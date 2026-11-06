@@ -1,0 +1,31 @@
+COMMAND: scripts/verify.py
+EXIT: 0
+Artifact audit PASS: 4 schemas; 75 case definitions; 63 local links.
+Positive source/tree audits: 31; executed L0 negatives: 11.
+L1 negative definitions only (NOT executed): 32; informative L2: 1.
+Fictional sample: 17 nodes. Uncovered requirement IDs: CONF-01, CONF-02, VAL-01, VAL-02.
+This is not full L1 conformance certification or an egov round-trip test.
+
+COMMAND: -m unittest discover -s tests -v
+EXIT: 0
+test_date_requires_quotes (test_artifacts.ArtifactAuditTests) ... ok
+test_duplicate_id_mutation (test_artifacts.ArtifactAuditTests) ... ok
+test_duplicate_yaml_keys_rejected (test_artifacts.ArtifactAuditTests) ... ok
+test_expected_text_mutation (test_artifacts.ArtifactAuditTests) ... ok
+test_fixed_position_mutation (test_artifacts.ArtifactAuditTests) ... ok
+test_heading_number_mutation (test_artifacts.ArtifactAuditTests) ... ok
+test_input_bytes (test_artifacts.ArtifactAuditTests) ... ok
+test_manifest_metadata_mutation (test_artifacts.ArtifactAuditTests) ... ok
+test_non_decimal_subitem_display (test_artifacts.ArtifactAuditTests) ... ok
+test_number_forms (test_artifacts.ArtifactAuditTests) ... ok
+test_source_mutation (test_artifacts.ArtifactAuditTests) ... ok
+test_unsafe_paths (test_artifacts.ArtifactAuditTests) ... ok
+test_wrong_id_mutation (test_artifacts.ArtifactAuditTests) ... ok
+test_wrong_parent_mutation (test_artifacts.ArtifactAuditTests) ... ok
+test_yaml12_not_yaml11 (test_artifacts.ArtifactAuditTests) ... ok
+test_yaml_extensions_rejected (test_artifacts.ArtifactAuditTests) ... ok
+
+----------------------------------------------------------------------
+Ran 16 tests in 0.019s
+
+OK
