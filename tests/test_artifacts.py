@@ -15,6 +15,15 @@ class ArtifactAuditTests(unittest.TestCase):
         self.man = v.load_yaml(self.path.read_text(encoding="utf-8"))
         self.expected = v.read_json(v.ROOT / "conformance/expected/T001.json")
 
+    def test_split_appendix_expected_text_is_audited(self):
+        path = v.ROOT / "conformance/valid/T076/law.yaml"
+        man = v.load_yaml(path.read_text(encoding="utf-8"))
+        expected = v.read_json(v.ROOT / "conformance/expected/T076.json")
+        v.check_positive(path, man, expected)
+        expected["ast"]["root"]["content"][1]["content"][0]["text"] = "本文。\n\n"
+        with self.assertRaises(ValueError):
+            v.check_positive(path, man, expected)
+
     def test_duplicate_yaml_keys_rejected(self):
         with self.assertRaises(ValueError):
             v.load_yaml("a: 1\na: 2\n")

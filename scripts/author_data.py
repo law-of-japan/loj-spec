@@ -337,5 +337,7 @@ add("欠番と逆順を保持", "HEAD-02 AST-01", "# 第三条\n" + wrap() + BAS
 add("字母細分は未対応", "DISP-01 BASIC-03", "# 第一条\n" + wrap("本文。\n" + wrap("一　号。\n" + wrap("イ　細分。\n", "1", "subitem", 1), "1", "item")), failure="DISP-01")
 add("属性順の交換", "DIR-01", "# 第一条\n" + wrap("本文。\n" + wrap("一　号。\n" + wrap("1　細分。\n", "1", "subitem", 1).replace("level=1 number=1", "number=1 level=1"), "1", "item")),
     tree([a(children=[p("本文。\n", children=[n("Item", "1", "一", [t("一　号。\n"), n("Subitem", "1", "1", [t("1　細分。\n")], level=1)])])])]))
+from appendix_cases import add_cases
+add_cases(add, manifest, tree, a, n, t, BASE)
 write("conformance/manifest.json", {"schemaVersion": "loj/v1alpha1", "cases": CASES})
 print("Materialized", len(CASES), "hand-authored cases and schemas; no parser invoked.")
