@@ -8,6 +8,7 @@ HTMLコメントで項・号・細分を明示し、Manifestと見出しから�
 - [Manifest](spec/v1alpha1/02-manifest.md) / [Markdown](spec/v1alpha1/03-markdown.md) / [見出し](spec/v1alpha1/04-headings.md)
 - [マーカー](spec/v1alpha1/05-directives.md) / [意味AST・位置](spec/v1alpha1/06-semantic-model.md) / [ID](spec/v1alpha1/07-identifiers.md)
 - [参照](spec/v1alpha1/08-references.md) / [検証](spec/v1alpha1/09-validation.md) / [適合データ契約](spec/v1alpha1/10-conformance.md)
+- [文字保存規則](spec/v1alpha1/01-overview.md#char-01) / [文字保存の設計判断](docs/design-decisions/011-character-preservation.md)
 - [Manifest Schema](schemas/v1alpha1/manifest.schema.json) / [AST Schema](schemas/v1alpha1/ast.schema.json) / [EBNF](grammar/v1alpha1/directives.ebnf)
 - [適合ケース索引](conformance/manifest.json) / [必須25領域の対応表](docs/coverage.md)
 - [架空法令のManifest](examples/fictional-law/law.yaml) / [本則第1章](examples/fictional-law/provisions/chapter1.md) / [期待AST](examples/fictional-law/expected.ast.json)

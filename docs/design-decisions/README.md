@@ -12,3 +12,4 @@
 - [008 XML対応](008-xml.md)
 - [009 対応範囲](009-scope.md)
 - [010 互換性と適合](010-versioning.md)
+- [011 文字同一性とUnicode文字保存（2026-11-07）](011-character-preservation.md)

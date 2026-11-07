@@ -1397,6 +1397,20 @@
       "input": "conformance/valid/T105/law.yaml",
       "expected": "conformance/expected/T105.json",
       "success": true
+    },
+    {
+      "id": "T106",
+      "title": "旧字体・互換漢字・結合文字・異体字セレクタの保存",
+      "requirements": [
+        "CHAR-01",
+        "BASIC-02",
+        "SRC-01"
+      ],
+      "level": "L1",
+      "normative": true,
+      "input": "conformance/valid/T106/law.yaml",
+      "expected": "conformance/expected/T106.json",
+      "success": true
     }
   ]
 }
