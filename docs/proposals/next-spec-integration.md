@@ -70,8 +70,8 @@ Status: Draft（未採用）
 | S-06 | 新schemaVersionで拡張する | 新しい構造・意味は新schemaVersionで定義。未知フィールド拒否を維持 | `law.yaml`を変えず、`history.yaml`を`loj-history/v1alpha1`として別定義 | 履歴マニフェストは独立したschemaVersionを持つ。版パッケージも、原典どおりの本文を書くために新しいschemaVersionにする（§13 PKG-01） |
 | S-07 | 既存参照の維持 | 既存IDを維持し一括再発行しない | 既存SHAへのリンクを凍結ブランチで維持 | 一致。旧履歴の凍結と既存ID維持を移行原則にまとめる |
 | S-08 | 根拠資料 | 関係・番号・条件に出典と箇所を要求 | 各版に`source_url` | 案Bの`source_url`を案Aの出典（資料識別子と箇所、確認状態）に拡張する |
-| S-09 | 改正関係の種別 | amends／totally_revises／repeals／succeeds、根拠・範囲・確認状態 | `kind: 制定/改正`のみ | 案Aの関係モデルを採用し、案Bの`kind`は関係から派生させる |
-| S-10 | 全部改正・廃止 | 全部改正は新Record＋関係、repealsは連続性を意味しない | 規定なし（一法令一リポジトリの履歴のみ） | 案Aで補う。案Bの履歴はRecordごとに閉じ、Record間はtotally_revises等で結ぶ |
+| S-09 | 改正関係の種別 | amends／totallyRevises／repeals／succeeds、根拠・範囲・確認状態 | `kind: 制定/改正`のみ | 案Aの関係モデルを採用し、案Bの`kind`は関係から派生させる |
+| S-10 | 全部改正・廃止 | 全部改正は新Record＋関係、repealsは連続性を意味しない | 規定なし（一法令一リポジトリの履歴のみ） | 案Aで補う。案Bの履歴はRecordごとに閉じ、Record間はtotallyRevises等で結ぶ |
 | S-11 | 登録台帳 | 本文なしのRecord登録、登録空間全体での一意性、統合・分割 | 規定なし（リポジトリ単位） | 案Aの登録台帳を、法令リポジトリの外に置く層として追加する |
 | S-12 | 改め文のデータ化 | 関係の対象範囲・内訳を保持 | 将来の発展形として不採用 | 衝突しない。案Aの対象範囲が将来の改め文データの受け皿になる |
 | S-13 | 状態選択の扱い | 選択機能・APIは対象外。将来のための情報保持のみ | historyブランチは閲覧ビュー | historyブランチを規範外（informative）の派生ビューとすれば両立する |
@@ -272,7 +272,7 @@ R3のうちRevisionの識別、時間値の型、版の順序の要件案。本�
 | `derived` | 規則により確定日が計算できる | 計算規則の原文、基準となる時点値、計算結果の日付、出典 | 公布の日から起算して三十日を経過した日 |
 | `pending` | 法令上まだ定まっていない | 定め方の原文（委任先・条件）、出典。確定した場合はその根拠（施行期日政令等） | 政令で定める日、条約が効力を生ずる日 |
 | `unknown` | 調査上不明 | 理由（未調査、資料不足、判読不能、資料間不一致）、確認した資料の範囲 | 原典未取得 |
-| `not_applicable` | 該当なし | 該当しないと判断した根拠 | 公布行為を伴わない状態 |
+| `notApplicable` | 該当なし | 該当しないと判断した根拠 | 公布行為を伴わない状態 |
 
 - `date`の精度が日に満たない場合（年月のみ等）、確定日として順序比較に使ってはならない。暦や精度が不明な値を推定で`date`に変換してはならない。
 - 原表記（和暦・漢数字）を保存し、グレゴリオ暦の値で置き換えない。グレゴリオ暦への換算は明治6年1月1日以後の日付に限って必須とし、それより前の日付の扱いは別途定める。
@@ -418,11 +418,11 @@ R4のうち、正本への変更の種類と、種類ごとの検査の要件案
 |---|---|---|---|
 | `format` 書式変更 | 同じ内容の表現（Markdownの書式・マーカー・ファイル分割）の変更 | 表現だけ変わる。ASTは変わらない | なし |
 | `correction` 記録訂正 | LoJの転記・復元の誤りを、原典に照らして直す | 宣言した版のASTが変わる | ID維持。記録版の更新 |
-| `official-correction` 官報正誤 | 官報正誤による公布本文の訂正を反映する | 宣言した版のASTが変わる | ID維持。記録版の更新（§5.6） |
+| `officialCorrection` 官報正誤 | 官報正誤による公布本文の訂正を反映する | 宣言した版のASTが変わる | ID維持。記録版の更新（§5.6） |
 | `restoration` 復元の進展 | 欠落していた本文を補う | 宣言した版のASTに内容が加わる。復元状況が変わる | ID維持。記録版の更新 |
 | `metadata` 属性・根拠の更新 | 時点値、出典、確認状態、改正関係、外部ID、ラベル等の更新 | 変わらない | ID維持。属性の更新 |
-| `revision-add` 状態の追加 | 新しい改正による版を加える | 新しい版パッケージが加わる。既存の版は変わらない | 新Revision |
-| `revision-fix` 状態の訂正 | 法令状態の取り違えの訂正、Revisionの撤回・統合・分割（案A T-11） | 宣言した版が変わる・増える・減る | 撤回・統合・分割の対応を記録 |
+| `revisionAdd` 状態の追加 | 新しい改正による版を加える | 新しい版パッケージが加わる。既存の版は変わらない | 新Revision |
+| `revisionFix` 状態の訂正 | 法令状態の取り違えの訂正、Revisionの撤回・統合・分割（案A T-11） | 宣言した版が変わる・増える・減る | 撤回・統合・分割の対応を記録 |
 | `migration` 仕様の版の移行 | 版パッケージを別のschemaVersionへ変換する | ASTのスキーマが変わる | なし |
 
 - 種類を一つに決められない変更（例: 書式変更と記録訂正の混在）は、種類ごとに分けて記録しなければならない（6.3）。
@@ -435,11 +435,11 @@ ASTの比較は、現行CONF-01の比較方法に準じ、schemaVersion・law・
 | 種類 | 変更してよい範囲 | 検査 |
 |---|---|---|
 | `format` | 版パッケージのファイル（表現） | 変更前後で、すべての版のASTが一致する。履歴マニフェスト・登録台帳は変わらない |
-| `correction`／`official-correction` | 宣言した版の本文 | 宣言していない版のASTが一致する。宣言した版ごとに根拠（原典の箇所、官報正誤）がある |
+| `correction`／`officialCorrection` | 宣言した版の本文 | 宣言していない版のASTが一致する。宣言した版ごとに根拠（原典の箇所、官報正誤）がある |
 | `restoration` | 宣言した版の本文と復元状況 | 宣言していない版のASTが一致する。復元状況・欠落範囲の宣言が更新されている |
 | `metadata` | 履歴マニフェスト・登録台帳 | すべての版のASTが一致する |
-| `revision-add` | 新しい版パッケージと、そのマニフェスト項目 | 既存のすべての版のASTが一致する。新しい版が`basedOn`等の順序検査（5.4）を満たす |
-| `revision-fix` | 宣言した版と、撤回・統合・分割の対応記録 | 宣言していない版のASTが一致する。撤回・統合・分割した旧IDが再利用されていない（REVID-01） |
+| `revisionAdd` | 新しい版パッケージと、そのマニフェスト項目 | 既存のすべての版のASTが一致する。新しい版が`basedOn`等の順序検査（5.4）を満たす |
+| `revisionFix` | 宣言した版と、撤回・統合・分割の対応記録 | 宣言していない版のASTが一致する。撤回・統合・分割した旧IDが再利用されていない（REVID-01） |
 | `migration` | 全版 | 新しい仕様の版が規範として提供するAST対応表により変換した旧ASTが、新ASTと一致する |
 
 - 誤りが後続の版へ引き継がれている場合（ある版の転記ミスが以後の版にも複製されている）、記録訂正は影響するすべての版を宣言して一度に直してよい。
@@ -470,7 +470,7 @@ ASTの比較は、現行CONF-01の比較方法に準じ、schemaVersion・law・
 
 | 対象 | 内容 |
 |---|---|
-| S-03 記録訂正を法令改正として記録しない | 種類の分類で、改正（`revision-add`）とそれ以外を区別（6.1） |
+| S-03 記録訂正を法令改正として記録しない | 種類の分類で、改正（`revisionAdd`）とそれ以外を区別（6.1） |
 | S-04 書式変更の安全確認 | `format`の検査として正式化。他の種類にも「宣言外の版は不変」を適用（6.2） |
 | C-11 記録訂正の扱い | 記録訂正が正本のGit履歴に種類付きで残り、記録版の履歴になる（6.3） |
 | C-12 L3の範囲 | AST比較を適合レベルから外し、変更検査として独立させる（6.5） |
@@ -621,7 +621,7 @@ R5のうち、法令リポジトリの正本構成と履歴マニフェストの
 |---|---|---|
 | RecordRef | `id`、`space`（省略時は自身の登録空間）、`label`（任意） | Recordを登録空間とIDの組で指す。リポジトリURLでは指さない（C-02）。`label`は「平成十七年法律第四十三号」等の表示用で、番号主張の代わりにしない（C-03） |
 | Evidence | `source`（Sourceのid）、`locator`（箇所の原文表記。例: 附則第一項） | 箇所のない出典参照だけで確認済みにしない |
-| Source | `id`、`kind`（promulgation／official-correction／index／egov／other）、`title`、`uri`（任意）、`fixed`（任意） | `fixed`は資料の内容を固定する手段（ハッシュ、保存先とcommit等）。`uri`だけでは過去の内容の固定を保証しない（案A REVISION-04）。旧`sources`から移行したURIは、個別の主張の根拠に自動で認定しない（案A M-03） |
+| Source | `id`、`kind`（promulgation／officialCorrection／index／egov／other）、`title`、`uri`（任意）、`fixed`（任意） | `fixed`は資料の内容を固定する手段（ハッシュ、保存先とcommit等）。`uri`だけでは過去の内容の固定を保証しない（案A REVISION-04）。旧`sources`から移行したURIは、個別の主張の根拠に自動で認定しない（案A M-03） |
 | Verification | `state`（unverified／confirmed／disputed／retracted）、`reason`（任意） | `confirmed`には一つ以上のEvidenceを必須とする。`unverified`・`disputed`には理由を推奨する |
 | TimePoint | `state`と、5.2の状態ごとの必須情報（`value`、`raw`、`precision`、`rule`、`base`、`reason`）、`evidence`、`verification` | `pending`の時点が法令上確定した場合は、`state: date`とし、確定前の定め方を`delegation`（原文と出典）、確定させた根拠を`determinedBy`に保持する。誤りの訂正は記録版の履歴（§6、`metadata`の変更）で追跡する |
 | Scope | `text`（対象範囲の原文表記。必須）、`nodes`（任意。対象版のノードIDの一覧） | `nodes`は位置の補助情報であり、条の歴史的同一性の主張ではない（ID-02、VIEW-05） |
@@ -636,22 +636,22 @@ R5のうち、法令リポジトリの正本構成と履歴マニフェストの
 | `relations` | 必須（空可） | このRecordを終点とする関係の一覧（8.5） |
 | `revisions` | 必須（一つ以上） | Revisionの一覧（8.6）。撤回・統合・分割したものも残す |
 | `coverage` | 必須 | 収録範囲（8.7） |
-| `termination` | 任意 | Recordの法令としての効力の終了（HIST-06、§10.17）。各項目は`type`（repealed／totally-revised／expired）と根拠。repealed・totally-revisedは関係のidを参照し、時点は関係の`items`に書く。expiredは`evidence`と`effective`（TimePoint、条件付きで未確定なら`pending`）を持つ |
+| `termination` | 任意 | Recordの法令としての効力の終了（HIST-06、§10.17）。各項目は`type`（repealed／totallyRevised／expired）と根拠。repealed・totallyRevisedは関係のidを参照し、時点は関係の`items`に書く。expiredは`evidence`と`effective`（TimePoint、条件付きで未確定なら`pending`）を持つ |
 
 ### 8.5 relations
 
 | フィールド | 必須 | 内容 |
 |---|---|---|
 | `id` | 必須 | マニフェスト内で一意な不透明ID。撤回後も再利用しない |
-| `type` | 必須 | amends／totally_revises／repeals／succeeds（案A RELATION-01） |
+| `type` | 必須 | amends／totallyRevises／repeals／succeeds（案A RELATION-01） |
 | `from` | 必須 | 起点のRecordRef（改正法令、全部改正後の新Record、廃止を定める法令、後継法令） |
 | `evidence`、`verification` | 必須 | 関係全体の根拠と確認状態 |
-| `items` | amends・repeals・totally_revisesでは必須、succeedsでは任意 | 対象範囲ごとの内訳。各項目は`id`、`scope`、`effective`（TimePoint）、`evidence`、`verification`を持つ（案A R-05〜R-07） |
+| `items` | amends・repeals・totallyRevisesでは必須、succeedsでは任意 | 対象範囲ごとの内訳。各項目は`id`、`scope`、`effective`（TimePoint）、`evidence`、`verification`を持つ（案A R-05〜R-07） |
 | `status` | 必須 | active／retracted。撤回は削除せず`retracted`とし、理由を`verification.reason`に残す |
 
 - 関係は終点のRecordの履歴マニフェストに置く。起点側のRecordには複製しない。起点側からの参照はRecordRefと関係のidの組で行う。
 - 内訳の一部だけの撤回は、その項目の`verification.state`を`retracted`とし、関係全体の撤回（`status: retracted`）と区別する（案A R-07）。
-- `repeals`・`totally_revises`の`items`は、通常、終点のRecord全体を対象範囲とする一項目で、`effective`に廃止・全部改正の効力発生の時点を書く。一部だけを廃止する規定は`amends`（削る改正）として扱う（§10.17 O-10b）。
+- `repeals`・`totallyRevises`の`items`は、通常、終点のRecord全体を対象範囲とする一項目で、`effective`に廃止・全部改正の効力発生の時点を書く。一部だけを廃止する規定は`amends`（削る改正）として扱う（§10.17 O-10b）。
 - 終点のRecordが本文を収録していなくても、関係は終点の履歴マニフェストに置く。そのために`history.yaml`だけの法令リポジトリを作る（REG-07）。
 
 ### 8.6 revisions
@@ -660,18 +660,18 @@ R5のうち、法令リポジトリの正本構成と履歴マニフェストの
 |---|---|---|
 | `id` | 必須 | revision_id（REVID-01） |
 | `label` | 任意 | 可読ラベル（REVID-02）。e-Gov法令履歴IDの書式を使ってよい |
-| `origin` | 起点のみ必須 | enactment／total-revision／coverage-start（5.4）。`total-revision`では、新旧関係（totally_revises）をRecordRefと関係idで参照する |
+| `origin` | 起点のみ必須 | enactment／totalRevision／coverageStart（5.4）。`totalRevision`では、新旧関係（totallyRevises）をRecordRefと関係idで参照する |
 | `basedOn` | 起点以外は必須 | 基礎状態のrevision_id、または`{state: unknown, reason}`（5.4） |
 | `basis` | 起点以外は必須 | 成立根拠。`relation`（関係id）と`items`（内訳のid一覧）の組。制定時の段階施行では`enactment`（`scope`、`evidence`）とする |
 | `effective` | 必須 | 施行時点（TimePoint） |
-| `applicability` | 必須 | `state`（none-confirmed／unsurveyed／conditions）と、`conditions`の場合は条件の一覧（`scope`、`text`、`evidence`、`verification`、`machineEvaluable`） |
+| `applicability` | 必須 | `state`（noneConfirmed／unsurveyed／conditions）と、`conditions`の場合は条件の一覧（`scope`、`text`、`evidence`、`verification`、`machineEvaluable`） |
 | `text` | 必須 | `status`（complete／partial／absent）、`package`（省略時は`versions/<id>/law.yaml`）、`gaps`（partialのとき必須。欠落範囲のScope一覧）、`sources`（本文を起こした原典資料のEvidence一覧。complete・partialのとき必須、REB-03）、`glyphs`（字体の照合状態。`verified`＝原典の字体と照合済み／`unverified`＝新字体化された資料等に由来し未照合。complete・partialのとき必須、§10.5）、`glyphNotes`（字体注記ファイルのパス。注記がある場合は必須、§12） |
 | `externalIds` | 任意 | `issuer`（例: egov）、`kind`（revision）、`value`、`evidence`、`verification`（§5.6） |
 | `status` | 必須 | active／retracted／merged／split。merged・splitでは`replacedBy`（revision_idの一覧）と根拠を持つ |
 
 - `basis`が参照する内訳の`effective`と、Revisionの`effective`は一致しなければならない。両方が`date`の場合に検査する。
 - 一つのRevisionの`basis`は、一つの関係の内訳（同じ改正法令）に限る（5.3.1）。同じ関係・同じ施行時点のRevisionが二つ以上あってはならない。
-- `applicability`の`none-confirmed`には根拠を必須とし、`unsurveyed`と区別する（案A T-13）。
+- `applicability`の`noneConfirmed`には根拠を必須とし、`unsurveyed`と区別する（案A T-13）。
 - 経過措置で併存する状態は、同じ`basedOn`を持つ複数のRevisionと、それぞれの`applicability`で表す。
 
 ### 8.7 coverage
@@ -797,7 +797,7 @@ R5のうち、登録台帳の保存形式の要件案。8.1〜8.11で対象外�
 | `aliases` | 任意 | 旧リポジトリの以前の名前の一覧（§10.12）。各項目は`id`、`evidence`、`verification`。参照の解決にだけ使い、ほかのRecordに再利用しない |
 | `status` | 必須 | provisional（仮登録）／active／merged／split／withdrawn |
 | `identity` | 必須 | 同一性の確認。対象を指し示す資料・調査記録（`evidence`）と`verification`。`provisional`のRecordでは`verification.state`を`confirmed`にしない |
-| `text` | 必須 | 本文の取得状況。`state`（collected＝法令リポジトリに本文がある／not-collected＝未取得／nonexistent-confirmed＝本文が存在しないことを確認済み）。`not-collected`から不存在を推論しない（案A） |
+| `text` | 必須 | 本文の取得状況。`state`（collected＝法令リポジトリに本文がある／notCollected＝未取得／nonexistentConfirmed＝本文が存在しないことを確認済み）。`notCollected`から不存在を推論しない（案A） |
 | `repository` | `text.state`がcollectedのとき、または関係・Revisionを記録するとき必須 | 法令リポジトリの解決先。`location`（例: `github.com/law-of-japan/19480720-law-178`）、`canonicalBranch`（正本ブランチ。例: `main`）。移転したら更新する。固定参照はcommitで記録版を指すので、移転の影響を受けない（FIXREF-01） |
 | `sources` | 必須（空可） | Sourceの一覧（§8.3） |
 | `numbers` | 必須（空可） | 番号主張の一覧（REG-03） |
@@ -845,8 +845,8 @@ R5のうち、登録台帳の保存形式の要件案。8.1〜8.11で対象外�
 
 #### REG-07 履歴だけの法令リポジトリ
 
-- 関係の終点となるRecordは、本文を収録していなくても（`text.state: not-collected`）法令リポジトリを持てる。リポジトリには`history.yaml`だけを置き、`versions/`を置かなくてよい。
-- その履歴マニフェストのRevisionは、本文のない起点（`origin: coverage-start`、`text.status: absent`）一つでよい。`coverage`は`unconfirmed`とする（REB-06）。
+- 関係の終点となるRecordは、本文を収録していなくても（`text.state: notCollected`）法令リポジトリを持てる。リポジトリには`history.yaml`だけを置き、`versions/`を置かなくてよい。
+- その履歴マニフェストのRevisionは、本文のない起点（`origin: coverageStart`、`text.status: absent`）一つでよい。`coverage`は`unconfirmed`とする（REB-06）。
 - 詳細は§10.17 O-10aのとおり（2026-11-09合意）。
 
 #### 記述例：19480720-law-178
@@ -1026,7 +1026,7 @@ R8の要件案。案A §6「互換性と移行の原則（検討上の合意）�
 
 - 既存データには、旧字体・異体字の新字体への置換や異体字セレクタの欠落等、文字情報が失われている可能性がある（CHAR-01）。VAL-01のとおり、基礎データ単体から過去の置換の有無を完全に証明することはできない。
 - 取り込んだ本文は、文字情報の欠落を検出できないままL1に合格し、完全な本文に見える。「移行由来・未確認」と印を付けても、`text.status: complete`と書けば原典どおりと受け取られ、書かなければ取り込む意味がない。
-- 正本は、本文のない版（`text.status: absent`）、収録開始の起点（`coverage-start`、§5.4）、網羅性の未確認（`coverage: unconfirmed`、§8.7）を表せる。原典を確認できた範囲から始め、それより前は版の存在だけを記録できるので、旧本文で穴を埋める必要がない。
+- 正本は、本文のない版（`text.status: absent`）、収録開始の起点（`coverageStart`、§5.4）、網羅性の未確認（`coverage: unconfirmed`、§8.7）を表せる。原典を確認できた範囲から始め、それより前は版の存在だけを記録できるので、旧本文で穴を埋める必要がない。
 
 ただし、IDと既存の参照は維持する。旧資産の扱いは次のとおりとする。
 
@@ -1072,7 +1072,7 @@ R8の要件案。案A §6「互換性と移行の原則（検討上の合意）�
 
 #### REB-06 収録範囲
 
-- 原典で本文を確認できた最初の状態を起点にできない場合（それより前の版の存在は分かるが本文を起こせない場合）は、本文のない版（`text.status: absent`）を記録してよい。存在の根拠もない状態は記録せず、起点を`coverage-start`とする（§5.4）。
+- 原典で本文を確認できた最初の状態を起点にできない場合（それより前の版の存在は分かるが本文を起こせない場合）は、本文のない版（`text.status: absent`）を記録してよい。存在の根拠もない状態は記録せず、起点を`coverageStart`とする（§5.4）。
 - 再構築直後の`coverage`は`unconfirmed`とする（§8.7）。旧リポジトリの版の数を、収録の網羅性の根拠にしない。
 
 #### REB-07 旧commitとの対応と再構築報告
@@ -1334,7 +1334,7 @@ differences:
 
 - `text.glyphs`は`unverified`とした。画像の解像度では、「労／勞」「産／產」などのように決められない字が多い。また、すべての字を照合してはいない。
 - 字体注記は10件で、内訳は次のとおり。どれも、§10.6で決められないと記録した字だけを対象にした。
-  - 「祝」8件: 統合漢字を置いた（`unified-default`）
+  - 「祝」8件: 統合漢字を置いた（`unifiedDefault`）
   - 「豊／豐」1件、「号／號」1件: 〓を置いた（`undetermined`）
 - 「人々」の踊り字は、画像を読み直して「々」と判断した。注記はしていない。
 - 再構築報告に記録した旧本文との差は、次の4件である。
@@ -1398,7 +1398,7 @@ O-05fの判断で、GLYPH-04の3cを「下書きの資料の字を仮に置く�
    - 「より豊かな」の「豊」: 上が「曲」の形の「豊」
    - 附則第二項の「第二十五号」の「号」: 新字体の「号」
 
-   御署名原本を`text.sources`に加えた。この2字の字体注記は、§12.7の合意により`basis: other-source`として残す。次の字は、御署名原本でも決められない。
+   御署名原本を`text.sources`に加えた。この2字の字体注記は、§12.7の合意により`basis: otherSource`として残す。次の字は、御署名原本でも決められない。
    - 「祝」の偏
    - 附則の項番号「1」「2」の全角・半角
 4. **御署名原本と官報で、字体が違う可能性がある。** 御署名原本の冒頭の法令番号は、押印のような書体で「法律第百七十八號」と読める（確度は高くない）。一方、官報の本文の「号」は、新字体と読める。二つの資料の字体が食い違うとき、どちらを版の本文の根拠にするかが決まっていない。GLYPH-04の3aは、ほかの原典資料で「確かめる」としか定めていない（§14 O-05g）。
@@ -1414,10 +1414,10 @@ O-05fの判断で、GLYPH-04の3cを「下書きの資料の字を仮に置く�
 #### プロトタイプへの反映
 
 - 第二條の表の憲法記念日の行を「國の成長を期する」に直した。
-- 履歴マニフェストの`sources`に、官報正誤（`kind: official-correction`）と御署名原本を加えた。
+- 履歴マニフェストの`sources`に、官報正誤（`kind: officialCorrection`）と御署名原本を加えた。
 - 再構築報告の文言の差を削除し、字体の差の件数を12に直した。旧本文の「国の成長」は、正誤後の本文と字体の差だけになる。
 - 字体注記は11件になった。注記の位置の検査は、本文と一致した。
-- §12.7の合意後、「豊」「号」の注記を`basis: other-source`として戻した（13件）。注記の位置は本文と一致した。
+- §12.7の合意後、「豊」「号」の注記を`basis: otherSource`として戻した（13件）。注記の位置は本文と一致した。
 - §10.7の再構築報告の記述例は、この調査の前に書いたものであり、文言の差の例として残す。
 
 ### 10.10 改正の原典の入手経路（2026-11-08合意、O-08）
@@ -1448,7 +1448,7 @@ O-05fの判断で、GLYPH-04の3cを「下書きの資料の字を仮に置く�
   - `text.sources`に、御署名原本を示す。
   - `text.glyphs`は`unverified`とする。官報の字体と照合していないためである。
   - 官報正誤を確かめていないことを、再構築報告の`sourceChecks`の`note`と、版の`text.sources`の`locator`に書く。
-  - 官報を入手した時点で照合し、差があれば記録訂正（§6.1 `correction`）または官報正誤（`official-correction`）として直す。
+  - 官報を入手した時点で照合し、差があれば記録訂正（§6.1 `correction`）または官報正誤（`officialCorrection`）として直す。
 - 有料のサービスや図書館で確かめた官報も、Sourceとして記録してよい。その場合は、号・日付・頁を`locator`に書く。URIを持たない資料には、`fixed`を設定できなくてよい。ただし、照合した人と日時はcommitで追えるようにする。
 - 官報も御署名原本も入手できない改正の版は、本文のない版（`text.status: absent`）として記録してよい（REB-06）。e-Govの改正後の全文から本文を起こさない（§10.5の決定点3）。
 
@@ -1479,7 +1479,7 @@ O-05fの判断で、GLYPH-04の3cを「下書きの資料の字を仮に置く�
 
 - 版パッケージ`versions/zwgmz1rt/`（`basedOn: 98mj5vgx`）。第二條の表は12行になった。
 - 履歴マニフェストに、関係`rel-s41-86`（`amends`、起点`19660625-act-86`、内訳3件）と、Revision`zwgmz1rt`（施行は「公布の日から」、1966-06-25）を加えた。
-- 登録台帳に、改正法のRecord（`text.state: not-collected`、番号主張「法律第八十六号」）を加えた。
+- 登録台帳に、改正法のRecord（`text.state: notCollected`、番号主張「法律第八十六号」）を加えた。
 - 再構築報告では、旧commit `4505a64` をこの版に対応させた（`unverified`）。字体の差（12字分）と構造の差（箇条書き）を記録した。
 - 次のことを確かめた。
   - 両方の版で、字体注記の位置が本文と一致する。
@@ -1498,7 +1498,7 @@ O-05fの判断で、GLYPH-04の3cを「下書きの資料の字を仮に置く�
    | 検証例 | 結果 |
    |---|---|
    | R-01（一部改正法が複数法令を改正） | 一部を確かめた。改正法のRecordと被改正法令を分け、関係を被改正法令の履歴マニフェストに置いた。老人福祉法は収録していないため、二つ目の`amends`は記録していない |
-   | I-06（本文未取得のRecord） | 確かめた。改正法を`text.state: not-collected`で登録できた |
+   | I-06（本文未取得のRecord） | 確かめた。改正法を`text.state: notCollected`で登録できた |
    | T-12、T-13 | 確かめた。`coverage: unconfirmed`と既知の欠落、`applicability: unsurveyed`を保持した |
    | M-01、M-04 | 確かめた。新しいschemaVersionを使い、旧IDを維持した。旧データにない公布日は原典から記録し、官報と照合していない値は`unverified`とした |
    | T-01、T-04 | 該当しない。この改正法の施行期日は一つで、確定している。「建国記念の日／政令で定める日」は祝日の日付の委任であり、版の施行時点ではない |
@@ -1569,16 +1569,16 @@ O-05fの判断で、GLYPH-04の3cを「下書きの資料の字を仮に置く�
 **GLYPH-08 原典の中の訂正**
 
 - 原典の中で印刷を消して書き直した箇所（見え消し）は、訂正後の字句を本文に置く。訂正前の字句は本文に置かない。
-- 訂正のあった箇所は、字体注記に`kind: source-edit`として記録する。
+- 訂正のあった箇所は、字体注記に`kind: sourceEdit`として記録する。
   - `recorded`: 本文に置いた訂正後の字句
   - `description`: 訂正前の字句と、訂正の方法（手書き、貼り紙等）
   - `evidence`: 原典資料と箇所
 - 手書きの字は、印刷の字体の区別（旧字体・新字体等）を判断する根拠にしない。手書きの部分の字体は、GLYPH-04の3cと同じく下書きの資料の字を仮に置く。
 - 官報を入手して照合した場合は、官報の字句と字体を根拠とする（§12.7）。原本の訂正の注記は、資料間の記録として残してよい。
 
-GLYPH-03の`kind`に`source-edit`を加え、`description`を`source-edit`でも必須とする。
+GLYPH-03の`kind`に`sourceEdit`を加え、`description`を`sourceEdit`でも必須とする。
 
-試作では、改正後の版（`zwgmz1rt`）の建国記念の日の日付欄に`kind: source-edit`の注記を加えた（注記14件）。注記の位置は本文と一致した。
+試作では、改正後の版（`zwgmz1rt`）の建国記念の日の日付欄に`kind: sourceEdit`の注記を加えた（注記14件）。注記の位置は本文と一致した。
 
 #### 決定事項（2026-11-08合意）
 
@@ -1588,7 +1588,7 @@ GLYPH-03の`kind`に`source-edit`を加え、`description`を`source-edit`でも
 |---|---|---|
 | 対象範囲とノードの照合 | 番号で指す部分は番号の経路で照合し、内容で指す部分は自動で照合せず人が`nodes`を書く（SCOPE-01） | 文字列の一致で照合する（「第二条」と「第二條」が一致しない）／新字体等に変換した文字列の一致で自動照合する（「成人の日の項」のような内容の指定を、誤って別のノードに対応づけるおそれがある） |
 | 原典の中の訂正の本文 | 訂正後の字句を置く（GLYPH-08） | 訂正前の字句を置く（公布された法令の内容と違う） |
-| 訂正の記録先 | 字体注記に`kind: source-edit`として、位置と訂正前の字句を記録する | 再構築報告や`sourceChecks`の注記だけに書く（位置が分からず、再構築でない新規の収録では記録先がない） |
+| 訂正の記録先 | 字体注記に`kind: sourceEdit`として、位置と訂正前の字句を記録する | 再構築報告や`sourceChecks`の注記だけに書く（位置が分からず、再構築でない新規の収録では記録先がない） |
 | 手書きの字の字体 | 下書きの資料の字を仮に置く（3cと同じ） | 手書きの字形から字体を判断する（手書きは印刷の字体の区別を表さない） |
 
 ### 10.14 プロトタイプの結果：記録版・固定参照・派生ビュー（2026-11-08、O-09d）
@@ -1601,11 +1601,11 @@ GLYPH-03の`kind`に`source-edit`を加え、`description`を`source-edit`でも
 
 | # | 変更の種類 | 内容 | 版の状態 |
 |---|---|---|---|
-| C1 | `revision-add` | 制定時の版を官報から起こす。官報の誤植「國民の」のまま。附則の項番号を読み落とした状態（§10.6の読み誤り） | 98mj5vgx complete |
+| C1 | `revisionAdd` | 制定時の版を官報から起こす。官報の誤植「國民の」のまま。附則の項番号を読み落とした状態（§10.6の読み誤り） | 98mj5vgx complete |
 | C2 | `correction` | 附則の項番号「1」「2」の読み落としを直す（LoJの転記の誤り） | 同上 |
-| C3 | `official-correction` | 官報正誤（1948年9月28日）を反映し、「國の」に直す | 同上 |
+| C3 | `officialCorrection` | 官報正誤（1948年9月28日）を反映し、「國の」に直す | 同上 |
 | C4 | `metadata` | 御署名原本で「豊」「号」を確かめ、出典と字体注記を加える | 同上 |
-| C5 | `revision-add` | 昭和41年法律第86号による改正後の版を加える。体育の日の項はまだ起こしていない | zwgmz1rt partial（`gaps: 第二条体育の日の項`） |
+| C5 | `revisionAdd` | 昭和41年法律第86号による改正後の版を加える。体育の日の項はまだ起こしていない | zwgmz1rt partial（`gaps: 第二条体育の日の項`） |
 | C6 | `restoration` | 体育の日の項を起こす | zwgmz1rt complete |
 | C7 | `metadata` | 再構築報告を加える | — |
 
@@ -1737,7 +1737,7 @@ GLYPH-03の`kind`に`source-edit`を加え、`description`を`source-edit`でも
 
   政令の前は計算結果を持たないので、版は施行日の確定した版として扱われない。派生ビュー（§10.14の選択規則）から除外される。
 - **R-03:** 廃止の関係（`repeals`）の起点を施行法とし、新法と旧法の承継（`succeeds`）は記録しなかった。施行法第三条以下の「旧法による特許権は新法による特許権となつたものとみなす」は承継の判断材料になる。しかし、関係の存在から自動では作らない（案A R-03）。
-- **R-02:** 新法のRecordの最初のRevisionを`origin: total-revision`とし、全部改正の関係（`totally_revises`）を参照できた。
+- **R-02:** 新法のRecordの最初のRevisionを`origin: totalRevision`とし、全部改正の関係（`totallyRevises`）を参照できた。
 - **T-02:** 次の二つの組で表せた。
   - 旧法の最後のRevisionの`applicability`に、施行法第二十条の条件（係属中の出願には従前の例による）を書く。
   - 新法の最初のRevisionの`applicability`に、その裏返しの条件を書く。
@@ -1745,7 +1745,7 @@ GLYPH-03の`kind`に`source-edit`を加え、`description`を`source-edit`でも
 
 #### 分かったこと
 
-1. **終点のRecordに法令リポジトリがないと、関係を置けない（§14 O-10a）。** 関係は終点のRecordの履歴マニフェストに置く（§8.5、§8.11の決定点1）。`repeals`・`totally_revises`の終点は旧法である。旧法は、本文を集めていない（`text.state: not-collected`）ことが多く、法令リポジトリも履歴マニフェストもない。旧特許法・旧教育基本法とも、これに当たった。
+1. **終点のRecordに法令リポジトリがないと、関係を置けない（§14 O-10a）。** 関係は終点のRecordの履歴マニフェストに置く（§8.5、§8.11の決定点1）。`repeals`・`totallyRevises`の終点は旧法である。旧法は、本文を集めていない（`text.state: notCollected`）ことが多く、法令リポジトリも履歴マニフェストもない。旧特許法・旧教育基本法とも、これに当たった。
 2. **廃止・全部改正の効力発生の時点を書けない（§14 O-10b）。** 関係の時点は`items`の`effective`にしかない。しかも`items`は`amends`でだけ必須である。旧特許法がいつ廃止されたか（1960-04-01）、旧教育基本法がいつ全部改正されたか（2006-12-22）を、関係にもRevisionにも書けなかった。そのため、旧法のRevisionの`applicability`（廃止後も係属中の出願に適用）が「廃止後の適用」であることも、データから読み取れない。
 3. **Recordの効力の状態（廃止・失効）がない（§14 O-10c）。** 登録台帳の`status`（provisional／active／merged／split／withdrawn）は、登録の状態である。法令の効力の状態ではない。廃止・全部改正された法令、皇室典範特例法第二条のような条件付きの失効を、Recordについて直接は表せない。関係（`repeals`等）から導くのか、別に持つのかが決まっていない。
 4. **他のRecordの時点を写して持つことになる（§14 O-10d）。** T-04の基準の時点（特例法の施行日）は、特例法自身の施行時点である。それを祝日法の履歴マニフェストに写して持った。特例法を収録すれば、同じ時点が二か所に書かれ、食い違う可能性がある。時点値から他のRecordの時点を参照する方法がない。
@@ -1761,10 +1761,10 @@ GLYPH-03の`kind`に`source-edit`を加え、`description`を`source-edit`でも
 
 - 関係の終点となるRecordは、本文を収録していなくても法令リポジトリを持てる。リポジトリには`history.yaml`だけを置き、`versions/`を置かなくてよい。
 - 登録台帳では、次のように記録する。
-  - `text.state`: `not-collected`のまま
+  - `text.state`: `notCollected`のまま
   - `repository`: 設定する。`repository`を必須とする条件を「`text.state`が`collected`のとき、または関係・Revisionを記録するとき」に改める（§8.12 REG-02）
 - このとき、履歴マニフェストには次を置く。
-  - Revision: 少なくとも一つ。本文のない起点（`origin: coverage-start`、`text.status: absent`、時点は`unknown`等）でよい（REB-06）
+  - Revision: 少なくとも一つ。本文のない起点（`origin: coverageStart`、`text.status: absent`、時点は`unknown`等）でよい（REB-06）
   - `coverage`: `unconfirmed`
 - 関係は、引き続き終点のRecordの履歴マニフェストに置く（§8.11の決定点1）。登録台帳には置かない。
 
@@ -1772,8 +1772,8 @@ GLYPH-03の`kind`に`source-edit`を加え、`description`を`source-edit`でも
 
 **§8.5の改訂**
 
-- `items`を、`amends`・`repeals`・`totally_revises`で必須とする。`succeeds`では任意とする。
-- `repeals`・`totally_revises`の`items`は、通常、終点のRecord全体を対象範囲（`scope.text`例: 「全部」）とする一項目である。`effective`に、廃止・全部改正の効力発生の時点を書く。
+- `items`を、`amends`・`repeals`・`totallyRevises`で必須とする。`succeeds`では任意とする。
+- `repeals`・`totallyRevises`の`items`は、通常、終点のRecord全体を対象範囲（`scope.text`例: 「全部」）とする一項目である。`effective`に、廃止・全部改正の効力発生の時点を書く。
 - 一部だけを廃止する規定は、引き続き`amends`（削る改正）として扱う。
 
 #### O-10c Recordの効力の終了
@@ -1786,7 +1786,7 @@ GLYPH-03の`kind`に`source-edit`を加え、`description`を`source-edit`でも
   | `type` | 根拠 | 時点 |
   |---|---|---|
   | `repealed` | `repeals`関係のid | 関係の`items`の`effective`（O-10b）。`termination`に写さない |
-  | `totally-revised` | `totally_revises`関係のid | 同上 |
+  | `totallyRevised` | `totallyRevises`関係のid | 同上 |
   | `expired` | 自身の規定による失効（時限、条件付きの失効）。`evidence`（例: 附則第二条） | `effective`（TimePoint）。条件付きで時点が決まらないものは`pending`とし、条件の原文を`delegation`に書く |
 
 - 登録台帳の`status`は、登録の状態として変えない。効力の終了を、登録台帳に写して持たない。
@@ -1812,7 +1812,7 @@ GLYPH-03の`kind`に`source-edit`を加え、`description`を`source-edit`でも
 | 点 | 決定 | 採らなかった案 |
 |---|---|---|
 | 終点に法令リポジトリがない関係（O-10a） | 本文がなくても、`history.yaml`だけの法令リポジトリを作り、そこに置く（REG-07） | 法令リポジトリができるまで、登録台帳のRecordに関係を置き、できたら移す（置き場所が二つになり、移動のたびに参照が変わる）／関係をすべて登録台帳に置く（§8.11の決定を改める。法令リポジトリ単体でL3の関係の検査ができなくなる） |
-| 廃止・全部改正の時点（O-10b） | `items`を`amends`・`repeals`・`totally_revises`で必須にし、時点は`items`の`effective`に書く | 関係のトップレベルに`effective`を加える（`amends`と書き方が分かれる） |
+| 廃止・全部改正の時点（O-10b） | `items`を`amends`・`repeals`・`totallyRevises`で必須にし、時点は`items`の`effective`に書く | 関係のトップレベルに`effective`を加える（`amends`と書き方が分かれる） |
 | 効力の終了（O-10c） | 履歴マニフェストに`termination`を置き、廃止・全部改正は関係を参照し、失効は自身の根拠と時点を書く（HIST-06）。登録台帳の`status`は変えない | 関係からだけ導き、失効は表さない（時限法・条件付き失効を記録できない）／登録台帳に効力の状態を持つ（関係・履歴マニフェストと二重になり、食い違う） |
 | 他のRecordの時点（O-10d） | 値を持ったまま`sameAs`で参照先を示し、L4で一致を検査する（XREF-03） | 参照だけを持ち、値を持たない（参照先を収録していないと時点が分からない）／写すだけで参照を持たない（食い違いを検出できない） |
 
@@ -1971,10 +1971,10 @@ CHAR-01が「本版では未定義」とした、対応するUnicode表現を特
 | `field` | 任意（既定は`text`） | 字のある場所。`text`（ノードの本文）または`display`（ノードの表示ラベル、AST-01）（§12.6） |
 | `offset` | 必須 | `field`が`text`なら、ノード自身の本文を出現順につないだ文字列（子ノードの本文を含めない）でのコードポイント単位の位置（0始まり）。`field`が`display`なら、`display`の文字列での位置（§12.6） |
 | `recorded` | 必須 | 本文に置いたコードポイント列。位置の検査に使う。`kind: spacing`で空白を書かなかった場合は空文字列 |
-| `kind` | 必須 | ambiguous／illegible／unencodable／literal／spacing（字間を書くか判断できない場合、PKG-08）／variance（官報とほかの原典資料の字体の違い、§12.7）／source-edit（原典の中の訂正、§10.13 GLYPH-08）／selected（GLYPH-04の2・5で互換漢字・異体字セレクタ付きの字を選んだ、§10.18） |
+| `kind` | 必須 | ambiguous／illegible／unencodable／literal／spacing（字間を書くか判断できない場合、PKG-08）／variance（官報とほかの原典資料の字体の違い、§12.7）／sourceEdit（原典の中の訂正、§10.13 GLYPH-08）／selected（GLYPH-04の2・5で互換漢字・異体字セレクタ付きの字を選んだ、§10.18） |
 | `candidates` | ambiguousで必須 | 候補のコードポイント列の一覧（2件以上）。`recorded`が〓でなければ`recorded`を含む |
-| `basis` | ambiguousで必須 | 本文の字の決め方。`unified-default`（GLYPH-04の3）、`other-source`（3a、ほかの原典資料で確かめた字、§12.7）、`same-source`（3b）、`provisional`（3c、下書きの資料の字の仮置き）、`undetermined`（3cで下書きの資料がその字を持たない場合、`recorded`は〓） |
-| `description` | unencodable・source-editで必須 | 字の説明（構成要素の記述、IDS（Ideographic Description Sequence）等） |
+| `basis` | ambiguousで必須 | 本文の字の決め方。`unifiedDefault`（GLYPH-04の3）、`otherSource`（3a、ほかの原典資料で確かめた字、§12.7）、`sameSource`（3b）、`provisional`（3c、下書きの資料の字の仮置き）、`undetermined`（3cで下書きの資料がその字を持たない場合、`recorded`は〓） |
+| `description` | unencodable・sourceEditで必須 | 字の説明（構成要素の記述、IDS（Ideographic Description Sequence）等） |
 | `evidence` | 必須 | 原典資料と箇所（§8.3 Evidence）。画像資料では頁・コマと位置 |
 | `verification` | 必須 | 確認状態（§8.3 Verification） |
 
@@ -1991,10 +1991,10 @@ DDR-011の「対応が曖昧な場合の判断基準」を次のとおり定め�
 3. 統合漢字と互換漢字のどちらに当たるか決められない場合は、統合漢字を本文に置き、ambiguousとして注記する（GLYPH-02）。
    - 3a. 別々に符号化された字（例: 号 U+53F7／號 U+865F）のどちらに当たるか決められない場合は、入手できる他の原典資料（御署名原本、法令全書、より高い解像度の画像等）で確かめる（推奨）。確かめられれば1を適用し、使った資料をEvidenceに記録する。
      - 版の本文の字体の根拠は、公布された本文（官報と官報正誤）とする。ほかの原典資料は、官報で字体を決められない字を確かめるためにだけ使う（§12.7）。
-     - ほかの原典資料で確かめた字は、その字を本文に置き、ambiguousとして注記する。`basis: other-source`と、確かめた資料を`evidence`に記録する。官報の字体を直接確かめたとは扱わない。
+     - ほかの原典資料で確かめた字は、その字を本文に置き、ambiguousとして注記する。`basis: otherSource`と、確かめた資料を`evidence`に記録する。官報の字体を直接確かめたとは扱わない。
      - 官報とほかの原典資料がどちらも読め、字体が違う場合は、官報の字を本文に置き、`kind: variance`として両方の字と資料を注記する。
      - 文言が違う場合は字体注記の対象としない。官報正誤があれば正誤後の本文とし（§5.6）、見つからなければ官報の本文を置いて、食い違いを`verification: disputed`として再構築報告と`text.sources`に記録する。LoJは、どちらが法規範の内容かを判断しない。
-   - 3b. それでも決められない場合は、同じ原典資料の中で同じ字がはっきり印刷されている箇所の字体を本文に置いてよい。ambiguousとして注記し、`basis: same-source`と根拠の箇所を`evidence`に記録する。この選択は推定であり、原典の字体を確認したとは扱わない。
+   - 3b. それでも決められない場合は、同じ原典資料の中で同じ字がはっきり印刷されている箇所の字体を本文に置いてよい。ambiguousとして注記し、`basis: sameSource`と根拠の箇所を`evidence`に記録する。この選択は推定であり、原典の字体を確認したとは扱わない。
    - 3c. 3bの箇所もない場合は、本文の下書きに使った機械可読の資料（§10.5のe-Gov等）がその箇所に置いている字を、仮に本文に置く。ambiguousとして候補を注記し、`basis: provisional`と、下書きの資料の箇所を`evidence`に記録する。仮置きは原典の字体の確認ではなく、字体を推定したとも扱わない。字体の既定を新字体・旧字体で決めず、下書きの資料に従うことで、人によって選び方が変わらないようにする。
    - 下書きの資料がその箇所の字を持たない場合（資料間で文言が違う等）は、〓（U+3013）を置き、`basis: undetermined`とする。
    - 全角形・半角形（例: １ U+FF11／1 U+0031）のように、印刷から幅を決められない字も3a〜3cによる。
@@ -2031,7 +2031,7 @@ DDR-011の「対応が曖昧な場合の判断基準」を次のとおり定め�
 
 #### GLYPH-08 原典の中の訂正
 
-§10.13で定める（見え消しは訂正後の字句を本文に置き、`kind: source-edit`で記録する）。
+§10.13で定める（見え消しは訂正後の字句を本文に置き、`kind: sourceEdit`で記録する）。
 
 ### 12.3 解消される未決事項
 
@@ -2114,7 +2114,7 @@ DDR-011の「対応が曖昧な場合の判断基準」を次のとおり定め�
 
 御署名原本と官報の字体が違うとき、どちらを正とするかについての公的な説明は見つからなかった。また、字体だけの違いが官報正誤の対象になった例も、今回の調査では見つけていない。e-Govの字体の扱いの方針も、公開資料では見つからなかった。
 
-これを受けて、GLYPH-04の3aに字体の根拠の規則を加え、GLYPH-03の`kind`に`variance`、`basis`に`other-source`を加えた（12.2）。
+これを受けて、GLYPH-04の3aに字体の根拠の規則を加え、GLYPH-03の`kind`に`variance`、`basis`に`otherSource`を加えた（12.2）。
 
 #### 決定事項（2026-11-08合意）
 
@@ -2123,7 +2123,7 @@ DDR-011の「対応が曖昧な場合の判断基準」を次のとおり定め�
 | 点 | 決定 | 採らなかった案 |
 |---|---|---|
 | 本文の字体の根拠 | 公布された本文（官報と官報正誤）（3a） | 御署名原本（公布の手段は官報であり、官報の表記は正誤されない限り公布された本文として残る）／両方を同格とする（食い違うたびに本文に置く字が決まらない） |
-| 官報で読めない字を、ほかの原典資料で確かめた場合 | 注記を残し、`basis: other-source`とする | 注記せず、確かめた字として扱う（官報の字体を直接確かめていないことが記録に残らない） |
+| 官報で読めない字を、ほかの原典資料で確かめた場合 | 注記を残し、`basis: otherSource`とする | 注記せず、確かめた字として扱う（官報の字体を直接確かめていないことが記録に残らない） |
 | 官報とほかの原典資料がどちらも読めて、字体が違う場合 | 官報の字を置き、`kind: variance`で注記する | ほかの原典資料（御署名原本）の字を置く（公布された本文と食い違う） |
 
 ## 13. 版パッケージの新しいschemaVersion（案、O-01）
@@ -2404,7 +2404,7 @@ DDR-011の「対応が曖昧な場合の判断基準」を次のとおり定め�
 │        └─ O-09e 関係の内訳の`scope.nodes`が、どの記録版のノードIDかを持たない【新規、§10.14】（§10.15で合意：行のkeyとSCOPE-02）
 ├─ O-10 別の実例で、経過措置・全部改正・期日未確定（T-02、T-04、R-02）を検証する ← O-02
 │        （§10.16で関係と時間の記述を試行、§10.17で合意）
-│        ├─ O-10a 終点のRecordに法令リポジトリがないとき、関係（repeals・totally_revises）をどこに置くか【新規、§10.16】（§10.17で合意：REG-07）
+│        ├─ O-10a 終点のRecordに法令リポジトリがないとき、関係（repeals・totallyRevises）をどこに置くか【新規、§10.16】（§10.17で合意：REG-07）
 │        ├─ O-10b 廃止・全部改正の効力発生の時点を書く場所がない【新規、§10.16】（§10.17で合意：`items`を必須に）
 │        ├─ O-10c Recordの効力の状態（廃止・失効）を表す方法【新規、§10.16】（§10.17で合意：HIST-06 `termination`）
 │        └─ O-10d 時点値から他のRecordの時点を参照する方法【新規、§10.16】（§10.17で合意：`sameAs`）
@@ -2417,6 +2417,7 @@ DDR-011の「対応が曖昧な場合の判断基準」を次のとおり定め�
 
 段階3 規範仕様への採用
 ├─ O-12 フィールド名・列挙値の確定とJSON Schema（loj-history、loj-glyphs、新しい版パッケージ、登録台帳） ← O-01, O-02, O-04
+│        （§16.1で方針を合意。schemaは作成中）
 ├─ O-13 規範仕様の本文の改訂：VAL-01（L3の定義）、CHAR-01、BASIC-03、見出し・IDの規則（O-01の反映）
 ├─ O-14 DDRの追加と改訂：派生ビュー、時間の型、変更の分類、L3/L4、再構築、Record ID、字体注記、新しい版パッケージ。
 │        DDR-011の未決事項を解消する
@@ -2447,7 +2448,7 @@ DDR-011の「対応が曖昧な場合の判断基準」を次のとおり定め�
 
 ## 15. 未解決のまま残す論点
 
-- totally_revisesとamendsの重複登録・推論規則（案Aで保留）。
+- totallyRevisesとamendsの重複登録・推論規則（案Aで保留）。
 - 状態選択の機能・API（案Aで対象外）。historyブランチを唯一の「現行」として公開するかどうかの運用判断。
 - 改め文のデータ化（案Bで将来課題）。
 - 仕様の版をまたぐAST対応表の形式（案Bの未決事項）。
@@ -2456,3 +2457,114 @@ DDR-011の「対応が曖昧な場合の判断基準」を次のとおり定め�
 - 1966年以降の官報（改正法の原典）の入手経路、対象期間、利用条件（§10.5）。
 - 他法令の条項・版を指定した参照の解決（L4条項参照、L2の参照設計の確定後）（§7.4）。
 - 官報正誤の前後の本文をどちらも参照可能にする必要があるか（§5.6）。
+
+## 16. 規範仕様への採用（段階3）
+
+### 16.1 フィールド名・列挙値とJSON Schema（2026-11-09合意、O-12）
+
+§13.7の5種類のファイルについて、フィールド名と列挙値を確定し、JSON Schemaを作る。本節はその方針と、確定する値の一覧である。schemaの本体は、方針の合意後に作る。
+
+#### 現状
+
+これまでの節で合意したフィールド名は、すべてcamelCase（`basedOn`、`glyphNotes`、`knownGaps`、`machineEvaluable`、`sameAs`等）で、v1alpha1（`promulgatedAt`、`unsupportedFeatures`）とそろっている。一方、二語以上の列挙値の書き方がそろっていない。
+
+| 書き方 | 例（節） |
+|---|---|
+| v1alpha1のcamelCase | `cabinetOrder`、`ministerialOrdinance`（`law.type`） |
+| snake_case | `totally_revises`（§8.5）、`not_applicable`（§5.2） |
+| kebab-case | `coverage-start`・`total-revision`（§8.6）、`none-confirmed`（§8.6）、`official-correction`（§8.3 Source、§6.1）、`totally-revised`（§8.4）、`not-collected`・`nonexistent-confirmed`（REG-02）、`unified-default`・`other-source`・`same-source`・`source-edit`（GLYPH-03）、`revision-add`・`revision-fix`（§6.1） |
+
+同じ概念が、関係の種類では`totally_revises`、効力の終了では`totally-revised`と、別の書き方になっている。
+
+また、試作の履歴マニフェストは、日付を引用符なしで書いていた（`value: 1948-07-20`、四つのファイルで計16か所）。v1alpha1の`law.yaml`は、YAML 1.2のJSON互換データモデルに限り、日付を意図する文字列の引用を必須としている（02-manifest）。YAML 1.1の読み込み器（PyYAMLの既定等）は、引用のない日付を日付型に変える。新しい種類のファイルには、まだこの定めがない。
+
+#### SCHEMA-01 列挙値の書き方
+
+- 二語以上の列挙値は、v1alpha1の`law.type`にそろえてcamelCaseとする。フィールド名も引き続きcamelCaseとする。
+- 次の値を改める（本文書の§16より前の節は、改めた値に書き換えた）。
+
+  | 節 | 現在 | 改めた値 |
+  |---|---|---|
+  | §5.2 TimePointの`state` | `not_applicable` | `notApplicable` |
+  | §8.3 Sourceの`kind` | `official-correction` | `officialCorrection` |
+  | §8.4 `termination.type` | `totally-revised` | `totallyRevised` |
+  | §8.5 関係の`type` | `totally_revises` | `totallyRevises` |
+  | §8.6 `origin` | `total-revision`、`coverage-start` | `totalRevision`、`coverageStart` |
+  | §8.6 `applicability.state` | `none-confirmed` | `noneConfirmed` |
+  | §8.12 REG-02 `text.state` | `not-collected`、`nonexistent-confirmed` | `notCollected`、`nonexistentConfirmed` |
+  | GLYPH-03 `kind` | `source-edit` | `sourceEdit` |
+  | GLYPH-03 `basis` | `unified-default`、`other-source`、`same-source` | `unifiedDefault`、`otherSource`、`sameSource` |
+  | §6.1 変更の種類 | `official-correction`、`revision-add`、`revision-fix` | `officialCorrection`、`revisionAdd`、`revisionFix` |
+
+- Markdownのマーカー名（`end-paragraph`、`enact-statement`）は、v1alpha1の字句（DIR-01）のまま、kebab-caseとする。マーカーはデータの値ではないためである。
+
+#### SCHEMA-02 YAMLのデータモデル
+
+- 5種類のファイルすべてに、v1alpha1の`law.yaml`のYAMLの定め（02-manifest）を適用する。YAML 1.2のJSON互換データモデルに限り、タグ・アンカー・エイリアス・merge key・複数文書・重複キーを禁止し、日付を意図する文字列は引用する。
+- 違反はL0（`law.yaml`、MAN-01）またはそのファイルの形の検査（`loj-history`等はHIST-01、`loj-glyphs`はGLYPH-06、登録台帳はREG-06、再構築報告はREBR-06）として報告する。
+- 試作の引用のない日付は、規範の記述例にするときに引用する。
+
+#### SCHEMA-03 schemaとvalidatorの分担
+
+- JSON Schemaには、一つのファイルの中だけで決まる形を書く。閉じたschema（`additionalProperties: false`）、必須フィールド、型、列挙値、書式（revision_id、行の`key`、Record IDの文字種、日付の書式）と、同じオブジェクトの値で決まる条件（TimePointの`state`ごとの必須情報、`kind: ambiguous`の`candidates`等）を`if`/`then`で書く。
+- 次は、schemaではなくvalidatorの規則として検査する。
+  - ほかのファイル・ほかのRecordを見る検査（`glyphNotes`のパス、`law.id`、`sameAs`、関係の起点の解決）
+  - 本文を見る検査（注記の位置、注記のない〓・互換漢字）
+  - 一覧の中の参照・一意性（関係id・revision_idの一意性、`basis`の内訳、`basedOn`、`termination.relation`）
+  - 計算（`calc`、順序）
+- schemaに合格しても、そのレベルの合格を意味しない。schemaの検査は、各規則の検査の一部である（VAL-01）。
+
+#### SCHEMA-04 schemaの置き場所
+
+```text
+schemas/
+  v1alpha1/                     # 既存（版パッケージ v1alpha1）
+  v1alpha2/                     # 版パッケージ loj/v1alpha2
+    manifest.schema.json
+    ast.schema.json
+  loj-history/v1alpha1/history.schema.json
+  loj-glyphs/v1alpha1/glyphs.schema.json
+  loj-rebuild/v1alpha1/rebuild.schema.json
+  loj-registry/v1alpha1/record.schema.json
+  common/v1alpha1/types.schema.json     # RecordRef・Evidence・Source・Verification・TimePoint・Scope（§8.3）
+```
+
+- 版パッケージは、v1alpha1と同じ`schemas/<版>/`の形を続ける。新しい種類は`schemas/<種類>/<版>/`とする（VER-02で種類ごとに版を上げるため）。
+- §8.3の共通の型は`common`に置き、各schemaから`$ref`で参照する。共通の型の版は、それを使う種類の版とは別に上げる。どの種類のどの版がどの共通の型の版を使うかは、VER-02の対応表に含める。
+
+#### SCHEMA-05 `calc`の語彙（O-11b）
+
+| `calc` | 意味 | 法令の原文の例 | 計算 |
+|---|---|---|---|
+| `{op: sameDay}` | 基準の時点と同じ日 | 公布の日から施行する | 基準の日 |
+| `{op: nextDay}` | 基準の時点の翌日 | この法律の施行の日の翌日から施行する | 基準の日の翌日 |
+| `{op: afterElapsed, unit: day, count: N}` | 基準の日から起算してN日を経過した日 | 公布の日から起算して三十日を経過した日から施行する | 基準の日を1日目として数え、N日目の翌日（基準の日＋N日） |
+| `{op: afterElapsed, unit: month, count: N}`、`unit: year` | 基準の日から起算してNか月（N年）を経過した日 | 公布の日から起算して六月を経過した日から施行する | 暦に従って計算し（民法第143条）、期間の末日の翌日 |
+
+- 語彙にない規則（「…から起算して一年を超えない範囲内において政令で定める日」等、期日が別に定まるもの）は`derived`ではなく`pending`である（§5.2）。語彙にない計算の規則は、`calc`を書かず、L3で「未検査」と報告する。
+- `calc`は`rule`（原文）の代わりにしない。`calc`と`rule`の対応は、入力者の判断であり、L3の原典照合（予約）で確かめる。
+
+#### SCHEMA-06 変更の種類のtrailer
+
+- 正本のcommitに、次のtrailerを置く（§6.3。§10.14の試作で仮に使った名前を確定する）。
+
+  ```text
+  LoJ-Change: correction
+  LoJ-Revisions: 98mj5vgx
+  ```
+
+- `LoJ-Change`は一つのcommitに一つで、値は§6.1の種類（SCHEMA-01で改めた値）とする。`LoJ-Revisions`は、対象のrevision_idをカンマと空白で区切って並べる。対象が版でない種類（`format`、`metadata`のうち登録台帳だけの変更等）では省略してよい。
+- 派生ビューのtrailer（§10.14の`LoJ-View-*`）は、派生ビューの生成器の定め（VIEW-03）とあわせて、O-13で書く。
+
+#### 決定事項（2026-11-09合意）
+
+以下は次期仕様の設計方針としての合意であり、規範仕様への採用は未完了である。
+
+| 点 | 決定 | 採らなかった案 |
+|---|---|---|
+| 列挙値の書き方 | camelCaseにそろえる（SCHEMA-01） | kebab-caseにそろえる（YAMLで読みやすいが、v1alpha1の`law.type`（`cabinetOrder`）と書き方が分かれる。v1alpha1の値を改めることになる）／今のまま節ごとに分ける（同じ概念が別の書き方になる） |
+| YAMLのデータモデル | 5種類すべてにv1alpha1の`law.yaml`の定めを適用する（SCHEMA-02） | 新しい種類は通常のYAMLとする（読み込み器によって日付の型が変わり、検査結果が実装で変わる） |
+| schemaとvalidatorの分担 | 一つのファイルの中で決まる形と条件をschemaに、ほかはvalidatorの規則に（SCHEMA-03） | すべての検査をvalidatorに置き、schemaは型だけにする（閉じたschemaや条件を独立実装で再利用できない） |
+| schemaの置き場所 | 版パッケージは`schemas/v1alpha2/`、新しい種類は`schemas/<種類>/<版>/`、共通の型は`schemas/common/`（SCHEMA-04） | すべてを`schemas/v1alpha2/`に置く（種類ごとに版を上げるVER-02と合わない）／共通の型を各schemaに複製する（型の食い違いが起きる） |
+| `calc`の語彙 | `sameDay`、`nextDay`、`afterElapsed`（日・月・年）の三つ（SCHEMA-05） | 日数の加算だけにする（月・年の期間を表せない）／語彙を広く取る（使われない語が増え、検査の実装が重くなる） |
+| trailer | `LoJ-Change`と`LoJ-Revisions`（SCHEMA-06） | `Change-Kind`等の接頭辞のない名前（ほかの道具のtrailerと衝突し得る） |
