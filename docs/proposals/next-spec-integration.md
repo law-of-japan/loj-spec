@@ -583,7 +583,7 @@ L4の「他法令との参照整合性」を、Record間の参照について次
 
 ## 8. 履歴マニフェストのschema（案）
 
-R5のうち、法令リポジトリの正本構成と履歴マニフェストの論理schemaの要件案。本節の「必須」「禁止」は採用を提案する要件であり、現行v1alpha1の適合要件ではない。登録台帳の保存形式は本節の対象外とする。§5.5の記述例は本節で置き換える。
+R5のうち、法令リポジトリの正本構成と履歴マニフェストの論理schemaの要件案。本節の「必須」「禁止」は採用を提案する要件であり、現行v1alpha1の適合要件ではない。登録台帳の保存形式は8.12で定める。§5.5の記述例は本節で置き換える。
 
 ### 8.1 対象と配置
 
@@ -756,7 +756,143 @@ coverage:
 | 対象範囲の表現 | 原文表記を必須、ノードIDを任意にする（8.3） | ノードIDを必須にする（未取得・部分復元の版で書けない） |
 | マニフェストのファイル名 | リポジトリ直下の`history.yaml`（案Bのまま）（8.1） | `loj-history.yaml`等、LoJ固有と分かる名前にする |
 
-フィールド名と列挙値（8.3〜8.7）は案のままとし、JSON Schemaと適合ケースを作る段階で確定する。登録台帳の保存形式は引き続き本節の対象外とする。
+フィールド名と列挙値（8.3〜8.7）は案のままとし、JSON Schemaと適合ケースを作る段階で確定する。登録台帳の保存形式は8.12で定めた。
+
+### 8.12 登録台帳の保存形式（2026-11-08合意、O-02）
+
+R5のうち、登録台帳の保存形式の要件案。8.1〜8.11で対象外とした部分である。本節の「必須」「禁止」は採用を提案する要件であり、現行v1alpha1の適合要件ではない。登録台帳は、案Aの「登録と本文パッケージの境界」「登録空間と参照解決」、IDENTITY-01〜03を実現する。
+
+#### REG-01 置き場所と単位
+
+```text
+<登録台帳のリポジトリ>/
+  space.yaml                  # 登録空間の識別子（RID-04）と発行済みIDの扱い
+  records/
+    <Record ID>.yaml          # Recordごとに一つ
+```
+
+- 登録台帳は、法令リポジトリとは別の一つのリポジトリに置く。Recordごとに一つのファイルとし、ファイル名はRecord IDとする。
+- 正本ブランチのGit履歴を登録台帳の記録版の履歴とし、force push等で書き換えない（VIEW-04と同じ）。台帳の値の訂正・判断の変更は、このGit履歴でも追える。ただし番号主張の訂正関係は、REG-04のとおりデータに持つ。
+- 本文パッケージのないRecordも登録できる（案A「登録と本文パッケージの境界」）。法令リポジトリを持たないRecordは、`repository`を持たない。
+- Record IDの衝突確認（RID-01）は、`records/`のファイル名を、大小文字を区別せずに比べて行う。撤回・統合・分割したRecordのファイルも削除しない（RID-05）。
+
+#### REG-02 Recordのファイル
+
+閉じたschema（`schemaVersion: loj-registry/…`）のYAMLとする。資料（Source）は、ファイルの中の`sources`で定義する（§8.3）。
+
+| フィールド | 必須 | 内容 |
+|---|---|---|
+| `schemaVersion` | 必須 | `loj-registry/…` |
+| `id` | 必須 | Record ID。ファイル名と一致する |
+| `label` | 任意 | 表示用のラベル（RID-03）。参照の解決・同一性の判断に使わない |
+| `status` | 必須 | provisional（仮登録）／active／merged／split／withdrawn |
+| `identity` | 必須 | 同一性の確認。対象を指し示す資料・調査記録（`evidence`）と`verification`。`provisional`のRecordでは`verification.state`を`confirmed`にしない |
+| `text` | 必須 | 本文の取得状況。`state`（collected＝法令リポジトリに本文がある／not-collected＝未取得／nonexistent-confirmed＝本文が存在しないことを確認済み）。`not-collected`から不存在を推論しない（案A） |
+| `repository` | `text.state`がcollectedのとき必須 | 法令リポジトリの解決先。`location`（例: `github.com/law-of-japan/19480720-law-178`）、`canonicalBranch`（正本ブランチ。例: `main`）。移転したら更新する。固定参照はcommitで記録版を指すので、移転の影響を受けない（FIXREF-01） |
+| `sources` | 必須（空可） | Sourceの一覧（§8.3） |
+| `numbers` | 必須（空可） | 番号主張の一覧（REG-03） |
+| `externalIds` | 必須（空可） | 外部識別子の一覧（REG-05） |
+| `replacedBy` | `merged`・`split`のとき必須 | 統合先、または分割先の候補の一覧。各項目は`record`（RecordRef）、`evidence`、`verification`。分割先が確定していない候補は`verification.state: unverified`で残す（RID-05） |
+
+- 題名は登録台帳に持たない。題名は版ごとに版パッケージ（`law.yaml`の`title`、ASTのLawの`display`）にあり、改正で変わり得るためである。表示用には`label`を使う。
+- 法令種別（`law.type`）も版パッケージに置き、登録台帳に複製しない。
+
+#### REG-03 番号主張
+
+案A IDENTITY-02の情報を、主張の一覧として持つ。一つの欄の上書きで訂正しない。
+
+| フィールド | 必須 | 内容 |
+|---|---|---|
+| `id` | 必須 | ファイル内で一意な識別子 |
+| `state` | 必須 | exists（番号がある）／nonexistent（番号がないことを確認）／unknown／illegible（判読不能）／conflicting（資料間不一致） |
+| `raw` | `exists`・`illegible`・`conflicting`で必須 | 出典で観測した表記（例: `法律第百七十八号`）。正規化値で置き換えない。資料間不一致では資料ごとの表記を一覧にする |
+| `structured` | 任意 | `system`（採番体系。例: 法律）、`period`（採番期間。原表記と、明治6年以後はグレゴリオ暦の範囲）、`issuer`（発令機関。原記載順の一覧）、`series`（`state`: regular／none／unknown と原表記）、`number`（番号成分。NUM-01の正規形） |
+| `evidence` | 必須 | 出典と箇所（§8.3）。索引の転記（Sourceの`kind: index`・`egov`）と公布原典（`promulgation`）を区別できる |
+| `verification` | 必須 | 確認状態（§8.3） |
+| `decision` | 必須 | adopted（採用）／pending（保留）／retracted（撤回）。理由を`reason`に書く |
+| `supersedes` | 任意 | 訂正前の主張のid。訂正前の主張は削除せず、`decision: retracted`として残す |
+| `glyphs` | 任意 | `raw`の字体注記（§12）。`node`の代わりに主張の`id`で指し、`offset`は`raw`の中の位置とする（§12.6の法令番号の字） |
+
+- 採番期間を西暦年だけに縮約しない。発令機関は公布・発令時のものとし、現在の所管から逆算しない（案A IDENTITY-02）。
+- `unknown`の番号を持つRecord同士を、番号の一致で同一と判断しない。番号成分の完全な一致は照合の候補にとどめ、自動で統合しない。
+- 採用している主張（`decision: adopted`）は、同時に二つ以上あってはならない。資料間不一致で決められないときは、`conflicting`の主張を一つ採用するか、すべて`pending`にする。
+
+#### REG-04 訂正と履歴
+
+- 番号主張の訂正は、新しい主張を加えて`supersedes`で訂正前の主張を指し、訂正前の主張を`retracted`にする。番号以外の値（`label`、`repository`等）の訂正は、Git履歴で追う。
+- 判断の記録日時は、その主張を加えた・変えたcommitの日時とする。データに日時の欄を設けない。
+
+#### REG-05 外部識別子
+
+- 各項目は`issuer`（発行元。例: egov）、`kind`（対象種別。law等）、`value`、`evidence`、`verification`を持つ（案A IDENTITY-03）。
+- 版（Revision）を対象とする外部識別子（e-Gov法令履歴ID）は、履歴マニフェストのRevisionの`externalIds`に置く（§5.6、§8.6）。登録台帳には置かない。
+- 外部の収録単位がLoJのRecordと一致するとは仮定しない。一つの外部IDが複数のRecordに対応する場合、候補をすべて`unverified`で残す。外部IDの変更で、Record IDを変えない。
+
+#### REG-06 検査
+
+- 登録台帳の検査（schema、ファイル名とID、`supersedes`・`replacedBy`の解決、採用中の番号主張が一つ以下であること、ID衝突）は、L4の入力の前提として行い、結果を別に報告する。登録台帳の検査の結果を、法令データのL0〜L3の適合として主張しない。
+- L4の関係の解決（§7.4）は、`status`を見て行う。`merged`のRecordへの参照は統合先へ解決し、`split`のRecordへの参照は候補を返して解決済みにしない。
+
+#### 記述例：19480720-law-178
+
+```yaml
+schemaVersion: loj-registry/v1alpha1   # 版番号は§14 O-04で決める
+id: 19480720-law-178
+label: 国民の祝日に関する法律（昭和二十三年法律第百七十八号）
+status: active
+identity:
+  evidence: [{source: src-kanpo-19480720, locator: 1コマ}]
+  verification: {state: confirmed}
+text: {state: collected}
+repository:
+  location: github.com/law-of-japan/19480720-law-178
+  canonicalBranch: main
+sources:
+  - id: src-kanpo-19480720
+    kind: promulgation
+    title: 官報 第6453号 昭和23年7月20日（国立国会図書館デジタルコレクション pid/2962986）
+    uri: https://dl.ndl.go.jp/pid/2962986
+  - id: src-egov
+    kind: egov
+    title: e-Gov法令検索 法令API v2
+    uri: https://laws.e-gov.go.jp/law/323AC1000000178
+numbers:
+  - id: n1
+    state: exists
+    raw: 法律第百七十八号
+    structured:
+      system: 法律
+      period: {raw: 昭和二十三年, gregorian: 1948}
+      series: {state: regular}
+      number: "178"
+    evidence: [{source: src-kanpo-19480720, locator: 1コマ 法律の冒頭}]
+    verification: {state: confirmed}
+    decision: adopted
+    glyphs:
+      - {id: g1, claim: n1, offset: 7, recorded: "号", kind: ambiguous, candidates: ["号", "號"],
+         basis: provisional, evidence: [{source: src-egov, locator: 法令番号}],
+         verification: {state: confirmed, reason: 画像の最大解像度で字体を決められない}}
+externalIds:
+  - issuer: egov
+    kind: law
+    value: 323AC1000000178
+    evidence: [{source: src-egov, locator: 法令ID}]
+    verification: {state: confirmed}
+```
+
+`structured.period`の年は、官報の発行日と法令番号の慣行からの判断である。原典の法令番号の表記「法律第百七十八号」には年がない。
+
+#### 決定事項（2026-11-08合意）
+
+以下は次期仕様の設計方針としての合意であり、規範仕様への採用は未完了である。
+
+| 点 | 決定 | 採らなかった案 |
+|---|---|---|
+| 置き場所と単位 | 専用のリポジトリ一つに、Recordごとのファイルを置く（REG-01） | 一つの大きなファイルにする（変更が衝突しやすく、差分が読みにくい）／各法令リポジトリに置く（法令リポジトリを持たないRecordを登録できず、登録空間全体の衝突確認ができない） |
+| 本文の取得状況 | 同一性の確認と別に、`text.state`を台帳に持つ（REG-02） | 法令リポジトリの有無から判断する（未取得と不存在確認済みを区別できない） |
+| 題名 | 台帳には表示用の`label`だけを持ち、題名は版パッケージに置く（REG-02） | 台帳に題名の主張の一覧を持つ（版パッケージの題名と二重管理になる） |
+| 番号主張の訂正 | 主張を加え、`supersedes`で訂正前を指し、訂正前は`retracted`で残す（REG-04） | Git履歴だけで追う（案A IDENTITY-02の「訂正関係を追跡できる」をデータで満たせない。時点値（§8.11）と扱いが異なるのは、案Aが番号に限って訂正関係の保持を求めているため） |
+| 法令番号の字体 | 番号主張の中に字体注記を持つ（REG-03） | 字体注記ファイル（§12）で、台帳を指す位置の種類を加える（版ごとのファイルに台帳の値を混ぜることになる） |
 
 ## 9. 固定参照の構文（案）
 
@@ -1662,7 +1798,7 @@ DDR-011の「対応が曖昧な場合の判断基準」を次のとおり定め�
 │   │   ├─ O-01f 既に決めた事項の見直し：§8.1・S-06「版パッケージはv1alpha1のまま」、
 │   │   │         GLYPH-01と§12.4の決定点1「版パッケージのschemaVersionは変えない」、REB-01（§13.3で反映済み）
 │   │   └─ O-01g 字間を本文の文字とみなす基準（「附　則」と、表のセルの均等割付）【新規、§10.8】（§13.6で合意）
-│   ├─ O-02 登録台帳の保存形式（§8で対象外としたまま）                → O-09, O-12
+│   ├─ O-02 登録台帳の保存形式（§8.12で合意）                        → O-09, O-12
 │   │   ├─ O-02a 番号主張の形（案A IDENTITY-02、C-03）
 │   │   └─ O-02b 外部識別子の形（案A IDENTITY-03。e-Gov法令履歴ID、§5.6）
 │   ├─ O-03 再構築報告のファイル形式（REB-07）（§10.7で合意）        → O-06
