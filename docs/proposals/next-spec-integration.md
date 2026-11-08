@@ -590,6 +590,7 @@ R5のうち、法令リポジトリの正本構成と履歴マニフェストの
 ```text
 <法令リポジトリ>/
   history.yaml                 # 履歴マニフェスト（一つのRecordにつき一つ）
+  rebuild.yaml                 # 再構築報告（旧リポジトリから移行したRecordだけ。§10.7）
   versions/
     <revision_id>/             # 版パッケージ（v1alpha1の本文パッケージ。REVID-03）
       law.yaml
@@ -923,7 +924,7 @@ R8の要件案。案A §6「互換性と移行の原則（検討上の合意）�
 
 #### REB-07 旧commitとの対応と再構築報告
 
-- 再構築のたびに、正本に再構築報告を記録する。少なくとも次を挙げる。
+- 再構築のたびに、正本に再構築報告を記録する（形式は10.7）。少なくとも次を挙げる。
   - 旧commitと新しいRevisionの対応（10.4の決定点4）。対応は判断であり、確認状態を持つ
   - 旧リポジトリにあるが、まだ再構築していない改正
   - 使った原典資料と、文字情報の保持の確認結果（REB-04）
@@ -1038,6 +1039,128 @@ REB-04の確認として、日本国憲法と国民の祝日に関する法律�
 - 無番号の項のIDは、番号を持たないため、ID-01（出現順序をIDに含めない）と衝突する。e-Govのように編集上の番号を補って属性に持ち、表示はしない形が候補になる。
 - GLYPH-02に、別々に符号化された字の間で決められない場合の規則を加える必要がある。
 - 文言の差（「國民の成長」）の原因を確かめるには、1948年7月以降の官報正誤を調べる必要がある。
+
+### 10.7 再構築報告の形式（2026-11-08合意、O-03）
+
+REB-07の再構築報告のファイル形式の要件案。本節の「必須」「禁止」は採用を提案する要件であり、現行v1alpha1の適合要件ではない。
+
+#### REBR-01 置き場所と単位
+
+- 再構築報告は、正本のリポジトリ直下の`rebuild.yaml`とする。一つのRecordにつき一つとし、再構築を進めるたびに同じファイルを更新する。過去の報告の内容は、正本のGit履歴（記録版の履歴、§4.1）で追う。
+- 再構築報告は正本に属するが、法令状態のデータではない。登録台帳・履歴マニフェスト・版パッケージの値の根拠に使ってはならない（REB-05）。
+- 再構築報告だけを変える変更は、変更の種類を`metadata`とする（§6.1）。版パッケージ・履歴マニフェストの変更と同じcommitに含める場合は、それぞれの種類を宣言する（§6.3）。
+- 旧リポジトリから移行していないRecord（新しく登録したRecord）には、再構築報告を置かない。
+
+#### REBR-02 形式
+
+- 閉じたschema（`schemaVersion: loj-rebuild/…`）のYAMLとする。未知のフィールドを拒否する（P5）。
+- 資料（Source）は、履歴マニフェストの`sources`のidで参照する。再構築報告で資料を定義し直さない。
+- 旧リポジトリは、リポジトリとcommit（完全なSHA）で指す。ブランチ名・タグ名で指さない（凍結した`master`も含む）。
+
+| フィールド | 必須 | 内容 |
+|---|---|---|
+| `schemaVersion` | 必須 | `loj-rebuild/…` |
+| `record` | 必須 | 自身のRecordRef（§8.3） |
+| `legacy` | 必須 | 旧リポジトリ（`repository`）と、凍結時点の`master`のcommit（`frozenAt`） |
+| `sourceChecks` | 必須（空可） | 使った資料ごとの文字情報の保持の確認結果（REBR-03） |
+| `mappings` | 必須（空可） | 旧commitとRevisionの対応（REBR-04） |
+| `pending` | 必須（空可） | 旧リポジトリにあるが、まだ再構築していない改正（REBR-04） |
+| `differences` | 必須（空可） | 原典と旧本文の間に見つかった差（REBR-05） |
+
+#### REBR-03 資料の確認結果
+
+- `sourceChecks`の各項目は、`source`（Sourceのid）、`glyphs`、`evidence`、`note`（任意）を持つ。`glyphs`は次のいずれかとする。
+  - `preserved`: 旧字体・異体字を保持している（例: 官報の画像）
+  - `normalized`: 新字体等に置き換えている（例: e-Gov、§10.5）
+  - `unknown`: 確認していない
+- `glyphs`が`preserved`でない資料から起こした本文は、原典どおりと主張しない（REB-04）。その版の`text.glyphs`を`verified`にするには、`preserved`の資料と照合しなければならない（GLYPH-05）。
+
+#### REBR-04 旧commitとの対応と未再構築の改正
+
+- `mappings`の各項目は、旧commit（`commit`）、対応するRevision（`revisions`、0件以上）、`verification`（§8.3）、`note`（任意）を持つ。一つの旧commitが複数のRevisionに対応してもよい。
+- Revisionに対応しない旧commit（書式の修正、旧リポジトリでの誤りの訂正等）は、`revisions: []`と理由を記録する。旧commitを省略してはならない。省略すると、対応の有無を確認したかどうか区別できない。
+- 対応は判断であり、旧commitのメッセージ・日付だけを根拠に`confirmed`にしない（REB-05）。
+- `pending`の各項目は、旧commit（任意）、旧リポジトリでの呼び名（`label`）、未再構築の理由（`reason`）を持つ。例えば「1966年以降の官報を入手していない」（§14 O-08）。
+
+#### REBR-05 原典と旧本文の差
+
+- `differences`の各項目は、`revision`、`class`、`legacy`（旧commitとファイルのパス）、`evidence`、`verification`を持つ。`class`ごとに次を記録する。
+
+  | `class` | 内容 | 記録の単位 |
+  |---|---|---|
+  | `wording` | 文言の差（字体の差を除く） | 箇所ごと。`node`（新しい版のノードID）、`recorded`（新しい本文の該当部分）、`legacyText`（旧本文の該当部分） |
+  | `structure` | 構造の差（表を箇条書きにしている、無番号の項に番号を補っている等） | 箇所ごと。`node`と説明（`note`） |
+  | `omission` | 旧本文にない部分（附則の欠落等） | 箇所ごと。`node`または対象範囲（Scope） |
+  | `glyph` | 字体だけの差（原典の旧字体を旧本文が新字体にしている等） | 版ごとに1件。件数（`count`）と例（任意） |
+
+- 字体だけの差かどうかは、派生処理（新字体への変換、CHAR-01）で両方をそろえた結果を比べて判定してよい。派生処理の結果を本文に書き戻してはならない。
+- 差の原因が分からないもの（例: 官報正誤による差か、旧データの誤りか）は、`verification: unverified`とし、理由に未確認の点を書く。原因が分かるまで、旧データの誤りと決めつけない。
+
+#### REBR-06 検査
+
+- 再構築報告の検査は、適合レベル（L0〜L4）の外で行う。検査するのは、schema、Revision・Source・ノードIDの解決、旧commitの存在（旧リポジトリを取得できる場合）である。
+- 再構築報告の検査の結果を、法令データの適合として主張してはならない。
+
+#### 記述例：19480720-law-178の制定時の版
+
+旧commitのSHAとrevision_idは仮の値である。
+
+```yaml
+schemaVersion: loj-rebuild/v1alpha1   # 版番号は§14 O-04で決める
+record: {id: 19480720-law-178}
+legacy:
+  repository: law-of-japan/19480720-law-178
+  frozenAt: "<凍結時点のmasterのcommit>"
+sourceChecks:
+  - source: src-kanpo-19480720
+    glyphs: preserved
+    evidence: [{source: src-kanpo-19480720, locator: 1コマ}]
+    note: 「祝」の偏、「号／號」等は画像の解像度で決められない（字体注記で記録）
+  - source: src-egov
+    glyphs: normalized
+    evidence: [{source: src-egov, locator: 第一条}]
+mappings:
+  - commit: "<制定時の版を収録した旧commit>"
+    revisions: [k3v9q2m7]
+    verification: {state: unverified, reason: 旧本文と原典の照合は差の記録まで}
+pending:
+  - label: 昭和四十一年法律第八十六号による改正
+    reason: 1966年以降の官報を入手していない（§14 O-08）
+differences:
+  - revision: k3v9q2m7
+    class: wording
+    node: 19480720-law-178/main/article/2/paragraph/1/table/1/row/5/cell/3
+    recorded: 國民の成長を期する
+    legacyText: 国の成長を期する
+    legacy: {commit: "<旧commit>", path: "<旧ファイルのパス>"}
+    evidence: [{source: src-kanpo-19480720, locator: 第二條の表 憲法記念日の行}]
+    verification: {state: unverified, reason: 官報正誤による差かどうか未確認（§14 O-07）}
+  - revision: k3v9q2m7
+    class: structure
+    node: 19480720-law-178/main/article/2/paragraph/1/table/1
+    note: 旧本文は祝日の表を箇条書きで書いている
+    legacy: {commit: "<旧commit>", path: "<旧ファイルのパス>"}
+    evidence: [{source: src-kanpo-19480720, locator: 第二條}]
+    verification: {state: confirmed}
+  - revision: k3v9q2m7
+    class: glyph
+    count: 0   # 制定時の版の照合後に数える
+    legacy: {commit: "<旧commit>", path: "<旧ファイルのパス>"}
+    evidence: [{source: src-kanpo-19480720, locator: 全体}]
+    verification: {state: unverified, reason: 件数は未集計}
+```
+
+#### 決定事項（2026-11-08合意）
+
+以下は次期仕様の設計方針としての合意であり、規範仕様への採用は未完了である。
+
+| 点 | 決定 | 採らなかった案 |
+|---|---|---|
+| 置き場所と単位 | リポジトリ直下の`rebuild.yaml`一つを更新し、過去の内容はGit履歴で追う（REBR-01） | 再構築のたびに報告のファイルを追加する（現在の対応を知るのに全ファイルを読む必要がある） |
+| 形式 | 閉じたschemaのYAML（REBR-02） | Markdownの文書（対応・参照を機械で検査できない） |
+| 字体だけの差 | 版ごとに件数で1件にまとめる（REBR-05） | 一字ずつ記録する（旧本文は全体が新字体のため、差の大半を占めて文言の差が埋もれる）／記録しない（旧データの字体の置き換えの規模が残らない） |
+| 資料の文字情報の保持の記録先 | 再構築報告の`sourceChecks`（REBR-03） | 履歴マニフェストのSourceに属性を加える（再構築以外でも使えるが、§8.3のSourceの型を変える） |
+| 検査の扱い | 適合レベルの外で、形式と参照だけを検査する（REBR-06） | L3の区分に加える（移行の記録を法令データの適合と混ぜることになる） |
 
 ## 11. Record IDの発行方式（案）
 
@@ -1418,7 +1541,7 @@ DDR-011の「対応が曖昧な場合の判断基準」を次のとおり定め�
 │   ├─ O-02 登録台帳の保存形式（§8で対象外としたまま）                → O-09, O-12
 │   │   ├─ O-02a 番号主張の形（案A IDENTITY-02、C-03）
 │   │   └─ O-02b 外部識別子の形（案A IDENTITY-03。e-Gov法令履歴ID、§5.6）
-│   ├─ O-03 再構築報告のファイル形式（REB-07）                       → O-06
+│   ├─ O-03 再構築報告のファイル形式（REB-07）（§10.7で合意）        → O-06
 │   └─ O-04 各schemaVersionの版番号（loj-history、loj-glyphs、新しい版パッケージ） → O-12
 └─ 文字（§12）
     └─ O-05 GLYPH-02・GLYPH-04の補完【新規】（§12.5で合意）          → O-06
