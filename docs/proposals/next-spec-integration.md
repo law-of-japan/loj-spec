@@ -279,6 +279,7 @@ R3のうちRevisionの識別、時間値の型、版の順序の要件案。本�
 - `pending`が後に確定した場合は、`date`へ上書きせず、確定させた根拠と確定前の値を履歴として追跡できるようにする（案A P4）。
 - `derived`の基準時点が`date`でない場合、計算結果を確定日として扱ってはならない。
 - すべての時点値は確認状態（未確認・確認済み・撤回）と出典を持てること。
+- 時点値は、任意の`sameAs`で、同じ時点を定める他のRecordのRevision（RecordRefとrevision_id）を指せる。`sameAs`があっても、自身の状態・値・原表記は省略しない。参照先との一致はL4で検査する（§10.17 O-10d、XREF-03）。
 
 ### 5.3 Revisionが持つ時間情報
 
@@ -552,10 +553,12 @@ L4の「他法令との参照整合性」を、Record間の参照について次
 | HIST-03 | L3履歴構造 | 時点値の型・精度 |
 | HIST-04 | L3履歴構造 | `basedOn`、起点、順序の検査 |
 | HIST-05 | L3履歴構造 | マニフェストと版パッケージの配置・復元状況 |
+| HIST-06 | L3履歴構造 | 効力の終了（`termination`）の根拠と時点 |
 | EVID-01 | L3根拠 | 確認済みの主張の出典、未確認・不明の理由 |
 | SRCM-01 | L3原典照合（予約） | 原典との一致 |
 | XREF-01 | L4関係の解決 | 関係の起点・終点の解決 |
 | XREF-02 | L4関係の整合 | 成立根拠と関係の矛盾 |
+| XREF-03 | L4時点の整合 | 時点値の`sameAs`と参照先の時点の一致 |
 
 警告（5.4の日付順序の逆転等）と判定不能・保留は、不合格の診断と区別して報告する。
 
@@ -631,6 +634,7 @@ R5のうち、法令リポジトリの正本構成と履歴マニフェストの
 | `relations` | 必須（空可） | このRecordを終点とする関係の一覧（8.5） |
 | `revisions` | 必須（一つ以上） | Revisionの一覧（8.6）。撤回・統合・分割したものも残す |
 | `coverage` | 必須 | 収録範囲（8.7） |
+| `termination` | 任意 | Recordの法令としての効力の終了（HIST-06、§10.17）。各項目は`type`（repealed／totally-revised／expired）と根拠。repealed・totally-revisedは関係のidを参照し、時点は関係の`items`に書く。expiredは`evidence`と`effective`（TimePoint、条件付きで未確定なら`pending`）を持つ |
 
 ### 8.5 relations
 
@@ -640,11 +644,13 @@ R5のうち、法令リポジトリの正本構成と履歴マニフェストの
 | `type` | 必須 | amends／totally_revises／repeals／succeeds（案A RELATION-01） |
 | `from` | 必須 | 起点のRecordRef（改正法令、全部改正後の新Record、廃止を定める法令、後継法令） |
 | `evidence`、`verification` | 必須 | 関係全体の根拠と確認状態 |
-| `items` | amendsでは必須 | 対象範囲ごとの内訳。各項目は`id`、`scope`、`effective`（TimePoint）、`evidence`、`verification`を持つ（案A R-05〜R-07） |
+| `items` | amends・repeals・totally_revisesでは必須、succeedsでは任意 | 対象範囲ごとの内訳。各項目は`id`、`scope`、`effective`（TimePoint）、`evidence`、`verification`を持つ（案A R-05〜R-07） |
 | `status` | 必須 | active／retracted。撤回は削除せず`retracted`とし、理由を`verification.reason`に残す |
 
 - 関係は終点のRecordの履歴マニフェストに置く。起点側のRecordには複製しない。起点側からの参照はRecordRefと関係のidの組で行う。
 - 内訳の一部だけの撤回は、その項目の`verification.state`を`retracted`とし、関係全体の撤回（`status: retracted`）と区別する（案A R-07）。
+- `repeals`・`totally_revises`の`items`は、通常、終点のRecord全体を対象範囲とする一項目で、`effective`に廃止・全部改正の効力発生の時点を書く。一部だけを廃止する規定は`amends`（削る改正）として扱う（§10.17 O-10b）。
+- 終点のRecordが本文を収録していなくても、関係は終点の履歴マニフェストに置く。そのために`history.yaml`だけの法令リポジトリを作る（REG-07）。
 
 ### 8.6 revisions
 
@@ -685,6 +691,7 @@ R5のうち、法令リポジトリの正本構成と履歴マニフェストの
 | HIST-03 | TimePointの状態ごとの必須情報、精度、`delegation`・`determinedBy` |
 | HIST-04 | `origin`・`basedOn`、順序の検査（5.4）、`effective`と内訳の一致、同じ関係・同じ施行時点の重複 |
 | HIST-05 | `text.status`と版パッケージの配置の対応、`law.id`とRecord IDの一致 |
+| HIST-06 | `termination`の根拠の関係の存在と種類の一致。終了の時点より後に施行されるRevisionは警告（不合格にしない） |
 | EVID-01 | `confirmed`の主張のEvidence、Sourceの参照先 |
 
 ### 8.9 記述例
@@ -773,7 +780,7 @@ R5のうち、登録台帳の保存形式の要件案。8.1〜8.11で対象外�
 
 - 登録台帳は、法令リポジトリとは別の一つのリポジトリに置く。Recordごとに一つのファイルとし、ファイル名はRecord IDとする。
 - 正本ブランチのGit履歴を登録台帳の記録版の履歴とし、force push等で書き換えない（VIEW-04と同じ）。台帳の値の訂正・判断の変更は、このGit履歴でも追える。ただし番号主張の訂正関係は、REG-04のとおりデータに持つ。
-- 本文パッケージのないRecordも登録できる（案A「登録と本文パッケージの境界」）。法令リポジトリを持たないRecordは、`repository`を持たない。
+- 本文パッケージのないRecordも登録できる（案A「登録と本文パッケージの境界」）。法令リポジトリを持たないRecordは、`repository`を持たない。本文がなくても、関係・Revisionを記録するRecordは法令リポジトリを持つ（REG-07）。
 - Record IDの衝突確認（RID-01）は、`records/`のファイル名を、大小文字を区別せずに比べて行う。撤回・統合・分割したRecordのファイルも削除しない（RID-05）。
 
 #### REG-02 Recordのファイル
@@ -789,7 +796,7 @@ R5のうち、登録台帳の保存形式の要件案。8.1〜8.11で対象外�
 | `status` | 必須 | provisional（仮登録）／active／merged／split／withdrawn |
 | `identity` | 必須 | 同一性の確認。対象を指し示す資料・調査記録（`evidence`）と`verification`。`provisional`のRecordでは`verification.state`を`confirmed`にしない |
 | `text` | 必須 | 本文の取得状況。`state`（collected＝法令リポジトリに本文がある／not-collected＝未取得／nonexistent-confirmed＝本文が存在しないことを確認済み）。`not-collected`から不存在を推論しない（案A） |
-| `repository` | `text.state`がcollectedのとき必須 | 法令リポジトリの解決先。`location`（例: `github.com/law-of-japan/19480720-law-178`）、`canonicalBranch`（正本ブランチ。例: `main`）。移転したら更新する。固定参照はcommitで記録版を指すので、移転の影響を受けない（FIXREF-01） |
+| `repository` | `text.state`がcollectedのとき、または関係・Revisionを記録するとき必須 | 法令リポジトリの解決先。`location`（例: `github.com/law-of-japan/19480720-law-178`）、`canonicalBranch`（正本ブランチ。例: `main`）。移転したら更新する。固定参照はcommitで記録版を指すので、移転の影響を受けない（FIXREF-01） |
 | `sources` | 必須（空可） | Sourceの一覧（§8.3） |
 | `numbers` | 必須（空可） | 番号主張の一覧（REG-03） |
 | `externalIds` | 必須（空可） | 外部識別子の一覧（REG-05） |
@@ -833,6 +840,12 @@ R5のうち、登録台帳の保存形式の要件案。8.1〜8.11で対象外�
 
 - 登録台帳の検査（schema、ファイル名とID、`supersedes`・`replacedBy`の解決、採用中の番号主張が一つ以下であること、ID衝突）は、L4の入力の前提として行い、結果を別に報告する。登録台帳の検査の結果を、法令データのL0〜L3の適合として主張しない。
 - L4の関係の解決（§7.4）は、`status`を見て行う。`merged`のRecordへの参照は統合先へ解決し、`split`のRecordへの参照は候補を返して解決済みにしない。
+
+#### REG-07 履歴だけの法令リポジトリ
+
+- 関係の終点となるRecordは、本文を収録していなくても（`text.state: not-collected`）法令リポジトリを持てる。リポジトリには`history.yaml`だけを置き、`versions/`を置かなくてよい。
+- その履歴マニフェストのRevisionは、本文のない起点（`origin: coverage-start`、`text.status: absent`）一つでよい。`coverage`は`unconfirmed`とする（REB-06）。
+- 詳細は§10.17 O-10aのとおり（2026-11-09合意）。
 
 #### 記述例：19480720-law-178
 
@@ -1738,6 +1751,69 @@ GLYPH-03の`kind`に`source-edit`を加え、`description`を`source-edit`でも
 
 試作の記述は作業用の一時ディレクトリにあり、規範の記述例としては使わない。
 
+### 10.17 関係の置き場所・効力の終了・他のRecordの時点（2026-11-09合意、O-10a〜d）
+
+#### O-10a 終点のRecordに法令リポジトリがない場合
+
+**REG-07 履歴だけの法令リポジトリ**
+
+- 関係の終点となるRecordは、本文を収録していなくても法令リポジトリを持てる。リポジトリには`history.yaml`だけを置き、`versions/`を置かなくてよい。
+- 登録台帳では、次のように記録する。
+  - `text.state`: `not-collected`のまま
+  - `repository`: 設定する。`repository`を必須とする条件を「`text.state`が`collected`のとき、または関係・Revisionを記録するとき」に改める（§8.12 REG-02）
+- このとき、履歴マニフェストには次を置く。
+  - Revision: 少なくとも一つ。本文のない起点（`origin: coverage-start`、`text.status: absent`、時点は`unknown`等）でよい（REB-06）
+  - `coverage`: `unconfirmed`
+- 関係は、引き続き終点のRecordの履歴マニフェストに置く（§8.11の決定点1）。登録台帳には置かない。
+
+#### O-10b 廃止・全部改正の効力発生の時点
+
+**§8.5の改訂**
+
+- `items`を、`amends`・`repeals`・`totally_revises`で必須とする。`succeeds`では任意とする。
+- `repeals`・`totally_revises`の`items`は、通常、終点のRecord全体を対象範囲（`scope.text`例: 「全部」）とする一項目である。`effective`に、廃止・全部改正の効力発生の時点を書く。
+- 一部だけを廃止する規定は、引き続き`amends`（削る改正）として扱う。
+
+#### O-10c Recordの効力の終了
+
+**HIST-06 効力の終了**
+
+- 履歴マニフェストのトップレベルに`termination`（任意）を置く。Recordの法令としての効力が終わったことと、その根拠・時点を書く。
+- `termination`の各項目は、`type`と根拠を持つ。
+
+  | `type` | 根拠 | 時点 |
+  |---|---|---|
+  | `repealed` | `repeals`関係のid | 関係の`items`の`effective`（O-10b）。`termination`に写さない |
+  | `totally-revised` | `totally_revises`関係のid | 同上 |
+  | `expired` | 自身の規定による失効（時限、条件付きの失効）。`evidence`（例: 附則第二条） | `effective`（TimePoint）。条件付きで時点が決まらないものは`pending`とし、条件の原文を`delegation`に書く |
+
+- 登録台帳の`status`は、登録の状態として変えない。効力の終了を、登録台帳に写して持たない。
+- 効力が終了した後の適用（経過措置で「なお従前の例による」等）は、そのRecordのRevisionの`applicability`で表す（T-02）。`termination`があることで、その`applicability`が終了後の適用であることを読み取れる。
+- L3では、次の二つを検査する。
+  - `termination`の根拠の関係が存在し、種類が合うこと
+  - `termination`の時点より後に施行されるRevisionがないこと。後に施行されるRevisionがあれば警告とする（施行前に廃止された等の特殊な場合があるため、不合格にしない）
+
+#### O-10d 他のRecordの時点
+
+**§5.2の補足**
+
+- 時点値に、任意のフィールド`sameAs`を加える。値は、その時点と同じ時点を定める他のRecordのRevision（RecordRefとrevision_id）である。例: 「特例法の施行の日」は、特例法の最初のRevisionの`effective`と同じ。
+- `sameAs`があっても、時点値自身の状態・値・原表記は省略しない。参照先のRecordを収録していない場合にも、時点が分かるようにするためである。
+- L4では、参照先のRecordを収録していれば、両方の時点を比べる。
+  - 食い違えば違反とする。
+  - 参照先を収録していない場合は、「未取得」として報告する（C-14の三値）。
+
+#### 決定事項（2026-11-09合意）
+
+以下は次期仕様の設計方針としての合意であり、規範仕様への採用は未完了である。§5.2、§7.5、§8.4、§8.5、§8.8、§8.12に反映した。
+
+| 点 | 決定 | 採らなかった案 |
+|---|---|---|
+| 終点に法令リポジトリがない関係（O-10a） | 本文がなくても、`history.yaml`だけの法令リポジトリを作り、そこに置く（REG-07） | 法令リポジトリができるまで、登録台帳のRecordに関係を置き、できたら移す（置き場所が二つになり、移動のたびに参照が変わる）／関係をすべて登録台帳に置く（§8.11の決定を改める。法令リポジトリ単体でL3の関係の検査ができなくなる） |
+| 廃止・全部改正の時点（O-10b） | `items`を`amends`・`repeals`・`totally_revises`で必須にし、時点は`items`の`effective`に書く | 関係のトップレベルに`effective`を加える（`amends`と書き方が分かれる） |
+| 効力の終了（O-10c） | 履歴マニフェストに`termination`を置き、廃止・全部改正は関係を参照し、失効は自身の根拠と時点を書く（HIST-06）。登録台帳の`status`は変えない | 関係からだけ導き、失効は表さない（時限法・条件付き失効を記録できない）／登録台帳に効力の状態を持つ（関係・履歴マニフェストと二重になり、食い違う） |
+| 他のRecordの時点（O-10d） | 値を持ったまま`sameAs`で参照先を示し、L4で一致を検査する（XREF-03） | 参照だけを持ち、値を持たない（参照先を収録していないと時点が分からない）／写すだけで参照を持たない（食い違いを検出できない） |
+
 ## 11. Record IDの発行方式（案）
 
 R1・D1のうち、新しく登録するRecordのIDの発行方式、IDの文字種、登録空間の識別子の要件案。案A IDENTITY-01と「登録空間と参照解決（検討上の合意）」を具体化する。既存IDの維持はREB-02による。登録台帳の保存形式は本節の対象外とする。本節の「必須」「禁止」は採用を提案する要件であり、現行v1alpha1の適合要件ではない。
@@ -2275,11 +2351,11 @@ DDR-011の「対応が曖昧な場合の判断基準」を次のとおり定め�
 │        ├─ O-09d 試作をGitで管理し、記録版・固定参照・記録訂正（T-06〜T-10）と派生ビュー（M-05）を検証する【新規】（§10.14で検証済み）
 │        └─ O-09e 関係の内訳の`scope.nodes`が、どの記録版のノードIDかを持たない【新規、§10.14】（§10.15で合意：行のkeyとSCOPE-02）
 ├─ O-10 別の実例で、経過措置・全部改正・期日未確定（T-02、T-04、R-02）を検証する ← O-02
-│        （§10.16で関係と時間の記述を試行）
-│        ├─ O-10a 終点のRecordに法令リポジトリがないとき、関係（repeals・totally_revises）をどこに置くか【新規、§10.16】
-│        ├─ O-10b 廃止・全部改正の効力発生の時点を書く場所がない【新規、§10.16】
-│        ├─ O-10c Recordの効力の状態（廃止・失効）を表す方法【新規、§10.16】
-│        └─ O-10d 時点値から他のRecordの時点を参照する方法【新規、§10.16】
+│        （§10.16で関係と時間の記述を試行、§10.17で合意）
+│        ├─ O-10a 終点のRecordに法令リポジトリがないとき、関係（repeals・totally_revises）をどこに置くか【新規、§10.16】（§10.17で合意：REG-07）
+│        ├─ O-10b 廃止・全部改正の効力発生の時点を書く場所がない【新規、§10.16】（§10.17で合意：`items`を必須に）
+│        ├─ O-10c Recordの効力の状態（廃止・失効）を表す方法【新規、§10.16】（§10.17で合意：HIST-06 `termination`）
+│        └─ O-10d 時点値から他のRecordの時点を参照する方法【新規、§10.16】（§10.17で合意：`sameAs`）
 └─ O-11 検証用の検査手段：新しい版パッケージのL0/L1、loj-history・loj-glyphsのL3検査 ← O-01
          （段階3のvalidator実装の前に、最小限の試作でよい）
 
