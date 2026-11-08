@@ -136,7 +136,7 @@ L3 具体的な決定事項（後続設計）
 ├─ D1 Record ID・Revision IDの発行方式と可読ラベルの扱い         ← R1, R3
 ├─ D2 時間フィールドの型（確定日・未確定・不明・暦と精度）       ← R3
 ├─ D3 履歴マニフェストのフィールド定義と関係の格納位置           ← R2, R5
-├─ D4 固定参照の構文（repo＋commit＋パッケージパス）             ← R4
+├─ D4 固定参照の構文（Record＋Revision＋commit）                 ← R4（§9）
 ├─ D5 変更種別の申告方法とCI検査（AST不変・差分許容の切替）      ← R4
 ├─ D6 L3/L4の検査項目と診断ルールID、適合ケース                  ← R7
 └─ D7 プロトタイプ（19480720-law-178）での受入検証               ← 案A §7 の検証例 + 案B 移行計画
@@ -147,7 +147,7 @@ L3 具体的な決定事項（後続設計）
 1. **L0原則とL1概念モデルを確定する。** 特にM5「派生ビュー」を規範外と位置付けることで、C-04・C-07・C-10・C-16の大半は案Bの運用を残したまま解消できる（要件案は§4）。
 2. **R3（時間）とR1（ID）を先に決める。** C-01・C-05・C-06は`history.yaml`のフィールド設計を直接左右するため、R5の保存形式より前に決める（Revision IDと時間の型の要件案は§5）。
 3. **R4の変更分類を決め、案BのAST不変検査を位置付ける。** 書式変更と記録訂正でCI検査を切り替える必要がある（要件案は§6）。
-4. **R5で履歴マニフェストのschemaを定義する。** 案Bの構成を出発点とし、C-02・C-03・C-08を反映する。
+4. **R5で履歴マニフェストのschemaを定義する。** 案Bの構成を出発点とし、C-02・C-03・C-08を反映する（要件案は§8）。
 5. **R7でL3/L4を再定義する。** 現行VAL-01の定義文（L3＝原典一致・改正履歴・施行時点）を改めるかどうかを含めて決める（要件案は§7）。
 6. **プロトタイプで検証する。** 案Bの19480720-law-178の変換を、案A §7の検証例のうち該当するもの（T-01、T-06〜T-10、M-01〜M-05）と照合する。経過措置・全部改正・期日未確定（T-02、T-04、R-02）は別の実例を選ぶ。
 
@@ -185,7 +185,7 @@ M5「派生ビュー」の要件案。本節の「必須」「禁止」は採用
 #### VIEW-04 参照の区別
 
 - historyブランチのタグは、Revisionを指す参照として扱う。記録訂正による再生成で、タグが指す内容は変わり得る。
-- 記録版まで固定する参照は、正本のリポジトリ・commit・版パッケージのパスで行う。派生ビューのcommit SHAを固定参照として案内しない。
+- 記録版まで固定する参照は、正本のRecord・Revision・commitで行う（構文と解決規則は§9）。派生ビューのcommit SHAを固定参照として案内しない。
 - 再生成で古いビューのcommitが到達不能になっても、正本の記録版への到達性は失われないこと。正本の履歴をforce pushで書き換えてはならない。
 - 移行前の既存履歴は、既存の外部リンクを保つために凍結して残す（必須）。移行後のビューの旧版を残すかどうかは任意とする。
 
@@ -216,7 +216,7 @@ M5「派生ビュー」の要件案。本節の「必須」「禁止」は採用
 |---|---|---|
 | C-04 版列の形 | 一本の列はビューの選択規則に限る（VIEW-02）。正本の版は集合として持つ | 正本で版の順序関係をどう表すか（R3） |
 | C-07 未施行改正 | 確定日だけ自動進行、未確定は進めない（VIEW-06） | 「確定日」の型の定義（D2） |
-| C-10 固定参照 | タグはRevision参照、固定参照は正本commit＋パス（VIEW-03/04） | 固定参照の構文（D4） |
+| C-10 固定参照 | タグはRevision参照、固定参照は正本commit＋パス（VIEW-03/04） | 固定参照の構文（D4。§9） |
 | C-11 記録訂正 | 再生成で失われるのはビューだけ（VIEW-04） | なし |
 | C-15 部分復元の版 | ビューでは除外または注記で示す（VIEW-02） | 正本で欠落範囲を宣言する方法（R3） |
 | C-16 版間差分 | 本文の変化を示す差分は残し、改正箇所の要約は改正関係から作る（VIEW-05） | 改正関係の対象範囲の表現（R2） |
@@ -321,7 +321,7 @@ Revisionの単位は「一つの施行時点 × 一つの改正法令」とす�
 
 ### 5.5 履歴マニフェストの記述例
 
-架空例。フィールド名は説明用であり、保存形式を拘束しない。
+架空例。フィールド名は説明用であり、保存形式を拘束しない。schemaの案は§8で定め、記述例は§8.9で置き換える。
 
 ```yaml
 schemaVersion: loj-history/v1alpha1   # 版番号は別途決める
@@ -399,7 +399,7 @@ e-Govの法令履歴IDは、被改正法令・施行期日・改正法令から�
 | ラベルによる別名タグ | 許容するが安定性は保証しない（REVID-03） | 禁止し、タグはrevision_idだけにする |
 | 明治6年より前の日付 | 本節では原表記と`unknown`／精度付きの値に留め、換算規則は別途定める（5.2） | 太陰太陽暦の換算規則を本節で定める |
 
-IDの文字種・長さ、衝突確認の手順、別名タグの命名規則は、保存形式（R5）とガイドラインで定める。明治6年より前の日付の換算規則は§8の未解決論点に加える。
+IDの文字種・長さ、衝突確認の手順、別名タグの命名規則は、保存形式（R5）とガイドラインで定める。明治6年より前の日付の換算規則は§10の未解決論点に加える。
 
 ## 6. 変更の分類とAST検査（案）
 
@@ -578,7 +578,289 @@ L4の「他法令との参照整合性」を、Record間の参照について次
 
 違反種別の名前と分割（7.5）は案のままとし、schemaと適合ケースを作る段階で確定する。CONF-02の「L2/L3/L4は本版では将来対応」の記述は、次期版で正式化する区分に合わせて改める。
 
-## 8. 未解決のまま残す論点
+## 8. 履歴マニフェストのschema（案）
+
+R5のうち、法令リポジトリの正本構成と履歴マニフェストの論理schemaの要件案。本節の「必須」「禁止」は採用を提案する要件であり、現行v1alpha1の適合要件ではない。登録台帳の保存形式は本節の対象外とする。§5.5の記述例は本節で置き換える。
+
+### 8.1 対象と配置
+
+```text
+<法令リポジトリ>/
+  history.yaml                 # 履歴マニフェスト（一つのRecordにつき一つ）
+  versions/
+    <revision_id>/             # 版パッケージ（v1alpha1の本文パッケージ。REVID-03）
+      law.yaml
+      main.md
+      ...
+```
+
+- 履歴マニフェストは一つのRecordの履歴（Revisionの集合、そのRecordを終点とする関係、収録範囲）を記述する。
+- 版パッケージは現行v1alpha1のManifestと本文をそのまま使い、変更しない（§2 S-06）。`law.yaml`の`law.id`はRecord IDと一致しなければならない（案A §6）。
+- Record自体の属性（番号主張、外部ID、題名の変遷等）は登録台帳に置き、履歴マニフェストに複製しない。
+
+### 8.2 schemaの原則
+
+- `schemaVersion`は`loj-history/`で始まる独自の値とし、版番号は別途決める。
+- 現行Manifestと同様に閉じたschemaとし、未知のフィールドを拒否する（P5）。
+- 法的な時点はすべて時点値（5.2）で表す。日付文字列やnullを直接置かない。
+- 確認状態を持つ主張は、出典参照と確認状態を同じ形で持つ（8.3）。
+- 可読ラベル（`label`）は表示用であり、参照の解決・同一性の判断・順序の決定に使ってはならない（REVID-02）。
+
+### 8.3 共通の型
+
+| 型 | フィールド | 要件 |
+|---|---|---|
+| RecordRef | `id`、`space`（省略時は自身の登録空間）、`label`（任意） | Recordを登録空間とIDの組で指す。リポジトリURLでは指さない（C-02）。`label`は「平成十七年法律第四十三号」等の表示用で、番号主張の代わりにしない（C-03） |
+| Evidence | `source`（Sourceのid）、`locator`（箇所の原文表記。例: 附則第一項） | 箇所のない出典参照だけで確認済みにしない |
+| Source | `id`、`kind`（promulgation／official-correction／index／egov／other）、`title`、`uri`（任意）、`fixed`（任意） | `fixed`は資料の内容を固定する手段（ハッシュ、保存先とcommit等）。`uri`だけでは過去の内容の固定を保証しない（案A REVISION-04）。旧`sources`から移行したURIは、個別の主張の根拠に自動で認定しない（案A M-03） |
+| Verification | `state`（unverified／confirmed／disputed／retracted）、`reason`（任意） | `confirmed`には一つ以上のEvidenceを必須とする。`unverified`・`disputed`には理由を推奨する |
+| TimePoint | `state`と、5.2の状態ごとの必須情報（`value`、`raw`、`precision`、`rule`、`base`、`reason`）、`evidence`、`verification` | `pending`の時点が法令上確定した場合は、`state: date`とし、確定前の定め方を`delegation`（原文と出典）、確定させた根拠を`determinedBy`に保持する。誤りの訂正は記録版の履歴（§6、`metadata`の変更）で追跡する |
+| Scope | `text`（対象範囲の原文表記。必須）、`nodes`（任意。対象版のノードIDの一覧） | `nodes`は位置の補助情報であり、条の歴史的同一性の主張ではない（ID-02、VIEW-05） |
+
+### 8.4 トップレベル
+
+| フィールド | 必須 | 内容 |
+|---|---|---|
+| `schemaVersion` | 必須 | `loj-history/…` |
+| `record` | 必須 | 自身のRecordRef |
+| `sources` | 必須（空可） | Sourceの一覧 |
+| `relations` | 必須（空可） | このRecordを終点とする関係の一覧（8.5） |
+| `revisions` | 必須（一つ以上） | Revisionの一覧（8.6）。撤回・統合・分割したものも残す |
+| `coverage` | 必須 | 収録範囲（8.7） |
+
+### 8.5 relations
+
+| フィールド | 必須 | 内容 |
+|---|---|---|
+| `id` | 必須 | マニフェスト内で一意な不透明ID。撤回後も再利用しない |
+| `type` | 必須 | amends／totally_revises／repeals／succeeds（案A RELATION-01） |
+| `from` | 必須 | 起点のRecordRef（改正法令、全部改正後の新Record、廃止を定める法令、後継法令） |
+| `evidence`、`verification` | 必須 | 関係全体の根拠と確認状態 |
+| `items` | amendsでは必須 | 対象範囲ごとの内訳。各項目は`id`、`scope`、`effective`（TimePoint）、`evidence`、`verification`を持つ（案A R-05〜R-07） |
+| `status` | 必須 | active／retracted。撤回は削除せず`retracted`とし、理由を`verification.reason`に残す |
+
+- 関係は終点のRecordの履歴マニフェストに置く。起点側のRecordには複製しない。起点側からの参照はRecordRefと関係のidの組で行う。
+- 内訳の一部だけの撤回は、その項目の`verification.state`を`retracted`とし、関係全体の撤回（`status: retracted`）と区別する（案A R-07）。
+
+### 8.6 revisions
+
+| フィールド | 必須 | 内容 |
+|---|---|---|
+| `id` | 必須 | revision_id（REVID-01） |
+| `label` | 任意 | 可読ラベル（REVID-02）。e-Gov法令履歴IDの書式を使ってよい |
+| `origin` | 起点のみ必須 | enactment／total-revision／coverage-start（5.4）。`total-revision`では、新旧関係（totally_revises）をRecordRefと関係idで参照する |
+| `basedOn` | 起点以外は必須 | 基礎状態のrevision_id、または`{state: unknown, reason}`（5.4） |
+| `basis` | 起点以外は必須 | 成立根拠。`relation`（関係id）と`items`（内訳のid一覧）の組。制定時の段階施行では`enactment`（`scope`、`evidence`）とする |
+| `effective` | 必須 | 施行時点（TimePoint） |
+| `applicability` | 必須 | `state`（none-confirmed／unsurveyed／conditions）と、`conditions`の場合は条件の一覧（`scope`、`text`、`evidence`、`verification`、`machineEvaluable`） |
+| `text` | 必須 | `status`（complete／partial／absent）、`package`（省略時は`versions/<id>/law.yaml`）、`gaps`（partialのとき必須。欠落範囲のScope一覧） |
+| `externalIds` | 任意 | `issuer`（例: egov）、`kind`（revision）、`value`、`evidence`、`verification`（§5.6） |
+| `status` | 必須 | active／retracted／merged／split。merged・splitでは`replacedBy`（revision_idの一覧）と根拠を持つ |
+
+- `basis`が参照する内訳の`effective`と、Revisionの`effective`は一致しなければならない。両方が`date`の場合に検査する。
+- 一つのRevisionの`basis`は、一つの関係の内訳（同じ改正法令）に限る（5.3.1）。同じ関係・同じ施行時点のRevisionが二つ以上あってはならない。
+- `applicability`の`none-confirmed`には根拠を必須とし、`unsurveyed`と区別する（案A T-13）。
+- 経過措置で併存する状態は、同じ`basedOn`を持つ複数のRevisionと、それぞれの`applicability`で表す。
+
+### 8.7 coverage
+
+| フィールド | 必須 | 内容 |
+|---|---|---|
+| `state` | 必須 | confirmed／unconfirmed。収録の網羅性の確認状態 |
+| `surveyed` | 任意 | 確認した資料・期間・対象範囲の一覧 |
+| `knownGaps` | 任意 | 既知の欠落（未収録の改正、未取得の版等）の一覧 |
+
+個々のRevisionの確認状態から`coverage.state`を導出してはならない（案A REVISION-03、T-12）。
+
+### 8.8 L3の検査との対応
+
+| rule（§7.5） | 主な検査対象 |
+|---|---|
+| HIST-01 | schemaVersion、閉じたschema、必須フィールド |
+| HIST-02 | revision_id・関係idの一意性と非再利用、`replacedBy`の参照先 |
+| HIST-03 | TimePointの状態ごとの必須情報、精度、`delegation`・`determinedBy` |
+| HIST-04 | `origin`・`basedOn`、順序の検査（5.4）、`effective`と内訳の一致、同じ関係・同じ施行時点の重複 |
+| HIST-05 | `text.status`と版パッケージの配置の対応、`law.id`とRecord IDの一致 |
+| EVID-01 | `confirmed`の主張のEvidence、Sourceの参照先 |
+
+### 8.9 記述例
+
+架空例。値は実在法令についての判断を示さない。
+
+```yaml
+schemaVersion: loj-history/v1alpha1   # 版番号は別途決める
+record: {id: record-a}
+sources:
+  - {id: src-1, kind: promulgation, title: 架空法の公布原典, fixed: {sha256: "…"}}
+  - {id: src-12, kind: promulgation, title: 架空改正法の公布原典}
+relations:
+  - id: rel-12
+    type: amends
+    from: {id: record-m, label: 架空年法律第四十三号}
+    evidence: [{source: src-12, locator: 本則}]
+    verification: {state: confirmed}
+    status: active
+    items:
+      - id: i1
+        scope: {text: 第二条}
+        effective: {state: date, value: 2007-01-01, raw: 架空年一月一日, precision: day,
+                    evidence: [{source: src-12, locator: 附則第一項}], verification: {state: confirmed}}
+        evidence: [{source: src-12, locator: 本則第二条関係}]
+        verification: {state: confirmed}
+revisions:
+  - id: k3v9q2m7
+    label: 制定
+    origin: enactment
+    effective: {state: date, value: 1948-07-20, raw: 架空年七月二十日, precision: day,
+                evidence: [{source: src-1, locator: 附則}], verification: {state: confirmed}}
+    applicability: {state: unsurveyed}
+    text: {status: complete}
+    status: active
+  - id: p8w1x4t6
+    label: record-a_20070101_record-m
+    basedOn: k3v9q2m7
+    basis: [{relation: rel-12, items: [i1]}]
+    effective: {state: date, value: 2007-01-01, raw: 架空年一月一日, precision: day,
+                evidence: [{source: src-12, locator: 附則第一項}], verification: {state: confirmed}}
+    applicability: {state: unsurveyed}
+    text: {status: partial, gaps: [{text: 別表第一}]}
+    status: active
+coverage:
+  state: unconfirmed
+  knownGaps: [{text: 1950年代の改正の有無を未調査}]
+```
+
+### 8.10 解消される競合
+
+| 競合 | 解消の仕方 |
+|---|---|
+| C-02 改正法の参照方法 | RecordRefで参照し、リポジトリURLを持たない（8.3） |
+| C-03 番号の表現 | 番号主張は登録台帳に置き、マニフェストでは表示用`label`だけにする（8.1、8.3） |
+| C-08 一部施行と関係の分割 | 関係の内訳（`items`）と、内訳を参照するRevisionの`basis`（8.5、8.6） |
+| C-09 起点と網羅性 | `origin`と`coverage`（8.6、8.7） |
+| 案A REVISION-03の網羅性 | `coverage`を必須とし、個々の確認状態から導出しない（8.7） |
+
+### 8.11 決定事項（2026-11-08合意）
+
+以下は次期仕様の設計方針としての合意であり、規範仕様への採用は未完了である。
+
+| 点 | 決定 | 採らなかった案 |
+|---|---|---|
+| 関係の置き場所 | 終点のRecordの履歴マニフェストに置き、起点側は参照だけにする（8.5） | 登録台帳に集約する（法令リポジトリ単体でL3の関係参照を検査できなくなる）／両側に複製する（L4で整合を取る負担が増える） |
+| 時点値の訂正の追跡 | 法令上の確定（`delegation`・`determinedBy`）はデータに持ち、誤りの訂正は記録版の履歴で追う（8.3） | 番号主張と同様に、時点値ごとに主張の履歴をデータに持つ |
+| Revisionの`effective` | 明示して書き、内訳との一致を検査する（8.6） | 内訳から導出し、起点だけに書く（記述は減るが読みにくい） |
+| 対象範囲の表現 | 原文表記を必須、ノードIDを任意にする（8.3） | ノードIDを必須にする（未取得・部分復元の版で書けない） |
+| マニフェストのファイル名 | リポジトリ直下の`history.yaml`（案Bのまま）（8.1） | `loj-history.yaml`等、LoJ固有と分かる名前にする |
+
+フィールド名と列挙値（8.3〜8.7）は案のままとし、JSON Schemaと適合ケースを作る段階で確定する。登録台帳の保存形式は引き続き本節の対象外とする。
+
+## 9. 固定参照の構文（案）
+
+D4（R4）の要件案。案A REVISION-04（Revisionを指す参照と記録版まで固定する参照の区別）、T-09・T-10、及びVIEW-04を具体化する。本節の「必須」「禁止」は採用を提案する要件であり、現行v1alpha1の適合要件ではない。
+
+### 9.1 参照の種類
+
+| 種類 | 指すもの | 指す内容が変わるか | 主な用途 |
+|---|---|---|---|
+| Record参照 | Law Record | — | 法令そのものを指す（RecordRef、8.3） |
+| Revision参照 | 法令状態 | 記録訂正・復元の進展で変わり得る | 「この法令のこの状態」を指す。派生ビューのタグと同じ意味（VIEW-04） |
+| 固定参照 | 記録版 | 変わらない | 引用・検証の対象となった本文・根拠・判断を固定する（案A T-09） |
+
+版の中の特定のノードを指せるのは固定参照だけとする（9.4 FIXREF-05）。
+
+### 9.2 構造化形式
+
+履歴マニフェスト等のデータの中では、次の構造化形式で書く。
+
+| 型 | フィールド | 要件 |
+|---|---|---|
+| RevisionRef | `record`（RecordRef）、`revision`（revision_id） | revision_idで指す。可読ラベルや施行日では指さない（REVID-02）。`node`を持たない |
+| FixedRef | RevisionRefのフィールドに加えて`commit`（必須）、`node`（任意）、`path`（任意）、`repository`（任意） | `commit`は正本のcommitの完全なハッシュ。`path`と`repository`は検査と解決の補助であり、参照の同一性には含めない |
+
+### 9.3 文字列表記
+
+データの外（文献、Issue、外部サイト等）で引用するための表記を定める。
+
+```text
+loj:<space>/<record>/<revision>                 # Revision参照
+loj:<space>/<record>/<revision>@<commit>        # 固定参照
+loj:<space>/<record>/<revision>@<commit>#<node> # 固定参照＋ノード
+```
+
+- `@<commit>`のない`#<node>`（`loj:<space>/<record>/<revision>#<node>`）は認めない（FIXREF-05）。
+- 構造化形式と文字列表記は相互に変換でき、変換で情報を落とさない。
+- 登録空間・Record ID・revision_idは`/`、`@`、`#`を含んではならない。ID全体の文字種はR1・REVID-01の発行規則で定める。
+- `loj:`は解決規則（9.4）の名前であり、URIスキームの登録を前提にしない。GitHub等のURLは解決結果の一つであり、参照そのものとして案内しない（C-02）。
+
+### 9.4 要件
+
+#### FIXREF-01 固定参照の解決
+
+- 固定参照は、登録台帳からRecordのリポジトリを求め、指定commitの`history.yaml`で`revision`を探し、その`text.package`の版パッケージを対象とする。リポジトリの移転があっても、commitが同じなら同じ記録版を指す。
+- 固定参照が固定する記録は、そのcommitにおける版パッケージ、履歴マニフェスト中の当該Revisionの記述、`basis`で参照する関係とその内訳、及びそれらが参照するSourceとする。本文だけを固定するものではない（案A REVISION-04）。
+- `path`がある場合は、指定commitの`text.package`と一致しなければならない。一致しなければ解決の誤りとし、`path`を優先して読んではならない。
+- commitだけでは対象の版が定まらないため、`revision`を省略した固定参照を認めない（案A T-10）。
+
+#### FIXREF-02 commitの条件
+
+- `commit`は完全なハッシュとする。短縮形、ブランチ名、タグ名を使ってはならない。ハッシュの長さでGitのオブジェクト形式（SHA-1は40桁、SHA-256は64桁）を区別する。
+- 固定参照として案内できるcommitは、正本ブランチの履歴から到達できるものに限る。作業ブランチや派生ビューのcommitを固定参照にしてはならない（VIEW-04）。
+- 正本ブランチの履歴をforce push等で書き換えてはならない（VIEW-04の再掲）。
+
+#### FIXREF-03 Revision参照の解決
+
+- Revision参照は、正本ブランチの最新commitにおける当該Revisionの記録版に解決する。解決結果には、解決に使ったcommitを付けて返す。
+- 撤回したRevisionへの参照は撤回されたことを報告する。統合・分割したRevisionへの参照は`replacedBy`を示し、黙って別のRevisionへ転送しない。
+- 撤回・統合・分割したRevisionへの固定参照は、当時の記録版に解決できる。そのうえで現在の状態を併せて示す。
+
+#### FIXREF-04 解決できない場合
+
+解決結果は次のいずれかで報告する（§7.4の三値報告に合わせる）。
+
+| 結果 | 条件 |
+|---|---|
+| 解決済み | 9.4の手順で対象を特定できた |
+| 未取得 | リポジトリまたはcommitを取得できない（未取得のまま不存在とみなさない） |
+| 解決の誤り | commitは取得できたが、そのcommitに当該Revisionがない、`path`が一致しない、commitが正本ブランチから到達できない。または`commit`のない参照に`node`がある（最新の記録版へ黙って解決してはならない） |
+
+#### FIXREF-05 ノードの指定
+
+- `node`はその版のノードID（ID-01）とする。ノードIDは版の中の位置を示し、条の歴史的同一性を主張しない（ID-02、VIEW-05）。
+- ノードを指定できるのは固定参照だけとする。Revision参照にノードを付けてはならない。ノードIDは番号から作るため、番号・附則keyの誤転記訂正、復元の進展、版の訂正、仕様の版の移行（§6.1）で、同じIDが別の規定を指すことがある。Revision参照では書いた時点のcommitがなく、この取り違えを検出できない。
+- 固定参照のノードは、常に指定commitの版の同じノードに解決する。
+- 固定参照を起点に、正本ブランチの最新で同じIDのノードを示す機能は、実装の補助機能として提供してよい。その場合は、指定commitから内容・位置が変わったかを併せて報告する。この機能は規範にしない。
+- 履歴マニフェストのScopeの`nodes`（8.3）は、同じcommitの版のノードを指すため、本要件の対象外とする。
+
+### 9.5 他の要件との関係
+
+- Sourceの`fixed`（8.3）でLoJ内の資料を指す場合はFixedRefを使う。
+- 他のRecordへの固定参照・Revision参照の解決は、L4の関係の解決（§7.4）で検査する。自身のRecordへの参照は、指定commitの取得を伴うため、正本の構造検査（L3履歴構造）とは別の検査とする。
+- 移行前の既存履歴へのGitHubのURL（凍結ブランチのcommit）は固定参照ではない。既存リンクの維持はR8で扱う。
+
+### 9.6 解消される競合
+
+| 競合・要件 | 解消の仕方 |
+|---|---|
+| C-10 外部参照の固定（残作業） | 固定参照の構文と解決規則（9.2〜9.4） |
+| 案A REVISION-04「参照構文は後続設計」 | Revision参照と固定参照の構造化形式・文字列表記（9.2、9.3） |
+| 案A T-09 | 固定参照は当時の記録版に解決し、撤回後も到達できる（FIXREF-01、FIXREF-03） |
+| 案A T-10 | `revision`を必須とし、commitだけの参照を認めない（FIXREF-01） |
+
+### 9.7 決定事項（2026-11-08合意）
+
+以下は次期仕様の設計方針としての合意であり、規範仕様への採用は未完了である。
+
+| 点 | 決定 | 採らなかった案 |
+|---|---|---|
+| 文字列表記を規範にするか | `loj:`表記を構造化形式と並べて規範にする（9.3） | 構造化形式だけを規範とし、文字列表記はガイドラインに置く（引用の書き方が実装ごとに分かれる） |
+| 版パッケージのパス | 指定commitの`text.package`から求め、`path`は任意の検査用にする（FIXREF-01） | `path`を必須にする（記述が冗長になり、不一致の扱いが要る） |
+| リポジトリの特定 | 登録台帳から求め、`repository`は任意の補助にする（FIXREF-01） | `repository`を必須にする（リポジトリの移転で参照が壊れる） |
+| 固定参照に使えるcommit | 正本ブランチから到達できるcommitに限る（FIXREF-02） | リポジトリ内の任意のcommitを認める（作業途中の記録が固定参照として流通する） |
+| ノードの指定 | 固定参照に限る。`@<commit>`のない`#<node>`を認めない（FIXREF-05） | 両方の参照で認める（番号に関わる記録訂正で、黙って別の規定を指す）／Revision参照のノードに書いた時点のcommitを必須で添える（参照の種類が実質的に増える）／番号の訂正ごとに旧新IDの対応表を残す（記録の負担が大きく、復元の進展では対応が決まらない） |
+
+文字列表記で使う区切り文字（`/`、`@`、`#`）をIDに含めない制約は、R1・REVID-01のIDの文字種を定めるときに反映する。
+
+## 10. 未解決のまま残す論点
 
 - totally_revisesとamendsの重複登録・推論規則（案Aで保留）。
 - 状態選択の機能・API（案Aで対象外）。historyブランチを唯一の「現行」として公開するかどうかの運用判断。
