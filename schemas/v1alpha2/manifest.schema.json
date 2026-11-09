@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://law-of-japan.github.io/loj-spec/schemas/v1alpha2/manifest.schema.json",
   "$comment": "Canonical identifier only; publication at this URI is not required.",
-  "title": "LoJ version package manifest loj/v1alpha2 (§13)",
+  "title": "LoJ version package manifest loj/v1alpha2",
   "type": "object",
   "properties": {
     "schemaVersion": {

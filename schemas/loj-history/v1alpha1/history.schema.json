@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://law-of-japan.github.io/loj-spec/schemas/loj-history/v1alpha1/history.schema.json",
   "$comment": "Canonical identifier only; publication at this URI is not required.",
-  "title": "LoJ history manifest (§8)",
+  "title": "LoJ history manifest",
   "type": "object",
   "properties": {
     "schemaVersion": {
@@ -598,7 +598,7 @@
             }
           }
         ],
-        "$comment": "basis may accompany origin enactment (staged enforcement); validator checks HIST-04."
+        "$comment": "basis may accompany origin enactment (staged enforcement); validator checks HIST-05."
       },
       "minItems": 1
     },

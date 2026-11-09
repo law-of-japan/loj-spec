@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://law-of-japan.github.io/loj-spec/schemas/loj-glyphs/v1alpha1/glyphs.schema.json",
   "$comment": "Canonical identifier only; publication at this URI is not required.",
-  "title": "LoJ glyph notes (§12)",
+  "title": "LoJ glyph notes",
   "type": "object",
   "properties": {
     "schemaVersion": {

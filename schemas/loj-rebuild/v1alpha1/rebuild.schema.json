@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://law-of-japan.github.io/loj-spec/schemas/loj-rebuild/v1alpha1/rebuild.schema.json",
   "$comment": "Canonical identifier only; publication at this URI is not required.",
-  "title": "LoJ rebuild report (§10.7)",
+  "title": "LoJ rebuild report",
   "type": "object",
   "properties": {
     "schemaVersion": {

@@ -10,10 +10,10 @@ LoJ（Law of Japan）のデータの規範仕様の入口である。本書は�
 |---|---|---|
 | [common/v1alpha1](common/v1alpha1/01-overview.md) | 種類にまたがる要件（構成、文字、適合レベル、共通の型、時点値、変更の種類、固定参照、派生ビュー、Record間の検査） | なし（共通の型の版） |
 | [v1alpha2](v1alpha2/01-overview.md) | 版パッケージ（`law.yaml`と本文のMarkdown） | `loj/v1alpha2` |
-| loj-history/v1alpha1 | 履歴マニフェスト（`history.yaml`） | `loj-history/v1alpha1` |
-| loj-glyphs/v1alpha1 | 字体注記（`glyphs.yaml`） | `loj-glyphs/v1alpha1` |
-| loj-registry/v1alpha1 | 登録台帳のRecord（`records/<Record ID>.yaml`） | `loj-registry/v1alpha1` |
-| loj-rebuild/v1alpha1 | 原典からの再構築と再構築報告（`rebuild.yaml`） | `loj-rebuild/v1alpha1` |
+| [loj-history/v1alpha1](loj-history/v1alpha1/01-history.md) | 履歴マニフェスト（`history.yaml`） | `loj-history/v1alpha1` |
+| [loj-glyphs/v1alpha1](loj-glyphs/v1alpha1/01-glyphs.md) | 字体注記（`glyphs.yaml`） | `loj-glyphs/v1alpha1` |
+| [loj-registry/v1alpha1](loj-registry/v1alpha1/01-registry.md) | 登録台帳のRecord（`records/<Record ID>.yaml`） | `loj-registry/v1alpha1` |
+| [loj-rebuild/v1alpha1](loj-rebuild/v1alpha1/01-rebuild.md) | 原典からの再構築と再構築報告（`rebuild.yaml`） | `loj-rebuild/v1alpha1` |
 
 - 各ディレクトリに対応する`schemas/`のJSON Schemaと、適合データ（`conformance/`）も規範とする。
 - `docs/`の文書、`examples/`の例、各ディレクトリの付録のうち「参考」と示したものは、参考情報である。

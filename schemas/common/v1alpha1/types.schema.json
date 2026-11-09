@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://law-of-japan.github.io/loj-spec/schemas/common/v1alpha1/types.schema.json",
   "$comment": "Canonical identifier only; publication at this URI is not required.",
-  "title": "LoJ common types (§8.3)",
+  "title": "LoJ common types",
   "$defs": {
     "recordId": {
       "type": "string",
@@ -554,7 +554,7 @@
           }
         }
       ],
-      "$comment": "derived.value is required only when base is a date; checked by HIST-03 (validator)."
+      "$comment": "derived.value is required only when base is a date; checked by TIME-03 (validator)."
     },
     "TextNote": {
       "type": "object",

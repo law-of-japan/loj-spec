@@ -2419,7 +2419,7 @@ DDR-011の「対応が曖昧な場合の判断基準」を次のとおり定め�
 ├─ O-12 フィールド名・列挙値の確定とJSON Schema（loj-history、loj-glyphs、新しい版パッケージ、登録台帳） ← O-01, O-02, O-04
 │        （§16.1で方針を合意、§16.2でschemaを作成し細目を合意）
 ├─ O-13 規範仕様の本文の改訂：VAL-01（L3の定義）、CHAR-01、BASIC-03、見出し・IDの規則（O-01の反映）
-│        （§16.3で構成と要件IDの整理を合意）
+│        （§16.3で構成と要件IDの整理を合意し、O-13a〜cで本文を作成）
 ├─ O-14 DDRの追加と改訂：派生ビュー、時間の型、変更の分類、L3/L4、再構築、Record ID、字体注記、新しい版パッケージ。
 │        DDR-011の未決事項を解消する
 ├─ O-15 診断ルールID（§7.5）と適合ケース
@@ -2821,4 +2821,92 @@ spec/
 | 本文の表示番号の「ノ」（DISP-01） | PKG-02は見出しの枝番号についてだけ「ノ」を定めていた。項・号の表示番号の枝番号にも「ノ」を許した。一つのラベルの中での「の」と「ノ」の混在は制限していない |
 | 編・章・節・款・目の字（HEAD-01） | PKG-02は「v1alpha1のまま」としていた。コードポイントを明記した |
 | 試作の検査器の規則の名前 | 前文の位置はMD-01ではなくPRE-01・PRE-02、本文の中のGFMの表はPKG-05ではなくTABLE-01、項番号の混在はPKG-04ではなくPARA-01で報告する |
+
+#### O-13cの結果（2026-11-09）
+
+4種類のファイルの規範の本文を書いた。
+
+| ファイル | 要件ID |
+|---|---|
+| `spec/loj-history/v1alpha1/01-history.md` | HIST-01〜12 |
+| `spec/loj-history/v1alpha1/02-revision-ids.md` | REV-01〜04 |
+| `spec/loj-glyphs/v1alpha1/01-glyphs.md` | GLYPH-01〜11 |
+| `spec/loj-registry/v1alpha1/01-registry.md` | REG-01〜05 |
+| `spec/loj-registry/v1alpha1/02-record-ids.md` | RID-01〜05 |
+| `spec/loj-rebuild/v1alpha1/01-rebuild.md` | REB-01〜08 |
+| `spec/loj-rebuild/v1alpha1/02-report.md` | REBR-01〜05 |
+
+- `spec/README.md`から4つのディレクトリへのリンクを張った。
+- schemaの`title`から統合案の節番号を除き、`$comment`の統合案のID（HIST-03、HIST-04、REG-06、REG-07）を新しいID（TIME-03、HIST-05、REG-01、REG-02）に直した。schemaの形は変えていない。§16.2の検査（試作の写し10件、正例・負例24件）を再実行し、結果は変わらなかった。
+- `scripts/verify.py`（リンクの検査を含む）と`tests/`は通る。
+
+書くときに見つかった、統合案・系列の一覧との食い違いと、その扱いは次のとおりである。
+
+| 点 | 扱い |
+|---|---|
+| 字体注記の種類の一覧（GLYPH-02） | §12.1の表は5種類だけで、`spacing`・`variance`・`sourceEdit`はGLYPH-03の`kind`の欄にだけあった。8種類を一つの表にまとめた |
+| L1が不合格の版の字体注記（GLYPH-11） | 統合案のGLYPH-06（検査）にあった。「検査」の要件を設けない原則（原則2）に従い、互換漢字の注記の必須（GLYPH-11）に置いた |
+| 互換漢字を選ぶ場合（GLYPH-06の2） | §12.2の2は「互換漢字を選ぶ」だけだった。O-11dの決定に合わせ、`selected`として注記すると書いた |
+| 起点と`basedOn`（HIST-04） | 統合案に明記がなかった。schema（§16.2）のとおり、`origin`を持つRevisionは`basedOn`を持たず、持たないRevisionは`basedOn`と`basis`を持つとした |
+| 官報正誤と記録訂正でRevisionを作らないこと | §5.6にあった。CHG-01とREV-04の両方に書いた |
+| 登録台帳の検査（統合案のREG-06） | REG-01に置いた。L4での`merged`・`split`の扱いはXREF-01に置いた |
+
+#### 統合案のIDと規範仕様のIDの対応
+
+統合案の本文のIDは書き換えない。統合案のIDを規範仕様で探すときは、次の表による。表にないIDは、同じIDのまま規範仕様にある（VIEW-01〜07、RID-01〜05、XREF-01〜03、SRCM-01、REBR-03〜05）。
+
+| 統合案 | 規範仕様 |
+|---|---|
+| REVID-01〜03 | REV-01〜03 |
+| §5.3.1（版の粒度） | REV-04 |
+| §5.2（時点値）、SCHEMA-05（`calc`）、§10.17 O-10d（`sameAs`） | TIME-01〜07 |
+| §5.3〜5.4（時間の情報、順序） | HIST-04〜06 |
+| §5.6（e-Gov法令履歴ID） | HIST-09 |
+| §6.1〜6.5、SCHEMA-06 | CHG-01〜05 |
+| §7.1〜7.4、VAL-01（v1alpha1） | VAL-01〜06 |
+| §7.5の規則の一覧 | VAL-07 |
+| HIST-01（形状） | HIST-01 |
+| HIST-02（revision_idの一意性） | REV-01、HIST-03、HIST-10 |
+| HIST-03（時点値） | TIME-01〜06 |
+| HIST-04（起点・順序） | HIST-04〜06 |
+| HIST-05（配置・本文の状態） | HIST-02、HIST-08 |
+| HIST-06（効力の終了） | HIST-12 |
+| EVID-01 | TYPE-05 |
+| §8.3（共通の型） | TYPE-01〜04、TYPE-06 |
+| SCOPE-01、SCOPE-02 | TYPE-07、TYPE-08 |
+| §8.4〜8.7 | HIST-02、HIST-03、HIST-04〜11 |
+| REG-01〜05 | REG-01〜05 |
+| REG-06（検査） | REG-01、XREF-01 |
+| REG-07（履歴だけの法令リポジトリ） | HIST-01、REG-02 |
+| FIXREF-01〜05、§9.1〜9.3 | FIXREF-01〜07（統合案のFIXREF-01〜05は03〜07） |
+| REB-01〜06 | REB-01〜04、REB-06、REB-07（統合案のREB-05はREB-06、REB-06はREB-07） |
+| REB-07（再構築報告の内容） | REBR-02 |
+| REB-08 | REB-08 |
+| REB-09（原典の入手経路） | REB-05 |
+| REB-10（改正法の附則） | BASIC-03（v1alpha2）、HIST-03 |
+| REB-02の補足（既存IDの決め方） | REB-02、RID-01 |
+| REBR-01、REBR-02 | REBR-01、REBR-02 |
+| REBR-06（検査） | REBR-01、VAL-07 |
+| GLYPH-01 | GLYPH-01、GLYPH-02、GLYPH-11 |
+| GLYPH-02 | GLYPH-03 |
+| GLYPH-03、§12.6 | GLYPH-04、GLYPH-05 |
+| GLYPH-04、§12.5 | GLYPH-06 |
+| §12.7 | GLYPH-07 |
+| GLYPH-05 | GLYPH-10 |
+| GLYPH-06（検査） | GLYPH-04、GLYPH-11、SRCM-01 |
+| GLYPH-07 | GLYPH-08 |
+| GLYPH-08 | GLYPH-09 |
+| PKG-01 | BASIC-01、BASIC-04（v1alpha2） |
+| PKG-02 | HEAD-01、NUM-01、DISP-01 |
+| PKG-03 | HEAD-03 |
+| PKG-04 | PARA-01 |
+| PKG-05、§10.15のPKG-05の改訂 | TABLE-01〜03、ID-01、ID-02 |
+| PKG-06 | PRE-01、PRE-02 |
+| PKG-07 | BASIC-03 |
+| PKG-08 | MD-04 |
+| VER-01、VER-02 | CORE-04、CORE-05 |
+| SCHEMA-02 | CORE-03 |
+| SCHEMA-01、SCHEMA-03、SCHEMA-04 | 規範にしない（DDR、O-14） |
+| CHAR-01（v1alpha1） | CHAR-01〜05 |
+| CONF-01・02、VAL-02（v1alpha1） | CONF-01〜03 |
 

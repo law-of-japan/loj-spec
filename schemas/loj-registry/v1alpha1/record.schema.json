@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://law-of-japan.github.io/loj-spec/schemas/loj-registry/v1alpha1/record.schema.json",
-  "$comment": "repository is also required when relations or revisions are recorded (REG-07); checked by REG-06.",
-  "title": "LoJ registry record (§8.12)",
+  "$comment": "repository is also required when relations or revisions are recorded (REG-02); checked by the registry checks (REG-01).",
+  "title": "LoJ registry record",
   "type": "object",
   "properties": {
     "schemaVersion": {
