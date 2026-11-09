@@ -7,6 +7,7 @@
 - 新しい要件には、原則として適合ケースを加える。機械で検査できない要件、ケースを作れない要件は、理由を[要件との対応表](docs/coverage.md)に記録する。
 - alphaの版の中の変更も[CHANGELOG](CHANGELOG.md)に書き、公開した版の意味を黙って差し替えない。
 - 凍結した`spec/v1alpha1`、`schemas/v1alpha1`、`grammar/v1alpha1`、`conformance/v1alpha1`は変えない。
+- 新しい用語を定めたとき、用語の意味や定める要件を変えたときは、[用語集](docs/glossary.md)も更新する。用語集は参考であり、定義は要件に書く。
 
 ## 役目を終えた文書
 
