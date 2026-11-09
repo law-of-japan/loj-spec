@@ -447,9 +447,11 @@ def audit_suite(name, validators, rules):
         covered.update(case["requirements"])
         require(case["normative"] == (case["check"] != "L2"), ident + " normative/check mismatch")
         group = "/valid/" if case["success"] else "/invalid/"
-        for path in input_files(case):
+        inputs = input_files(case)
+        for path in inputs:
             require(path.exists(), ident + " missing input: " + str(path))
-            require(group in "/" + path.relative_to(ROOT).as_posix(), ident + " case directory mismatch")
+        # Inputs may share checked-in positive fixtures; the case's own input must sit in its group.
+        require(any(group in "/" + path.relative_to(ROOT).as_posix() for path in inputs), ident + " case directory mismatch")
         exp_path = ROOT / case["expected"]
         require(exp_path.is_file() and case["expected"] not in expected_paths, ident + " expected file")
         expected_paths.add(case["expected"])
