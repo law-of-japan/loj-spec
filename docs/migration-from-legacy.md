@@ -1,6 +1,6 @@
 # 旧リポジトリから原典による再構築への移行の手順
 
-旧形式の法令リポジトリ（[旧リポジトリ管理ガイドライン](https://github.com/law-of-japan/loj-repository-management-guideline/blob/27eaa01db778aac04349eadab0942da3f8800a44/CONTRIBUTING.md)に従ったもの）のRecordを、次期仕様の形へ移す作業の手順である。本書は参考であり、規範は[loj-rebuild/v1alpha1](../spec/loj-rebuild/v1alpha1/01-rebuild.md)と、そこから参照する各種類の要件である。手順と規範が食い違えば、規範に従う。
+旧形式の法令リポジトリ（[旧リポジトリ管理ガイドライン](https://github.com/law-of-japan/loj-repository-management-guideline/blob/27eaa01db778aac04349eadab0942da3f8800a44/CONTRIBUTING.md)に従ったもの）のRecordを、次期仕様の形へ移す作業の手順である。移した後の法令リポジトリの運用は、次期仕様に合わせた[リポジトリ管理ガイドライン](https://github.com/law-of-japan/loj-repository-management-guideline/blob/24b89b40474f9238120cc23e35ff01a6c44c8077/CONTRIBUTING.md)に従う。本書は参考であり、規範は[loj-rebuild/v1alpha1](../spec/loj-rebuild/v1alpha1/01-rebuild.md)と、そこから参照する各種類の要件である。手順と規範が食い違えば、規範に従う。
 
 ## 方針
 
