@@ -1,31 +1,46 @@
 # e-Gov法令標準XMLとの対応（参考）
 
 [公式v3 XSD](https://laws.e-gov.go.jp/file/XMLSchemaForJapaneseLaw_v3.xsd)と
-[要素解説](https://laws.e-gov.go.jp/docs/law-data-basic/419a603-xml-schema-for-japanese-law/)を参照した概念対応。
-変換器・可逆変換の保証ではない。lojは独立モデルであり、XMLの要素順・全属性を再現しない。
+[要素解説](https://laws.e-gov.go.jp/docs/law-data-basic/419a603-xml-schema-for-japanese-law/)を参照した概念の対応である。
+変換器や可逆変換の保証ではない。LoJは独立したモデルであり、XMLの要素の順序・すべての属性を再現しない。
 
-| XML | loj/v1alpha1 | 範囲・損失管理 |
+e-Govの本文は新字体に置き換えている。版の本文の根拠は公布された本文（官報と官報正誤）であり、e-Govの本文をそのまま版の本文にしない（[GLYPH-07](../spec/loj-glyphs/v1alpha1/01-glyphs.md)、[REB-05](../spec/loj-rebuild/v1alpha1/01-rebuild.md)）。e-Govは、構造の確認と字体の仮置きの手がかりとして使う。
+
+## 版パッケージ（loj/v1alpha2）
+
+| XML | loj/v1alpha2 | 範囲・損失の管理 |
 |---|---|---|
-| Law / LawNum / LawTitle | lawとLaw | 番号・名称・言語・日付。元号等の属性分解は将来 |
-| LawBody | Law.content | 独立ノードを作らない |
-| MainProvision | MainProvision | 条を含む構造のみ |
-| Part | Part | 編 |
-| Chapter | Chapter | 章 |
-| Section | Section | 節 |
-| Subsection | Subsection | 款 |
-| Division | Division | 目 |
-| Article / ArticleTitle / ArticleCaption | Article / display | 番号と見出し。削除条を限定対応 |
-| Paragraph / ParagraphNum | Paragraph | 第一項も明示 |
-| Item / ItemTitle | Item | 本版の表示番号範囲のみ |
-| Subitem1〜Subitem10 | Subitem(level=1〜10) | 階層対応。いろは等の表記は未対応 |
-| Sentence等の本文 | text | 原文Markdown。文・列の型は再現しない |
-| SupplProvision | SupplementaryProvision | Manifestの永続key。改正属性・施行条件は将来 |
-| AppdxTable / AppdxNote / AppdxStyle / Appdx / AppdxFig / AppdxFormat | AppendedMaterial | 不透明本文のみ。原XML型、表セル、図・様式の構造は未対応 |
-| SupplProvisionAppdx系 | 未対応 | 附則内の附属資料としての意味関係は保持できない |
-| Preamble / EnactStatement / TOC | 未対応 | 本文へ押し込んで完全移行と扱わない |
-| Ruby / Sup / Sub / Table / Fig / ArithFormula / AmendProvision | 将来 | 専用の型付き意味表現と往復テストが必要 |
+| Law / LawNum / LawTitle | `law.yaml`と`Law` | 番号・題名・種別は版ごとに`law.yaml`へ。番号主張の構造化は登録台帳（REG-03） |
+| LawBody | `Law`の内容 | 独立したノードを作らない |
+| EnactStatement | `EnactStatement` | PRE-02。`Law`の最初の子 |
+| Preamble | `Preamble` | PRE-01。`MainProvision`の前 |
+| TOC | 未対応 | 目次は本版で型付けしない |
+| MainProvision | `MainProvision` | 条を含む構造だけ。条を持たない本則は未対応 |
+| Part / Chapter / Section / Subsection / Division | `Part` / `Chapter` / `Section` / `Subsection` / `Division` | 編・章・節・款・目 |
+| Article / ArticleTitle / ArticleCaption | `Article`と表示 | 番号と見出し。削除条を含む |
+| Paragraph / ParagraphNum | `Paragraph` | 番号のある項は`numbering: explicit`。ParagraphNumが空の項は`implicit`（PARA-01） |
+| Item / ItemTitle | `Item` | 表示番号の範囲はDISP-01 |
+| Subitem1〜Subitem10 | `Subitem`（level 1〜10） | いろは等の表示は未対応 |
+| Sentence等の本文 | `text` | 原文のMarkdown。文・列の型は再現しない |
+| TableStruct / Table / TableRow / TableColumn | `Table` / `Row` / `Cell` | 項・号・細分の本文の中の表（TABLE-01〜03）。罫線・配置・列の幅は記録しない。セルの中の項・号・表、入れ子の表は未対応 |
+| SupplProvision | `SupplementaryProvision` | `law.yaml`の永続key。その法令自身の附則だけを収録する |
+| SupplProvision（`AmendLawNum`を持つ改正法の附則） | 収録しない | 改正法のRecordに属する（BASIC-03）。施行時点は履歴マニフェストの関係（`relations`）に記録する |
+| AppdxTable / AppdxNote / AppdxStyle / Appdx / AppdxFig / AppdxFormat | `AppendedMaterial` | 不透明な本文だけ。表のセル、図・様式の構造は未対応 |
+| SupplProvisionAppdx系 | 未対応 | 附則の中の附属資料としての関係は保持できない |
+| Ruby / Sup / Sub / Fig / ArithFormula / AmendProvision | 未対応 | 型付きの意味表現と往復の検査が必要 |
 
-XML→loj移行時は、未対応の属性・要素を一覧化してunsupportedFeaturesへ申告する。
-入力XMLを別途保存し、削除・圧縮によって失われる情報を隠さない。lojのL1成功はXMLの情報保全を証明しない。
-XMLで許される本則の直接項や混合構造を、lojがすべて許すわけではない。
-往復対応を追加する場合は、型別fixtureと情報損失レポートを次版の条件にする。
+## 履歴と識別子
+
+| e-Gov | LoJ | 備考 |
+|---|---|---|
+| 法令ID（例: `323AC1000000178`） | 登録台帳の外部識別子（REG-05） | Record IDの代わりに使わない |
+| 法令履歴ID | 履歴マニフェストのRevisionの外部識別子（HIST-09） | revision_idの代わりに使わない。対応なし・複数の候補を許す |
+| 改正法令の施行日 | 関係の内訳の時点値（TIME） | 原典で確かめた値を記録する。e-Govの値だけを根拠に確認済みにしない |
+
+## 移行の注意
+
+- XMLから起こす場合は、未対応の要素・属性を一覧にし、`unsupportedFeatures`に記録する。
+- 入力のXMLを別に保存し、削除・圧縮で失われる情報を隠さない。LoJのL1の合格は、XMLの情報の保全を証明しない。
+- XMLで許される構造を、LoJがすべて許すわけではない。
+
+`loj/v1alpha1`との対応は、本書のGitの履歴にある。

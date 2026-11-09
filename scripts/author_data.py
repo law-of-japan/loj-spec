@@ -169,7 +169,7 @@ def add(title, rules, text=BASE, ast_value=None, failure=None, level="L1", files
         positions=None, normative=True):
     ident = "T%03d" % (len(CASES) + 1)
     success = failure is None
-    folder = "conformance/" + ("valid/" if success else "invalid/") + ident
+    folder = "conformance/v1alpha1/" + ("valid/" if success else "invalid/") + ident
     files = files if files is not None else {"main.md": text}
     man = man if man is not None else manifest([(name, "main") for name in files])
     write(folder + "/law.yaml", man)  # JSON is deliberately valid YAML 1.2.
@@ -178,7 +178,7 @@ def add(title, rules, text=BASE, ast_value=None, failure=None, level="L1", files
     expected_value = {"ast": ast_value or tree([a()])} if success else {"diagnostics": [{"rule": failure}]}
     if positions:
         expected_value["positions"] = positions
-    expected_path = "conformance/expected/" + ident + ".json"
+    expected_path = "conformance/v1alpha1/expected/" + ident + ".json"
     write(expected_path, expected_value)
     CASES.append(dict(id=ident, title=title, requirements=rules.split(), level=level,
                       normative=normative, input=folder + "/law.yaml", expected=expected_path, success=success))
@@ -339,5 +339,5 @@ add("属性順の交換", "DIR-01", "# 第一条\n" + wrap("本文。\n" + wrap(
     tree([a(children=[p("本文。\n", children=[n("Item", "1", "一", [t("一　号。\n"), n("Subitem", "1", "1", [t("1　細分。\n")], level=1)])])])]))
 from appendix_cases import add_cases
 add_cases(add, manifest, tree, a, n, t, BASE)
-write("conformance/manifest.json", {"schemaVersion": "loj/v1alpha1", "cases": CASES})
+write("conformance/v1alpha1/manifest.json", {"schemaVersion": "loj/v1alpha1", "cases": CASES})
 print("Materialized", len(CASES), "hand-authored cases and schemas; no parser invoked.")

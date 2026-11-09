@@ -75,7 +75,7 @@ def path_ok(path):
                for part in path.split("/"))
 
 
-def inspect_manifest(path, validator):
+def inspect_manifest(path, validator, version="loj/v1alpha1"):
     try:
         text = check_bytes(path.read_bytes())
     except (ValueError, UnicodeError):
@@ -84,7 +84,7 @@ def inspect_manifest(path, validator):
         man = load_yaml(text)
     except (ValueError, yaml.YAMLError):
         return ["MAN-01"], None
-    if isinstance(man, dict) and man.get("schemaVersion") != "loj/v1alpha1":
+    if isinstance(man, dict) and man.get("schemaVersion") != version:
         return ["BASIC-01"], man
     if list(validator.iter_errors(man)):
         return ["MAN-01"], man
@@ -131,6 +131,9 @@ def inspect_manifest(path, validator):
 
 RANK = {"Part": 1, "Chapter": 2, "Section": 3, "Subsection": 4, "Division": 5, "Article": 6}
 TEXT_KINDS = {"Paragraph", "Item", "Subitem", "AppendedMaterial"}
+TEXT_KINDS_V2 = TEXT_KINDS | {"Cell", "Preamble", "EnactStatement"}
+CONTAINERS_V2 = {"paragraph": "Paragraph", "item": "Item", "subitem": "Subitem", "table": "Table", "row": "Row",
+                 "cell": "Cell", "preamble": "Preamble", "enact-statement": "EnactStatement"}
 
 
 def japanese(value):
@@ -146,9 +149,9 @@ def japanese(value):
 JAPANESE = {japanese(value): str(value) for value in range(1, 10000)}
 
 
-def normalized_display(value, kind):
+def normalized_display(value, kind, v2=False):
     parts = []
-    for part in value.split("の"):
+    for part in re.split("[のノ]" if v2 else "の", value):
         if re.fullmatch(r"[1-9][0-9]{0,3}", part):
             parts.append(part)
         elif kind != "Subitem" and re.fullmatch(r"[１-９][０-９]{0,3}", part):
@@ -167,7 +170,7 @@ def nodes(node):
             yield from nodes(child)
 
 
-def check_tree(ast, man):
+def check_tree(ast, man, v2=False):
     require(ast["law"] == man["law"], "AST metadata differs from Manifest")
     seen = set()
     lid = ast["law"]["id"]
@@ -176,7 +179,12 @@ def check_tree(ast, man):
     scopes += [("AppendedMaterial", lid + "/appendix/" + x["key"]) for x in man.get("appendices", [])]
     root = ast["root"]
     require(root["kind"] == "Law" and root["id"] == lid and root["display"] == ast["law"]["title"], "Bad root")
-    require([(c.get("kind"), c.get("id")) for c in root["content"]] == scopes, "Scope order")
+    top = [(c.get("kind"), c.get("id")) for c in root["content"]]
+    if v2:
+        lead = [x for x in [("EnactStatement", lid + "/enact-statement"), ("Preamble", lid + "/preamble")] if x in top]
+        scopes = lead + scopes
+    require(top == scopes, "Scope order")
+    text_kinds = TEXT_KINDS_V2 if v2 else TEXT_KINDS
 
     def visit(node, parent=None, scope=None):
         kind, ident = node["kind"], node["id"]
@@ -184,6 +192,13 @@ def check_tree(ast, man):
         seen.add(ident)
         if kind in ("MainProvision", "SupplementaryProvision", "AppendedMaterial"):
             scope = ident
+        elif kind in ("EnactStatement", "Preamble"):
+            require(node["number"] is None and node["display"] == "", "Preamble/enact fields")
+        elif kind == "Row":
+            require(ident == parent["id"] + "/row/" + node["key"] and node["number"] is None, "Row ID: " + ident)
+        elif kind == "Cell":
+            position = str([c["id"] for c in parent["content"] if "kind" in c].index(ident) + 1)
+            require(node["number"] == position and ident == parent["id"] + "/cell/" + position, "Cell ID: " + ident)
         elif parent:
             prefix = scope if kind == "Article" else parent["id"]
             level = str(node["level"]) + "/" if kind == "Subitem" else ""
@@ -191,10 +206,16 @@ def check_tree(ast, man):
         content = node["content"]
         children = [c for c in content if "kind" in c]
         texts = [c["text"] for c in content if "text" in c]
-        require(not texts or kind in TEXT_KINDS, "Text in structural parent")
+        require(not texts or kind in text_kinds, "Text in structural parent")
         require(all(not ("text" in x and "text" in y) for x, y in zip(content, content[1:])), "Adjacent text")
-        if kind in TEXT_KINDS:
+        if kind in text_kinds:
             require(bool("".join(texts).strip()), "Empty body")
+        if kind in ("Cell", "Preamble", "EnactStatement"):
+            require(not children and len(texts) == 1, "Text-only container")
+        if kind in ("Table", "Row"):
+            require(bool(children) and all(c["kind"] == ("Row" if kind == "Table" else "Cell") for c in children),
+                    "Table rows/cells")
+            require(node["display"] == "", "Table display")
         if kind in RANK and kind != "Article" or kind in ("MainProvision", "SupplementaryProvision"):
             require(bool(children), "Empty structural container")
         child_kinds = [c["kind"] for c in children]
@@ -204,30 +225,41 @@ def check_tree(ast, man):
             require(all(k in RANK for k in child_kinds), "Main children")
         elif kind == "SupplementaryProvision":
             require(all(k in RANK for k in child_kinds) or all(k == "Paragraph" for k in child_kinds), "Supplement mode")
-            require(node["display"] == "附則", "Supplement label")
+            require(bool(re.fullmatch("附\u3000*則", node["display"])) if v2 else node["display"] == "附則",
+                    "Supplement label")
         elif kind == "Article":
             require((node["status"] == "deleted" and not content) or
                     (node["status"] == "active" and bool(children) and all(k == "Paragraph" for k in child_kinds)), "Article children")
         elif kind == "Paragraph":
-            require(all(k == "Item" for k in child_kinds), "Paragraph children")
+            require(all(k == "Item" or v2 and k == "Table" for k in child_kinds), "Paragraph children")
         elif kind in ("Item", "Subitem"):
             next_level = 1 if kind == "Item" else node["level"] + 1
-            require(all(c["kind"] == "Subitem" and c["level"] == next_level for c in children), "Subitem children")
+            require(all(c["kind"] == "Subitem" and c["level"] == next_level or v2 and c["kind"] == "Table"
+                        for c in children), "Subitem children")
         elif kind == "AppendedMaterial":
             require(not children, "Opaque appendix children")
         if kind == "MainProvision":
             require(node["display"] == "", "Main display")
         if kind in RANK:
             unit = {"Part": "編", "Chapter": "章", "Section": "節", "Subsection": "款", "Division": "目", "Article": "条"}[kind]
+            if v2 and kind == "Article":
+                unit = "[条條]"
+            sep = "[のノ]" if v2 else "の"
             tail = r"(?:（[^（）\r\n]+）)?" if kind == "Article" else r"[ 　][^\r\n]+"
-            match = re.fullmatch("第(.+?)" + unit + r"((?:の[^ 　（）]+)*)" + tail, node["display"])
+            match = re.fullmatch("第(.+?)" + unit + r"((?:" + sep + r"[^ 　（）]+)*)" + tail, node["display"])
             require(bool(match), "Invalid heading display")
-            require(normalized_display(match[1] + match[2], kind) == node["number"], "Heading number mismatch")
+            require(normalized_display(match[1] + match[2], kind, v2) == node["number"], "Heading number mismatch")
+        if kind == "Paragraph" and v2:
+            require(node["numbering"] in ("explicit", "implicit"), "Paragraph numbering")
+        if kind == "Table":
+            require(ident == parent["id"] + "/table/" + node["number"], "Table ID: " + ident)
         if kind in ("Paragraph", "Item", "Subitem"):
             first = texts[0].lstrip("\r\n")
-            if node["display"]:
+            if node.get("numbering") == "implicit":
+                require(node["display"] == "", "Implicit paragraph display")
+            elif node["display"]:
                 require(first.startswith(node["display"] + " ") or first.startswith(node["display"] + "　"), "Display/body differs")
-                require(normalized_display(node["display"], kind) == node["number"], "Display number mismatch")
+                require(normalized_display(node["display"], kind, v2) == node["number"], "Display number mismatch")
             else:
                 require(kind == "Paragraph" and node["number"] == "1", "Required display")
         for child in children:
@@ -236,13 +268,33 @@ def check_tree(ast, man):
     return seen
 
 
-def expected_trace(node):
+def marker_attrs(kind, node):
+    """Attributes a v1alpha2 marker carries for this node (defaults omitted)."""
+    attrs = {}
+    if kind in ("Paragraph", "Item", "Subitem", "Table"):
+        attrs["number"] = node["number"]
+    if kind == "Subitem":
+        attrs["level"] = str(node["level"])
+    if kind == "Paragraph" and node["numbering"] == "implicit":
+        attrs["numbering"] = "implicit"
+    if kind == "Row":
+        attrs["key"] = node["key"]
+    for span in ("rowspan", "colspan"):
+        if span in node:
+            attrs[span] = str(node[span])
+    return attrs
+
+
+def expected_trace(node, v2=False):
     """Linear observations of a hand-authored tree, not an inferred AST."""
     result = []
     kind = node["kind"]
+    names = {v: k for k, v in CONTAINERS_V2.items()}
     if kind in RANK or kind in ("SupplementaryProvision", "AppendedMaterial"):
         result.append(("heading", node["display"], node["id"]))
-    if kind in ("Paragraph", "Item", "Subitem"):
+    if v2 and kind in names:
+        result.append(("open", (names[kind], marker_attrs(kind, node)), node["id"]))
+    elif kind in ("Paragraph", "Item", "Subitem"):
         result.append(("open", (kind.lower(), node["number"], node.get("level")), node["id"]))
     if node.get("status") == "deleted":
         result.append(("deleted", "削除", node["id"]))
@@ -250,13 +302,15 @@ def expected_trace(node):
         if "text" in child:
             result.append(("text", child["text"], None))
         else:
-            result += expected_trace(child)
-    if kind in ("Paragraph", "Item", "Subitem"):
+            result += expected_trace(child, v2)
+    if v2 and kind in names:
+        result.append(("close", names[kind], node["id"]))
+    elif kind in ("Paragraph", "Item", "Subitem"):
         result.append(("close", kind.lower(), node["id"]))
     return result
 
 
-def source_trace(path, man):
+def source_trace(path, man, v2=False):
     """Bounded positive-fixture audit. Does not diagnose arbitrary invalid L1 input."""
     trace, spans, open_stack = [], [], []
     seen_scopes = set()
@@ -284,15 +338,19 @@ def source_trace(path, man):
             clean = line.rstrip("\r\n")
             span = {"path": doc["path"], "start": offsets[i], "end": offsets[i] + len(line.encode("utf-8"))}
             heading = re.fullmatch(r"#{1,6} (.+)", clean) if i not in protected else None
-            marker = re.fullmatch(r"<!-- loj:(paragraph|item|subitem) (.+) -->", clean) if i not in protected else None
-            close = re.fullmatch(r"<!-- loj:end-(paragraph|item|subitem) -->", clean) if i not in protected else None
+            names = "|".join(CONTAINERS_V2) if v2 else "paragraph|item|subitem"
+            marker = re.fullmatch(r"<!-- loj:(" + names + r")((?: [^ ]+)*) -->", clean) if i not in protected else None
+            close = re.fullmatch(r"<!-- loj:end-(" + names + r") -->", clean) if i not in protected else None
             if appendix and not (first_scope and i == 0):
                 heading = marker = close = None
             if heading:
                 trace.append(("heading", heading[1])); spans.append(span)
             elif marker:
                 attrs = dict(pair.split("=", 1) for pair in marker[2].split(" ") if pair)
-                trace.append(("open", (marker[1], attrs["number"], int(attrs["level"]) if "level" in attrs else None)))
+                if v2:
+                    trace.append(("open", (marker[1], attrs)))
+                else:
+                    trace.append(("open", (marker[1], attrs["number"], int(attrs["level"]) if "level" in attrs else None)))
                 spans.append(span)
                 open_stack.append(len(spans) - 1)
             elif close:
@@ -312,10 +370,10 @@ def source_trace(path, man):
     return trace, spans
 
 
-def check_positive(path, man, expected):
-    ids = check_tree(expected["ast"], man)
-    want = expected_trace(expected["ast"]["root"])
-    observed, spans = source_trace(path, man)
+def check_positive(path, man, expected, v2=False):
+    ids = check_tree(expected["ast"], man, v2)
+    want = expected_trace(expected["ast"]["root"], v2)
+    observed, spans = source_trace(path, man, v2)
     require(observed == [(k, value) for k, value, _ in want], "Source/expected trace mismatch: " + str(path))
     by_id = {ident: span for (kind, _, ident), span in zip(want, spans) if kind in ("heading", "open")}
     for position in expected.get("positions", []):
@@ -324,6 +382,123 @@ def check_positive(path, man, expected):
         require(by_id[ident] == {k: v for k, v in position.items() if k != "nodeId"},
                 "Fixed byte position mismatch: " + str(position) + "; observed " + str(by_id[ident]))
     return len(ids)
+
+
+SUITES = {"loj/v1alpha2": ("v1alpha2", "pkg"), "common/v1alpha1": ("common/v1alpha1", "common"),
+          "loj-history/v1alpha1": ("loj-history/v1alpha1", "hist"), "loj-glyphs/v1alpha1": ("loj-glyphs/v1alpha1", "glyph"),
+          "loj-registry/v1alpha1": ("loj-registry/v1alpha1", "reg"), "loj-rebuild/v1alpha1": ("loj-rebuild/v1alpha1", "rebuild")}
+KIND_SCHEMAS = {"loj/v1alpha2": "v1alpha2/manifest.schema.json", "loj-history/v1alpha1": "loj-history/v1alpha1/history.schema.json",
+                "loj-glyphs/v1alpha1": "loj-glyphs/v1alpha1/glyphs.schema.json",
+                "loj-registry/v1alpha1": "loj-registry/v1alpha1/record.schema.json",
+                "loj-rebuild/v1alpha1": "loj-rebuild/v1alpha1/rebuild.schema.json"}
+
+
+def all_schemas():
+    schemas = {path.relative_to(ROOT / "schemas").as_posix(): read_json(path) for path in (ROOT / "schemas").rglob("*.json")}
+    registry = Registry().with_resources((s["$id"], Resource.from_contents(s)) for s in schemas.values())
+    validators = {}
+    for name, value in schemas.items():
+        Draft202012Validator.check_schema(value)
+        validators[name] = Draft202012Validator(value, registry=registry, format_checker=FormatChecker())
+    return validators
+
+
+def next_rules():
+    rules = set()
+    for path in (ROOT / "spec").rglob("*.md"):
+        if "v1alpha1" in path.relative_to(ROOT / "spec").parts[:1]:
+            continue
+        rules.update(re.findall(r"^## ([A-Z]+-\d+) ", path.read_text(encoding="utf-8"), re.M))
+    return rules
+
+
+def input_files(case):
+    spec = case["input"]
+    paths = [spec[key] for key in ("path", "registry", "bundle") if key in spec] + spec.get("repositories", [])
+    return [ROOT / value for value in paths]
+
+
+def check_yaml_files(folder, validators):
+    """Schema-check every LoJ YAML file below a positive repository/registry input."""
+    count = 0
+    for path in sorted(folder.rglob("*.yaml")):
+        data = load_yaml(check_bytes(path.read_bytes()))
+        version = data.get("schemaVersion") if isinstance(data, dict) else None
+        require(version in KIND_SCHEMAS, "Unknown schemaVersion in positive input: " + str(path))
+        errors = list(validators[KIND_SCHEMAS[version]].iter_errors(data))
+        require(not errors, "Positive input fails its schema: " + str(path) + ": " + (errors[0].message if errors else ""))
+        count += 1
+    return count
+
+
+def audit_suite(name, validators, rules):
+    folder, prefix = SUITES[name]
+    base = ROOT / "conformance" / folder
+    index = read_json(base / "manifest.json")
+    validators["common/v1alpha1/conformance.schema.json"].validate(index)
+    require(index["suite"] == name, "Suite mismatch: " + folder)
+    seen, covered, expected_paths, stats = set(), set(), set(), {"positive": 0, "negative": 0, "files": 0}
+    for case in index["cases"]:
+        ident = case["id"]
+        require(ident.startswith(prefix + "-") and ident not in seen, "Bad or duplicate case ID: " + ident)
+        seen.add(ident)
+        unknown = set(case["requirements"]) - rules
+        require(not unknown, ident + " unknown requirement: " + str(unknown))
+        covered.update(case["requirements"])
+        require(case["normative"] == (case["check"] != "L2"), ident + " normative/check mismatch")
+        group = "/valid/" if case["success"] else "/invalid/"
+        inputs = input_files(case)
+        for path in inputs:
+            require(path.exists(), ident + " missing input: " + str(path))
+        # Inputs may share checked-in positive fixtures; the case's own input must sit in its group.
+        require(any(group in "/" + path.relative_to(ROOT).as_posix() for path in inputs), ident + " case directory mismatch")
+        exp_path = ROOT / case["expected"]
+        require(exp_path.is_file() and case["expected"] not in expected_paths, ident + " expected file")
+        expected_paths.add(case["expected"])
+        expected = read_json(exp_path)
+        validators["common/v1alpha1/expected.schema.json"].validate(expected)
+        failed = any(r["result"] == "fail" for r in expected.get("results", []))
+        errors = [d for d in expected.get("diagnostics", []) if d["class"] == "error"]
+        require(all(d["rule"] in rules for d in expected.get("diagnostics", [])), ident + " unknown diagnostic rule")
+        if case["success"]:
+            require(not failed and not errors, ident + " positive case expects failure")
+        else:
+            require(bool(errors), ident + " negative case needs an error diagnostic")
+        if case["input"]["kind"] == "package":
+            v2 = name == "loj/v1alpha2"
+            require(("ast" in expected) == (case["success"] and v2), ident + " AST presence")
+            path = ROOT / case["input"]["path"]
+            issues, man = inspect_manifest(path, validators["v1alpha2/manifest.schema.json"], "loj/v1alpha2")
+            if case["success"]:
+                require(not issues and not man.get("unsupportedFeatures"), ident + " invalid positive Manifest: " + str(issues))
+                validators["v1alpha2/ast.schema.json"].validate(expected["ast"])
+                check_positive(path, man, expected, v2=True)
+            elif case["check"] == "L0":
+                wanted = {d["rule"] for d in errors}
+                require(wanted <= set(issues), ident + " expected L0 rejection absent: " + str(issues))
+            elif case["check"] == "L1":
+                require(not issues, ident + " unexpected L0 failure: " + str(issues))
+        elif case["success"]:
+            for path in input_files(case):
+                if path.is_dir():
+                    stats["files"] += check_yaml_files(path, validators)
+        stats["positive" if case["success"] else "negative"] += 1
+    on_disk = {p.relative_to(ROOT).as_posix() for p in (base / "expected").glob("*.json")}
+    require(expected_paths == on_disk, folder + " orphan expected file")
+    return len(seen), covered, stats
+
+
+def audit_next(validators):
+    rules = next_rules()
+    covered, lines = set(), []
+    for name, (folder, _) in SUITES.items():
+        if not (ROOT / "conformance" / folder / "manifest.json").is_file():
+            continue
+        count, cov, stats = audit_suite(name, validators, rules)
+        covered |= cov
+        lines.append(f"{folder}: {count} cases ({stats['positive']} positive, {stats['negative']} negative; "
+                     f"{stats['files']} positive YAML files schema-checked)")
+    return lines, sorted(rules - covered)
 
 
 def check_links():
@@ -358,7 +533,7 @@ def main():
     for name, value in schemas.items():
         Draft202012Validator.check_schema(value)
         validators[name] = Draft202012Validator(value, registry=registry, format_checker=FormatChecker())
-    index = read_json(ROOT / "conformance/manifest.json")
+    index = read_json(ROOT / "conformance/v1alpha1/manifest.json")
     validators["conformance.schema.json"].validate(index)
     rules = set()
     for path in (ROOT / "spec/v1alpha1").glob("*.md"):
@@ -396,21 +571,27 @@ def main():
             require(not issues, ident + " unexpected L0 failure: " + str(issues))
             require(all(d["rule"] in case["requirements"] for d in expected["diagnostics"]), "Diagnostic rule mismatch")
             negative_l1 += 1
-    require(expected_paths == {p.relative_to(ROOT).as_posix() for p in (ROOT / "conformance/expected").glob("*.json")}, "Orphan expected file")
-    require(input_paths == {p.relative_to(ROOT).as_posix() for p in (ROOT / "conformance").glob("*/T*/law.yaml")}, "Orphan input case")
-    require(read_json(ROOT / "conformance/expected/T016.json")["ast"] ==
-            read_json(ROOT / "conformance/expected/T017.json")["ast"], "Split/whole AST differs")
+    require(expected_paths == {p.relative_to(ROOT).as_posix() for p in (ROOT / "conformance/v1alpha1/expected").glob("*.json")}, "Orphan expected file")
+    require(input_paths == {p.relative_to(ROOT).as_posix() for p in (ROOT / "conformance/v1alpha1").glob("*/T*/law.yaml")}, "Orphan input case")
+    require(read_json(ROOT / "conformance/v1alpha1/expected/T016.json")["ast"] ==
+            read_json(ROOT / "conformance/v1alpha1/expected/T017.json")["ast"], "Split/whole AST differs")
     sample_path = ROOT / "examples/fictional-law/law.yaml"
     issues, sample = inspect_manifest(sample_path, validators["manifest.schema.json"])
     require(not issues, "Sample Manifest invalid")
     sample_ast = read_json(sample_path.parent / "expected.ast.json")
     validators["ast.schema.json"].validate(sample_ast)
     node_count = check_positive(sample_path, sample, {"ast": sample_ast})
+    next_lines, uncovered_next = audit_next(all_schemas())
     links = check_links()
     print(f"Artifact audit PASS: {len(schemas)} schemas; {len(seen)} case definitions; {links} local links.")
     print(f"Positive source/tree audits: {positive}; executed L0 negatives: {negative_l0}.")
     print(f"L1 negative definitions only (NOT executed): {negative_l1}; informative L2: {illustrative}.")
     print(f"Fictional sample: {node_count} nodes. Uncovered requirement IDs: {', '.join(sorted(rules - covered))}.")
+    for line in next_lines:
+        print("Next spec suite " + line + ".")
+    print("Next spec requirement IDs without a case: " + (", ".join(uncovered_next) or "none") + ".")
+    print("L1 negatives and L3/L4/registry/rebuild/change/reference cases are checked for shape only; "
+          "their outcomes need a validator.")
     print("This is not full L1 conformance certification or an egov round-trip test.")
 
 

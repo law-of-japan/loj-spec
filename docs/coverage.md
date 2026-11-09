@@ -1,6 +1,6 @@
 # 必須テスト領域の追跡
 
-固定入力と結果は[索引](../conformance/manifest.json)を参照。
+固定入力と結果は[索引](../conformance/v1alpha1/manifest.json)を参照。
 T016/T017は同じ意味ASTを持つ分割後/前の対であり、位置は意味比較から独立する。
 
 | 依頼領域 | ケース |
@@ -42,3 +42,33 @@ VAL-01/02とCONF-01/02は適合主張・試験契約そのものなので、資�
 T076〜T105は承認されたMAN-03 B案の独立ケース。附属資料の通常本文/見出しでの開始、
 空白だけの後続、フェンスの文字種・長さ・引用内・CRLF・最終EOF、HTML7種類の明示/暗黙終端、
 予約マーカー禁止、参照定義のファイル境界、インデントコード、先頭空行の保存を扱う。
+
+## 次期仕様（loj/v1alpha2と新しい4種類）
+
+適合ケースは、規範仕様と同じ分け方で置く。各ディレクトリの`manifest.json`が索引である。
+
+| ディレクトリ | ケース | 内容 |
+|---|---|---|
+| [conformance/v1alpha2](../conformance/v1alpha2/manifest.json) | pkg-001〜124 | v1alpha1の106件を写したもの（pkg-001〜106）と、「條」「ノ」「附　則」、無番号の項、表、前文・制定文とその違反（pkg-107〜124） |
+| [conformance/loj-history/v1alpha1](../conformance/loj-history/v1alpha1/manifest.json) | hist-001〜015 | 祝日法の制定時と最初の改正後の版、履歴だけの法令リポジトリ三つ、その違反 |
+| [conformance/loj-glyphs/v1alpha1](../conformance/loj-glyphs/v1alpha1/manifest.json) | glyph-001〜009 | 祝日法の字体注記と、その違反。L1が不合格の版の字体注記（未完了） |
+| [conformance/loj-registry/v1alpha1](../conformance/loj-registry/v1alpha1/manifest.json) | reg-001〜008 | 三つのRecordの登録台帳と、その違反 |
+| [conformance/loj-rebuild/v1alpha1](../conformance/loj-rebuild/v1alpha1/manifest.json) | rebuild-001〜004 | 祝日法の再構築報告と、その違反 |
+| [conformance/common/v1alpha1](../conformance/common/v1alpha1/manifest.json) | common-001〜012 | L4の時点の整合（T-04）、変更検査、固定参照（`git bundle`の架空の履歴） |
+
+`scripts/verify.py`は、すべての索引・期待結果・正例の入力の形と、要件IDの存在を検査し、v1alpha2の正例のASTを原文と突き合わせる。v1alpha2のL1の負例と、L3・L4・登録台帳・再構築報告・変更検査・固定参照のケースの合否は判定しない。検査器で判定する。
+
+### ケースのない要件
+
+次の要件にはケースを作らない（検査の対象外）。
+
+| 要件 | 理由 |
+|---|---|
+| CORE-01〜05、CHAR-02〜05、VIEW-01〜07 | データの構成・作業・派生処理の制約であり、一つの入力の成否として検査できない。CORE-03（YAML）の違反は各系列の01で、CHAR-01はpkg-106で確かめる |
+| CONF-01〜03、VAL-01、VAL-03、VAL-05、VAL-07、VAL-08 | 適合の主張とケースの契約そのもの。資料の監査とレビューで確かめる |
+| REB-01〜08 | 再構築の作業の手順。結果は再構築報告（REBR）と履歴マニフェストのケースで確かめる |
+| SRCM-01、XREF-04 | 予約の区分 |
+| GLYPH-03、GLYPH-07、GLYPH-08 | 本文に置く字の選び方は原典と比べないと判定できない（原典照合） |
+| RID-03、REV-02 | リポジトリの名前と可読ラベルは参照の解決に使わない、という制約 |
+
+次の要件は機械で検査できるが、まだケースがない。今後加える: TIME-02、TIME-05、TIME-06、TYPE-01〜04、TYPE-06〜08、HIST-09、CHG-04、CHG-05、FIXREF-01、RID-04、RID-05、XREF-02。

@@ -2,7 +2,7 @@
 
 ## CONF-01
 
-[manifest.json](../../conformance/manifest.json)を入口とする。各ケースはid、title、requirements、level、normative、input、expected、successを持つ（MUST）。inputはlaw.yamlへのリポジトリ相対パス。正例と負例はvalid/invalidへ分ける。期待値は[期待結果Schema](../../schemas/v1alpha1/expected.schema.json)、索引は[ケースSchema](../../schemas/v1alpha1/conformance.schema.json)に従う。
+[manifest.json](../../conformance/v1alpha1/manifest.json)を入口とする。各ケースはid、title、requirements、level、normative、input、expected、successを持つ（MUST）。inputはlaw.yamlへのリポジトリ相対パス。正例と負例はvalid/invalidへ分ける。期待値は[期待結果Schema](../../schemas/v1alpha1/expected.schema.json)、索引は[ケースSchema](../../schemas/v1alpha1/conformance.schema.json)に従う。
 
 success=trueでは完全な意味ASTを固定JSONとして保持し、実装の結果をschemaVersion/law/rootへ投影して完全一致で比較する（MUST）。ソース・診断・実装独自キャッシュは比較対象外だが、別のpositions指定があれば数値位置を比較する。textの改行・空白も一致させる。success=falseは期待diagnosticsのruleをすべて含む診断集合を要求する。部分ASTは正解データとして使わない。expectedのpositionsはnodeIdとpath/start/endを持つ選択検査である。
 

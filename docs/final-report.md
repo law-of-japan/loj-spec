@@ -1,5 +1,7 @@
 # loj/v1alpha1 作業完了報告
 
+本書はv1alpha1の作成時の記録であり、変えない。次期仕様は[規範仕様の入口](../spec/README.md)にある。
+
 ## MAN-03 B案採用後の追記（2026-11-06）
 
 Issue #2のB案をユーザーが承認。非最終附属資料ファイルのフェンス/HTML明示終端と、
@@ -61,7 +63,7 @@ GitHub Actions自体の実行はpushしていないため未確認である。
 | 論理ID | 07-identifiers、固定期待AST |
 | 複数ファイル統合 | MAN-03、T016/T017同一ASTの検査 |
 | L0/L1条件 | 09-validation、10-conformance |
-| 正例負例 | conformance/valid、invalid、expected |
+| 正例負例 | conformance/v1alpha1/valid、invalid、expected |
 | 完全架空例 | examples/fictional-law、17ノードAST |
 | XML対応 | egov-xml-mapping.md |
 | DDR | design-decisions/001〜010 |

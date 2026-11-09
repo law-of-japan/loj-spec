@@ -1,26 +1,70 @@
-# loj-validator実装者向けガイド
+# 検査器の実装者向けガイド
 
-仕様の正解は[規範](../spec/v1alpha1/01-overview.md)と固定データであり、
-scripts/verify.pyや構文実験の実装ではない。Rust固有の型や整数上限を規範へ持ち込まない。
+次期仕様の検査器（loj-validator等）を作る人向けの参考である。正解は[規範](../spec/README.md)と固定の適合データであり、`scripts/verify.py`や試作のスクリプトではない。特定の言語の型や整数の上限を、規範に持ち込まない。
 
-1. Manifestの安全なYAML読込、未知version/キー/重複キー拒否、Schema及び意味制約を実装する。
-2. 元ファイルbytesを保存し、scopeごとの順序と独立したMarkdown読込を管理する。
-3. CommonMarkの領域と元位置を取得し、予約コメント候補を選別する。全行regexだけで抽出しない。
-4. 見出しを番号・種別へ分解し、rankスタックで階層を復元する。Hレベルを法的rankにしない。
-5. 明示マーカースタックで本文と子を区分し、混在contentを元順序で保存する。
-6. scope基準の条ID、親基準のその他ID、重複、表示番号、未対応申告を検査する。
-7. 完全意味ASTと別に原文・ソース対応を返す。診断codeをrule IDへマップする。
-8. ケース索引を読み、成功時は期待ASTの全フィールドを比較、失敗時は必要ruleの存在を比較する。
+## 読む順
 
-既存loj-validatorのprofileによる見出し・リスト写像にマーカーregexを足すだけでは足りない。
-独立したv1alpha1パイプラインと旧形式アダプターを用意し、既存ASTからの変換境界を明示する。
-Manifest統合は単に既存ASTを連結する操作ではなく、scope・分類文脈の継承と一意ID検査を伴う。
-source offsetは文字数ではなく元UTF-8bytes。CRLFやUnicode正規化後の文字列から逆算しない。
+1. [規範仕様の入口](../spec/README.md): 規範の範囲、要件IDの付け方、組み合わせて使える版の対応表（CORE-05）。
+2. [共通](../spec/common/v1alpha1/01-overview.md): ファイルの種類とschemaVersion、YAMLのデータモデル（CORE-03）、文字（CHAR）、適合レベルと結果（VAL）、共通の型（TYPE）、時点値（TIME）、変更の種類（CHG）、固定参照（FIXREF）、派生ビュー（VIEW）、Record間の検査（XREF）。
+3. 種類ごとの要件: [版パッケージ](../spec/v1alpha2/01-overview.md)、[履歴マニフェスト](../spec/loj-history/v1alpha1/01-history.md)、[字体注記](../spec/loj-glyphs/v1alpha1/01-glyphs.md)、[登録台帳](../spec/loj-registry/v1alpha1/01-registry.md)、[再構築](../spec/loj-rebuild/v1alpha1/01-rebuild.md)。
+4. 各種類の[JSON Schema](../schemas/)。schemaは閉じており、未知のフィールドを拒否する。schemaで表せない制約は本文の要件にある。
 
-実装アダプターの推奨CLIは`check law.yaml --spec loj/v1alpha1 --level L1 --json`。
-これは推奨インターフェースであり本版で実装済みではない。JSONの実装固有包絡から
-schemaVersion/law/rootを投影し、positionsを別途照合する。失敗時の部分ASTは比較しない。
-未対応L2をL1失敗に変換しない。正式L1負例を含む全件の実行結果を、資料CIと別のバッジ/レポートにする。
+設計の理由は[DDR](design-decisions/README.md)（特にDDR-012〜022）にある。
 
-次のマイルストーンは、負例全件の診断実行とCommonMark境界の追加検証。
-さらに別言語又は別Markdownエンジンによる独立実装で曖昧性を検出し、いろは細分・前文の拡張を検討する。
+## 検査と入力
+
+| 検査 | 入力 | 結果の単位 |
+|---|---|---|
+| L0・L1 | 一つの版パッケージ（`law.yaml`とMarkdown） | 版ごと |
+| L2 | 同上 | 予約。合格を宣言できない |
+| L3 | 一つのRecordの正本の記録版（`history.yaml`、`versions/`、`glyphs.yaml`） | 区分ごと（`historyStructure`、`evidence`。`sourceMatch`は予約） |
+| L4 | 登録台帳と、照合する複数のRecordの履歴マニフェスト | 区分ごと（`relationResolution`、`relationConsistency`、`timeConsistency`。`clauseReference`は予約） |
+| 登録台帳の検査 | 登録台帳のリポジトリ | 適合レベルとは別（REG-01） |
+| 再構築報告の検査 | `rebuild.yaml`と履歴マニフェスト | 適合レベルとは別 |
+| 変更の検査 | 正本の二つのcommitの間の履歴 | commitごと（CHG-02、CHG-03） |
+| 参照の解決 | 固定参照・Revision参照と、法令リポジトリ・登録台帳 | 参照ごと（FIXREF-03〜07） |
+
+- 各判定は独立している（VAL-02）。履歴構造の検査は、版パッケージのL1の合格を前提にしない。数字の大きいレベルの合格で、小さいレベルの合格を代用しない。
+- 読めない入力、知らないschemaVersion、対応表にない組み合わせは、未完了（`incomplete`）とする。対象なし・未完了を合格とみなさない（VAL-04）。
+- 判定の結果には、対象とした記録版（リポジトリと正本のcommit）を記録する（VAL-03）。
+
+## 処理の流れ
+
+1. ファイルのバイトを読み、厳密なUTF-8、BOMなし、NULなし、単独のCRなしを確かめる。
+2. YAMLは、JSON互換のデータモデルだけを受け付ける安全な読み込みで読む（CORE-03）。重複キー、タグ、アンカー、エイリアス、merge key、複数文書を拒否する。
+3. `schemaVersion`で種類を決め、そのschemaで検査する。知らない値は推測で読み替えない。
+4. 種類ごとの意味の検査を行う。版パッケージは、v1alpha1と同じく、CommonMarkの領域、予約コメント、見出しのrankスタック、明示マーカーのスタックから意味ASTを作り、ID・番号・構造を検査する。
+5. 履歴マニフェストは、revision_id、時点値、版の順序、成立根拠が参照する関係、版パッケージの配置、本文の状態、効力の終了を検査する（HIST、REV、TIME）。
+6. L4では、登録台帳でRecordを解決し、関係・時点の整合を確かめる。解決の結果は、解決済み・未取得・不存在確認済みの三つで報告する。未取得は不合格にしない。
+7. 結果を[検査の報告](../schemas/common/v1alpha1/report.schema.json)の形で出す。
+
+## 検査の報告
+
+- `results`は、検査（`check`）ごと、L3・L4では区分（`category`）ごとに、`pass`・`fail`・`notApplicable`・`incomplete`のいずれかを持つ。
+- `diagnostics`の各項目は、`rule`（要件ID）、`schemaVersion`（その規則を定める種類と版。共通の規則は`common/v1alpha1`）、`class`（`error`・`warning`・`undetermined`・`pending`）を持つ。実装固有の`code`・`message`・`location`は加えてよい。
+- 要件IDは版ごとに意味を持つので、`rule`と`schemaVersion`の組で規則を特定する。
+- 警告・判定不能・保留は、不合格の診断と区別する。警告だけでは不合格にしない。
+
+## 適合ケースの使い方
+
+- 索引は種類ごとにある（`conformance/<種類>/<版>/manifest.json`）。形は[索引のschema](../schemas/common/v1alpha1/conformance.schema.json)、期待結果は[期待結果のschema](../schemas/common/v1alpha1/expected.schema.json)にある。
+- 入力の`kind`は、`package`（`law.yaml`）、`repository`（法令リポジトリのディレクトリ）、`registry`（登録台帳のディレクトリ）、`records`（登録台帳と複数の法令リポジトリ）、`change`（`git bundle`と、比べる二つのcommit）、`reference`（`git bundle`、登録台帳、参照の文字列）である。
+- `git bundle`は、`git clone <bundle> <dir>`で取り出す。commitのハッシュは固定であり、作り直すと変わる。
+- 成功するケースは、`results`がすべて期待どおりで、`error`の診断がないことを確かめる。版パッケージでは、意味ASTを位置情報を除いて完全一致で比べ、`positions`をソースのバイトで照合する。
+- 失敗するケースは、期待する`error`の診断（`rule`と`schemaVersion`の組）をすべて含むことを確かめる。ほかの診断が加わってもよい。部分的なASTは比べない。
+- 結果は検査（L3・L4は区分）ごとに集計する（CONF-02）。予約の区分、L2、参考のケースを、正式な結果に混ぜない。
+- どの要件にケースがないかは[要件との対応表](coverage.md)にある。
+
+## v1alpha1から流用できる部分
+
+- 版パッケージのMarkdownの扱い（CommonMarkの領域、予約コメント、見出し、マーカー、ID、ソースの位置）は、v1alpha1から大きく変わっていない。v1alpha1の実装を土台にできる。
+- 変わる点: `schemaVersion`が`loj/v1alpha2`、`Paragraph`の`numbering`（`explicit`、無番号の項は`implicit`。PARA-01）、前文・制定文（PRE）、表の構造（TABLE）、診断に`schemaVersion`と`class`が加わる。規則と各レベルの対応は[v1alpha2の検証](../spec/v1alpha2/10-validation.md)にある。
+- 履歴マニフェスト・字体注記・登録台帳・再構築報告と、L3・L4・変更・参照の検査は、新しく作る。
+
+## 実装上の注意
+
+- 本文のコードポイント列を正規化しない。互換漢字（例: U+FA51）は、NFC等で統合漢字に変わる。読み込み・比較・出力のどこでも正規化しないこと（CHAR-01）。
+- ソースの位置は、文字数ではなく元のUTF-8のバイトで数える。CRLFや正規化後の文字列から逆算しない。
+- `label`等の表示用の値を、参照の解決・同一性の判断・順序の決定に使わない。
+- commitメッセージのtrailer（`LoJ-Change`、`LoJ-Revisions`）はUTF-8で読む。
+- 推奨のCLIの例は`check <パス> --level L3 --json`である。推奨であり、規範ではない。

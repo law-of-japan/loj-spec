@@ -1,3 +1,6 @@
 * text=auto eol=lf
 conformance/** -text
+# Conformance inputs and expected results are fixtures written by the authoring
+# scripts; GitHub collapses them in diffs.
+conformance/** linguist-generated=true
 examples/** -text
