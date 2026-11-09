@@ -61,7 +61,7 @@ GitHub Actions自体の実行はpushしていないため未確認である。
 | 論理ID | 07-identifiers、固定期待AST |
 | 複数ファイル統合 | MAN-03、T016/T017同一ASTの検査 |
 | L0/L1条件 | 09-validation、10-conformance |
-| 正例負例 | conformance/valid、invalid、expected |
+| 正例負例 | conformance/v1alpha1/valid、invalid、expected |
 | 完全架空例 | examples/fictional-law、17ノードAST |
 | XML対応 | egov-xml-mapping.md |
 | DDR | design-decisions/001〜010 |

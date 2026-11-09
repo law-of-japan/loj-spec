@@ -358,7 +358,7 @@ def main():
     for name, value in schemas.items():
         Draft202012Validator.check_schema(value)
         validators[name] = Draft202012Validator(value, registry=registry, format_checker=FormatChecker())
-    index = read_json(ROOT / "conformance/manifest.json")
+    index = read_json(ROOT / "conformance/v1alpha1/manifest.json")
     validators["conformance.schema.json"].validate(index)
     rules = set()
     for path in (ROOT / "spec/v1alpha1").glob("*.md"):
@@ -396,10 +396,10 @@ def main():
             require(not issues, ident + " unexpected L0 failure: " + str(issues))
             require(all(d["rule"] in case["requirements"] for d in expected["diagnostics"]), "Diagnostic rule mismatch")
             negative_l1 += 1
-    require(expected_paths == {p.relative_to(ROOT).as_posix() for p in (ROOT / "conformance/expected").glob("*.json")}, "Orphan expected file")
-    require(input_paths == {p.relative_to(ROOT).as_posix() for p in (ROOT / "conformance").glob("*/T*/law.yaml")}, "Orphan input case")
-    require(read_json(ROOT / "conformance/expected/T016.json")["ast"] ==
-            read_json(ROOT / "conformance/expected/T017.json")["ast"], "Split/whole AST differs")
+    require(expected_paths == {p.relative_to(ROOT).as_posix() for p in (ROOT / "conformance/v1alpha1/expected").glob("*.json")}, "Orphan expected file")
+    require(input_paths == {p.relative_to(ROOT).as_posix() for p in (ROOT / "conformance/v1alpha1").glob("*/T*/law.yaml")}, "Orphan input case")
+    require(read_json(ROOT / "conformance/v1alpha1/expected/T016.json")["ast"] ==
+            read_json(ROOT / "conformance/v1alpha1/expected/T017.json")["ast"], "Split/whole AST differs")
     sample_path = ROOT / "examples/fictional-law/law.yaml"
     issues, sample = inspect_manifest(sample_path, validators["manifest.schema.json"])
     require(not issues, "Sample Manifest invalid")

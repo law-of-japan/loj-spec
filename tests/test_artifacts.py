@@ -11,14 +11,14 @@ import verify as v
 
 class ArtifactAuditTests(unittest.TestCase):
     def setUp(self):
-        self.path = v.ROOT / "conformance/valid/T001/law.yaml"
+        self.path = v.ROOT / "conformance/v1alpha1/valid/T001/law.yaml"
         self.man = v.load_yaml(self.path.read_text(encoding="utf-8"))
-        self.expected = v.read_json(v.ROOT / "conformance/expected/T001.json")
+        self.expected = v.read_json(v.ROOT / "conformance/v1alpha1/expected/T001.json")
 
     def test_split_appendix_expected_text_is_audited(self):
-        path = v.ROOT / "conformance/valid/T076/law.yaml"
+        path = v.ROOT / "conformance/v1alpha1/valid/T076/law.yaml"
         man = v.load_yaml(path.read_text(encoding="utf-8"))
-        expected = v.read_json(v.ROOT / "conformance/expected/T076.json")
+        expected = v.read_json(v.ROOT / "conformance/v1alpha1/expected/T076.json")
         v.check_positive(path, man, expected)
         expected["ast"]["root"]["content"][1]["content"][0]["text"] = "本文。\n\n"
         with self.assertRaises(ValueError):
@@ -81,7 +81,7 @@ class ArtifactAuditTests(unittest.TestCase):
             v.check_positive(self.path, self.man, expected)
 
     def test_fixed_position_mutation(self):
-        expected = v.read_json(v.ROOT / "conformance/expected/T018.json")
+        expected = v.read_json(v.ROOT / "conformance/v1alpha1/expected/T018.json")
         expected["positions"][0]["start"] += 1
         with self.assertRaises(ValueError):
             v.check_positive(self.path, self.man, expected)

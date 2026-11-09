@@ -1,6 +1,6 @@
 # 必須テスト領域の追跡
 
-固定入力と結果は[索引](../conformance/manifest.json)を参照。
+固定入力と結果は[索引](../conformance/v1alpha1/manifest.json)を参照。
 T016/T017は同じ意味ASTを持つ分割後/前の対であり、位置は意味比較から独立する。
 
 | 依頼領域 | ケース |
