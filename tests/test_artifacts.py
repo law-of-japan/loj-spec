@@ -122,5 +122,43 @@ class ArtifactAuditTests(unittest.TestCase):
             v.check_tree(ast, self.man)
 
 
+class ArchiveAuditTests(unittest.TestCase):
+    """docs/archive must stay distinguishable from the normative spec/."""
+
+    FILES = {
+        "spec/a.md": "# A\n\n## VIEW-01 定義\n\n本文。\n",
+        "docs/archive/old.md": "# 古い案\n\n状態: 経緯の記録。規範ではない。\n\n#### 案VIEW-01 定義\n",
+        "docs/design-decisions/001.md": "# DDR-001 見出し\n",
+        "README.md": "# R\n", "CONTRIBUTING.md": "# C\n", "CHANGELOG.md": "# L\n",
+    }
+
+    def run_check(self, changes):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            for name, text in {**self.FILES, **changes}.items():
+                (root / name).parent.mkdir(parents=True, exist_ok=True)
+                (root / name).write_text(text, encoding="utf-8")
+            saved = v.ROOT, v.ARCHIVE
+            v.ROOT, v.ARCHIVE = root.resolve(), (root / "docs/archive").resolve()
+            try:
+                return v.check_archive()
+            finally:
+                v.ROOT, v.ARCHIVE = saved
+
+    def test_valid_layout_passes(self):
+        self.assertEqual(self.run_check({}), 1)
+
+    def test_rejections(self):
+        cases = {
+            "missing status": {"docs/archive/old.md": "# 古い案\n\n本文。\n"},
+            "spec links archive": {"spec/a.md": "# A\n\n[案](../docs/archive/old.md)\n"},
+            "bare ID heading in archive": {"docs/archive/old.md": "# 古い案\n\n状態: 記録。\n\n#### VIEW-01 定義\n"},
+            "ID heading in docs": {"docs/guide.md": "# ガイド\n\n### HIST-01 履歴\n"},
+        }
+        for label, change in cases.items():
+            with self.subTest(label), self.assertRaises(ValueError):
+                self.run_check(change)
+
+
 if __name__ == "__main__":
     unittest.main()

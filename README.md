@@ -10,9 +10,10 @@ alpha版であり、互換性のない変更があり得る。正式な適合対
 - 適合ケース: [版パッケージ](conformance/v1alpha2/manifest.json) / [共通](conformance/common/v1alpha1/manifest.json) / [履歴](conformance/loj-history/v1alpha1/manifest.json) / [字体注記](conformance/loj-glyphs/v1alpha1/manifest.json) / [登録台帳](conformance/loj-registry/v1alpha1/manifest.json) / [再構築](conformance/loj-rebuild/v1alpha1/manifest.json) / [要件との対応表](docs/coverage.md)
 - 完全な例: [祝日法の法令リポジトリ](conformance/loj-history/v1alpha1/valid/hist-001/repo/history.yaml)（適合ケースの正例）
 - [実装ガイド](docs/implementation-guide.md) / [移行の手順](docs/migration-from-legacy.md) / [制限](docs/limitations.md) / [XML対応](docs/egov-xml-mapping.md)
-- [設計判断](docs/design-decisions/README.md) / [統合案](docs/proposals/next-spec-integration.md) / [検証記録](docs/validation.md) / [変更履歴](CHANGELOG.md)
+- [設計判断](docs/design-decisions/README.md) / [検証記録](docs/validation.md) / [変更履歴](CHANGELOG.md)
+- [経緯の記録](docs/archive/README.md)（規範ではない。採用前の統合案、v1alpha1の作成時の報告と調査）
 
-凍結した版: [loj/v1alpha1](spec/v1alpha1/01-overview.md)（内容を変えない。[適合ケース](conformance/v1alpha1/manifest.json)、[架空法令の例](examples/fictional-law/law.yaml)、[作成時の報告](docs/final-report.md)、[調査記録](docs/research.md)）。
+凍結した版: [loj/v1alpha1](spec/v1alpha1/01-overview.md)（内容を変えない。[適合ケース](conformance/v1alpha1/manifest.json)、[架空法令の例](examples/fictional-law/law.yaml)、[作成時の報告](docs/archive/final-report.md)、[調査記録](docs/archive/research.md)）。
 
 ## 検査
 

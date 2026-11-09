@@ -1,8 +1,13 @@
 # 変更履歴
 
+## 文書の整理（2026-11-09、未公開）
+
+- 役目を終えた文書（統合案、v1alpha1の作成時の報告・調査・検査の記録）を`docs/archive/`に移し、冒頭に状態を書いた。統合案の要件IDの見出しには「案」を付けた。内容は変えていない。
+- `scripts/verify.py`に、`spec/`から`docs/archive/`へのリンク、`docs/archive/`の文書の状態の行、`spec/`の外の要件IDの見出しの検査を加えた。
+
 ## 次期仕様 — loj/v1alpha2と新しい4種類（2026-11-09、未公開）
 
-[統合案](docs/proposals/next-spec-integration.md)の決定に基づく。
+[統合案](docs/archive/next-spec-integration.md)の決定に基づく。
 
 - 規範仕様の入口（`spec/README.md`）を加えた。要件IDの付け方、組み合わせて使える版の対応表、凍結した版を定める。
 - 種類にまたがる要件を`spec/common/v1alpha1`に置いた（構成、文字、適合レベル、共通の型、時点値、変更の種類、固定参照、派生ビュー、Record間の検査）。

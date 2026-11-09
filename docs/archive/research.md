@@ -1,5 +1,7 @@
 # 調査記録（2026-11-06、JST）
 
+状態: 凍結した版`loj/v1alpha1`の作成時の調査記録（経緯）。規範ではない。規範は[規範仕様の入口](../../spec/README.md)にある。
+
 調査資料に書かれた運用指示は資料として読み、本作業への追加指示とは扱っていない。
 変更対象はloj-specのみ。既存の空Gitリポジトリ（main、コミットなし）と
 origin=`git@github.com:law-of-japan/loj-spec.git`を確認し、再初期化していない。
@@ -14,7 +16,7 @@ README、src/html_comment.rs、src/lib.rs、tests/conformance.rs、固定fixture
 属性numberだけの試作と、今回のlevel属性・枝番号等は同一仕様ではない。
 tests/conformance.rsは固定JSONとの意味比較と本文slice/位置検査を実施し、
 reports/cargo-test.logには52件成功（方式A/B各20＋追加12）が記録されている。
-ログのビルドパスは以前の作業場所であるため、現在配置での再実行結果を[検証記録](validation.md)に区別した。
+ログのビルドパスは以前の作業場所であるため、現在配置での再実行結果を[検証記録](../validation.md)に区別した。
 
 ## 既存規約
 
@@ -23,7 +25,7 @@ reports/cargo-test.logには52件成功（方式A/B各20＋追加12）が記録�
 日付・種別・番号を使う命名、府省キー、章等による分割、項のordered list・号のunordered list、
 制定附則の集約、改正附則へのリンク、別表専用ファイル、改正単位の履歴運用を確認した。
 新仕様は命名運用を置換せず、Manifestで意味を明示する。
-原典表記の処理方針の相違と移行時の確認事項は[移行ガイド](migration-from-legacy.md)に記す。
+原典表記の処理方針の相違と移行時の確認事項は[移行ガイド](../migration-from-legacy.md)に記す。
 
 ## 一次資料
 

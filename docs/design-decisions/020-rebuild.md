@@ -48,4 +48,4 @@ DDR-011の「既存データの移行手順・適用範囲」は、本DDRで再�
 
 ## 経緯
 
-[統合案](../proposals/next-spec-integration.md)の§10.1〜10.14。
+[統合案](../archive/next-spec-integration.md)の§10.1〜10.14。
