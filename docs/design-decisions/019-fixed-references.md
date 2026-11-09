@@ -44,4 +44,4 @@
 
 ## 経緯
 
-[統合案](../proposals/next-spec-integration.md)の§9、§10.14、§16.3。
+[統合案](../archive/next-spec-integration.md)の§9、§10.14、§16.3。

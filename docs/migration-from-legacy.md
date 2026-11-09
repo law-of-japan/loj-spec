@@ -109,4 +109,4 @@ LoJ-Revisions: 98mj5vgx
 | 5・6 | [制定時の版](../conformance/loj-history/v1alpha1/valid/hist-001/repo/versions/98mj5vgx/law.yaml)、[改正後の版](../conformance/loj-history/v1alpha1/valid/hist-001/repo/versions/zwgmz1rt/law.yaml)と、それぞれの`glyphs.yaml` |
 | 7 | [再構築報告](../conformance/loj-history/v1alpha1/valid/hist-001/repo/rebuild.yaml) |
 
-試作の経緯と、原典資料の確認の結果は、[統合案](proposals/next-spec-integration.md)の§10.5〜§10.18にある。適合ケースは試作であり、実際の旧リポジトリの凍結・移行はまだ行っていない。
+試作の経緯と、原典資料の確認の結果は、[統合案](archive/next-spec-integration.md)の§10.5〜§10.18にある。適合ケースは試作であり、実際の旧リポジトリの凍結・移行はまだ行っていない。

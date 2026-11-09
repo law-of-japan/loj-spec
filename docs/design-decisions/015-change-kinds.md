@@ -53,4 +53,4 @@
 
 ## 経緯
 
-[統合案](../proposals/next-spec-integration.md)の§6、§10.14、§16.1（SCHEMA-06）。
+[統合案](../archive/next-spec-integration.md)の§6、§10.14、§16.1（SCHEMA-06）。

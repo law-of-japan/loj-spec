@@ -526,6 +526,40 @@ def check_links():
     return count
 
 
+ARCHIVE = ROOT / "docs/archive"
+ID_HEADING = re.compile(r"^#+ ([A-Z]+)-\d+(?:\s|$)", re.M)
+
+
+def local_link_targets(path):
+    for block in MD.parse(path.read_text(encoding="utf-8")):
+        for token in block.children or []:
+            if token.type in ("link_open", "image"):
+                parsed = urlsplit(token.attrGet("href") or token.attrGet("src"))
+                if not parsed.scheme and parsed.path:
+                    yield (path.parent / unquote(parsed.path)).resolve()
+
+
+def check_archive():
+    """Keep settled documents (docs/archive) from being read as normative."""
+    archived = sorted(ARCHIVE.rglob("*.md"))
+    require(archived, "docs/archive has no documents")
+    for path in archived:
+        lines = [line for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
+        require(len(lines) > 1 and lines[0].startswith("# ") and lines[1].startswith("状態:"),
+                "Archived document needs a 状態: line after its title: " + str(path))
+    for path in (ROOT / "spec").rglob("*.md"):
+        for target in local_link_targets(path):
+            require(target != ARCHIVE and ARCHIVE not in target.parents,
+                    "Normative text links to an archived document: " + str(path))
+    outside = [ROOT / name for name in ("README.md", "CONTRIBUTING.md", "CHANGELOG.md")]
+    outside += list((ROOT / "docs").rglob("*.md")) + list((ROOT / "examples").rglob("*.md"))
+    for path in outside:
+        series = set(ID_HEADING.findall(path.read_text(encoding="utf-8"))) - {"DDR"}
+        require(not series, "Requirement ID heading outside spec/ (prefix it with 案): "
+                + str(path) + ": " + ", ".join(sorted(series)))
+    return len(archived)
+
+
 def main():
     schemas = {path.name: read_json(path) for path in (ROOT / "schemas/v1alpha1").glob("*.json")}
     registry = Registry().with_resources((s["$id"], Resource.from_contents(s)) for s in schemas.values())
@@ -583,7 +617,9 @@ def main():
     node_count = check_positive(sample_path, sample, {"ast": sample_ast})
     next_lines, uncovered_next = audit_next(all_schemas())
     links = check_links()
+    archived = check_archive()
     print(f"Artifact audit PASS: {len(schemas)} schemas; {len(seen)} case definitions; {links} local links.")
+    print(f"Archived documents: {archived} (status lines present; not linked from spec/).")
     print(f"Positive source/tree audits: {positive}; executed L0 negatives: {negative_l0}.")
     print(f"L1 negative definitions only (NOT executed): {negative_l1}; informative L2: {illustrative}.")
     print(f"Fictional sample: {node_count} nodes. Uncovered requirement IDs: {', '.join(sorted(rules - covered))}.")

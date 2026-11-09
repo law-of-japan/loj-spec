@@ -54,4 +54,4 @@
 
 ## 経緯
 
-[統合案](../proposals/next-spec-integration.md)の§10.5、§10.6、§10.8、§10.9、§10.13、§10.18、§12。
+[統合案](../archive/next-spec-integration.md)の§10.5、§10.6、§10.8、§10.9、§10.13、§10.18、§12。
