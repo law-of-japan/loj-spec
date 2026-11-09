@@ -2424,7 +2424,7 @@ DDR-011の「対応が曖昧な場合の判断基準」を次のとおり定め�
 │        DDR-011の未決事項を解消する
 ├─ O-15 診断ルールID（§7.5）と適合ケース（§16.5で構成を合意し、ケースを作成。合否は未判定）
 ├─ O-16 ガイドラインと移行文書の改訂（docs/migration-from-legacy.md等）（このリポジトリの文書は完了、§16.6。リポジトリ管理ガイドラインは別のセッションで改める）
-└─ O-17 validatorの実装
+└─ O-17 validatorの実装（§16.7で構成を決定。loj-validatorで別のセッションとして実装する）
 ```
 
 ### 14.3 依存関係と順序
@@ -3154,3 +3154,39 @@ O-13〜O-15で作った規範仕様・DDR・適合ケースに合わせて、こ
 - `CONTRIBUTING.md`には要件ID、作成スクリプトの使い分け、互換漢字の書き方、`git bundle`の作り直しの注意を、`CHANGELOG.md`には次期仕様の項目を加えた。
 - `docs/egov-xml-mapping.md`のv1alpha1の対応表と、`docs/migration-from-legacy.md`のv1alpha1の変換の手順は、Gitの履歴で参照できる。
 - リポジトリ管理ガイドラインはまだ改めていない。改める内容は「現状」の表のとおりである。
+
+### 16.7 検査器の実装（2026-11-09合意、O-17）
+
+規範仕様（O-13）と適合ケース（O-15）を満たす検査器を作り、適合ケースの期待結果を初めて実行で確かめる。本節は、置き場所・範囲・順序・食い違いの扱いである。
+
+#### 現状
+
+- 検査器は、隣のリポジトリ`law-of-japan/loj-validator`（Rust、約6,100行）にある。対応しているのは、旧形式（schematterによる構造検査と、宣言的プロファイルによる意味の検査）と、`loj/v1alpha1`のL0・L1である。v1alpha1の正式なケースは、loj-specの固定commit（`b704631`）を`vendor/loj-spec`に写して、`cargo test`ですべて通している。
+- v1alpha1の実装（`crates/law-semantic/src/v1alpha1/`）は、Manifest、CommonMarkの領域、マーカー、見出し、ID、ソースの位置を分けて実装している。v1alpha2の版パッケージは、この上に無番号の項・表・前文と制定文・診断の`schemaVersion`と`class`を加えれば作れる（`docs/implementation-guide.md`の「v1alpha1から流用できる部分」）。
+- O-11の試作の検査器（Python一ファイル）は作業用の一時ディレクトリにあり、規範の実装として使わない（§10.18）。
+- loj-specの`scripts/verify.py`は、L1負例とL3以降のケースを形だけ検査する（CONF-03）。合否を判定する実装にはしない（§16.5の決定）。
+- 適合ケースは、版パッケージ124件、共通12件、履歴15件、字体注記9件、登録台帳8件、再構築4件である。そのうち実行で期待結果を確かめたのは、版パッケージの正例53件の意味木とL0負例だけである。
+
+#### 範囲と順序
+
+| 段階 | 対象 | 適合ケース |
+|---|---|---|
+| 1 | 版パッケージ`loj/v1alpha2`のL0・L1 | `conformance/v1alpha2`（pkg） |
+| 2 | 履歴マニフェストと字体注記のL3（`historyStructure`、`evidence`）。L1が不合格の版の字体注記は未完了とする（§10.18、O-11a） | `conformance/loj-history`、`conformance/loj-glyphs` |
+| 3 | 登録台帳の検査と、L4（`relationResolution`、`relationConsistency`、`timeConsistency`） | `conformance/loj-registry`、共通の`records`のケース |
+| 4 | 再構築報告の検査 | `conformance/loj-rebuild` |
+| 5 | 変更の種類の検査（CHG-02・03）と、固定参照・Revision参照の解決（FIXREF-03〜07）。`git bundle`を読む | 共通の`change`・`reference`のケース |
+
+- 予約（L2、L3の`sourceMatch`、L4の`clauseReference`）は実装しない。報告では合格を宣言しない。
+- 結果は[検査の報告のschema](../../schemas/common/v1alpha1/report.schema.json)の形で出す。CLIは、既存の`loj-validator check`に、レベル・区分・検査の選択を加える。
+- 段階ごとに、その段階の適合ケースをすべて通してから次へ進む。各段階の結果（合格・不合格・食い違いの件数）を、loj-specの`docs/validation.md`に記録する。
+
+#### 決定事項（2026-11-09合意）
+
+| 点 | 決定 | 採らなかった案 |
+|---|---|---|
+| 置き場所 | `loj-validator`に加える。v1alpha1の実装とCommonMark・JSON Schemaの基盤を使え、loj-specの資料とは別の実装になる | loj-specの中にPythonの参照検査器を作る（`scripts/verify.py`が検査器を兼ねることになり、CONF-03・§16.5の決定に反する）／新しいリポジトリを作る（v1alpha1の基盤を写すことになる） |
+| 作業の進め方 | `loj-validator`のリポジトリで、別のセッションとして進める。このリポジトリからは、範囲と順序、仕様の固定commit、食い違いの扱いを渡す | このセッションで続ける（別のリポジトリの変更が、このブランチの作業に混ざる） |
+| 適合データの取り込み | v1alpha1と同じく、loj-specの固定commitの資料（`spec`、`schemas`、`conformance`）を`vendor/loj-spec`に写し、commitとSHA-256の一覧を記録する。loj-specの資料を改めたら写し直す | Gitのsubmodule等で直接参照する（pushしていないブランチを参照できず、オフラインで再現できない） |
+| 期待結果と実装が食い違ったとき | 実装の側で直せない食い違いは、検査器のセッションが一覧にして止まる。仕様・ケースの誤りなら、このリポジトリで決定を仰いで直し、写し直す。期待結果を実装の出力に合わせて書き換えない（CONF-01） | 検査器のセッションが、loj-specのケースも直す（期待結果が実装に引きずられ、二つの独立性が失われる） |
+| v1alpha1と旧形式の対応 | v1alpha1のL0・L1と旧形式のプロファイルは、そのまま残す。旧形式のリポジトリは移行まで使われ、v1alpha1の実装はv1alpha2の土台になるため。外すかどうかは、移行が終わってから決める | v1alpha1の対応を外す（凍結した版に検査器が対応し続ける必要はないが、v1alpha2との差分の確認に使えなくなる）／旧形式も外す（移行前の法令リポジトリを検査できなくなる） |
