@@ -22,6 +22,23 @@
 
 `python -m unittest discover -s tests -v`は17件成功した。GitHub上のCIの結果は、まだ確かめていない（pushしていない）。
 
+### 検査器による実行（2026-11-09、O-17）
+
+`loj-validator`（Rust）のローカルブランチ`feat/next-spec-validator`で、次期仕様の検査器を5段階で実装し、loj-specのcommit `c4149e7`の適合ケースを実行した。期待結果は変えていない。
+
+| 索引 | 規範のケース | 合格 |
+|---|---|---|
+| `loj/v1alpha2` | 123（参考のL2のpkg-026を除く） | 123 |
+| `common/v1alpha1` | 12 | 12 |
+| `loj-history/v1alpha1` | 15 | 15 |
+| `loj-glyphs/v1alpha1` | 9 | 9 |
+| `loj-registry/v1alpha1` | 8 | 8 |
+| `loj-rebuild/v1alpha1` | 4 | 4 |
+
+- `cargo test --workspace --locked`は、ローカルWindowsで成功した。
+- これで、L1負例と、L3・L4・登録台帳・再構築・変更・参照のケースの期待結果を、一つの実装で確かめた。独立した二つ目の実装による確認はない。
+- 実装の中で見つかった、規範が定めていない点（期待結果の`references`の比べ方、適合ケースの登録台帳の登録空間）は、CONF-01に加えた（[統合案](proposals/next-spec-integration.md)の§16.7）。検査器は、加えた内容のとおりに動いている。
+
 ## loj/v1alpha1（作成時の記録）
 
 以下はv1alpha1の作成時の記録であり、変えない。
