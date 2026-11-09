@@ -5,6 +5,7 @@
 alpha版であり、互換性のない変更があり得る。正式な適合対象はL0・L1、L3の履歴構造・根拠、L4の関係の解決・関係の整合・時点の整合である。L2、L3の原典照合、L4の条項参照の解決は予約である。
 
 - [規範仕様の入口](spec/README.md)（規範の範囲、要件IDの付け方、組み合わせて使える版）
+- [用語集](docs/glossary.md)（正本、記録版、Revision、固定参照等、本仕様に固有の用語と、その定義の要件）
 - [共通](spec/common/v1alpha1/01-overview.md) / [版パッケージ](spec/v1alpha2/01-overview.md) / [履歴マニフェスト](spec/loj-history/v1alpha1/01-history.md) / [字体注記](spec/loj-glyphs/v1alpha1/01-glyphs.md) / [登録台帳](spec/loj-registry/v1alpha1/01-registry.md) / [再構築](spec/loj-rebuild/v1alpha1/01-rebuild.md)
 - [JSON Schema](schemas/) / [EBNF](grammar/v1alpha2/directives.ebnf)
 - 適合ケース: [版パッケージ](conformance/v1alpha2/manifest.json) / [共通](conformance/common/v1alpha1/manifest.json) / [履歴](conformance/loj-history/v1alpha1/manifest.json) / [字体注記](conformance/loj-glyphs/v1alpha1/manifest.json) / [登録台帳](conformance/loj-registry/v1alpha1/manifest.json) / [再構築](conformance/loj-rebuild/v1alpha1/manifest.json) / [要件との対応表](docs/coverage.md)
