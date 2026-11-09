@@ -5,6 +5,7 @@
 本仕様に出てくるプロジェクト固有の用語を、一か所にまとめた索引である。各用語の定義は「定義」の列の要件にあり、本書と規範が食い違う場合は規範を正とする（食い違いは仕様の欠陥として報告する）。対象は[組み合わせて使える版](../spec/README.md#組み合わせて使える版)の組1（`loj/v1alpha2`と、共通の型・4種類の`v1alpha1`）である。凍結した`loj/v1alpha1`の用語は含めない。
 
 - 「表記」の列は、データやschemaに現れるフィールド名・値・型の名前である。
+- 「定義」の列は、その用語を主に定める要件を先に置き、補う要件を後に続ける。
 - 二語以上の列挙値はcamelCase、Markdownのマーカーの名前はkebab-caseで書く（[DDR-022](design-decisions/022-spec-structure.md)）。
 - 似た語の区別は、末尾の[取り違えやすい用語](#取り違えやすい用語)にまとめた。
 
@@ -27,21 +28,31 @@
 | 可読ラベル | `label` | 表示用の名前（例: `2007-01-01_H17-043`）。一意でなくてよく、訂正で変わる。参照の解決に使わない | [REV-02](../spec/loj-history/v1alpha1/02-revision-ids.md#rev-02-可読ラベル)、[REG-02](../spec/loj-registry/v1alpha1/01-registry.md#reg-02-recordのファイル) |
 | 旧リポジトリ、旧形式 | `legacy` | 次期仕様より前の形式で法令を収めていたリポジトリ。凍結し、原典から再構築して移す | [REB-01](../spec/loj-rebuild/v1alpha1/01-rebuild.md#reb-01-対象と新しい版で書くこと)、[REB-08](../spec/loj-rebuild/v1alpha1/01-rebuild.md#reb-08-既存の参照の維持と旧形式) |
 
-## ファイルと版
+## ファイル
+
+法令と、その版（Revision）を記録するファイルである。仕様の版（schemaVersion）は[次の表](#仕様の版とschema)にまとめた。
 
 | 用語 | 表記 | 意味 | 定義 |
 |---|---|---|---|
-| ファイルの種類 | — | 版パッケージ、履歴マニフェスト、字体注記、再構築報告、登録台帳のRecordの5種類。種類ごとに独立した版を持つ | [CORE-02](../spec/common/v1alpha1/01-overview.md#core-02-ファイルの種類とschemaversion)、[CORE-05](../spec/common/v1alpha1/01-overview.md#core-05-種類ごとの版と対応表) |
-| 版パッケージ | `loj/v1alpha2` | 一つの法令の一つの版の`law.yaml`と、そこに列挙したMarkdown。法令リポジトリの`versions/<revision_id>/`に置く | [BASIC-01](../spec/v1alpha2/01-overview.md#basic-01-入力とschemaversion)、[CORE-02](../spec/common/v1alpha1/01-overview.md#core-02-ファイルの種類とschemaversion) |
+| ファイルの種類 | — | 版パッケージ、履歴マニフェスト、字体注記、再構築報告、登録台帳のRecordの5種類 | [CORE-02](../spec/common/v1alpha1/01-overview.md#core-02-ファイルの種類とschemaversion) |
+| 版パッケージ | `law.yaml`と本文のMarkdown | 一つの法令の一つの版（Revision）の`law.yaml`と、そこに列挙したMarkdown。法令リポジトリの`versions/<revision_id>/`に置く。「版」は法令の版であり、仕様の版ではない | [BASIC-01](../spec/v1alpha2/01-overview.md#basic-01-入力とschemaversion)、[CORE-02](../spec/common/v1alpha1/01-overview.md#core-02-ファイルの種類とschemaversion) |
 | Manifest | `law.yaml` | 版パッケージのメタデータ（`law`）と、本文のファイルの一覧（`documents`） | [MAN-01](../spec/v1alpha2/02-manifest.md#man-01-lawyamlの形) |
-| 履歴マニフェスト | `history.yaml`、`loj-history/v1alpha1` | 一つのRecordの履歴（Revision、そのRecordを終点とする関係、収録範囲、効力の終了）。法令リポジトリの最上位に置く | [HIST-01](../spec/loj-history/v1alpha1/01-history.md#hist-01-ファイルと形式)、[HIST-02](../spec/loj-history/v1alpha1/01-history.md#hist-02-トップレベル) |
-| 字体注記 | `glyphs.yaml`、`loj-glyphs/v1alpha1` | 原典との対応を決められなかった字や、特に記録が要る字の注記。版ごとに一つ、版パッケージと同じディレクトリに置く | [GLYPH-01](../spec/loj-glyphs/v1alpha1/01-glyphs.md#glyph-01-ファイルと形式) |
-| 再構築報告 | `rebuild.yaml`、`loj-rebuild/v1alpha1` | 旧リポジトリから移したRecordの、再構築の進み具合と見つかった差の記録。正本に属するが、法令の状態のデータではない | [REBR-01](../spec/loj-rebuild/v1alpha1/02-report.md#rebr-01-置き場所と形式) |
-| Recordのファイル | `records/<Record ID>.yaml`、`loj-registry/v1alpha1` | 登録台帳の中の、Recordごとの一つのファイル | [REG-01](../spec/loj-registry/v1alpha1/01-registry.md#reg-01-置き場所と形式)、[REG-02](../spec/loj-registry/v1alpha1/01-registry.md#reg-02-recordのファイル) |
-| schemaVersion | `schemaVersion` | 各ファイルが最上位で宣言する、自身の種類と版（例: `loj-history/v1alpha1`）。知らない値のファイルは処理不能とする | [CORE-02](../spec/common/v1alpha1/01-overview.md#core-02-ファイルの種類とschemaversion)、[CORE-04](../spec/common/v1alpha1/01-overview.md#core-04-版番号) |
-| 対応表 | — | 組み合わせて使える版の一覧。表にない組み合わせは処理不能として報告してよい | [CORE-05](../spec/common/v1alpha1/01-overview.md#core-05-種類ごとの版と対応表)、[規範仕様の入口](../spec/README.md#組み合わせて使える版) |
-| 共通の型 | `schemas/common/` | 各種類のschemaが参照する型（RecordRef、Source、Evidence、Verification、Scope、時点値等）。種類とは別に版を上げる | [共通の型](../spec/common/v1alpha1/05-types.md)、[CORE-04](../spec/common/v1alpha1/01-overview.md#core-04-版番号) |
-| 凍結した版 | `loj/v1alpha1` | 内容を変えない版。検査器と適合データが対応し続けることを求めない | [規範仕様の入口](../spec/README.md#凍結した版) |
+| 履歴マニフェスト | `history.yaml` | 一つのRecordの履歴（Revision、そのRecordを終点とする関係、収録範囲、効力の終了）。法令リポジトリの最上位に置く | [HIST-01](../spec/loj-history/v1alpha1/01-history.md#hist-01-ファイルと形式)、[HIST-02](../spec/loj-history/v1alpha1/01-history.md#hist-02-トップレベル) |
+| 字体注記 | `glyphs.yaml` | 原典との対応を決められなかった字や、特に記録が要る字の注記。版ごとに一つ、版パッケージと同じディレクトリに置く | [GLYPH-01](../spec/loj-glyphs/v1alpha1/01-glyphs.md#glyph-01-ファイルと形式) |
+| 再構築報告 | `rebuild.yaml` | 旧リポジトリから移したRecordの、再構築の進み具合と見つかった差の記録。正本に属するが、法令の状態のデータではない | [REBR-01](../spec/loj-rebuild/v1alpha1/02-report.md#rebr-01-置き場所と形式) |
+| Recordのファイル | `records/<Record ID>.yaml` | 登録台帳の中の、Recordごとの一つのファイル | [REG-01](../spec/loj-registry/v1alpha1/01-registry.md#reg-01-置き場所と形式)、[REG-02](../spec/loj-registry/v1alpha1/01-registry.md#reg-02-recordのファイル) |
+
+## 仕様の版とschema
+
+各ファイルの形式を定める仕様とschemaの版である。法令の版（Revision）とは別の概念である。
+
+| 用語 | 表記 | 意味 | 定義 |
+|---|---|---|---|
+| schemaVersion | `schemaVersion` | 各ファイルが最上位で宣言する、自身の種類と仕様の版。接頭辞は種類ごとに`loj/`（版パッケージ）、`loj-history/`、`loj-glyphs/`、`loj-rebuild/`、`loj-registry/`。知らない値のファイルは処理不能とする | [CORE-02](../spec/common/v1alpha1/01-overview.md#core-02-ファイルの種類とschemaversion)、[CORE-04](../spec/common/v1alpha1/01-overview.md#core-04-版番号) |
+| 仕様の版、版番号 | `v1alpha2`、`v1alpha1`等 | 種類ごとに独立して上げる仕様の版。新しい種類は`v1alpha1`から始める。alphaの版は版の間の互換を保証しないが、一度公開した版の意味は変えない | [CORE-04](../spec/common/v1alpha1/01-overview.md#core-04-版番号)、[CORE-05](../spec/common/v1alpha1/01-overview.md#core-05-種類ごとの版と対応表) |
+| 対応表 | — | 組み合わせて使える仕様の版の一覧。表にない組み合わせは処理不能として報告してよい | [CORE-05](../spec/common/v1alpha1/01-overview.md#core-05-種類ごとの版と対応表)、[規範仕様の入口](../spec/README.md#組み合わせて使える版) |
+| 凍結した版 | `loj/v1alpha1` | 内容を変えない仕様の版。検査器と適合データが対応し続けることを求めない | [規範仕様の入口](../spec/README.md#凍結した版) |
+| 共通の型 | `schemas/common/` | 各種類のschemaが参照する型（RecordRef、Source、Evidence、Verification、Scope、時点値等）。それを使う種類とは別に版を上げる | [共通の型](../spec/common/v1alpha1/05-types.md)、[CORE-04](../spec/common/v1alpha1/01-overview.md#core-04-版番号) |
 | 閉じたschema | — | 未知のフィールドを拒否するschema。新しいフィールドは新しいschemaVersionでだけ定める | [CORE-02](../spec/common/v1alpha1/01-overview.md#core-02-ファイルの種類とschemaversion) |
 
 ## 版パッケージの構造
@@ -69,7 +80,7 @@
 | 構造の見出し | — | 分類・条・附則・附属資料を示すATX見出し。Setextや装飾を禁止する | [HEAD-01](../spec/v1alpha2/04-headings.md#head-01-見出しの形)、[HEAD-03](../spec/v1alpha2/04-headings.md#head-03-附則と附属資料のscope) |
 | 番号、枝番号 | `number` | 番号の成分は1〜9999。枝番号は`の`・`ノ`で連ねる（第十二条の二） | [NUM-01](../spec/v1alpha2/04-headings.md#num-01-番号) |
 | 正規の番号 | `number`（例: `12-2-3`） | 各成分をASCIIの十進にしてハイフンで連ねた形。区切りの字によらず同じ | [NUM-01](../spec/v1alpha2/04-headings.md#num-01-番号) |
-| 表示番号、display | `display` | 原文のラベルや番号のtokenをそのまま保持した値。番号の比較には使わない | [HEAD-01](../spec/v1alpha2/04-headings.md#head-01-見出しの形)、[DISP-01](../spec/v1alpha2/05-directives.md#disp-01-表示番号)、[AST-01](../spec/v1alpha2/06-semantic-model.md#ast-01-意味astの形) |
+| 表示番号、display | `display` | 原文のラベルや番号のtokenをそのまま保持した値。番号の比較には使わない | [DISP-01](../spec/v1alpha2/05-directives.md#disp-01-表示番号)、[HEAD-01](../spec/v1alpha2/04-headings.md#head-01-見出しの形)、[AST-01](../spec/v1alpha2/06-semantic-model.md#ast-01-意味astの形) |
 | 未対応の構造 | `unsupportedFeatures` | 本版が型付けしない構造（目次、図、入れ子の表等）。含む入力は申告し、L1は不合格となる | [BASIC-03](../spec/v1alpha2/01-overview.md#basic-03-対象とする構造と収録しないもの) |
 | 意味AST | `root` | 版パッケージから導く規範のJSON表現。ノードは`kind`、`id`、`number`、`display`、`content`を持つ | [AST-01](../spec/v1alpha2/06-semantic-model.md#ast-01-意味astの形)、[AST-02](../spec/v1alpha2/06-semantic-model.md#ast-02-意味の検査) |
 | ソースの位置 | `{path, start, end}` | 元のファイルのUTF-8のバイト数による半開区間。行・列はその代わりにならない | [SRC-01](../spec/v1alpha2/06-semantic-model.md#src-01-ソースの保持と位置) |
@@ -140,7 +151,7 @@
 | 統合漢字、CJK互換漢字 | U+F900〜U+FAFF、U+2F800〜U+2FA1F | 互換漢字は正規化で統合漢字に変わるため、特に注意する。本文の互換漢字には字体注記が要る | [CHAR-01](../spec/common/v1alpha1/02-characters.md#char-01-コードポイント列の保持)、[GLYPH-11](../spec/loj-glyphs/v1alpha1/01-glyphs.md#glyph-11-互換漢字と異体字セレクタの注記) |
 | 異体字セレクタ、IVS | Variation Selector | 字形を指定する符号。原典に対応して記録したものを保持し、自動で付け外ししない | [CHAR-03](../spec/common/v1alpha1/02-characters.md#char-03-異体字セレクタ)、[GLYPH-06](../spec/loj-glyphs/v1alpha1/01-glyphs.md#glyph-06-コードポイントの選択基準) |
 | 踊り字 | 々、〻、ゝ、〳〵等 | 原典に印刷された記号のまま転記し、展開しない | [CHAR-02](../spec/common/v1alpha1/02-characters.md#char-02-字体の自動変換の禁止)、[GLYPH-08](../spec/loj-glyphs/v1alpha1/01-glyphs.md#glyph-08-踊り字) |
-| 〓（ゲタ） | U+3013 | 判読困難・符号化不能の字の代わりに本文に置く字。本文の〓にはすべて注記が要る | [GLYPH-02](../spec/loj-glyphs/v1alpha1/01-glyphs.md#glyph-02-注記する場合)、[GLYPH-03](../spec/loj-glyphs/v1alpha1/01-glyphs.md#glyph-03-本文に置く字) |
+| 〓（ゲタ） | U+3013 | 判読困難・符号化不能の字の代わりに本文に置く字。本文の〓にはすべて注記が要る | [GLYPH-03](../spec/loj-glyphs/v1alpha1/01-glyphs.md#glyph-03-本文に置く字)、[GLYPH-02](../spec/loj-glyphs/v1alpha1/01-glyphs.md#glyph-02-注記する場合) |
 | 字体注記の種類 | `kind` | `ambiguous`、`illegible`、`unencodable`、`literal`、`spacing`、`variance`、`sourceEdit`、`selected` | [GLYPH-02](../spec/loj-glyphs/v1alpha1/01-glyphs.md#glyph-02-注記する場合) |
 | 字の決め方 | `basis`（字体注記） | `ambiguous`の字の選び方。`unifiedDefault`、`otherSource`、`sameSource`、`provisional`、`undetermined` | [GLYPH-05](../spec/loj-glyphs/v1alpha1/01-glyphs.md#glyph-05-注記の内容)、[GLYPH-06](../spec/loj-glyphs/v1alpha1/01-glyphs.md#glyph-06-コードポイントの選択基準) |
 | 注記の位置 | `node`、`field`、`offset`、`recorded` | ノードIDと、そのノード自身の本文の中のコードポイント単位の位置で字を指す | [GLYPH-04](../spec/loj-glyphs/v1alpha1/01-glyphs.md#glyph-04-注記の位置) |
@@ -221,7 +232,7 @@
 
 | 語 | 区別 |
 |---|---|
-| 版 | 「版」「Revision」は法令の一つの状態。「仕様の版」はschemaVersion（`loj/v1alpha2`等）。「記録版」は正本のcommitにおける記録の内容。一つのRevisionに、記録訂正のたびに新しい記録版ができる |
+| 版 | 「版」「Revision」は法令の一つの状態で、「版パッケージ」の「版」もこれに当たる。「仕様の版」はschemaVersion（`loj/v1alpha2`等）。「記録版」は正本のcommitにおける記録の内容。一つのRevisionに、記録訂正のたびに新しい記録版ができる |
 | 起点 | Revisionの起点（`origin`。`basedOn`を持たない最初の状態）と、関係の起点（`from`。改正法令等の関係を定める側）は別の概念である |
 | 記録訂正と官報正誤 | 記録訂正（`correction`）はLoJの記録の誤りを直す。官報正誤（`officialCorrection`）は公布された本文の訂正を反映する。どちらも法令の改正ではなく、新しいRevisionを作らない |
 | Revision参照と固定参照 | Revision参照は正本ブランチの最新の記録版に解決し、指す内容が変わり得る。固定参照は指定のcommitの記録版に解決し、変わらない。ノードを指せるのは固定参照だけ |
