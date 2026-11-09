@@ -2789,3 +2789,36 @@ spec/
 | 規則とレベルの対応（VAL-07） | 系列ごとの表にした。L0とL1に分かれる系列（BASIC、MAN、MD）の規則ごとの対応は、O-13bで版パッケージの要件に書く |
 | schemaの`$comment` | 統合案のID（REG-06、REG-07等）を書いている。O-13cで新しいIDに直す |
 
+#### O-13bの結果（2026-11-09）
+
+`spec/v1alpha2/`の10章と、`grammar/v1alpha2/`の二つの文法を書いた。
+
+| ファイル | 要件ID |
+|---|---|
+| `01-overview.md` | BASIC-01〜04 |
+| `02-manifest.md` | MAN-01〜03 |
+| `03-markdown.md` | MD-01〜04 |
+| `04-headings.md` | HEAD-01〜04、NUM-01 |
+| `05-directives.md` | DIR-01〜02、DISP-01 |
+| `06-semantic-model.md` | AST-01〜02、SRC-01 |
+| `07-identifiers.md` | ID-01〜02 |
+| `08-references.md` | REF-01 |
+| `09-structures.md` | PARA-01、TABLE-01〜03、PRE-01〜02 |
+| `10-validation.md` | なし（規則とレベルの対応、文字の検査） |
+| `grammar/v1alpha2/headings.ebnf` | 「條」、「ノ」、「附　則」を加えた |
+| `grammar/v1alpha2/directives.ebnf` | `numbering`、`table`、`row`、`cell`、`preamble`、`enact-statement`を加えた |
+
+`scripts/verify.py`（リンクの検査を含む）と`tests/`は通る。`scripts/verify.py`はv1alpha2の要件IDと適合ケースをまだ検査しない（O-15・O-17）。
+
+書くときに見つかった、統合案・v1alpha1との食い違いと、その扱いは次のとおりである。
+
+| 点 | 扱い |
+|---|---|
+| v1alpha1の`08-references.md`の置き場所の誤り | 附属資料のファイルの分割の規則（違反の規則はMAN-03）とJSON Schemaの日付の検査が、参照の章に入っていた。前者をMAN-03に、後者をMAN-01に移した |
+| L2の参照の予約設計（REF-01） | v1alpha1の予約設計の`loj:main/article/2`は、固定参照の文字列表記（FIXREF-02の`loj:<space>/<record>/<revision>`）と同じ接頭辞で、区別できない。REF-01から予約設計を除き、L2の構文はFIXREF-02と区別できる形にすると書いた。L2の設計は引き続き未解決（§15） |
+| セルの結合（TABLE-03） | 統合案は「`rowspan`・`colspan`（既定1）を書ける」とだけ定めていた。値1を書くことを禁止し（表現を一通りにする、PARA-01と同じ考え方）、ASTは書いた場合にだけ持つとした。セルの位置`c`は、結合に関係なく、その行に書いたセルの順序とした |
+| 表・行の直下の本文（DIR-02） | 統合案に定めがなかった。表の直下と行の直下に、空白だけの行以外の本文を置くことを禁止し、表は1つ以上の行、行は1つ以上のセルを持つとした（v1alpha2のAST Schemaの形に合わせた） |
+| 本文の表示番号の「ノ」（DISP-01） | PKG-02は見出しの枝番号についてだけ「ノ」を定めていた。項・号の表示番号の枝番号にも「ノ」を許した。一つのラベルの中での「の」と「ノ」の混在は制限していない |
+| 編・章・節・款・目の字（HEAD-01） | PKG-02は「v1alpha1のまま」としていた。コードポイントを明記した |
+| 試作の検査器の規則の名前 | 前文の位置はMD-01ではなくPRE-01・PRE-02、本文の中のGFMの表はPKG-05ではなくTABLE-01、項番号の混在はPKG-04ではなくPARA-01で報告する |
+
