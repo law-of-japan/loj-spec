@@ -271,14 +271,14 @@ R3のうちRevisionの識別、時間値の型、版の順序の要件案。本�
 | `date` | 日が確定している | グレゴリオ暦の日付、原表記、精度、出典 | 平成十九年一月一日 |
 | `derived` | 規則により確定日が計算できる | 計算規則の原文、基準となる時点値、計算結果の日付、出典 | 公布の日から起算して三十日を経過した日 |
 | `pending` | 法令上まだ定まっていない | 定め方の原文（委任先・条件）、出典。確定した場合はその根拠（施行期日政令等） | 政令で定める日、条約が効力を生ずる日 |
-| `unknown` | 調査上不明 | 理由（未調査、資料不足、判読不能、資料間不一致）、確認した資料の範囲 | 原典未取得 |
+| `unknown` | 調査上不明 | 理由（未調査、資料不足、判読不能、資料間不一致）、確認した資料の範囲（`surveyed`、Evidenceの一覧。§16.2） | 原典未取得 |
 | `notApplicable` | 該当なし | 該当しないと判断した根拠 | 公布行為を伴わない状態 |
 
 - `date`の精度が日に満たない場合（年月のみ等）、確定日として順序比較に使ってはならない。暦や精度が不明な値を推定で`date`に変換してはならない。
 - 原表記（和暦・漢数字）を保存し、グレゴリオ暦の値で置き換えない。グレゴリオ暦への換算は明治6年1月1日以後の日付に限って必須とし、それより前の日付の扱いは別途定める。
 - `pending`が後に確定した場合は、`date`へ上書きせず、確定させた根拠と確定前の値を履歴として追跡できるようにする（案A P4）。
 - `derived`の基準時点が`date`でない場合、計算結果を確定日として扱ってはならない。
-- `derived`は、原文の`rule`のほかに、任意の`calc`（閉じた語彙。例: `same-day`、`next-day`、`days-after`（日数）、`months-after`）を持てる。`calc`があればL3で計算結果を検査し、なければ「未検査」と報告する。語彙はO-12で確定する（§10.18 O-11b）。
+- `derived`は、原文の`rule`のほかに、任意の`calc`（閉じた語彙。`sameDay`、`nextDay`、`afterElapsed`。§16.1 SCHEMA-05）を持てる。`calc`があればL3で計算結果を検査し、なければ「未検査」と報告する（§10.18 O-11b）。
 - すべての時点値は確認状態（未確認・確認済み・撤回）と出典を持てること。
 - 時点値は、任意の`sameAs`で、同じ時点を定める他のRecordのRevision（RecordRefとrevision_id）を指せる。`sameAs`があっても、自身の状態・値・原表記は省略しない。参照先との一致はL4で検査する（§10.17 O-10d、XREF-03）。
 
@@ -660,14 +660,14 @@ R5のうち、法令リポジトリの正本構成と履歴マニフェストの
 |---|---|---|
 | `id` | 必須 | revision_id（REVID-01） |
 | `label` | 任意 | 可読ラベル（REVID-02）。e-Gov法令履歴IDの書式を使ってよい |
-| `origin` | 起点のみ必須 | enactment／totalRevision／coverageStart（5.4）。`totalRevision`では、新旧関係（totallyRevises）をRecordRefと関係idで参照する |
+| `origin` | 起点のみ必須 | enactment／totalRevision／coverageStart（5.4）。`totalRevision`では、新旧関係を`totallyRevises: {record, relation}`（RecordRefと関係id）で参照する（§16.2） |
 | `basedOn` | 起点以外は必須 | 基礎状態のrevision_id、または`{state: unknown, reason}`（5.4） |
 | `basis` | 起点以外は必須 | 成立根拠。`relation`（関係id）と`items`（内訳のid一覧）の組。制定時の段階施行では`enactment`（`scope`、`evidence`）とする |
 | `effective` | 必須 | 施行時点（TimePoint） |
 | `applicability` | 必須 | `state`（noneConfirmed／unsurveyed／conditions）と、`conditions`の場合は条件の一覧（`scope`、`text`、`evidence`、`verification`、`machineEvaluable`） |
 | `text` | 必須 | `status`（complete／partial／absent）、`package`（省略時は`versions/<id>/law.yaml`）、`gaps`（partialのとき必須。欠落範囲のScope一覧）、`sources`（本文を起こした原典資料のEvidence一覧。complete・partialのとき必須、REB-03）、`glyphs`（字体の照合状態。`verified`＝原典の字体と照合済み／`unverified`＝新字体化された資料等に由来し未照合。complete・partialのとき必須、§10.5）、`glyphNotes`（字体注記ファイルのパス。注記がある場合は必須、§12） |
 | `externalIds` | 任意 | `issuer`（例: egov）、`kind`（revision）、`value`、`evidence`、`verification`（§5.6） |
-| `status` | 必須 | active／retracted／merged／split。merged・splitでは`replacedBy`（revision_idの一覧）と根拠を持つ |
+| `status` | 必須 | active／retracted／merged／split。merged・splitでは`replacedBy`（`revisions`＝統合・分割先のrevision_idの一覧、`evidence`、`verification`）を持つ（§16.2） |
 
 - `basis`が参照する内訳の`effective`と、Revisionの`effective`は一致しなければならない。両方が`date`の場合に検査する。
 - 一つのRevisionの`basis`は、一つの関係の内訳（同じ改正法令）に限る（5.3.1）。同じ関係・同じ施行時点のRevisionが二つ以上あってはならない。
@@ -815,8 +815,8 @@ R5のうち、登録台帳の保存形式の要件案。8.1〜8.11で対象外�
 |---|---|---|
 | `id` | 必須 | ファイル内で一意な識別子 |
 | `state` | 必須 | exists（番号がある）／nonexistent（番号がないことを確認）／unknown／illegible（判読不能）／conflicting（資料間不一致） |
-| `raw` | `exists`・`illegible`・`conflicting`で必須 | 出典で観測した表記（例: `法律第百七十八号`）。正規化値で置き換えない。資料間不一致では資料ごとの表記を一覧にする |
-| `structured` | 任意 | `system`（採番体系。例: 法律）、`period`（採番期間。原表記と、明治6年以後はグレゴリオ暦の範囲）、`issuer`（発令機関。原記載順の一覧）、`series`（`state`: regular／none／unknown と原表記）、`number`（番号成分。NUM-01の正規形） |
+| `raw` | `exists`・`illegible`・`conflicting`で必須 | 出典で観測した表記（例: `法律第百七十八号`）。正規化値で置き換えない。資料間不一致では、資料ごとの表記を`{source, raw}`の一覧（2件以上）にする（§16.2） |
+| `structured` | 任意 | `system`（採番体系。例: 法律）、`period`（採番期間。原表記`raw`と、明治6年以後はグレゴリオ暦の範囲`gregorian: {from, to}`（§16.2））、`issuer`（発令機関。原記載順の一覧）、`series`（`state`: regular／none／unknown と原表記）、`number`（番号成分。NUM-01の正規形） |
 | `evidence` | 必須 | 出典と箇所（§8.3）。索引の転記（Sourceの`kind: index`・`egov`）と公布原典（`promulgation`）を区別できる |
 | `verification` | 必須 | 確認状態（§8.3） |
 | `decision` | 必須 | adopted（採用）／pending（保留）／retracted（撤回）。理由を`reason`に書く |
@@ -878,7 +878,7 @@ numbers:
     raw: 法律第百七十八号
     structured:
       system: 法律
-      period: {raw: 昭和二十三年, gregorian: 1948}
+      period: {raw: 昭和二十三年, gregorian: {from: "1948-01-01", to: "1948-12-31"}}
       series: {state: regular}
       number: "178"
     evidence: [{source: src-kanpo-19480720, locator: 1コマ 法律の冒頭}]
@@ -2417,7 +2417,7 @@ DDR-011の「対応が曖昧な場合の判断基準」を次のとおり定め�
 
 段階3 規範仕様への採用
 ├─ O-12 フィールド名・列挙値の確定とJSON Schema（loj-history、loj-glyphs、新しい版パッケージ、登録台帳） ← O-01, O-02, O-04
-│        （§16.1で方針を合意。schemaは作成中）
+│        （§16.1で方針を合意、§16.2でschemaを作成し細目を合意）
 ├─ O-13 規範仕様の本文の改訂：VAL-01（L3の定義）、CHAR-01、BASIC-03、見出し・IDの規則（O-01の反映）
 ├─ O-14 DDRの追加と改訂：派生ビュー、時間の型、変更の分類、L3/L4、再構築、Record ID、字体注記、新しい版パッケージ。
 │        DDR-011の未決事項を解消する
@@ -2568,3 +2568,42 @@ schemas/
 | schemaの置き場所 | 版パッケージは`schemas/v1alpha2/`、新しい種類は`schemas/<種類>/<版>/`、共通の型は`schemas/common/`（SCHEMA-04） | すべてを`schemas/v1alpha2/`に置く（種類ごとに版を上げるVER-02と合わない）／共通の型を各schemaに複製する（型の食い違いが起きる） |
 | `calc`の語彙 | `sameDay`、`nextDay`、`afterElapsed`（日・月・年）の三つ（SCHEMA-05） | 日数の加算だけにする（月・年の期間を表せない）／語彙を広く取る（使われない語が増え、検査の実装が重くなる） |
 | trailer | `LoJ-Change`と`LoJ-Revisions`（SCHEMA-06） | `Change-Kind`等の接頭辞のない名前（ほかの道具のtrailerと衝突し得る） |
+
+### 16.2 JSON Schemaの作成結果（2026-11-09、O-12）
+
+§16.1の合意に沿って、7つのschemaを作った。規範仕様の本文（O-13）と適合ケース（O-15）はまだないため、schemaは規範仕様に採用する前の版である。
+
+| ファイル | 対象 |
+|---|---|
+| `schemas/common/v1alpha1/types.schema.json` | §8.3の共通の型（RecordRef、Evidence、Source、Verification、TimePoint、Scope）と、Record ID・revision_idの書式、`calc`（SCHEMA-05） |
+| `schemas/loj-history/v1alpha1/history.schema.json` | 履歴マニフェスト（§8.4〜8.7、HIST-06） |
+| `schemas/loj-glyphs/v1alpha1/glyphs.schema.json` | 字体注記（GLYPH-03、`selected`を含む） |
+| `schemas/loj-registry/v1alpha1/record.schema.json` | 登録台帳のRecord（REG-02、REG-03、REG-05） |
+| `schemas/loj-rebuild/v1alpha1/rebuild.schema.json` | 再構築報告（REBR-02〜05） |
+| `schemas/v1alpha2/manifest.schema.json` | 版パッケージの`law.yaml`。v1alpha1から`schemaVersion`だけを変えた（PKG-01） |
+| `schemas/v1alpha2/ast.schema.json` | 意味AST。`EnactStatement`、`Preamble`、`Table`、`Row`、`Cell`、Paragraphの`numbering`、Rowの`key`、Cellの`rowspan`・`colspan`を加えた（PKG-04〜06） |
+
+#### 確かめたこと
+
+- 7つのschemaは、JSON Schema 2020-12のメタschemaに合格した。リポジトリの既存の検査（`scripts/verify.py`、`tests/`）にも影響しなかった。
+- 試作の10ファイル（§10.8・§10.11の祝日法の履歴マニフェスト・版パッケージ・字体注記・再構築報告、登録台帳のRecord、§10.18の履歴だけの法令リポジトリ三つ）の写しを、SCHEMA-01の値とSCHEMA-02の日付の引用に書き換えて検査した。違反は1件で、登録台帳の採番期間を`gregorian: 1966`（整数）と書いていたものである（下の決定点1）。
+- 壊した例24件（古い列挙値、根拠のない`confirmed`、`base`のない`derived`、内訳のない`amends`、`i`を含むrevision_id、候補のない`ambiguous`、〓でない`illegible`、`key`のないRow、`numbering`のないParagraph等）は、期待どおり不合格になった。正しい例（`calc`の`afterElapsed`、`termination`の`repealed`、`selected`の注記、表を含むAST）は合格した。
+- SCHEMA-03のとおり、schemaにはファイルの中で決まる形だけを書いた。`derived`の`value`が基準の時点によって必須かどうか、`repository`が関係・Revisionの記録で必須になること（REG-07）等は、validatorの規則とし、schemaの`$comment`に書いた。
+
+#### schemaを書くために補った細目（決定事項（2026-11-09合意））
+
+これまでの節は、次の点のフィールド名・形を定めていなかった。次のとおり決定し、§5.2、§8.6、REG-03に反映した。schemaはこの形で書いている。
+
+| 点 | 決定 | 採らなかった案 |
+|---|---|---|
+| 採番期間のグレゴリオ暦（REG-03 `period`） | `gregorian: {from, to}`（日付の範囲）。昭和64年と平成元年のように、一つの暦年が二つの期間に分かれる場合を表せる | 西暦年の整数（REG-03の「西暦年だけに縮約しない」に反し、改元の年を表せない） |
+| `unknown`の時点の「確認した資料の範囲」（§5.2） | TimePointの`surveyed`（Evidenceの一覧）。`coverage.surveyed`と同じ名前にする | `reason`の文章に含める（機械で読めない） |
+| Revisionの`replacedBy`（§8.6） | `{revisions, evidence, verification}`。統合・分割先のrevision_idの一覧と、判断の根拠 | revision_idの一覧だけ（§8.6の「根拠を持つ」を書く場所がない） |
+| 全部改正による起点（§8.6 `origin: totalRevision`） | `totallyRevises: {record, relation}`。試作の形を採る | `basis`に関係を書く（`basis`は改正による版の成立根拠で、起点と意味が違う） |
+| 資料間で番号が食い違う主張（REG-03 `conflicting`） | `raw`を`{source, raw}`の一覧（2件以上）にする。そのほかの`state`では文字列 | 常に文字列とし、資料ごとの表記を`note`に書く（REG-03の「資料ごとの表記を一覧にする」を機械で読めない） |
+
+#### まだ作っていないもの
+
+- 登録台帳の`space.yaml`（REG-01）のschema。登録空間の識別子以外の内容が決まっていないため。
+- VER-02の、組み合わせて使える版の対応表。規範仕様の本文（O-13）に置く。
+- 適合ケース（O-15）。schemaの正例・負例は、本節の検査の入力を元に、O-15で作る。
