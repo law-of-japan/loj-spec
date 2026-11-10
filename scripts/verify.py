@@ -501,9 +501,12 @@ def audit_next(validators):
     return lines, sorted(rules - covered)
 
 
+ROOT_DOCS = ("README.md", "CONTRIBUTING.md", "CHANGELOG.md", "AGENTS.md")
+
+
 def check_links():
     count = 0
-    files = [ROOT / name for name in ("README.md", "CONTRIBUTING.md", "CHANGELOG.md")]
+    files = [ROOT / name for name in ROOT_DOCS]
     files += list((ROOT / "spec").rglob("*.md")) + list((ROOT / "docs").rglob("*.md"))
     for path in files:
         for block in MD.parse(path.read_text(encoding="utf-8")):
@@ -551,7 +554,7 @@ def check_archive():
         for target in local_link_targets(path):
             require(target != ARCHIVE and ARCHIVE not in target.parents,
                     "Normative text links to an archived document: " + str(path))
-    outside = [ROOT / name for name in ("README.md", "CONTRIBUTING.md", "CHANGELOG.md")]
+    outside = [ROOT / name for name in ROOT_DOCS]
     outside += list((ROOT / "docs").rglob("*.md")) + list((ROOT / "examples").rglob("*.md"))
     for path in outside:
         series = set(ID_HEADING.findall(path.read_text(encoding="utf-8"))) - {"DDR"}

@@ -48,4 +48,5 @@ python -m unittest discover -s tests -v
 ## そのほか
 
 - 独立した実装から矛盾が見つかった場合は、最小の入力、要件ID、期待する意味、実際の挙動を提出する。
+- AIエージェント向けの手引きは[AGENTS.md](AGENTS.md)にある。本書の規則や検査の手順を変えたときは、合わせて更新する。
 - 原典の表記の変更、法令リポジトリの管理、ブランチの運用は、[リポジトリ管理ガイドライン](https://github.com/law-of-japan/loj-repository-management-guideline)で扱う。

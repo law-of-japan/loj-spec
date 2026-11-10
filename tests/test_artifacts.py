@@ -130,6 +130,7 @@ class ArchiveAuditTests(unittest.TestCase):
         "docs/archive/old.md": "# 古い案\n\n状態: 経緯の記録。規範ではない。\n\n#### 案VIEW-01 定義\n",
         "docs/design-decisions/001.md": "# DDR-001 見出し\n",
         "README.md": "# R\n", "CONTRIBUTING.md": "# C\n", "CHANGELOG.md": "# L\n",
+        "AGENTS.md": "# G\n",
     }
 
     def run_check(self, changes):
