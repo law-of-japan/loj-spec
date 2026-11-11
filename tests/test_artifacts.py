@@ -204,7 +204,9 @@ class CodePointNotationTests(unittest.TestCase):
 
     def test_check_scope(self):
         bad = f"{self.UNIFIED} U+FA19\n"
-        self.assertEqual(self.run_check({"spec/a/01.md": f"{self.COMPAT} U+FA19\n", "docs/archive/old.md": bad}), 5)
+        # ROOT_DOCS and spec/a/01.md are checked; docs/archive/old.md is skipped.
+        self.assertEqual(self.run_check({"spec/a/01.md": f"{self.COMPAT} U+FA19\n", "docs/archive/old.md": bad}),
+                         len(v.ROOT_DOCS) + 1)
         for name in ("spec/a/01.md", "docs/guide.md", "CHANGELOG.md"):
             with self.subTest(name), self.assertRaises(ValueError):
                 self.run_check({name: bad})
