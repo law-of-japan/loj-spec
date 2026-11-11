@@ -2,6 +2,14 @@
 
 見出しの「草案」は、[草案の版](spec/README.md#版の状態)への変更であることを示す。版の状態の正は、[規範仕様の入口](spec/README.md#規範とするもの)の表にある。版を公開したときは、公開の日付の項目を加える。
 
+## 旧データの値の記録（2026-11-11、草案）
+
+[law-of-japan/loj-spec#22](https://github.com/law-of-japan/loj-spec/issues/22)の修正である。草案の版への変更であり、版番号は上げない。
+
+- REB-06の「旧データの値をやむを得ず記録する場合」を削り、原典で確かめられない値は確かめていないことを記録し、旧データの値は確認状態の理由にだけ手がかりとして書くと改めた。値の欄と根拠に旧データの値を置くことを禁じた。
+- 原典で確かめられない旧`number`（`null`を含む）を、番号主張の`state: unknown`・`verification.state: unverified`で記録すると定めた。旧`null`を`nonexistent`に読み替えることの禁止は残した。
+- 移行の手順（参考）とDDR-020を合わせた。`law.yaml`の`number: null`の意味は#13で扱う。
+
 ## 履歴マニフェストの本文のパスと成立根拠（2026-11-11、草案）
 
 [law-of-japan/loj-spec#20](https://github.com/law-of-japan/loj-spec/issues/20)の修正である。草案の版への変更であり、版番号は上げない。

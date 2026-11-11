@@ -36,7 +36,7 @@
 - 登録台帳のリポジトリに、`records/<Record ID>.yaml`を一つ作る。Record IDは手順1の既存のIDである。
 - それより前のリポジトリの名前は`aliases`に入れ、各別名に根拠（旧本文のリンク、GitHubの転送等）を付ける。
 - `repository`に、法令リポジトリの`location`と`canonicalBranch: main`を書く。
-- 番号主張・外部識別子は、原典で確かめた根拠と共に記録する。旧`law.yaml`の値を、確かめずに写さない。
+- 番号主張・外部識別子は、原典で確かめた根拠と共に記録する。旧`law.yaml`の値を、確かめずに写さない。原典で確かめられない番号は`state: unknown`の主張とし、旧`number`の値（`null`を含む）は確認状態の理由に手がかりとして書く（REB-06）。
 - 改正法など、本文を収録しないが関係の起点になるRecordも、ここで登録する（`text.state: notCollected`）。
 
 ### 3. 原典資料の確認
