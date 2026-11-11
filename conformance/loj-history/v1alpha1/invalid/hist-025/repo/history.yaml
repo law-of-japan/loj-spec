@@ -26,7 +26,7 @@ relations:
     type: amends
     from: {id: 19660625-act-86, label: 昭和四十一年法律第八十六号}
     evidence: [{source: src-goshomei-s41-86, locator: "本則"}]
-    verification: {state: confirmed}
+    verification: {state: retracted, reason: 適合ケースのために撤回した}
     status: retracted
     items:
       - id: i1

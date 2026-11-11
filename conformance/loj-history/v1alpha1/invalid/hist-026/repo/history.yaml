@@ -87,7 +87,7 @@ revisions:
   - id: 98mj5vgx
     label: 制定
     origin: enactment
-    basis: [{relation: rel-s41-86, items: [i1]}]
+    basis: [{enactment: {scope: {text: 全部}, evidence: [{source: src-kanpo-19480720, locator: 1コマ}]}}]
     effective:
       state: derived
       rule: 公布の日から

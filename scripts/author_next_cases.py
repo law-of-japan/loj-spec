@@ -162,9 +162,13 @@ def history():
         ("撤回したRevisionを基礎状態とする有効なRevision", "HIST-04",
          [("history.yaml", "      glyphNotes: versions/98mj5vgx/glyphs.yaml\n    status: active\n",
            "      glyphNotes: versions/98mj5vgx/glyphs.yaml\n    status: retracted\n")]),
-        ("撤回した関係を成立根拠とする有効なRevision", "HIST-05", [("history.yaml", "    status: active\n", "    status: retracted\n")]),
+        ("撤回した関係を成立根拠とする有効なRevision", "HIST-05",
+         [("history.yaml", "    verification: {state: confirmed}\n    status: active\n",
+           "    verification: {state: retracted, reason: 適合ケースのために撤回した}\n    status: retracted\n")]),
+        # An enactment basis has no effective to compare, so only "an origin has no basis" is broken.
         ("成立根拠を持つ起点", "HIST-05", [("history.yaml", "    origin: enactment\n",
-                                       "    origin: enactment\n    basis: [{relation: rel-s41-86, items: [i1]}]\n")]),
+                                       "    origin: enactment\n    basis: [{enactment: {scope: {text: 全部}, "
+                                       "evidence: [{source: src-kanpo-19480720, locator: 1コマ}]}}]\n")]),
     ]:
         dest = next_dir("hist", False) / "repo"
         mutate(dest, HIST_POS, edits)
