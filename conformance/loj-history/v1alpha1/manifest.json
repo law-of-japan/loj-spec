@@ -374,6 +374,70 @@
       },
       "expected": "conformance/loj-history/v1alpha1/expected/hist-022.json",
       "success": false
+    },
+    {
+      "id": "hist-023",
+      "title": "既定と違う版パッケージのパス",
+      "requirements": [
+        "HIST-08"
+      ],
+      "check": "L3",
+      "category": "historyStructure",
+      "normative": true,
+      "input": {
+        "kind": "repository",
+        "path": "conformance/loj-history/v1alpha1/invalid/hist-023/repo"
+      },
+      "expected": "conformance/loj-history/v1alpha1/expected/hist-023.json",
+      "success": false
+    },
+    {
+      "id": "hist-024",
+      "title": "撤回したRevisionを基礎状態とする有効なRevision",
+      "requirements": [
+        "HIST-04"
+      ],
+      "check": "L3",
+      "category": "historyStructure",
+      "normative": true,
+      "input": {
+        "kind": "repository",
+        "path": "conformance/loj-history/v1alpha1/invalid/hist-024/repo"
+      },
+      "expected": "conformance/loj-history/v1alpha1/expected/hist-024.json",
+      "success": false
+    },
+    {
+      "id": "hist-025",
+      "title": "撤回した関係を成立根拠とする有効なRevision",
+      "requirements": [
+        "HIST-05"
+      ],
+      "check": "L3",
+      "category": "historyStructure",
+      "normative": true,
+      "input": {
+        "kind": "repository",
+        "path": "conformance/loj-history/v1alpha1/invalid/hist-025/repo"
+      },
+      "expected": "conformance/loj-history/v1alpha1/expected/hist-025.json",
+      "success": false
+    },
+    {
+      "id": "hist-026",
+      "title": "成立根拠を持つ起点",
+      "requirements": [
+        "HIST-05"
+      ],
+      "check": "L3",
+      "category": "historyStructure",
+      "normative": true,
+      "input": {
+        "kind": "repository",
+        "path": "conformance/loj-history/v1alpha1/invalid/hist-026/repo"
+      },
+      "expected": "conformance/loj-history/v1alpha1/expected/hist-026.json",
+      "success": false
     }
   ]
 }

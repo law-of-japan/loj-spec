@@ -70,15 +70,17 @@
 - 一つのRevisionを、複数のRevisionが`basedOn`として参照してよい（MAY）。経過措置による新旧の状態の併存は、この分岐と適用関係（HIST-07）で表す。
 - 適用の順が不明な場合は、`basedOn`を`{state: unknown, reason}`とし、推測で順序を補ってはならない（MUST NOT）。改正法令の法令番号の順などで、機械的に順序を決めてはならない（MUST NOT）。
 - `basedOn`の循環と、存在しないrevision_idへの参照は違反とする。
+- `status: active`のRevisionの`basedOn`は、`status: active`のRevisionを参照しなければならない（MUST）。撤回・統合・分割したRevision（HIST-10）を基礎状態とする参照は違反とする。統合・分割したRevisionを基礎状態としていた版は、`revisionFix`で`replacedBy`の版へ付け替える。
 
 ## HIST-05 成立根拠
 
-- 起点以外のRevisionは、成立根拠`basis`を持たなければならない（MUST）。`basis`の各項目は、関係の`id`（`relation`）と、その内訳の`id`の一覧（`items`）の組である。
-- 制定時に施行時点が複数ある法令（段階施行）は、起点に続くRevisionの`basis`を`enactment`（`scope`、`evidence`）とする。
-- 一つのRevisionの`basis`は、一つの関係の内訳（同じ改正法令）に限る。
+- 起点以外のRevisionは、成立根拠`basis`を持たなければならない（MUST）。起点（`origin`を持つRevision）は、`basis`を持ってはならない（MUST NOT）。
+- `basis`は、項目を一つだけ持つ配列とする。項目は、関係の`id`（`relation`）とその内訳の`id`の一覧（`items`）の組か、制定時の段階施行（`enactment`）のどちらかである。一つのRevisionの`basis`は、一つの関係の内訳（同じ改正法令）に限る。
+- 制定時に施行時点が複数ある法令（段階施行）は、最初の施行の版を起点（`origin: enactment`）とし、起点に続くRevisionの`basis`を`enactment`（`scope`、`evidence`）とする。
 - `basis`が参照する関係と内訳は、同じ履歴マニフェストに存在しなければならない（MUST）。
 - `basis`が参照する内訳の`effective`と、Revisionの`effective`は一致しなければならない（MUST）。両方が`date`の場合に検査する。
-- 同じ関係・同じ施行時点のRevisionが二つ以上あってはならない（MUST NOT）。
+- 同じ関係・同じ施行時点のRevisionが二つ以上あってはならない（MUST NOT）。`status: active`のRevisionだけを数え、施行時点は、両方が確定日（[TIME-03](../../common/v1alpha1/06-time.md)）のときに日付で比べる。確定日でない施行時点どうしは、この規則では比べない。
+- `status: active`のRevisionの`basis`は、`status: retracted`の関係と、`verification.state: retracted`の内訳を参照してはならない（MUST NOT）。
 - 改正法の公布日をRevisionに写さない。改正法のRecordと関係から得る。
 
 ## HIST-06 版の時間の情報と順序
@@ -112,15 +114,15 @@
 | フィールド | 必須 | 内容 |
 |---|---|---|
 | `status` | 必須 | `complete`（本文がそろっている）／`partial`（一部が欠けている）／`absent`（本文がない） |
-| `package` | 任意 | 版パッケージの`law.yaml`のパス。省略時は`versions/<revision_id>/law.yaml` |
+| `package` | 任意 | 版パッケージの`law.yaml`のパス。書く場合は`versions/<revision_id>/law.yaml`（自身のrevision_id）でなければならない（MUST）。省略時も同じパスとする |
 | `gaps` | `partial`で必須 | 欠落の範囲（Scopeの一覧） |
 | `sources` | `complete`・`partial`で必須 | 本文を起こした原典資料（Evidenceの一覧） |
 | `glyphs` | `complete`・`partial`で必須 | 字体の照合状態。`verified`（原典の字体と照合した）／`unverified`（新字体化された資料等に由来し、照合していない） |
-| `glyphNotes` | 注記がある場合は必須 | 字体注記のファイルのパス |
+| `glyphNotes` | 注記がある場合は必須 | 字体注記のファイルのパス。`versions/<revision_id>/glyphs.yaml`（自身のrevision_id）でなければならない（MUST） |
 
 - `complete`・`partial`のRevisionの版パッケージは、存在しなければならない（MUST）。存在しなければ違反とする。版パッケージが存在するが読めない場合は、L3では判定せず、版パッケージのL0で扱う。
 - `absent`のRevisionに、版パッケージを置いてはならない（MUST NOT）。
-- 版パッケージのディレクトリ`versions/<revision_id>/`は、履歴マニフェストのRevisionと一対一に対応しなければならない（MUST）。
+- 版パッケージのディレクトリ`versions/<revision_id>/`は、履歴マニフェストの`complete`・`partial`のRevisionと一対一に対応しなければならない（MUST）。`absent`のRevisionは、ディレクトリを持たない。
 - `glyphs: verified`の意味は、字体注記の要件（loj-glyphs）による。
 
 ## HIST-09 外部識別子

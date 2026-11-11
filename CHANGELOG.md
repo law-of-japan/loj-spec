@@ -2,6 +2,16 @@
 
 見出しの「草案」は、[草案の版](spec/README.md#版の状態)への変更であることを示す。版の状態の正は、[規範仕様の入口](spec/README.md#規範とするもの)の表にある。版を公開したときは、公開の日付の項目を加える。
 
+## 履歴マニフェストの本文のパスと成立根拠（2026-11-11、草案）
+
+[law-of-japan/loj-spec#20](https://github.com/law-of-japan/loj-spec/issues/20)の修正である。草案の版への変更であり、版番号は上げない。
+
+- HIST-08: `text.package`と`text.glyphNotes`は、書く場合は自身のrevision_idの既定のパス（`versions/<revision_id>/law.yaml`、`versions/<revision_id>/glyphs.yaml`）とした。ディレクトリとの一対一を、`complete`・`partial`のRevisionに限った。GLYPH-01に字体注記のファイル名`glyphs.yaml`を書いた。
+- HIST-05: `basis`を項目一つの配列とし、起点は`basis`を持たないとした。同じ関係・同じ施行時点の重複を、有効なRevisionの確定日どうしで比べると定めた。有効なRevisionの`basis`が、撤回した関係・内訳を参照することを禁じた。
+- HIST-04: 有効なRevisionの`basedOn`が、撤回・統合・分割したRevisionを参照することを禁じた。
+- 履歴マニフェストのschemaで、パスの形、`basis`の項目の数、起点の`basis`の禁止を検査するようにした。
+- 負例hist-023〜026（既定と違うパス、撤回したRevisionを基礎状態とする版、撤回した関係を成立根拠とする版、成立根拠を持つ起点）を加えた。DDR-017に追記した。
+
 ## 固定参照の構造化形式（2026-11-11、草案）
 
 [law-of-japan/loj-spec#17](https://github.com/law-of-japan/loj-spec/issues/17)の修正である。草案の版への変更であり、版番号は上げない。

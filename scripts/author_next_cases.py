@@ -156,6 +156,21 @@ def history():
         mutate(dest, fixed_pos, edits)
         add("hist", title, sorted({"FIXREF-01", rule}), "L3", {"kind": "repository", "path": rel(dest)},
             {"results": [l3("evidence", "fail")], "diagnostics": [diag(rule, SV["common"])]}, False, "evidence")
+    for title, rule, edits in [
+        ("既定と違う版パッケージのパス", "HIST-08", [("history.yaml", "      glyphNotes: versions/zwgmz1rt/glyphs.yaml\n",
+                                                "      package: versions/98mj5vgx/law.yaml\n      glyphNotes: versions/zwgmz1rt/glyphs.yaml\n")]),
+        ("撤回したRevisionを基礎状態とする有効なRevision", "HIST-04",
+         [("history.yaml", "      glyphNotes: versions/98mj5vgx/glyphs.yaml\n    status: active\n",
+           "      glyphNotes: versions/98mj5vgx/glyphs.yaml\n    status: retracted\n")]),
+        ("撤回した関係を成立根拠とする有効なRevision", "HIST-05", [("history.yaml", "    status: active\n", "    status: retracted\n")]),
+        ("成立根拠を持つ起点", "HIST-05", [("history.yaml", "    origin: enactment\n",
+                                       "    origin: enactment\n    basis: [{relation: rel-s41-86, items: [i1]}]\n")]),
+    ]:
+        dest = next_dir("hist", False) / "repo"
+        mutate(dest, HIST_POS, edits)
+        add("hist", title, [rule], "L3", {"kind": "repository", "path": rel(dest)},
+            {"results": [l3("historyStructure", "fail")], "diagnostics": [diag(rule, SV["hist"])]}, False,
+            "historyStructure")
 
 
 # --- loj-glyphs --------------------------------------------------------------
