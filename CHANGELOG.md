@@ -2,6 +2,16 @@
 
 見出しの「草案」は、[草案の版](spec/README.md#版の状態)への変更であることを示す。版の状態の正は、[規範仕様の入口](spec/README.md#規範とするもの)の表にある。版を公開したときは、公開の日付の項目を加える。
 
+## 確定日の定義（2026-11-11、草案）
+
+[law-of-japan/loj-spec#14](https://github.com/law-of-japan/loj-spec/issues/14)の修正である。草案の版への変更であり、版番号は上げない。
+
+- TIME-03に、確定日の定義（精度が日の`date`、または`base`が確定日である`derived`）を置いた。`base`が確定日なら`value`を必須とし、確定日でないなら`value`を禁じた。`base`が`date`でない場合を一律に禁じていた文を、`base`が確定日でない`derived`を順序の比較に使うことの禁止に改めた。
+- TIME-02から確定日の定義を引き、TIME-01の`derived`の説明を、確定日を前提としない文に改めた。
+- 共通の型のschemaで、`derived`の`value`を`YYYY-MM-DD`に限った。
+- 適合ケースhist-016（`derived`を基準とする`derived`、架空）とhist-017（精度が月の`date`を基準として`value`を書いた負例）を加えた。
+- DDR-014に「確定日の定義」を加えた。用語集の「確定日」を改めた。
+
 ## 互換漢字の例の訂正（2026-11-11、草案）
 
 [law-of-japan/loj-spec#12](https://github.com/law-of-japan/loj-spec/issues/12)の訂正である。規範の意味は変えていない。

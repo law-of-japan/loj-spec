@@ -258,6 +258,38 @@
       },
       "expected": "conformance/loj-history/v1alpha1/expected/hist-015.json",
       "success": false
+    },
+    {
+      "id": "hist-016",
+      "title": "確定日であるderivedを基準とするderived（架空）",
+      "requirements": [
+        "TIME-03"
+      ],
+      "check": "L3",
+      "category": "historyStructure",
+      "normative": true,
+      "input": {
+        "kind": "repository",
+        "path": "conformance/loj-history/v1alpha1/valid/hist-016/repo"
+      },
+      "expected": "conformance/loj-history/v1alpha1/expected/hist-016.json",
+      "success": true
+    },
+    {
+      "id": "hist-017",
+      "title": "確定日でない基準から計算したvalue",
+      "requirements": [
+        "TIME-03"
+      ],
+      "check": "L3",
+      "category": "historyStructure",
+      "normative": true,
+      "input": {
+        "kind": "repository",
+        "path": "conformance/loj-history/v1alpha1/invalid/hist-017/repo"
+      },
+      "expected": "conformance/loj-history/v1alpha1/expected/hist-017.json",
+      "success": false
     }
   ]
 }
