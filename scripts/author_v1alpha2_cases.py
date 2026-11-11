@@ -180,6 +180,16 @@ case("附則の見出しの半角空白", ["HEAD-03"],
      man_extra={"supplements": [{"key": "original", "title": "制定附則"}]})
 case("v1alpha1のschemaVersion", ["BASIC-01"], [("main.md", "main", ART + P1)], fail("BASIC-01"), False, check="L0",
      man_extra={"schemaVersion": "loj/v1alpha1"})
+# 2026-11-11 (#25): spaces in markers, character kinds of display numbers.
+case("マーカーの属性の間の二つの空白", ["DIR-01"],
+     [("main.md", "main", ART + "<!-- loj:paragraph number=1  numbering=explicit -->\n" + BODY + "<!-- loj:end-paragraph -->\n")],
+     fail("DIR-01"), False)
+case("属性のないセルのマーカーの二つの空白", ["DIR-01"],
+     [("main.md", "main", TABLE_MD.replace("<!-- loj:cell -->\n白雲", "<!-- loj:cell  -->\n白雲"))], fail("DIR-01"), False)
+case("号の表示番号に全角の十進", ["DISP-01"],
+     [("main.md", "main", ART + "<!-- loj:paragraph number=1 -->\n" + BODY + "<!-- loj:item number=1 -->\n１　白雲\n"
+       "<!-- loj:end-item -->\n<!-- loj:end-paragraph -->\n")], fail("DISP-01"), False)
+case("条の番号の成分の間の字種の混在", ["NUM-01", "HEAD-01"], [("main.md", "main", "# 第十二条の２\n" + P1)], fail("NUM-01"), False)
 
 
 def main():
