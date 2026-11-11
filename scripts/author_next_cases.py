@@ -140,6 +140,22 @@ def history():
     add("hist", "確定日の基準から計算したvalueの書き漏らし", ["TIME-03"], "L3", {"kind": "repository", "path": rel(dest)},
         {"results": [l3("historyStructure", "fail")], "diagnostics": [diag("TIME-03", SV["common"])]}, False,
         "historyStructure")
+    fixed_pos = "conformance/loj-history/v1alpha1/valid/hist-019/repo"
+    add("hist", "Sourceのfixedに書く固定参照と外部の資料の固定（架空）", ["FIXREF-01", "TYPE-02"], "L3",
+        {"kind": "repository", "path": fixed_pos}, {"results": [l3("evidence")]}, True, "evidence")
+    for title, rule, edits in [
+        ("固定参照の短縮したcommit", "FIXREF-04", [("history.yaml", "commit: 02086ca793ace385b61e6fa5692709895e7e9b0e", "commit: 02086ca")]),
+        ("revisionのない固定参照", "FIXREF-03", [("history.yaml", "      revision: b7k2m9qd\n", "")]),
+        ("LoJの中の資料を文字列で固定する", "TYPE-02", [("history.yaml",
+                                     "    fixed:\n      record: {id: 20990101-act-1, label: 架空法律第一号}\n      revision: b7k2m9qd\n"
+                                     "      commit: 02086ca793ace385b61e6fa5692709895e7e9b0e\n"
+                                     "      node: 20990101-act-1/main/article/1/paragraph/1\n",
+                                     "    fixed: loj:loj/20990101-act-1/b7k2m9qd@02086ca793ace385b61e6fa5692709895e7e9b0e\n")]),
+    ]:
+        dest = next_dir("hist", False) / "repo"
+        mutate(dest, fixed_pos, edits)
+        add("hist", title, sorted({"FIXREF-01", rule}), "L3", {"kind": "repository", "path": rel(dest)},
+            {"results": [l3("evidence", "fail")], "diagnostics": [diag(rule, SV["common"])]}, False, "evidence")
 
 
 # --- loj-glyphs --------------------------------------------------------------
@@ -222,7 +238,7 @@ def cross_record():
         {"kind": "records", "registry": REG_POS, "repositories": repos},
         {"results": [{"check": "L4", "category": "relationResolution", "result": "pass"},
                      {"check": "L4", "category": "timeConsistency", "result": "pass"}],
-         "references": [{"target": "loj/20170616-law-63", "result": "resolved"}]}, True, "timeConsistency")
+         "references": [{"target": "loj:loj/20170616-law-63", "result": "resolved"}]}, True, "timeConsistency")
     dest = next_dir("common", False)
     mutate(dest / "hist-004", repos[1], [("history.yaml", '            value: "2019-04-30"\n', '            value: "2019-04-29"\n'),
                                          ("history.yaml", "        value: \"2019-04-30\"\n", "        value: \"2019-04-29\"\n")])
@@ -233,7 +249,7 @@ def cross_record():
     add("common", "参照先のRecordを収録していない", ["XREF-03", "VAL-04", "VAL-06"], "L4",
         {"kind": "records", "registry": REG_POS, "repositories": [repos[1]]},
         {"results": [{"check": "L4", "category": "timeConsistency", "result": "incomplete"}],
-         "references": [{"target": "loj/20170616-law-63/q3c8h0tw", "result": "notFetched"}]}, True, "timeConsistency")
+         "references": [{"target": "loj:loj/20170616-law-63/q3c8h0tw", "result": "notFetched"}]}, True, "timeConsistency")
 
 
 # --- common: change kinds and fixed references -------------------------------

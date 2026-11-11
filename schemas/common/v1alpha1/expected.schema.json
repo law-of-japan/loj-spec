@@ -152,8 +152,9 @@
             "minLength": 1
           },
           "target": {
+            "$comment": "FIXREF-02: the string notation of a Record, Revision or fixed reference (space, Record ID and revision_id as in types.schema.json).",
             "type": "string",
-            "minLength": 1
+            "pattern": "^loj:[a-z][a-z0-9-]*/[A-Za-z0-9][A-Za-z0-9-]*(/[0-9a-hjkmnp-tv-z]{8}(@([0-9a-f]{40}|[0-9a-f]{64})(#.+)?)?)?$"
           },
           "result": {
             "enum": [

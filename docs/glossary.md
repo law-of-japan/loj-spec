@@ -184,7 +184,7 @@
 | Record参照 | RecordRef | Recordを登録空間とRecord IDの組で指す。URLでは指さない | [TYPE-01](../spec/common/v1alpha1/05-types.md#type-01-recordref)、[FIXREF-01](../spec/common/v1alpha1/08-references.md#fixref-01-参照の種類と構造化形式) |
 | Revision参照 | RevisionRef、`loj:<space>/<record>/<revision>` | 「この法令のこの状態」を指す。記録訂正等で指す内容は変わり得る。ノードを付けられない | [FIXREF-01](../spec/common/v1alpha1/08-references.md#fixref-01-参照の種類と構造化形式)、[FIXREF-05](../spec/common/v1alpha1/08-references.md#fixref-05-revision参照の解決) |
 | 固定参照 | FixedRef、`…@<commit>`、`…@<commit>#<node>` | 正本のcommitまで固定した参照。指す記録版は変わらない。ノードを指せるのは固定参照だけ | [FIXREF-01](../spec/common/v1alpha1/08-references.md#fixref-01-参照の種類と構造化形式)、[FIXREF-03](../spec/common/v1alpha1/08-references.md#fixref-03-固定参照の解決)、[FIXREF-07](../spec/common/v1alpha1/08-references.md#fixref-07-ノードの指定) |
-| 文字列表記 | `loj:` | データの外で参照を引用する表記。URIスキームの登録を前提にしない | [FIXREF-02](../spec/common/v1alpha1/08-references.md#fixref-02-文字列表記) |
+| 文字列表記 | `loj:` | データの外で参照を引用する表記（Record参照は`loj:<space>/<record>`）。URIスキームの登録を前提にしない。適合ケースの期待結果の参照もこの表記で書く | [FIXREF-02](../spec/common/v1alpha1/08-references.md#fixref-02-文字列表記) |
 | 解決の結果 | 解決済み、未取得、解決の誤り | 参照を解決した結果。未取得を不存在とみなさない | [FIXREF-06](../spec/common/v1alpha1/08-references.md#fixref-06-解決できない場合) |
 | 不存在確認済み | `nonexistentConfirmed` | Record間の参照の結果の一つ。参照先が存在しないことを確認した | [VAL-06](../spec/common/v1alpha1/03-validation.md#val-06-l4の区分)、[XREF-01](../spec/common/v1alpha1/10-cross-record.md#xref-01-関係の解決) |
 
