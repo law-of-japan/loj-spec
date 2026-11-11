@@ -6,7 +6,7 @@
 
 - 字体注記は、版ごとに一つのファイル（`glyphs.yaml`）とし、版パッケージのディレクトリに置く。履歴マニフェストのRevisionの`text.glyphNotes`から参照する。
 - 字体注記のファイルは、版パッケージの`law.yaml`の`documents`に列挙しない。版パッケージの法令の入力には含まれない（MAN-02）。
-- `schemaVersion`は厳密に`loj-glyphs/v1alpha1`でなければならない（MUST）。YAMLのデータモデルは[CORE-03](../../common/v1alpha1/01-overview.md)に従う。schemaは閉じており、未知のフィールドを拒否する。
+- `schemaVersion`は厳密に`loj-glyphs/v1alpha1`でなければならない（MUST）。ほかの値（知らない版を含む）のファイルは、処理不能として未完了とし、不合格にしない（[VAL-04](../../common/v1alpha1/03-validation.md)）。YAMLのデータモデルは[CORE-03](../../common/v1alpha1/01-overview.md)に従う。schemaは閉じており、未知のフィールドを拒否する。
 - `revision`は、その版のrevision_idでなければならない（MUST）。
 - 注記の`evidence`は、同じ記録版の履歴マニフェストのSourceを指す（[TYPE-03](../../common/v1alpha1/05-types.md)）。
 
@@ -118,4 +118,4 @@
 - 本文の中のCJK互換漢字（U+F900〜U+FAFF、U+2F800〜U+2FA1F）と、異体字セレクタ付きの字には、すべて注記（`selected`、`ambiguous`等）がなければならない（MUST）。注記のないものは違反とする。
 - これにより、正規化による変化を、`recorded`と本文の比較（GLYPH-04）で常に検出できるようにする。
 - 本要件はL3（根拠）の規則である。版パッケージのL0・L1では、これらの字の存在を違反にしない（v1alpha2の検査の章）。
-- 版パッケージのL1が不合格の場合は、その版の字体注記を判定せず、L3（根拠）を未完了と報告する。不合格にしない。注記はL1で導くノードIDと本文の位置で字を指すためである（[VAL-02](../../common/v1alpha1/03-validation.md)）。
+- 版パッケージのL1が不合格の場合は、その版の字体注記を判定せず、判定不能として報告する。不合格にしない。判定不能により、L3（根拠）は未完了になる（[VAL-04](../../common/v1alpha1/03-validation.md)）。注記はL1で導くノードIDと本文の位置で字を指すためである（[VAL-02](../../common/v1alpha1/03-validation.md)）。

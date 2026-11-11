@@ -18,8 +18,12 @@
           "type": "string"
         }
       },
-      "required": [],
-      "additionalProperties": false
+      "required": [
+        "repository",
+        "commit"
+      ],
+      "additionalProperties": false,
+      "$comment": "VAL-03: a result must identify the record version it was judged on."
     },
     "results": {
       "type": "array",
@@ -198,6 +202,7 @@
     }
   },
   "required": [
+    "target",
     "results",
     "diagnostics"
   ],

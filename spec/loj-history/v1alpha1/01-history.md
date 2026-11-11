@@ -18,7 +18,7 @@
   ```
 
 - 履歴マニフェストは、リポジトリの最上位の`history.yaml`とし、一つのRecordの履歴（Revisionの集合、そのRecordを終点とする関係、収録範囲、効力の終了）を記述する。
-- `schemaVersion`は厳密に`loj-history/v1alpha1`でなければならない（MUST）。YAMLのデータモデルは[CORE-03](../../common/v1alpha1/01-overview.md)に従う。schemaは閉じており、未知のフィールドを拒否する。
+- `schemaVersion`は厳密に`loj-history/v1alpha1`でなければならない（MUST）。ほかの値（知らない版を含む）のファイルは、処理不能として未完了とし、不合格にしない（[VAL-04](../../common/v1alpha1/03-validation.md)）。YAMLのデータモデルは[CORE-03](../../common/v1alpha1/01-overview.md)に従う。schemaは閉じており、未知のフィールドを拒否する。
 - Record自体の属性（番号主張、外部識別子、同一性）は登録台帳に置き、履歴マニフェストに写してはならない（MUST NOT）。
 - 本文を収録していないRecordも、関係の終点になる場合や、Revisionを記録する場合は、法令リポジトリを持てる（MAY）。そのリポジトリには`history.yaml`だけを置き、`versions/`を置かなくてよい。その履歴マニフェストのRevisionは、本文のない起点（`origin: coverageStart`、`text.status: absent`）一つでよく、`coverage.state`は`unconfirmed`とする。
 - 履歴マニフェストの`label`等の表示用の値は、参照の解決・同一性の判断・順序の決定に使ってはならない（MUST NOT）。
@@ -92,10 +92,13 @@
 
   | 状況 | 結果 |
   |---|---|
-  | 基礎状態の施行時点が自身より後（両方とも`date`） | 警告。`basis`が参照する内訳が`retroactive`を持てば警告しない |
-  | `basis`が参照する関係の`promulgated`が、自身の施行時点より後（両方とも`date`） | 警告。`basis`が参照する内訳が`retroactive`を持てば警告しない |
-  | 上の二行で、比べる一方が`date`でない。2行目では、`basis`が参照する関係が`promulgated`を持たない場合も含む | 判定不能。合格にも不合格にもしない |
+  | 基礎状態の施行時点が自身より後（両方とも確定日。[TIME-03](../../common/v1alpha1/06-time.md)） | 警告。`basis`が参照する内訳が`retroactive`を持てば警告しない |
+  | `basis`が参照する関係の`promulgated`が、自身の施行時点より後（両方とも確定日） | 警告。`basis`が参照する内訳が`retroactive`を持てば警告しない |
+  | 上の二行で、比べる一方が確定日でない。2行目では、`basis`が参照する関係が`promulgated`を持たない場合も含む | 判定不能。合格にも不合格にもしない |
   | `basedOn`が`unknown` | 保留 |
+
+- 基礎状態が収録開始の起点（`origin: coverageStart`）で、その施行時点が確定日でない場合は、1行目を比べず、報告しない。収録開始は法令上の出来事ではなく、施行時点が不明なのが通常だからである。
+- 順序の検査は警告しか出さないので、その判定不能は区分の結果に影響しない（[VAL-04](../../common/v1alpha1/03-validation.md)）。
 
 ## HIST-07 適用関係
 

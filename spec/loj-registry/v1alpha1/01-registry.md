@@ -14,7 +14,7 @@
   ```
 
 - Recordごとに一つのファイルとし、ファイル名はRecord IDとしなければならない（MUST）。ファイルの`id`は、ファイル名と一致しなければならない。
-- `schemaVersion`は厳密に`loj-registry/v1alpha1`でなければならない（MUST）。YAMLのデータモデルは[CORE-03](../../common/v1alpha1/01-overview.md)に従う。schemaは閉じており、未知のフィールドを拒否する。
+- `schemaVersion`は厳密に`loj-registry/v1alpha1`でなければならない（MUST）。ほかの値（知らない版を含む）のファイルは、処理不能として未完了とし、不合格にしない（[VAL-04](../../common/v1alpha1/03-validation.md)）。YAMLのデータモデルは[CORE-03](../../common/v1alpha1/01-overview.md)に従う。schemaは閉じており、未知のフィールドを拒否する。
 - 正本ブランチのGit履歴を、登録台帳の記録版の履歴とする（[CORE-01](../../common/v1alpha1/01-overview.md)）。
 - 撤回・統合・分割したRecordのファイルを削除してはならない（MUST NOT）。
 - `space.yaml`の形は本版では定めない。
