@@ -10,7 +10,7 @@ Record・Revision・記録版を指す参照の形式と、解決の規則を定
 | Revision参照 | 法令の状態 | 記録訂正・復元の進展で変わり得る | 「この法令のこの状態」を指す。派生ビューのタグと同じ意味 |
 | 固定参照 | 記録版 | 変わらない | 引用・検証の対象になった本文・根拠・判断を固定する |
 
-データの中では、次の構造化形式で書く。
+データの中では、次の構造化形式で書く。RevisionRefとFixedRefは[共通の型のschema](../../../schemas/common/v1alpha1/types.schema.json)で定義する。時点値の`sameAs`（[TIME-07](06-time.md)）はRevisionRef、Sourceの`fixed`（[TYPE-02](05-types.md)）でLoJの中の資料を指すものはFixedRefである。
 
 | 型 | フィールド | 要件 |
 |---|---|---|
@@ -24,13 +24,16 @@ Record・Revision・記録版を指す参照の形式と、解決の規則を定
 データの外（文献、Issue、外部サイト等）で引用するときは、次の表記を使う。
 
 ```text
+loj:<space>/<record>                            # Record参照
 loj:<space>/<record>/<revision>                 # Revision参照
 loj:<space>/<record>/<revision>@<commit>        # 固定参照
 loj:<space>/<record>/<revision>@<commit>#<node> # 固定参照とノード
 ```
 
 - `@<commit>`のない`#<node>`を使ってはならない（MUST NOT）。
-- 構造化形式と文字列表記は相互に変換でき、変換で情報を落とさない。
+- 構造化形式と文字列表記は相互に変換でき、参照の同一性に含まれるフィールド（登録空間、Record ID、revision_id、commit、ノード）を落とさない。表示と解決の補助のフィールド（RecordRefの`label`、FixedRefの`path`と`repository`）は、文字列表記に書けず、変換で落ちる。
+- 構造化形式で`space`を省略した参照を文字列表記に変換するときは、参照する側の登録空間を補う。法令リポジトリの中の参照では、そのRecordを登録した登録台帳の登録空間とする。登録空間を宣言するファイル（`space.yaml`）の形を定めるまで、検査器はこの登録空間を入力として受け取る。
+- 適合ケースの期待結果の参照（`references[].target`）は、この文字列表記で書く（[CONF-01](04-conformance.md)）。
 - 登録空間の識別子、Record ID、revision_idは、`/`、`@`、`#`を含まない。
 - `loj:`は本章の解決規則の名前であり、URIスキームの登録を前提にしない。GitHub等のURLは解決結果の一つであり、参照そのものとして案内してはならない（MUST NOT）。
 

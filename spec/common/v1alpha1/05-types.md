@@ -21,9 +21,10 @@
 | `kind` | 必須 | `promulgation`（公布の原典）／`officialCorrection`（官報正誤）／`index`（索引）／`egov`（e-Gov）／`other` |
 | `title` | 必須 | 資料の名前 |
 | `uri` | 任意 | 資料の所在 |
-| `fixed` | 任意 | 資料の内容を固定する手段（ハッシュ、保存先とcommit等）。LoJの中の資料を指すときはFixedRef（[FIXREF-01](08-references.md)） |
+| `fixed` | 任意 | 資料の内容を固定する手段。LoJの中の資料はFixedRef（[FIXREF-01](08-references.md)）のmappingで、LoJの外の資料は固定の手段を記述した文字列（ハッシュ、保存先とcommit等）で書く |
 
 - `uri`だけでは、過去の内容の固定を保証しない。
+- LoJの中の資料を、`fixed`の文字列（文字列表記の`loj:`で始まるものを含む）で固定してはならない（MUST NOT）。`loj:`で始まる文字列は、schemaで拒否する。
 - 旧形式から移したURIを、個別の主張の根拠に自動で認定してはならない（MUST NOT）。
 
 ## TYPE-03 Evidence

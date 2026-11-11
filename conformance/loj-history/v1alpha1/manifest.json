@@ -306,6 +306,71 @@
       },
       "expected": "conformance/loj-history/v1alpha1/expected/hist-018.json",
       "success": false
+    },
+    {
+      "id": "hist-019",
+      "title": "Sourceのfixedに書く固定参照と外部の資料の固定（架空）",
+      "requirements": [
+        "FIXREF-01",
+        "TYPE-02"
+      ],
+      "check": "L3",
+      "category": "evidence",
+      "normative": true,
+      "input": {
+        "kind": "repository",
+        "path": "conformance/loj-history/v1alpha1/valid/hist-019/repo"
+      },
+      "expected": "conformance/loj-history/v1alpha1/expected/hist-019.json",
+      "success": true
+    },
+    {
+      "id": "hist-020",
+      "title": "固定参照の短縮したcommit",
+      "requirements": [
+        "FIXREF-01"
+      ],
+      "check": "L3",
+      "category": "evidence",
+      "normative": true,
+      "input": {
+        "kind": "repository",
+        "path": "conformance/loj-history/v1alpha1/invalid/hist-020/repo"
+      },
+      "expected": "conformance/loj-history/v1alpha1/expected/hist-020.json",
+      "success": false
+    },
+    {
+      "id": "hist-021",
+      "title": "revisionのない固定参照",
+      "requirements": [
+        "FIXREF-01"
+      ],
+      "check": "L3",
+      "category": "evidence",
+      "normative": true,
+      "input": {
+        "kind": "repository",
+        "path": "conformance/loj-history/v1alpha1/invalid/hist-021/repo"
+      },
+      "expected": "conformance/loj-history/v1alpha1/expected/hist-021.json",
+      "success": false
+    },
+    {
+      "id": "hist-022",
+      "title": "LoJの中の資料を文字列で固定する",
+      "requirements": [
+        "FIXREF-01"
+      ],
+      "check": "L3",
+      "category": "evidence",
+      "normative": true,
+      "input": {
+        "kind": "repository",
+        "path": "conformance/loj-history/v1alpha1/invalid/hist-022/repo"
+      },
+      "expected": "conformance/loj-history/v1alpha1/expected/hist-022.json",
+      "success": false
     }
   ]
 }

@@ -2,6 +2,17 @@
 
 見出しの「草案」は、[草案の版](spec/README.md#版の状態)への変更であることを示す。版の状態の正は、[規範仕様の入口](spec/README.md#規範とするもの)の表にある。版を公開したときは、公開の日付の項目を加える。
 
+## 固定参照の構造化形式（2026-11-11、草案）
+
+[law-of-japan/loj-spec#17](https://github.com/law-of-japan/loj-spec/issues/17)の修正である。草案の版への変更であり、版番号は上げない。
+
+- 共通の型のschemaに、RevisionRef、FixedRef、commitHashを定義した。`sameAs`はRevisionRefとした（形は変わらない）。
+- Sourceの`fixed`を、FixedRefのmapping、またはLoJの外の資料を固定する記述の文字列とした（TYPE-02）。`loj:`で始まる文字列を拒否する。
+- FIXREF-02に、Record参照の文字列表記`loj:<space>/<record>`を加えた。変換で落とさないものを参照の同一性のフィールドに限り、省略した`space`の補い方を定めた。
+- 期待結果の参照の`target`を文字列表記で書くと定め（CONF-01）、期待結果のschemaに書式を加えた。common-001・003の`target`を`loj:loj/…`に書き直した。
+- 適合ケースhist-019（固定参照と外部の資料の固定、架空）と、負例hist-020〜022（短縮したcommit、`revision`のない固定参照、LoJの中の資料の文字列での固定）を加えた。
+- DDR-019、用語集、制限、要件との対応表を更新した。
+
 ## 確定日の定義（2026-11-11、草案）
 
 [law-of-japan/loj-spec#14](https://github.com/law-of-japan/loj-spec/issues/14)の修正である。草案の版への変更であり、版番号は上げない。
