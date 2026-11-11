@@ -37,6 +37,10 @@
           "from": {
             "$ref": "https://law-of-japan.github.io/loj-spec/schemas/common/v1alpha1/types.schema.json#/$defs/RecordRef"
           },
+          "promulgated": {
+            "$comment": "HIST-03: the promulgation of the from-law; compared across Records by XREF-06.",
+            "$ref": "https://law-of-japan.github.io/loj-spec/schemas/common/v1alpha1/types.schema.json#/$defs/TimePoint"
+          },
           "items": {
             "type": "array",
             "items": {
@@ -56,6 +60,24 @@
                 },
                 "verification": {
                   "$ref": "https://law-of-japan.github.io/loj-spec/schemas/common/v1alpha1/types.schema.json#/$defs/Verification"
+                },
+                "retroactive": {
+                  "$comment": "HIST-03, HIST-06: the provision that makes this item retroactive.",
+                  "type": "object",
+                  "properties": {
+                    "raw": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "evidence": {
+                      "$ref": "https://law-of-japan.github.io/loj-spec/schemas/common/v1alpha1/types.schema.json#/$defs/evidenceList"
+                    }
+                  },
+                  "additionalProperties": false,
+                  "required": [
+                    "raw",
+                    "evidence"
+                  ]
                 }
               },
               "additionalProperties": false,

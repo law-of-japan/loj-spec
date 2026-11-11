@@ -224,6 +224,88 @@
       },
       "expected": "conformance/common/v1alpha1/expected/common-012.json",
       "success": false
+    },
+    {
+      "id": "common-013",
+      "title": "版パッケージの番号と採用中の番号主張（祝日法）",
+      "requirements": [
+        "XREF-05",
+        "MAN-01",
+        "REG-03"
+      ],
+      "check": "L4",
+      "category": "displayConsistency",
+      "normative": true,
+      "input": {
+        "kind": "records",
+        "registry": "conformance/loj-registry/v1alpha1/valid/reg-001/registry",
+        "repositories": [
+          "conformance/loj-history/v1alpha1/valid/hist-001/repo"
+        ]
+      },
+      "expected": "conformance/common/v1alpha1/expected/common-013.json",
+      "success": true
+    },
+    {
+      "id": "common-014",
+      "title": "版パッケージの番号が採用中の番号主張と食い違う",
+      "requirements": [
+        "XREF-05",
+        "MAN-01"
+      ],
+      "check": "L4",
+      "category": "displayConsistency",
+      "normative": true,
+      "input": {
+        "kind": "records",
+        "registry": "conformance/loj-registry/v1alpha1/valid/reg-001/registry",
+        "repositories": [
+          "conformance/common/v1alpha1/valid/common-014/hist-001"
+        ]
+      },
+      "expected": "conformance/common/v1alpha1/expected/common-014.json",
+      "success": true
+    },
+    {
+      "id": "common-015",
+      "title": "同じ改正法令の公布の時点が一致する（架空）",
+      "requirements": [
+        "XREF-06",
+        "HIST-03"
+      ],
+      "check": "L4",
+      "category": "timeConsistency",
+      "normative": true,
+      "input": {
+        "kind": "records",
+        "registry": "conformance/common/v1alpha1/valid/common-015/registry",
+        "repositories": [
+          "conformance/loj-history/v1alpha1/valid/hist-016/repo",
+          "conformance/common/v1alpha1/valid/common-015/hist-016b"
+        ]
+      },
+      "expected": "conformance/common/v1alpha1/expected/common-015.json",
+      "success": true
+    },
+    {
+      "id": "common-016",
+      "title": "同じ改正法令の公布の時点が食い違う（架空）",
+      "requirements": [
+        "XREF-06"
+      ],
+      "check": "L4",
+      "category": "timeConsistency",
+      "normative": true,
+      "input": {
+        "kind": "records",
+        "registry": "conformance/common/v1alpha1/valid/common-015/registry",
+        "repositories": [
+          "conformance/loj-history/v1alpha1/valid/hist-016/repo",
+          "conformance/common/v1alpha1/invalid/common-016/hist-016b"
+        ]
+      },
+      "expected": "conformance/common/v1alpha1/expected/common-016.json",
+      "success": false
     }
   ]
 }

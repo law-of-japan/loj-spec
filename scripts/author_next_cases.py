@@ -17,6 +17,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 C = ROOT / "conformance"
 HIST_POS = "conformance/loj-history/v1alpha1/valid/hist-001/repo"
+POS_016 = "conformance/loj-history/v1alpha1/valid/hist-016/repo"
 REG_POS = "conformance/loj-registry/v1alpha1/valid/reg-001/registry"
 SV = {"hist": "loj-history/v1alpha1", "glyph": "loj-glyphs/v1alpha1", "reg": "loj-registry/v1alpha1",
       "rebuild": "loj-rebuild/v1alpha1", "pkg": "loj/v1alpha2", "common": "common/v1alpha1"}
@@ -175,6 +176,23 @@ def history():
         add("hist", title, [rule], "L3", {"kind": "repository", "path": rel(dest)},
             {"results": [l3("historyStructure", "fail")], "diagnostics": [diag(rule, SV["hist"])]}, False,
             "historyStructure")
+    # 2026-11-11 (#19): promulgation of the from-law later than the effective time (HIST-06).
+    late = ('      value: "2099-06-01"\n      raw: 令和八十一年六月一日\n      precision: day\n      evidence: [{source: src-fictional, locator: 公布の日}]\n',
+            '      value: "2099-08-01"\n      raw: 令和八十一年八月一日\n      precision: day\n      evidence: [{source: src-fictional, locator: 公布の日}]\n')
+    dest = next_dir("hist", True) / "repo"
+    mutate(dest, POS_016, [("history.yaml",) + late])
+    add("hist", "施行時点より後の公布で遡及の根拠がない（架空）", ["HIST-06", "HIST-03"], "L3",
+        {"kind": "repository", "path": rel(dest)},
+        {"results": [l3("historyStructure")], "diagnostics": [diag("HIST-06", SV["hist"], "warning")]}, True,
+        "historyStructure")
+    dest = next_dir("hist", True) / "repo"
+    mutate(dest, POS_016, [("history.yaml",) + late,
+                           ("history.yaml", "      - id: i1\n        scope: {text: 第一条}\n",
+                            "      - id: i1\n        scope: {text: 第一条}\n"
+                            "        retroactive:\n          raw: この法律は、令和八十一年七月一日から適用する\n"
+                            "          evidence: [{source: src-fictional, locator: 附則第二項}]\n")])
+    add("hist", "施行時点より後の公布で遡及の根拠がある（架空）", ["HIST-06", "HIST-03"], "L3",
+        {"kind": "repository", "path": rel(dest)}, {"results": [l3("historyStructure")]}, True, "historyStructure")
 
 
 # --- loj-glyphs --------------------------------------------------------------
@@ -377,6 +395,50 @@ def changes_and_references():
             {"resolution": {"result": "error"}, "diagnostics": [diag(rule, SV["common"])]}, False)
 
 
+# --- common: L4 display and promulgation (2026-11-11, #13 and #19) ---------------
+def fictional_record(folder, ident, label, repository):
+    body = ("schemaVersion: loj-registry/v1alpha1\nid: " + ident + "\nlabel: " + label + "\nstatus: active\n"
+            "identity:\n  evidence: [{source: src-fictional, locator: 題名}]\n  verification: {state: confirmed}\n"
+            "text: {state: notCollected}\n")
+    if repository:
+        body += "repository: {location: example.invalid/" + ident + ", canonicalBranch: main}\n"
+    body += "sources:\n  - {id: src-fictional, kind: other, title: 適合ケースのための架空の資料}\nnumbers: []\nexternalIds: []\n"
+    path = folder / "records" / (ident + ".yaml")
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_bytes(body.encode("utf-8"))
+
+
+def display_and_promulgation():
+    display = {"check": "L4", "category": "displayConsistency", "result": "pass"}
+    add("common", "版パッケージの番号と採用中の番号主張（祝日法）", ["XREF-05", "MAN-01", "REG-03"], "L4",
+        {"kind": "records", "registry": REG_POS, "repositories": [HIST_POS]}, {"results": [display]}, True,
+        "displayConsistency")
+    dest = next_dir("common", True) / "hist-001"
+    mutate(dest, HIST_POS, [(ZWG + "law.yaml", '"昭和二十三年法律第百七十八号"', '"昭和二十三年法律第百七十九号"')])
+    add("common", "版パッケージの番号が採用中の番号主張と食い違う", ["XREF-05", "MAN-01"], "L4",
+        {"kind": "records", "registry": REG_POS, "repositories": [rel(dest)]},
+        {"results": [display], "diagnostics": [diag("XREF-05", SV["common"], "warning")]}, True, "displayConsistency")
+    base = next_dir("common", True)
+    registry = base / "registry"
+    fictional_record(registry, "20990401-law-1", "架空の法律（時点の計算の例）", True)
+    fictional_record(registry, "20990402-law-3", "架空の法律（公布の時点の比較の例）", True)
+    fictional_record(registry, "20990601-law-2", "架空の改正法", False)
+    other = base / "hist-016b"
+    mutate(other, POS_016, [("history.yaml", "record: {id: 20990401-law-1, label: 架空の法律（時点の計算の例）}",
+                             "record: {id: 20990402-law-3, label: 架空の法律（公布の時点の比較の例）}")])
+    time = {"check": "L4", "category": "timeConsistency"}
+    add("common", "同じ改正法令の公布の時点が一致する（架空）", ["XREF-06", "HIST-03"], "L4",
+        {"kind": "records", "registry": rel(registry), "repositories": [POS_016, rel(other)]},
+        {"results": [dict(time, result="pass")]}, True, "timeConsistency")
+    dest = next_dir("common", False) / "hist-016b"
+    mutate(dest, rel(other), [("history.yaml", '      value: "2099-06-01"\n      raw: 令和八十一年六月一日\n',
+                               '      value: "2099-06-02"\n      raw: 令和八十一年六月二日\n')])
+    add("common", "同じ改正法令の公布の時点が食い違う（架空）", ["XREF-06"], "L4",
+        {"kind": "records", "registry": rel(registry), "repositories": [POS_016, rel(dest)]},
+        {"results": [dict(time, result="fail")], "diagnostics": [diag("XREF-06", SV["common"])]}, False,
+        "timeConsistency")
+
+
 def main():
     for suite, folder in FOLDER.items():
         for group in ("invalid", "expected"):
@@ -388,6 +450,7 @@ def main():
     rebuild()
     cross_record()
     changes_and_references()
+    display_and_promulgation()
     for suite, folder in FOLDER.items():
         write_json(C / folder / "manifest.json", {"suite": SV[suite], "cases": INDEX[suite]})
     print("Authored " + ", ".join(f"{k}: {len(v)}" for k, v in INDEX.items()) + "; no validator invoked.")

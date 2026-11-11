@@ -438,6 +438,40 @@
       },
       "expected": "conformance/loj-history/v1alpha1/expected/hist-026.json",
       "success": false
+    },
+    {
+      "id": "hist-027",
+      "title": "施行時点より後の公布で遡及の根拠がない（架空）",
+      "requirements": [
+        "HIST-06",
+        "HIST-03"
+      ],
+      "check": "L3",
+      "category": "historyStructure",
+      "normative": true,
+      "input": {
+        "kind": "repository",
+        "path": "conformance/loj-history/v1alpha1/valid/hist-027/repo"
+      },
+      "expected": "conformance/loj-history/v1alpha1/expected/hist-027.json",
+      "success": true
+    },
+    {
+      "id": "hist-028",
+      "title": "施行時点より後の公布で遡及の根拠がある（架空）",
+      "requirements": [
+        "HIST-06",
+        "HIST-03"
+      ],
+      "check": "L3",
+      "category": "historyStructure",
+      "normative": true,
+      "input": {
+        "kind": "repository",
+        "path": "conformance/loj-history/v1alpha1/valid/hist-028/repo"
+      },
+      "expected": "conformance/loj-history/v1alpha1/expected/hist-028.json",
+      "success": true
     }
   ]
 }

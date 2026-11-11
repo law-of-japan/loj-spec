@@ -125,6 +125,8 @@
 | 確定日 | — | 精度が日の`date`、または`base`が確定日である`derived`。確定日でない時点値は、順序の比較に使わない | [TIME-03](../spec/common/v1alpha1/06-time.md#time-03-derivedとcalc) |
 | 計算規則 | `rule`、`base`、`calc` | `derived`の規則の原文、基準の時点、機械が読める計算（`sameDay`、`nextDay`、`afterElapsed`） | [TIME-03](../spec/common/v1alpha1/06-time.md#time-03-derivedとcalc) |
 | 委任、確定 | `delegation`、`determinedBy` | `pending`の委任先・条件と、確定させた根拠（施行期日政令等）。確定しても委任の記録を消さない | [TIME-04](../spec/common/v1alpha1/06-time.md#time-04-pendingと確定) |
+| 公布の時点 | `promulgated` | 関係の起点の法令（改正法令等）の公布の時点（TimePoint）。終点の履歴マニフェストの関係に記録する。同じ起点の関係どうしの一致をL4の時点の整合で検査する | [HIST-03](../spec/loj-history/v1alpha1/01-history.md#hist-03-関係と内訳)、[XREF-06](../spec/common/v1alpha1/10-cross-record.md#xref-06-公布の時点の整合) |
+| 遡及の根拠 | `retroactive` | 関係の内訳が、公布・基礎状態より前の施行時点を持つことの根拠（規定の原文と箇所）。あれば順序の警告を出さない | [HIST-03](../spec/loj-history/v1alpha1/01-history.md#hist-03-関係と内訳)、[HIST-06](../spec/loj-history/v1alpha1/01-history.md#hist-06-版の時間の情報と順序) |
 | sameAs | `sameAs` | 同じ時点を定める他のRecordのRevisionを指す補助。L4の時点の整合で検査する | [TIME-07](../spec/common/v1alpha1/06-time.md#time-07-sameas)、[XREF-03](../spec/common/v1alpha1/10-cross-record.md#xref-03-時点の整合) |
 
 ## 根拠と同定
@@ -138,6 +140,7 @@
 | 確認状態 | Verification、`verification.state` | `unverified`（未確認）、`confirmed`（確認済み）、`disputed`（疑義あり）、`retracted`（撤回） | [TYPE-04](../spec/common/v1alpha1/05-types.md#type-04-verification) |
 | 確認済みの主張 | — | `verification.state: confirmed`の主張。箇所付きのEvidenceを一つ以上持つ。出典の内容が裏付けるかは機械で判定しない | [TYPE-05](../spec/common/v1alpha1/05-types.md#type-05-確認済みの主張の根拠) |
 | 対象範囲 | Scope、`text`、`nodes` | 関係・条件が及ぶ範囲。`text`は改め文等の原文のまま、`nodes`は同じcommitの版のノードIDの補助 | [TYPE-06](../spec/common/v1alpha1/05-types.md#type-06-scope)、[TYPE-07](../spec/common/v1alpha1/05-types.md#type-07-scopeとノードの照合)、[TYPE-08](../spec/common/v1alpha1/05-types.md#type-08-scopeのノードの記録版) |
+| 表示用の値 | `law.number`、`law.promulgatedAt` | 版パッケージの`law`に置く法令番号と公布日。根拠・順序・同定に使わない。正は採用中の番号主張と関係の`promulgated`。番号の食い違いはL4の表示の整合で警告とする | [CORE-02](../spec/common/v1alpha1/01-overview.md#core-02-ファイルの種類とschemaversion)、[MAN-01](../spec/v1alpha2/02-manifest.md#man-01-lawyamlの形)、[XREF-05](../spec/common/v1alpha1/10-cross-record.md#xref-05-表示の整合) |
 | 番号主張 | `numbers` | 法令番号についての、出典付きの主張。`state`（`exists`等）、原表記、構造化した値、`decision`を持つ | [REG-03](../spec/loj-registry/v1alpha1/01-registry.md#reg-03-番号主張) |
 | 採否 | `decision` | 番号主張の`adopted`（採用）、`pending`（保留）、`retracted`（撤回）。採用は同時に一つまで | [REG-03](../spec/loj-registry/v1alpha1/01-registry.md#reg-03-番号主張) |
 | supersedes | `supersedes` | 訂正後の番号主張から訂正前の主張を指す。訂正前の主張は削除しない | [REG-04](../spec/loj-registry/v1alpha1/01-registry.md#reg-04-訂正と履歴) |
@@ -219,7 +222,7 @@
 | 診断 | — | 検査器が報告する違反等。規則と、対象のファイルのschemaVersionを示す | [VAL-07](../spec/common/v1alpha1/03-validation.md#val-07-規則と診断) |
 | 検査器 | validator | 正本を規範に照らして検査する実装。このリポジトリのCIは検査器ではない | [CONF-03](../spec/common/v1alpha1/04-conformance.md#conf-03-このリポジトリの検査)、[実装ガイド](implementation-guide.md) |
 | 適合レベル | L0〜L4 | L0 ファイル形式・Manifest・Markdown構文、L1 法令の構造、L2 法令内の参照（予約）、L3 原典・履歴、L4 他法令との整合。各レベルを独立に判定し、上位の合格から下位の合格を推論しない | [VAL-01](../spec/common/v1alpha1/03-validation.md#val-01-適合レベルの定義)、[VAL-02](../spec/common/v1alpha1/03-validation.md#val-02-独立した判定) |
-| 区分 | `category` | L3・L4を分けた検査の単位。L3は`historyStructure`（履歴構造）、`evidence`（根拠）、`sourceMatch`（原典照合）。L4は`relationResolution`（関係の解決）、`relationConsistency`（関係の整合）、`timeConsistency`（時点の整合）、`clauseReference`（条項参照の解決） | [VAL-05](../spec/common/v1alpha1/03-validation.md#val-05-l3の区分と主張)、[VAL-06](../spec/common/v1alpha1/03-validation.md#val-06-l4の区分) |
+| 区分 | `category` | L3・L4を分けた検査の単位。L3は`historyStructure`（履歴構造）、`evidence`（根拠）、`sourceMatch`（原典照合）。L4は`relationResolution`（関係の解決）、`relationConsistency`（関係の整合）、`timeConsistency`（時点の整合）、`displayConsistency`（表示の整合）、`clauseReference`（条項参照の解決） | [VAL-05](../spec/common/v1alpha1/03-validation.md#val-05-l3の区分と主張)、[VAL-06](../spec/common/v1alpha1/03-validation.md#val-06-l4の区分) |
 | 正式、予約 | — | 正式は本版で合格を宣言できるもの。予約は将来の版で定めるもので、合格を主張できない（L2、原典照合、条項参照の解決） | [VAL-01](../spec/common/v1alpha1/03-validation.md#val-01-適合レベルの定義)、[VAL-05](../spec/common/v1alpha1/03-validation.md#val-05-l3の区分と主張)、[VAL-06](../spec/common/v1alpha1/03-validation.md#val-06-l4の区分) |
 | 原典照合 | `sourceMatch` | 版の本文と固定した原典資料の一致を確かめるL3の区分。予約 | [SRCM-01](../spec/common/v1alpha1/03-validation.md#srcm-01-l3の原典照合) |
 | 結果の値 | 合格、不合格、対象なし、未完了（`pass`、`fail`、`notApplicable`、`incomplete`） | 各レベル・区分の結果。対象なし・未完了を合格とみなさない | [VAL-04](../spec/common/v1alpha1/03-validation.md#val-04-結果の値) |

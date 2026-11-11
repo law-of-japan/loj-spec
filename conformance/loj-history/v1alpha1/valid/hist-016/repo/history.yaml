@@ -6,6 +6,13 @@ relations:
   - id: rel-amend
     type: amends
     from: {id: 20990601-law-2, label: 架空の改正法}
+    promulgated:
+      state: date
+      value: "2099-06-01"
+      raw: 令和八十一年六月一日
+      precision: day
+      evidence: [{source: src-fictional, locator: 公布の日}]
+      verification: {state: unverified, reason: 架空の資料}
     evidence: [{source: src-fictional, locator: 附則第一条}]
     verification: {state: unverified, reason: 架空の資料}
     status: active

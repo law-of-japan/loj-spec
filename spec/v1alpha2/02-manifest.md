@@ -5,8 +5,10 @@
 - `law.yaml`は、[CORE-03](../common/v1alpha1/01-overview.md)のYAMLのデータモデルに従う単一のmappingでなければならない（MUST）。
 - すべての階層の未知のフィールドを拒否する。必須・任意のフィールドと型は[Manifest Schema](../../schemas/v1alpha2/manifest.schema.json)で定める。schemaの検査では、日付の`format`の検査を有効にしなければならない（MUST）。
 - 必須のフィールドは、`schemaVersion`、`law`（`id`、`title`、`type`、`number`、`promulgatedAt`、`language`）、`documents`である。
-  - `number`は文字列、または`null`（法令番号なし）とする。
-  - `promulgatedAt`は実在するグレゴリオ暦の`YYYY-MM-DD`、または`null`（不明）とする。空文字列で不明を表してはならない（MUST NOT）。
+  - `number`と`promulgatedAt`は、表示用の値である（[CORE-02](../common/v1alpha1/01-overview.md)）。根拠・順序・同定に使わない。
+  - `number`は、法令番号の原表記の文字列、または`null`（表示する値を持たない）とする。番号がないのか、不明なのかは、`law.yaml`では区別せず、登録台帳の番号主張の`state`で表す。判読できない字は〓（U+3013）とする（GLYPH-03と同じ）。
+  - `promulgatedAt`は実在するグレゴリオ暦の`YYYY-MM-DD`、または`null`（表示する値を持たない）とする。空文字列で表してはならない（MUST NOT）。
+  - `number`と登録台帳の採用中の番号主張との食い違いは、L4の表示の整合で警告とする（[XREF-05](../common/v1alpha1/10-cross-record.md)）。`promulgatedAt`と関係の`promulgated`の整合は検査しない。
   - `language`は`ja`とする。
   - `type`は`constitution`／`act`／`cabinetOrder`／`imperialOrder`／`ministerialOrdinance`／`rule`／`ordinance`／`other`のいずれかとする。
   - `id`は、英数字で始まるASCIIの英数字とハイフンで、大小文字を区別し、永続的な登録キーとする。法令リポジトリの版パッケージでは、Record IDと一致しなければならない（MUST。履歴マニフェストの要件で検査する）。`id`から種別・日付を導いてはならない（MUST NOT）。

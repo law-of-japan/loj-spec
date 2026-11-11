@@ -2,6 +2,18 @@
 
 見出しの「草案」は、[草案の版](spec/README.md#版の状態)への変更であることを示す。版の状態の正は、[規範仕様の入口](spec/README.md#規範とするもの)の表にある。版を公開したときは、公開の日付の項目を加える。
 
+## 法令番号・公布日の表示用の値と、公布の時点・遡及の根拠（2026-11-12、草案）
+
+[law-of-japan/loj-spec#13](https://github.com/law-of-japan/loj-spec/issues/13)と[law-of-japan/loj-spec#19](https://github.com/law-of-japan/loj-spec/issues/19)の修正である。草案の版への変更であり、版番号は上げない。
+
+- CORE-02に、版パッケージの`law.number`・`law.promulgatedAt`を表示用の値とする例外を書いた。根拠・順序・同定に使わない。正は、登録台帳の採用中の番号主張と、関係の`promulgated`とした。
+- MAN-01: `number`と`promulgatedAt`の`null`を「表示する値を持たない」とし、判読できない字を〓とした。REG-03に、採用中の番号主張が法令番号の正であることを書いた。
+- HIST-03: 関係に任意の`promulgated`（公布の時点）、内訳に任意の`retroactive`（遡及の根拠）を加えた。HIST-05は、改正法の公布の時点を関係から得るとした。HIST-06の順序の警告の根拠を、これらのフィールドで定めた。
+- L4に区分「表示の整合」（`displayConsistency`）とXREF-05（`law.number`と採用中の番号主張。食い違いは警告）を加えた。XREF-06（同じ起点の関係の公布の時点。食い違いは違反）を「時点の整合」に加えた。
+- 履歴マニフェストのschema、適合ケースの索引・期待結果・報告のschemaの区分、Manifestのschemaの説明を更新した。
+- 正例hist-001・hist-016の関係に`promulgated`を加えた（hist-001を写した負例も同じ行が増える）。適合ケースhist-027（遡及の根拠のない公布より前の施行の警告）、hist-028（遡及の根拠あり）、common-013・014（表示の整合の合格と警告）、common-015・016（公布の時点の一致と食い違い）を加えた。
+- DDR-012・016・017と用語集を更新した。
+
 ## 版パッケージの表示番号・マーカーの空白・セルの結合・附則のtitle（2026-11-11、草案）
 
 [law-of-japan/loj-spec#25](https://github.com/law-of-japan/loj-spec/issues/25)の修正である。草案の版への変更であり、版番号は上げない。

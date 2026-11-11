@@ -46,7 +46,8 @@
 | `type` | 必須 | `amends`（改正）／`totallyRevises`（全部改正）／`repeals`（廃止）／`succeeds`（後継） |
 | `from` | 必須 | 起点のRecordRef（改正法令、全部改正後の新しいRecord、廃止を定める法令、後継の法令） |
 | `evidence`、`verification` | 必須 | 関係全体の根拠と確認状態 |
-| `items` | `amends`・`repeals`・`totallyRevises`で必須、`succeeds`で任意 | 対象範囲ごとの内訳。各項目は`id`、`scope`（Scope）、`effective`（TimePoint）、`evidence`、`verification` |
+| `promulgated` | 任意 | 起点の法令（改正法令、廃止を定める法令等）の公布の時点（TimePoint）。`amends`・`repeals`・`totallyRevises`では持つことを推奨する（SHOULD） |
+| `items` | `amends`・`repeals`・`totallyRevises`で必須、`succeeds`で任意 | 対象範囲ごとの内訳。各項目は`id`、`scope`（Scope）、`effective`（TimePoint）、`evidence`、`verification`と、任意の`retroactive`（遡及の根拠。`raw`（遡及を定める規定の原文）と`evidence`） |
 | `status` | 必須 | `active`／`retracted` |
 
 - 関係は、終点のRecordの履歴マニフェストに置かなければならない（MUST）。起点のRecordに写してはならない（MUST NOT）。起点からは、RecordRefと関係の`id`の組で参照する。
@@ -81,7 +82,7 @@
 - `basis`が参照する内訳の`effective`と、Revisionの`effective`は一致しなければならない（MUST）。両方が`date`の場合に検査する。
 - 同じ関係・同じ施行時点のRevisionが二つ以上あってはならない（MUST NOT）。`status: active`のRevisionだけを数え、施行時点は、両方が確定日（[TIME-03](../../common/v1alpha1/06-time.md)）のときに日付（`value`）の一致で比べる。確定日は精度が日の値だけなので、精度が月・年の値や`pending`等、確定日でない施行時点を含む組は、この規則では比べない。
 - `status: active`のRevisionの`basis`は、`status: retracted`の関係と、`verification.state: retracted`の内訳を参照してはならない（MUST NOT）。
-- 改正法の公布日をRevisionに写さない。改正法のRecordと関係から得る。
+- 改正法の公布の時点をRevisionに写さない。関係の`promulgated`から得る。
 
 ## HIST-06 版の時間の情報と順序
 
@@ -91,9 +92,9 @@
 
   | 状況 | 結果 |
   |---|---|
-  | 基礎状態の施行時点が自身より後（両方とも`date`） | 警告。遡及等の根拠が記録されていれば警告しない |
-  | 改正法の公布日が施行時点より後（両方とも`date`） | 警告。遡及の根拠が記録されていれば警告しない |
-  | 比べる一方が`date`でない | 判定不能。合格にも不合格にもしない |
+  | 基礎状態の施行時点が自身より後（両方とも`date`） | 警告。`basis`が参照する内訳が`retroactive`を持てば警告しない |
+  | `basis`が参照する関係の`promulgated`が、自身の施行時点より後（両方とも`date`） | 警告。`basis`が参照する内訳が`retroactive`を持てば警告しない |
+  | 比べる一方が`date`でない。または関係が`promulgated`を持たない | 判定不能。合格にも不合格にもしない |
   | `basedOn`が`unknown` | 保留 |
 
 ## HIST-07 適用関係
