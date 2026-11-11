@@ -5,6 +5,7 @@ Negative L1 fixture semantics require a future implementation adapter/review.
 """
 import json
 import re
+import unicodedata
 from pathlib import Path
 from urllib.parse import unquote, urlsplit
 
@@ -563,6 +564,48 @@ def check_archive():
     return len(archived)
 
 
+# 「字（U+XXXX）」「字 U+XXXX」: one character immediately before a code point notation.
+CODEPOINT_NOTE = re.compile(r"(.)(?:（| )U\+([0-9A-F]{4,6})(?![0-9A-F])")
+
+
+def codepoint_mismatches(text):
+    """(line, actual, written) for each character written next to a code point that is not its own,
+    e.g. a compatibility ideograph silently normalized to the unified one.
+
+    The character must be a letter, digit or symbol standing alone: one that ends a word
+    (空白（U+3000）), punctuation and range marks (U+F900〜U+FAFF) are not targets.
+    Limitation: a character directly after another letter is never checked, so an example must be
+    set off by a space or punctuation, and the notation must use a full-width parenthesis or a space
+    and upper-case hex (half-width "(U+...)" and "u+..." are not checked) (「例: 神 U+FA19」, not 「互換漢字神（U+FA19）」) to be checked.
+    """
+    found = []
+    for match in CODEPOINT_NOTE.finditer(text):
+        char, point = match[1], int(match[2], 16)
+        category = unicodedata.category(char)
+        before = text[match.start() - 1] if match.start() else " "
+        if category[0] not in "LNS" or category == "Sm" or unicodedata.category(before)[0] == "L":
+            continue
+        if ord(char) != point:
+            found.append((text.count("\n", 0, match.start()) + 1, f"U+{ord(char):04X}", match[2]))
+    return found
+
+
+def check_codepoints():
+    """Code point notations in spec/ and docs/ must match their characters.
+
+    docs/archive is skipped: its content is fixed, and it keeps characters that were normalized
+    before this check existed.
+    """
+    files = [ROOT / name for name in ROOT_DOCS]
+    files += list((ROOT / "spec").rglob("*.md")) + list((ROOT / "docs").rglob("*.md"))
+    files = [path for path in files if ARCHIVE not in path.resolve().parents]
+    for path in files:
+        problems = codepoint_mismatches(path.read_text(encoding="utf-8"))
+        require(not problems, "Character does not match its code point notation in " + str(path) + ": "
+                + ", ".join(f"line {line}: {actual} written as U+{written}" for line, actual, written in problems))
+    return len(files)
+
+
 def table_rows(text, heading):
     """Rows of the first Markdown table in the `## heading` section, as dicts keyed by header cell.
 
@@ -663,11 +706,13 @@ def main():
     next_lines, uncovered_next = audit_next(all_schemas())
     links = check_links()
     archived = check_archive()
+    noted = check_codepoints()
     states = check_states()
     print(f"Artifact audit PASS: {len(schemas)} schemas; {len(seen)} case definitions; {links} local links.")
     labels = {"草案": "draft", "公開": "published", "凍結": "frozen"}  # ASCII: stdout may not encode Japanese
     print("Version states: " + "; ".join(name + "=" + labels[state] for name, state in sorted(states.items()))
           + " (tables only; publication tags are not checked).")
+    print(f"Code point notations match their characters in {noted} documents (docs/archive excluded).")
     print(f"Archived documents: {archived} (status lines present; not linked from spec/).")
     print(f"Positive source/tree audits: {positive}; executed L0 negatives: {negative_l0}.")
     print(f"L1 negative definitions only (NOT executed): {negative_l1}; informative L2: {illustrative}.")

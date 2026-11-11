@@ -161,6 +161,62 @@ class ArchiveAuditTests(unittest.TestCase):
                 self.run_check(change)
 
 
+class CodePointNotationTests(unittest.TestCase):
+    """A character written next to its code point must be that code point (DDR-021: silent normalization)."""
+
+    COMPAT, UNIFIED = chr(0xFA19), chr(0x795E)
+
+    def test_matching_notations_pass(self):
+        texts = [
+            f"例: {self.COMPAT} U+FA19。",
+            f"{self.COMPAT}（U+FA19）／{self.UNIFIED}（U+795E）",
+            "〓（U+3013）を置く。",
+            "全角空白（U+3000）を置く。",  # 白 ends the word 空白, not a character example
+            "互換漢字（U+F900〜U+FAFF、U+2F800〜U+2FA1F）",
+            "私用領域の文字、U+FFFD、画像",
+            "例: 〜（U+FF5E）、＋（U+002B）",  # punctuation (〜 is Pd) and math symbols (Sm) are never checked
+        ]
+        for text in texts:
+            with self.subTest(text):
+                self.assertEqual(v.codepoint_mismatches(text), [])
+
+    def test_mismatches_reported(self):
+        cases = {
+            f"例: {self.UNIFIED} U+FA19。": [(1, "U+795E", "FA19")],
+            f"一行目\n{self.UNIFIED}（U+FA19）／{self.UNIFIED}（U+795E）": [(2, "U+795E", "FA19")],
+            "髙（U+9AD8）": [(1, "U+9AD9", "9AD8")],
+            "例: 〓（U+3012）": [(1, "U+3013", "3012")],  # other symbols (So) are checked
+        }
+        for text, wanted in cases.items():
+            with self.subTest(text):
+                self.assertEqual(v.codepoint_mismatches(text), wanted)
+
+    def run_check(self, files):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            for name, text in {**{n: "# T\n" for n in v.ROOT_DOCS}, **files}.items():
+                (root / name).parent.mkdir(parents=True, exist_ok=True)
+                (root / name).write_text(text, encoding="utf-8")
+            saved = v.ROOT, v.ARCHIVE
+            v.ROOT, v.ARCHIVE = root.resolve(), (root / "docs/archive").resolve()
+            try:
+                return v.check_codepoints()
+            finally:
+                v.ROOT, v.ARCHIVE = saved
+
+    def test_check_scope(self):
+        bad = f"{self.UNIFIED} U+FA19\n"
+        # ROOT_DOCS and spec/a/01.md are checked; docs/archive/old.md is skipped.
+        self.assertEqual(self.run_check({"spec/a/01.md": f"{self.COMPAT} U+FA19\n", "docs/archive/old.md": bad}),
+                         len(v.ROOT_DOCS) + 1)
+        for name in ("spec/a/01.md", "docs/guide.md", "CHANGELOG.md"):
+            with self.subTest(name), self.assertRaises(ValueError):
+                self.run_check({name: bad})
+
+    def test_repository_notations(self):
+        self.assertGreater(v.check_codepoints(), 0)
+
+
 class VersionStateTests(unittest.TestCase):
     """The state tables in spec/README.md are the source of truth for draft/published/frozen."""
 
