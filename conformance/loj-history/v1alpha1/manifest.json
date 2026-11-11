@@ -290,6 +290,22 @@
       },
       "expected": "conformance/loj-history/v1alpha1/expected/hist-017.json",
       "success": false
+    },
+    {
+      "id": "hist-018",
+      "title": "確定日の基準から計算したvalueの書き漏らし",
+      "requirements": [
+        "TIME-03"
+      ],
+      "check": "L3",
+      "category": "historyStructure",
+      "normative": true,
+      "input": {
+        "kind": "repository",
+        "path": "conformance/loj-history/v1alpha1/invalid/hist-018/repo"
+      },
+      "expected": "conformance/loj-history/v1alpha1/expected/hist-018.json",
+      "success": false
     }
   ]
 }

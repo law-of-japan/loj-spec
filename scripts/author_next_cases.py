@@ -134,6 +134,12 @@ def history():
     add("hist", "確定日でない基準から計算したvalue", ["TIME-03"], "L3", {"kind": "repository", "path": rel(dest)},
         {"results": [l3("historyStructure", "fail")], "diagnostics": [diag("TIME-03", SV["common"])]}, False,
         "historyStructure")
+    dest = next_dir("hist", False) / "repo"
+    mutate(dest, "conformance/loj-history/v1alpha1/valid/hist-004/repo",
+           [("history.yaml", '          value: "2019-05-01"\n', "")])
+    add("hist", "確定日の基準から計算したvalueの書き漏らし", ["TIME-03"], "L3", {"kind": "repository", "path": rel(dest)},
+        {"results": [l3("historyStructure", "fail")], "diagnostics": [diag("TIME-03", SV["common"])]}, False,
+        "historyStructure")
 
 
 # --- loj-glyphs --------------------------------------------------------------
