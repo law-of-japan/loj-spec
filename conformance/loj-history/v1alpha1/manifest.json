@@ -328,7 +328,8 @@
       "id": "hist-020",
       "title": "固定参照の短縮したcommit",
       "requirements": [
-        "FIXREF-01"
+        "FIXREF-01",
+        "FIXREF-04"
       ],
       "check": "L3",
       "category": "evidence",
@@ -344,7 +345,8 @@
       "id": "hist-021",
       "title": "revisionのない固定参照",
       "requirements": [
-        "FIXREF-01"
+        "FIXREF-01",
+        "FIXREF-03"
       ],
       "check": "L3",
       "category": "evidence",
@@ -360,7 +362,8 @@
       "id": "hist-022",
       "title": "LoJの中の資料を文字列で固定する",
       "requirements": [
-        "FIXREF-01"
+        "FIXREF-01",
+        "TYPE-02"
       ],
       "check": "L3",
       "category": "evidence",

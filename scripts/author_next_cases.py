@@ -143,10 +143,10 @@ def history():
     fixed_pos = "conformance/loj-history/v1alpha1/valid/hist-019/repo"
     add("hist", "Sourceのfixedに書く固定参照と外部の資料の固定（架空）", ["FIXREF-01", "TYPE-02"], "L3",
         {"kind": "repository", "path": fixed_pos}, {"results": [l3("evidence")]}, True, "evidence")
-    for title, edits in [
-        ("固定参照の短縮したcommit", [("history.yaml", "commit: 02086ca793ace385b61e6fa5692709895e7e9b0e", "commit: 02086ca")]),
-        ("revisionのない固定参照", [("history.yaml", "      revision: b7k2m9qd\n", "")]),
-        ("LoJの中の資料を文字列で固定する", [("history.yaml",
+    for title, rule, edits in [
+        ("固定参照の短縮したcommit", "FIXREF-04", [("history.yaml", "commit: 02086ca793ace385b61e6fa5692709895e7e9b0e", "commit: 02086ca")]),
+        ("revisionのない固定参照", "FIXREF-03", [("history.yaml", "      revision: b7k2m9qd\n", "")]),
+        ("LoJの中の資料を文字列で固定する", "TYPE-02", [("history.yaml",
                                      "    fixed:\n      record: {id: 20990101-act-1, label: 架空法律第一号}\n      revision: b7k2m9qd\n"
                                      "      commit: 02086ca793ace385b61e6fa5692709895e7e9b0e\n"
                                      "      node: 20990101-act-1/main/article/1/paragraph/1\n",
@@ -154,8 +154,8 @@ def history():
     ]:
         dest = next_dir("hist", False) / "repo"
         mutate(dest, fixed_pos, edits)
-        add("hist", title, ["FIXREF-01"], "L3", {"kind": "repository", "path": rel(dest)},
-            {"results": [l3("evidence", "fail")], "diagnostics": [diag("FIXREF-01", SV["common"])]}, False, "evidence")
+        add("hist", title, sorted({"FIXREF-01", rule}), "L3", {"kind": "repository", "path": rel(dest)},
+            {"results": [l3("evidence", "fail")], "diagnostics": [diag(rule, SV["common"])]}, False, "evidence")
 
 
 # --- loj-glyphs --------------------------------------------------------------

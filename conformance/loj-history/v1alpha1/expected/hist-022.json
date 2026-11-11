@@ -8,7 +8,7 @@
   ],
   "diagnostics": [
     {
-      "rule": "FIXREF-01",
+      "rule": "TYPE-02",
       "schemaVersion": "common/v1alpha1",
       "class": "error"
     }
