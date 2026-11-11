@@ -203,6 +203,11 @@ class VersionStateTests(unittest.TestCase):
             "listed twice": {"readme": self.README.replace("[v1alpha2](v1alpha2/01.md) | 版パッケージ | 公開",
                                                            "[v1alpha1](v1alpha1/01.md) | 版パッケージ | 公開"),
                              "folders": ("common/v1alpha1", "v1alpha1")},
+            "row shorter than header": {"readme": self.README.replace("| [v1alpha2](v1alpha2/01.md) | 版パッケージ | 公開 |",
+                                                                      "| [v1alpha2](v1alpha2/01.md) | 公開 |")},
+            "missing section": {"readme": self.README.replace("## 凍結した版", "## 古い版")},
+            "section without table": {"readme": self.README.split("## 凍結した版")[0] + "## 凍結した版\n\nなし。\n",
+                                      "folders": ("common/v1alpha1", "v1alpha2")},
             "directory not listed": {"folders": self.FOLDERS + ("loj-history/v1alpha1",)},
             "listed directory missing": {"folders": ("common/v1alpha1", "v1alpha1")},
         }

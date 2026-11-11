@@ -574,6 +574,9 @@ def table_rows(text, heading):
     lines = [line for line in section[1].splitlines() if line.startswith("|")]
     require(len(lines) > 2, "spec/README.md section has no table: " + heading)
     cells = [[cell.strip() for cell in line.strip().strip("|").split("|")] for line in lines]
+    for row in cells[1:]:
+        require(len(row) == len(cells[0]), "spec/README.md table row has " + str(len(row)) + " cells, header has "
+                + str(len(cells[0])) + ": " + heading + ": " + row[0])
     return [dict(zip(cells[0], row)) for row in cells[2:]]
 
 

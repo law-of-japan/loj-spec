@@ -54,7 +54,7 @@
 | 版の状態 | 草案、公開、凍結 | 仕様の版が、変えてよい段階にあるかどうか。規範仕様の入口の表を正とする | [規範仕様の入口](../spec/README.md#版の状態) |
 | 草案の版 | 草案 | `main`にあるが、公開していない仕様の版。版番号を上げずに意味を変えてよく、予告なく変わる | [規範仕様の入口](../spec/README.md#版の状態) |
 | 公開した版 | 公開 | 規範仕様の入口の表の状態を「公開」とした変更が、`main`に入った仕様の版。意味を変えない。公開したcommitに、schemaVersionと同じ名前のタグを打つ | [規範仕様の入口](../spec/README.md#版の状態)、[CORE-04](../spec/common/v1alpha1/01-overview.md#core-04-版番号) |
-| 意味を変える | — | いずれかの入力について、適合の結果、診断の規則、ASTのいずれかが変わること | [規範仕様の入口](../spec/README.md#版の状態) |
+| 意味を変える | — | いずれかの入力について、適合の結果、診断の規則、ASTのいずれかが変わること。schemaの`description`や参考の文書の変更は、これらを変えない限り含まない | [規範仕様の入口](../spec/README.md#版の状態) |
 | 凍結した版 | `loj/v1alpha1` | 公開した版のうち、保守を止めた仕様の版。内容を変えない。検査器と適合データが対応し続けることを求めない | [規範仕様の入口](../spec/README.md#凍結した版) |
 | 共通の型 | `schemas/common/` | 各種類のschemaが参照する型（RecordRef、Source、Evidence、Verification、Scope、時点値等）。それを使う種類とは別に版を上げる | [共通の型](../spec/common/v1alpha1/05-types.md)、[CORE-04](../spec/common/v1alpha1/01-overview.md#core-04-版番号) |
 | 閉じたschema | — | 未知のフィールドを拒否するschema。新しいフィールドは新しいschemaVersionでだけ定める | [CORE-02](../spec/common/v1alpha1/01-overview.md#core-02-ファイルの種類とschemaversion) |
