@@ -575,7 +575,8 @@ def codepoint_mismatches(text):
     The character must be a letter, digit or symbol standing alone: one that ends a word
     (空白（U+3000）), punctuation and range marks (U+F900〜U+FAFF) are not targets.
     Limitation: a character directly after another letter is never checked, so an example must be
-    set off by a space or punctuation (「例: 神 U+FA19」, not 「互換漢字神（U+FA19）」) to be checked.
+    set off by a space or punctuation, and the notation must use a full-width parenthesis or a space
+    and upper-case hex (half-width "(U+...)" and "u+..." are not checked) (「例: 神 U+FA19」, not 「互換漢字神（U+FA19）」) to be checked.
     """
     found = []
     for match in CODEPOINT_NOTE.finditer(text):

@@ -174,6 +174,7 @@ class CodePointNotationTests(unittest.TestCase):
             "全角空白（U+3000）を置く。",  # 白 ends the word 空白, not a character example
             "互換漢字（U+F900〜U+FAFF、U+2F800〜U+2FA1F）",
             "私用領域の文字、U+FFFD、画像",
+            "例: 〜（U+FF5E）、＋（U+002B）",  # punctuation (〜 is Pd) and math symbols (Sm) are never checked
         ]
         for text in texts:
             with self.subTest(text):
@@ -184,6 +185,7 @@ class CodePointNotationTests(unittest.TestCase):
             f"例: {self.UNIFIED} U+FA19。": [(1, "U+795E", "FA19")],
             f"一行目\n{self.UNIFIED}（U+FA19）／{self.UNIFIED}（U+795E）": [(2, "U+795E", "FA19")],
             "髙（U+9AD8）": [(1, "U+9AD9", "9AD8")],
+            "例: 〓（U+3012）": [(1, "U+3013", "3012")],  # other symbols (So) are checked
         }
         for text, wanted in cases.items():
             with self.subTest(text):
