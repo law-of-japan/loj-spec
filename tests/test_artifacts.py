@@ -161,5 +161,55 @@ class ArchiveAuditTests(unittest.TestCase):
                 self.run_check(change)
 
 
+class VersionStateTests(unittest.TestCase):
+    """The state tables in spec/README.md are the source of truth for draft/published/frozen."""
+
+    README = ("# 入口\n\n## 規範とするもの\n\n| ディレクトリ | 対象 | 状態 |\n|---|---|---|\n"
+              "| [common/v1alpha1](common/v1alpha1/01.md) | 共通 | 草案 |\n"
+              "| [v1alpha2](v1alpha2/01.md) | 版パッケージ | 公開 |\n\n- 注記。\n\n"
+              "## 凍結した版\n\n| 版 | 状態 | 後継 |\n|---|---|---|\n"
+              "| [v1alpha1](v1alpha1/01.md)（`loj/v1alpha1`） | 凍結。内容を変えない | `loj/v1alpha2` |\n")
+    FOLDERS = ("common/v1alpha1", "v1alpha2", "v1alpha1")
+
+    def run_check(self, readme=None, folders=None):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            for name in self.FOLDERS if folders is None else folders:
+                (root / "spec" / name).mkdir(parents=True)
+                (root / "spec" / name / "01.md").write_text("# 本文\n", encoding="utf-8")
+            (root / "spec/README.md").write_text(readme or self.README, encoding="utf-8")
+            saved = v.ROOT
+            v.ROOT = root.resolve()
+            try:
+                return v.check_states()
+            finally:
+                v.ROOT = saved
+
+    def test_valid_tables_pass(self):
+        self.assertEqual(self.run_check(), {"common/v1alpha1": "草案", "v1alpha2": "公開", "v1alpha1": "凍結"})
+
+    def test_repository_states(self):
+        states = v.check_states()
+        self.assertEqual(states["v1alpha1"], "凍結")
+        self.assertTrue(set(states.values()) <= {"草案", "公開", "凍結"})
+
+    def test_rejections(self):
+        cases = {
+            "unknown state": {"readme": self.README.replace("| 草案 |", "| 未公開 |")},
+            "frozen in active table": {"readme": self.README.replace("| 草案 |", "| 凍結 |")},
+            "draft in frozen table": {"readme": self.README.replace("| 凍結。内容を変えない |", "| 草案 |")},
+            "missing state column": {"readme": self.README.replace(" | 状態 |\n|---|---|---|\n| [common", " |\n|---|---|\n| [common")
+                                     .replace(" | 草案 |", " |").replace(" | 公開 |", " |")},
+            "listed twice": {"readme": self.README.replace("[v1alpha2](v1alpha2/01.md) | 版パッケージ | 公開",
+                                                           "[v1alpha1](v1alpha1/01.md) | 版パッケージ | 公開"),
+                             "folders": ("common/v1alpha1", "v1alpha1")},
+            "directory not listed": {"folders": self.FOLDERS + ("loj-history/v1alpha1",)},
+            "listed directory missing": {"folders": ("common/v1alpha1", "v1alpha1")},
+        }
+        for label, change in cases.items():
+            with self.subTest(label), self.assertRaises(ValueError):
+                self.run_check(**change)
+
+
 if __name__ == "__main__":
     unittest.main()
