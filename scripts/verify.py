@@ -564,7 +564,11 @@ def check_archive():
 
 
 def table_rows(text, heading):
-    """Rows of the first Markdown table in the `## heading` section, as dicts keyed by header cell."""
+    """Rows of the first Markdown table in the `## heading` section, as dicts keyed by header cell.
+
+    Cells are split on every `|`, so a cell must not contain one (not even escaped as `\\|`).
+    A row broken that way fails check_states() instead of passing silently.
+    """
     section = re.search(r"^## " + re.escape(heading) + r"\n(.*?)(?=^## |\Z)", text, re.M | re.S)
     require(bool(section), "spec/README.md has no section: " + heading)
     lines = [line for line in section[1].splitlines() if line.startswith("|")]
@@ -584,10 +588,14 @@ def check_states():
             require(bool(name), "Version table row needs a linked directory: " + heading)
             state = row.get("状態", "")
             if heading == "凍結した版":
+                # The frozen table writes the state as a sentence followed by notes ("凍結。内容を変えない…");
+                # only the part before the first "。" is the state.
                 state = state.split("。")[0]
             require(state in allowed, "Bad version state for " + name[1] + ": " + (state or "(none)"))
             require(name[1] not in states, "Version listed twice: " + name[1])
             states[name[1]] = state
+    # Deliberately strict: every directory under spec/ that holds Markdown is a version and needs a state.
+    # A subdirectory inside a version (e.g. an appendix folder) fails here until this rule is revisited.
     folders = {path.parent.relative_to(spec).as_posix() for path in spec.rglob("*.md") if path.parent != spec}
     require(folders == set(states), "Version tables and spec/ directories differ: "
             + ", ".join(sorted(folders ^ set(states))))
@@ -595,7 +603,7 @@ def check_states():
 
 
 def main():
-    schemas ={path.name: read_json(path) for path in (ROOT / "schemas/v1alpha1").glob("*.json")}
+    schemas = {path.name: read_json(path) for path in (ROOT / "schemas/v1alpha1").glob("*.json")}
     registry = Registry().with_resources((s["$id"], Resource.from_contents(s)) for s in schemas.values())
     validators = {}
     for name, value in schemas.items():
