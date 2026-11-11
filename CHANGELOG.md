@@ -2,6 +2,14 @@
 
 見出しの「草案」は、[草案の版](spec/README.md#版の状態)への変更であることを示す。版の状態の正は、[規範仕様の入口](spec/README.md#規範とするもの)の表にある。版を公開したときは、公開の日付の項目を加える。
 
+## 互換漢字の例の訂正（2026-11-11、草案）
+
+[law-of-japan/loj-spec#12](https://github.com/law-of-japan/loj-spec/issues/12)の訂正である。規範の意味は変えていない。
+
+- CHAR-01、CHAR-02、GLYPH-06の2で「神 U+FA19」と書いた箇所の字が、統合漢字（U+795E）に変わっていた。U+FA19に直した。
+- `scripts/verify.py`に、「字（U+XXXX）」「字 U+XXXX」の形で字とコードポイントを並べた箇所について、字のコードポイントが表記と一致することの検査を加えた。対象は、ルートの文書、`spec/`、`docs/`（`docs/archive/`を除く）である。範囲の表記と、語の末尾の字（「空白（U+3000）」の「白」）は対象にしない。
+- `docs/archive/`の統合案にも同じ現象が残っているが、内容を変えない文書なので直していない。
+
 ## 版の状態と公開（2026-11-11、草案）
 
 [law-of-japan/loj-spec#28](https://github.com/law-of-japan/loj-spec/issues/28)の結論に基づく。
