@@ -2037,8 +2037,7 @@
       "id": "pkg-126",
       "title": "属性のないセルのマーカーの二つの空白",
       "requirements": [
-        "DIR-01",
-        "TABLE-03"
+        "DIR-01"
       ],
       "check": "L1",
       "normative": true,

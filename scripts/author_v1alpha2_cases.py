@@ -184,7 +184,7 @@ case("v1alpha1のschemaVersion", ["BASIC-01"], [("main.md", "main", ART + P1)], 
 case("マーカーの属性の間の二つの空白", ["DIR-01"],
      [("main.md", "main", ART + "<!-- loj:paragraph number=1  numbering=explicit -->\n" + BODY + "<!-- loj:end-paragraph -->\n")],
      fail("DIR-01"), False)
-case("属性のないセルのマーカーの二つの空白", ["DIR-01", "TABLE-03"],
+case("属性のないセルのマーカーの二つの空白", ["DIR-01"],
      [("main.md", "main", TABLE_MD.replace("<!-- loj:cell -->\n白雲", "<!-- loj:cell  -->\n白雲"))], fail("DIR-01"), False)
 case("号の表示番号に全角の十進", ["DISP-01"],
      [("main.md", "main", ART + "<!-- loj:paragraph number=1 -->\n" + BODY + "<!-- loj:item number=1 -->\n１　白雲\n"
