@@ -122,6 +122,24 @@ def history():
     add("hist", "calcと計算結果の不一致", ["TIME-03"], "L3", {"kind": "repository", "path": rel(dest)},
         {"results": [l3("historyStructure", "fail")], "diagnostics": [diag("TIME-03", SV["common"])]}, False,
         "historyStructure")
+    add("hist", "確定日であるderivedを基準とするderived（架空）", ["TIME-03"], "L3",
+        {"kind": "repository", "path": rel(next_dir("hist", True) / "repo")},
+        {"results": [l3("historyStructure")]}, True, "historyStructure")
+    dest = next_dir("hist", False) / "repo"
+    month_base = ('value: "2019-04-30"\n{0}raw: 平成三十一年四月三十日\n{0}precision: day\n',
+                  'value: "2019-04"\n{0}raw: 平成三十一年四月\n{0}precision: month\n')
+    mutate(dest, "conformance/loj-history/v1alpha1/valid/hist-004/repo",
+           [("history.yaml", month_base[0].format(" " * 12), month_base[1].format(" " * 12)),
+            ("history.yaml", month_base[0].format(" " * 8), month_base[1].format(" " * 8))])
+    add("hist", "確定日でない基準から計算したvalue", ["TIME-03"], "L3", {"kind": "repository", "path": rel(dest)},
+        {"results": [l3("historyStructure", "fail")], "diagnostics": [diag("TIME-03", SV["common"])]}, False,
+        "historyStructure")
+    dest = next_dir("hist", False) / "repo"
+    mutate(dest, "conformance/loj-history/v1alpha1/valid/hist-004/repo",
+           [("history.yaml", '          value: "2019-05-01"\n', "")])
+    add("hist", "確定日の基準から計算したvalueの書き漏らし", ["TIME-03"], "L3", {"kind": "repository", "path": rel(dest)},
+        {"results": [l3("historyStructure", "fail")], "diagnostics": [diag("TIME-03", SV["common"])]}, False,
+        "historyStructure")
 
 
 # --- loj-glyphs --------------------------------------------------------------

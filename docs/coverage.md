@@ -74,3 +74,5 @@ T076〜T105は承認されたMAN-03 B案の独立ケース。附属資料の通�
 [規範仕様の入口](../spec/README.md#版の状態)の版の状態の定め（要件IDなし）にも、ケースを作らない。仕様の資料そのものの管理の規則であり、法令の入力の成否として検査できないためである。状態の表の形は`scripts/verify.py`が検査する。タグを打つことは、公開の手順（[CONTRIBUTING](../CONTRIBUTING.md)）で確かめる。
 
 次の要件は機械で検査できるが、まだケースがない。今後加える: TIME-02、TIME-05、TIME-06、TYPE-01〜04、TYPE-06〜08、HIST-09、CHG-04、CHG-05、FIXREF-01、RID-04、RID-05、XREF-02。
+
+TIME-03は、ケースがあるが一部だけである（hist-004、hist-015〜018）。`pending`等を基準とする`derived`に`value`を書いた負例と、`value`の書式（`YYYY-MM-DD`）に反する負例は、まだない。

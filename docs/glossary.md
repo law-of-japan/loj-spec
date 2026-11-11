@@ -122,7 +122,7 @@
 | 時点値の状態 | `state` | `date`（日が確定）、`derived`（規則で計算できる）、`pending`（法令上まだ定まっていない）、`unknown`（調査上不明）、`notApplicable`（該当しない） | [TIME-01](../spec/common/v1alpha1/06-time.md#time-01-時点値の状態) |
 | 原表記 | `raw` | 原典の表記（和暦・漢数字等）。正規化した値で置き換えない | [TIME-02](../spec/common/v1alpha1/06-time.md#time-02-date)、[REG-03](../spec/loj-registry/v1alpha1/01-registry.md#reg-03-番号主張) |
 | 精度 | `precision` | `date`の値の精度（`day`／`month`／`year`）。日に満たない値は順序の比較に使わない | [TIME-02](../spec/common/v1alpha1/06-time.md#time-02-date) |
-| 確定日 | — | 精度が日の`date`、または確定日を計算できる`derived` | [TIME-03](../spec/common/v1alpha1/06-time.md#time-03-derivedとcalc) |
+| 確定日 | — | 精度が日の`date`、または`base`が確定日である`derived`。確定日でない時点値は、順序の比較に使わない | [TIME-03](../spec/common/v1alpha1/06-time.md#time-03-derivedとcalc) |
 | 計算規則 | `rule`、`base`、`calc` | `derived`の規則の原文、基準の時点、機械が読める計算（`sameDay`、`nextDay`、`afterElapsed`） | [TIME-03](../spec/common/v1alpha1/06-time.md#time-03-derivedとcalc) |
 | 委任、確定 | `delegation`、`determinedBy` | `pending`の委任先・条件と、確定させた根拠（施行期日政令等）。確定しても委任の記録を消さない | [TIME-04](../spec/common/v1alpha1/06-time.md#time-04-pendingと確定) |
 | sameAs | `sameAs` | 同じ時点を定める他のRecordのRevisionを指す補助。L4の時点の整合で検査する | [TIME-07](../spec/common/v1alpha1/06-time.md#time-07-sameas)、[XREF-03](../spec/common/v1alpha1/10-cross-record.md#xref-03-時点の整合) |
