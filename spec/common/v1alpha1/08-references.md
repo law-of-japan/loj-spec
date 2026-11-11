@@ -41,7 +41,7 @@ loj:<space>/<record>/<revision>@<commit>#<node> # 固定参照とノード
 
 - 固定参照は、登録台帳からRecordのリポジトリを求め、指定のcommitの`history.yaml`で`revision`を探し、その`text.package`の版パッケージを対象とする。リポジトリが移転しても、commitが同じなら同じ記録版を指す。
 - 固定参照が固定するのは、そのcommitにおける版パッケージ、履歴マニフェストの当該Revisionの記述、`basis`が参照する関係とその内訳、それらが参照するSourceである。本文だけを固定するものではない。
-- `path`がある場合は、指定のcommitの`text.package`と一致しなければならない（MUST）。一致しなければ解決の誤りとし、`path`を優先して読んではならない（MUST NOT）。
+- `path`がある場合は、指定のcommitの`text.package`（省略時は既定の`versions/<revision_id>/law.yaml`、[HIST-08](../../loj-history/v1alpha1/01-history.md)）と一致しなければならない（MUST）。一致しなければ解決の誤りとし、`path`を優先して読んではならない（MUST NOT）。
 - `revision`を省略した固定参照を認めない。commitだけでは対象の版が定まらないためである。
 - LoJの中の資料をSourceの`fixed`で指すときは、FixedRefを使う。
 

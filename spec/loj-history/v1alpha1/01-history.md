@@ -79,7 +79,7 @@
 - 制定時に施行時点が複数ある法令（段階施行）は、最初の施行の版を起点（`origin: enactment`）とし、起点に続くRevisionの`basis`を`enactment`（`scope`、`evidence`）とする。
 - `basis`が参照する関係と内訳は、同じ履歴マニフェストに存在しなければならない（MUST）。
 - `basis`が参照する内訳の`effective`と、Revisionの`effective`は一致しなければならない（MUST）。両方が`date`の場合に検査する。
-- 同じ関係・同じ施行時点のRevisionが二つ以上あってはならない（MUST NOT）。`status: active`のRevisionだけを数え、施行時点は、両方が確定日（[TIME-03](../../common/v1alpha1/06-time.md)）のときに日付で比べる。確定日でない施行時点どうしは、この規則では比べない。
+- 同じ関係・同じ施行時点のRevisionが二つ以上あってはならない（MUST NOT）。`status: active`のRevisionだけを数え、施行時点は、両方が確定日（[TIME-03](../../common/v1alpha1/06-time.md)）のときに日付（`value`）の一致で比べる。確定日は精度が日の値だけなので、精度が月・年の値や`pending`等、確定日でない施行時点を含む組は、この規則では比べない。
 - `status: active`のRevisionの`basis`は、`status: retracted`の関係と、`verification.state: retracted`の内訳を参照してはならない（MUST NOT）。
 - 改正法の公布日をRevisionに写さない。改正法のRecordと関係から得る。
 
