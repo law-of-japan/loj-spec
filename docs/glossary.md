@@ -219,15 +219,15 @@
 | 要求レベル | MUST、MUST NOT、SHOULD、MAY | 必須、禁止、推奨、任意。示さない文は定義または説明 | [規範仕様の入口](../spec/README.md#要求レベル) |
 | 要件ID、系列 | `## <ID> <名前>`、例: `HIST-04` | 要件ごとのID。接頭辞（系列）は一つのディレクトリに属する。版ごとに意味を持つ | [規範仕様の入口](../spec/README.md#要件id) |
 | 規則 | `rule` | 診断で報告する要件ID。実装固有の`code`・`message`・`severity`とは区別する | [VAL-07](../spec/common/v1alpha1/03-validation.md#val-07-規則と診断) |
-| 診断 | — | 検査器が報告する違反等。規則と、対象のファイルのschemaVersionを示す | [VAL-07](../spec/common/v1alpha1/03-validation.md#val-07-規則と診断) |
+| 診断 | — | 検査器が報告する違反等。規則と、規則を定める版のschemaVersion（共通の要件は`common/<版>`）を示す | [VAL-07](../spec/common/v1alpha1/03-validation.md#val-07-規則と診断) |
 | 検査器 | validator | 正本を規範に照らして検査する実装。このリポジトリのCIは検査器ではない | [CONF-03](../spec/common/v1alpha1/04-conformance.md#conf-03-このリポジトリの検査)、[実装ガイド](implementation-guide.md) |
 | 適合レベル | L0〜L4 | L0 ファイル形式・Manifest・Markdown構文、L1 法令の構造、L2 法令内の参照（予約）、L3 原典・履歴、L4 他法令との整合。各レベルを独立に判定し、上位の合格から下位の合格を推論しない | [VAL-01](../spec/common/v1alpha1/03-validation.md#val-01-適合レベルの定義)、[VAL-02](../spec/common/v1alpha1/03-validation.md#val-02-独立した判定) |
 | 区分 | `category` | L3・L4を分けた検査の単位。L3は`historyStructure`（履歴構造）、`evidence`（根拠）、`sourceMatch`（原典照合）。L4は`relationResolution`（関係の解決）、`relationConsistency`（関係の整合）、`timeConsistency`（時点の整合）、`displayConsistency`（表示の整合）、`clauseReference`（条項参照の解決） | [VAL-05](../spec/common/v1alpha1/03-validation.md#val-05-l3の区分と主張)、[VAL-06](../spec/common/v1alpha1/03-validation.md#val-06-l4の区分) |
 | 正式、予約 | — | 正式は本版で合格を宣言できるもの。予約は将来の版で定めるもので、合格を主張できない（L2、原典照合、条項参照の解決） | [VAL-01](../spec/common/v1alpha1/03-validation.md#val-01-適合レベルの定義)、[VAL-05](../spec/common/v1alpha1/03-validation.md#val-05-l3の区分と主張)、[VAL-06](../spec/common/v1alpha1/03-validation.md#val-06-l4の区分) |
 | 原典照合 | `sourceMatch` | 版の本文と固定した原典資料の一致を確かめるL3の区分。予約 | [SRCM-01](../spec/common/v1alpha1/03-validation.md#srcm-01-l3の原典照合) |
 | 結果の値 | 合格、不合格、対象なし、未完了（`pass`、`fail`、`notApplicable`、`incomplete`） | 各レベル・区分の結果。対象なし・未完了を合格とみなさない | [VAL-04](../spec/common/v1alpha1/03-validation.md#val-04-結果の値) |
-| 処理不能 | — | 読めない入力、知らないschemaVersion、対応表にない組み合わせ。結果は未完了とする | [VAL-04](../spec/common/v1alpha1/03-validation.md#val-04-結果の値)、[CORE-05](../spec/common/v1alpha1/01-overview.md#core-05-種類ごとの版と対応表) |
-| 警告、判定不能、保留 | `warning`、`undetermined`、`pending` | 不合格の診断と区別して報告するもの。警告だけでは不合格にしない | [VAL-04](../spec/common/v1alpha1/03-validation.md#val-04-結果の値)、[HIST-06](../spec/loj-history/v1alpha1/01-history.md#hist-06-版の時間の情報と順序) |
+| 処理不能 | — | 読めない入力、知らないschemaVersion（知っている種類の知らない版を含む）、対応表にない組み合わせ。結果は未完了とし、不合格にしない。理由はschemaVersionの規則の診断で示す | [VAL-04](../spec/common/v1alpha1/03-validation.md#val-04-結果の値)、[CORE-05](../spec/common/v1alpha1/01-overview.md#core-05-種類ごとの版と対応表) |
+| 警告、判定不能、保留 | `warning`、`undetermined`、`pending` | 不合格の診断と区別して報告するもの。警告・保留だけなら合格。判定不能があれば未完了（警告しか出さない検査の判定不能を除く） | [VAL-04](../spec/common/v1alpha1/03-validation.md#val-04-結果の値)、[HIST-06](../spec/loj-history/v1alpha1/01-history.md#hist-06-版の時間の情報と順序) |
 | 適合ケース、適合データ | `conformance/` | 索引を入口とする固定の入力と期待結果。期待結果は規範から人が書き、検査器の出力を写さない | [CONF-01](../spec/common/v1alpha1/04-conformance.md#conf-01-適合ケース) |
 | 正例、負例 | `valid/`、`invalid/` | 成功するケースと失敗するケース。負例の期待結果は期待する規則の診断の集合 | [CONF-01](../spec/common/v1alpha1/04-conformance.md#conf-01-適合ケース) |
 | 規範のケース、参考のケース | normative、informative | 参考のケースの成否を、正式なレベルの結果に混ぜない | [CONF-01](../spec/common/v1alpha1/04-conformance.md#conf-01-適合ケース)、[CONF-02](../spec/common/v1alpha1/04-conformance.md#conf-02-レベルごとの適合の主張) |
@@ -252,7 +252,7 @@
 | `basis` | Revisionの`basis`は成立根拠（関係と内訳）。字体注記の`basis`は曖昧な字の決め方 |
 | `text` | 版パッケージのASTの`text`は本文。履歴マニフェストの`text`は本文の状態。登録台帳の`text`は本文の取得状況。Scopeの`text`は対象範囲の原文 |
 | 未取得と不存在 | 未取得（`notFetched`）はリポジトリ・commit・Recordを取得できなかったこと。不存在確認済み（`nonexistentConfirmed`）は存在しないことを確かめたこと。未取得を不存在とみなさない。登録台帳の`notCollected`（本文を取得していない）からも本文の不存在を推論しない |
-| 未完了、判定不能、処理不能 | 未完了はレベル・区分の結果の値。判定不能は個々の検査の結論が出ないこと（警告・保留と同じく不合格と区別する）。処理不能は入力を扱えないことで、結果は未完了になる |
+| 未完了、判定不能、処理不能 | 未完了はレベル・区分の結果の値。判定不能は個々の検査の結論が出ないことで、違反がなければ区分の結果を未完了にする（警告しか出さない検査の判定不能を除く）。処理不能は入力を扱えないことで、結果は未完了になる |
 | 確認状態と適合 | `verification.state: confirmed`は主張の出典を記録したことであり、L3の合格は判断の正しさを保証しない |
 | 適合レベルの外の検査 | 変更検査、登録台帳の検査、再構築報告の検査、自身のRecordへの参照の解決は、L0〜L4とは別に報告する |
 | ラベル | 可読ラベル・`label`は表示用であり、参照の解決・同一性・順序の決定に使わない |

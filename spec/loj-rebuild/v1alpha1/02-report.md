@@ -4,7 +4,7 @@
 
 - 再構築報告は、法令リポジトリの最上位の`rebuild.yaml`とする。一つのRecordにつき一つとし、再構築を進めるたびに同じファイルを更新する。過去の内容は、正本のGit履歴で追う。
 - 旧リポジトリから移していないRecord（新しく登録したRecord）には、再構築報告を置かない。
-- `schemaVersion`は厳密に`loj-rebuild/v1alpha1`でなければならない（MUST）。YAMLのデータモデルは[CORE-03](../../common/v1alpha1/01-overview.md)に従う。schemaは閉じており、未知のフィールドを拒否する。
+- `schemaVersion`は厳密に`loj-rebuild/v1alpha1`でなければならない（MUST）。ほかの値（知らない版を含む）のファイルは、処理不能として未完了とし、不合格にしない（[VAL-04](../../common/v1alpha1/03-validation.md)）。YAMLのデータモデルは[CORE-03](../../common/v1alpha1/01-overview.md)に従う。schemaは閉じており、未知のフィールドを拒否する。
 - 再構築報告は正本に属するが、法令の状態のデータではない（REB-06）。
 - 再構築報告だけを変える変更の種類は`metadata`とする（[CHG-01](../../common/v1alpha1/07-changes.md)）。
 - 再構築報告の検査（schema、Revision・Source・ノードIDの解決、旧commitの存在（旧リポジトリを取得できる場合））は、適合レベルの外で行う。その結果を、法令データの適合として主張してはならない（MUST NOT）。

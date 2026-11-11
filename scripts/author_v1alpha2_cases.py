@@ -178,7 +178,9 @@ case("附則の見出しの半角空白", ["HEAD-03"],
       ("supp.md", "supplement/original", "# 附 則\n<!-- loj:paragraph number=1 -->\nこの法律は、公布の日から施行する。\n"
        "<!-- loj:end-paragraph -->\n")], fail("HEAD-03"), False,
      man_extra={"supplements": [{"key": "original", "title": "制定附則"}]})
-case("v1alpha1のschemaVersion", ["BASIC-01"], [("main.md", "main", ART + P1)], fail("BASIC-01"), False, check="L0",
+# An unknown schemaVersion is unprocessable: L0 is incomplete, with BASIC-01 as the reason (VAL-04).
+case("v1alpha1のschemaVersion", ["BASIC-01", "VAL-04"], [("main.md", "main", ART + P1)],
+     {"results": [{"check": "L0", "result": "incomplete"}], **fail("BASIC-01")}, False, check="L0",
      man_extra={"schemaVersion": "loj/v1alpha1"})
 # 2026-11-11 (#25): spaces in markers, character kinds of display numbers.
 case("マーカーの属性の間の二つの空白", ["DIR-01"],

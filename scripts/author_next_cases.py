@@ -193,6 +193,20 @@ def history():
                             "          evidence: [{source: src-fictional, locator: 附則第二項}]\n")])
     add("hist", "施行時点より後の公布で遡及の根拠がある（架空）", ["HIST-06", "HIST-03"], "L3",
         {"kind": "repository", "path": rel(dest)}, {"results": [l3("historyStructure")]}, True, "historyStructure")
+    # 2026-11-12 (#24): Scope nodes of a version whose L1 fails, and nodes that do not exist (TYPE-07).
+    nodes = ("      - id: i1\n        scope: {text: 第二条成人の日の項の次に建国記念の日の項を加える}\n",
+             "      - id: i1\n        scope:\n          text: 第二条成人の日の項の次に建国記念の日の項を加える\n"
+             "          nodes: [19480720-law-178/main/article/{}]\n")
+    dest = next_dir("hist", False) / "repo"
+    mutate(dest, HIST_POS, [("history.yaml", nodes[0], nodes[1].format("2")), (ZWG + "main.md", "## 第三條", "## 三")])
+    add("hist", "版パッケージのL1が不合格のときのScopeのノード", ["TYPE-07", "TYPE-08", "VAL-02", "VAL-04", "VAL-05"], "L3",
+        {"kind": "repository", "path": rel(dest)},
+        {"results": [{"check": "L1", "result": "fail"}, l3("evidence", "incomplete"), l3("historyStructure")],
+         "diagnostics": [diag("HEAD-01", SV["pkg"])]}, False, "evidence")
+    dest = next_dir("hist", False) / "repo"
+    mutate(dest, HIST_POS, [("history.yaml", nodes[0], nodes[1].format("9"))])
+    add("hist", "版に存在しないScopeのノード", ["TYPE-07"], "L3", {"kind": "repository", "path": rel(dest)},
+        {"results": [l3("evidence", "fail")], "diagnostics": [diag("TYPE-07", SV["common"])]}, False, "evidence")
 
 
 # --- loj-glyphs --------------------------------------------------------------

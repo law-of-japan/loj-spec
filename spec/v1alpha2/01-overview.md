@@ -5,7 +5,7 @@
 ## BASIC-01 入力とschemaVersion
 
 - 入力は、一つの法令の一つの版の`law.yaml`と、そこに列挙したMarkdownのファイルでなければならない（MUST）。
-- `schemaVersion`は厳密に`loj/v1alpha2`でなければならない（MUST）。
+- `schemaVersion`は厳密に`loj/v1alpha2`でなければならない（MUST）。ほかの値（知らない版を含む）のファイルは、処理不能として未完了とし、不合格にしない（[VAL-04](../common/v1alpha1/03-validation.md)）。
 - 本版は`loj/v1alpha1`の後継であり、互換を保証しない。v1alpha1で合格するパッケージが本版で合格すること、同じ意味ASTになることを保証しない。
 - 法令本文はCommonMark 0.31.2を基礎とし、本ディレクトリの制約を加える。GFM全体への適合を求めない。
 - 版パッケージの正式な適合レベルはL0とL1である（[VAL-01](../common/v1alpha1/03-validation.md)）。L2は将来の版で定める。

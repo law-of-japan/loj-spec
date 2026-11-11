@@ -73,7 +73,7 @@ T076〜T105は承認されたMAN-03 B案の独立ケース。附属資料の通�
 
 [規範仕様の入口](../spec/README.md#版の状態)の版の状態の定め（要件IDなし）にも、ケースを作らない。仕様の資料そのものの管理の規則であり、法令の入力の成否として検査できないためである。状態の表の形は`scripts/verify.py`が検査する。タグを打つことは、公開の手順（[CONTRIBUTING](../CONTRIBUTING.md)）で確かめる。
 
-次の要件は機械で検査できるが、まだケースがない。今後加える: TIME-02、TIME-05、TIME-06、TYPE-01〜04、TYPE-06〜08、HIST-09、CHG-04、CHG-05、RID-04、RID-05、XREF-02。
+次の要件は機械で検査できるが、まだケースがない。今後加える: TIME-02、TIME-05、TIME-06、TYPE-01〜04、TYPE-06、HIST-09、CHG-04、CHG-05、RID-04、RID-05、XREF-02。
 
 HIST-04・05・08の2026-11-11の追加（[law-of-japan/loj-spec#20](https://github.com/law-of-japan/loj-spec/issues/20)）は、ケースがあるが一部だけである（hist-023〜026）。`glyphNotes`のパスの不一致、`absent`のRevisionのディレクトリ、同じ関係・同じ施行時点の重複、統合・分割したRevisionを基礎状態とする版、撤回した内訳だけを参照する成立根拠の負例は、まだない。
 

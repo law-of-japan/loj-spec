@@ -472,6 +472,42 @@
       },
       "expected": "conformance/loj-history/v1alpha1/expected/hist-028.json",
       "success": true
+    },
+    {
+      "id": "hist-029",
+      "title": "版パッケージのL1が不合格のときのScopeのノード",
+      "requirements": [
+        "TYPE-07",
+        "TYPE-08",
+        "VAL-02",
+        "VAL-04",
+        "VAL-05"
+      ],
+      "check": "L3",
+      "category": "evidence",
+      "normative": true,
+      "input": {
+        "kind": "repository",
+        "path": "conformance/loj-history/v1alpha1/invalid/hist-029/repo"
+      },
+      "expected": "conformance/loj-history/v1alpha1/expected/hist-029.json",
+      "success": false
+    },
+    {
+      "id": "hist-030",
+      "title": "版に存在しないScopeのノード",
+      "requirements": [
+        "TYPE-07"
+      ],
+      "check": "L3",
+      "category": "evidence",
+      "normative": true,
+      "input": {
+        "kind": "repository",
+        "path": "conformance/loj-history/v1alpha1/invalid/hist-030/repo"
+      },
+      "expected": "conformance/loj-history/v1alpha1/expected/hist-030.json",
+      "success": false
     }
   ]
 }

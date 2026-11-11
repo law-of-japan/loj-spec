@@ -2007,7 +2007,8 @@
       "id": "pkg-124",
       "title": "v1alpha1のschemaVersion",
       "requirements": [
-        "BASIC-01"
+        "BASIC-01",
+        "VAL-04"
       ],
       "check": "L0",
       "normative": true,

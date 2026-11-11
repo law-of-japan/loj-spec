@@ -2,6 +2,19 @@
 
 見出しの「草案」は、[草案の版](spec/README.md#版の状態)への変更であることを示す。版の状態の正は、[規範仕様の入口](spec/README.md#規範とするもの)の表にある。版を公開したときは、公開の日付の項目を加える。
 
+## 検査の結果の決め方と、L1が不合格の版のL3根拠（2026-11-12、草案）
+
+[law-of-japan/loj-spec#15](https://github.com/law-of-japan/loj-spec/issues/15)と[law-of-japan/loj-spec#24](https://github.com/law-of-japan/loj-spec/issues/24)の修正である。草案の版への変更であり、版番号は上げない。
+
+- VAL-04: 区分の結果の決め方の表を置いた（違反→不合格、判定不能→未完了、警告・保留だけ→合格）。警告しか出さない検査（HIST-06の順序）の判定不能は数えない。知らないschemaVersion（知っている種類の知らない版を含む）を処理不能として未完了とし、理由をschemaVersionの規則の診断で示すと定めた。BASIC-01・HIST-01・GLYPH-01・REG-01・REBR-01から引いた。
+- HIST-06: 順序の比較を、両方が確定日の場合とした。収録開始の起点の、確定日でない施行時点とは比べないとした。
+- CONF-01と版パッケージの検査の章: 負例では、期待結果に挙げたすべての規則の診断を含める、に揃えた。期待結果には必ず出るべき規則だけを挙げる。
+- VAL-05: 区分の結果をRecordにつき一つとした。VAL-06: 未取得を判定不能として表で扱うとした。
+- VAL-07: MD系列をL1とし、L0の「CommonMarkの構文解析」を削った。診断のschemaVersionを規則を定める版のもの（共通の要件は`common/<版>`）とし、共通の型の規則の違反を、その型を使うファイルの検査で報告すると定めた。報告のschemaで`target`（`repository`、`commit`）を必須にした（VAL-03）。
+- TYPE-07: L1が不合格の版の`nodes`は判定不能とした。GLYPH-11も判定不能として表で未完了にする形に揃えた。
+- pkg-058・124の期待結果に、L0の`incomplete`を加えた。適合ケースhist-029（L1が不合格の版のScopeのノード）とhist-030（版に存在しないScopeのノード）を加えた。
+- DDR-016、用語集、制限、要件との対応表を更新した。
+
 ## 法令番号・公布日の表示用の値と、公布の時点・遡及の根拠（2026-11-12、草案）
 
 [law-of-japan/loj-spec#13](https://github.com/law-of-japan/loj-spec/issues/13)と[law-of-japan/loj-spec#19](https://github.com/law-of-japan/loj-spec/issues/19)の修正である。草案の版への変更であり、版番号は上げない。
