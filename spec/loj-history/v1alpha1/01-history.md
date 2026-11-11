@@ -70,7 +70,7 @@
 - 一つのRevisionを、複数のRevisionが`basedOn`として参照してよい（MAY）。経過措置による新旧の状態の併存は、この分岐と適用関係（HIST-07）で表す。
 - 適用の順が不明な場合は、`basedOn`を`{state: unknown, reason}`とし、推測で順序を補ってはならない（MUST NOT）。改正法令の法令番号の順などで、機械的に順序を決めてはならない（MUST NOT）。
 - `basedOn`の循環と、存在しないrevision_idへの参照は違反とする。
-- `status: active`のRevisionの`basedOn`は、`status: active`のRevisionを参照しなければならない（MUST）。撤回・統合・分割したRevision（HIST-10）を基礎状態とする参照は違反とする。基礎状態としていた版は、同じ`revisionFix`で付け替える。統合・分割したRevisionからは`replacedBy`の版へ、撤回したRevisionからは撤回したRevisionの基礎状態等、根拠を確かめた有効な版へ付け替える。
+- `status: active`のRevisionの`basedOn`は、`status: active`のRevisionを参照しなければならない（MUST）。撤回・統合・分割したRevision（HIST-10）を基礎状態とする参照は違反とする。基礎状態としていた版は、同じ`revisionFix`で付け替える。統合・分割したRevisionからは`replacedBy`の版へ、撤回したRevisionからは有効な版へ付け替える。
 
 ## HIST-05 成立根拠
 
