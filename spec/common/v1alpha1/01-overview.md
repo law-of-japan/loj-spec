@@ -24,6 +24,7 @@
 - 検査器は、知らないschemaVersionのファイルを、知っている版として読んではならない（MUST NOT）。処理不能として報告する（[VAL-04](03-validation.md)）。
 - 各ファイルのschemaは閉じている。未知のフィールドを黙って無視してはならない（MUST NOT）。新しいフィールド・構造・意味は、新しいschemaVersionでだけ定める。
 - 法的な時点は時点値（[TIME-01](06-time.md)）で表す。日付の文字列やnullを直接置いてはならない（MUST NOT）。
+- 例外として、版パッケージ（`loj/v1alpha2`）の`law.number`と`law.promulgatedAt`は、版の本文に添える表示用の値であり、法的な時点・法令番号の記録ではない。これらを根拠・順序・同定に使ってはならない（MUST NOT）。法令番号の正は登録台帳の採用中の番号主張（[REG-03](../../loj-registry/v1alpha1/01-registry.md)）、公布の時点の正は履歴マニフェストの関係の`promulgated`（[HIST-03](../../loj-history/v1alpha1/01-history.md)）とする。
 
 ## CORE-03 YAMLのデータモデル
 

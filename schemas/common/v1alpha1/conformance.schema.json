@@ -58,6 +58,7 @@
               "relationResolution",
               "relationConsistency",
               "timeConsistency",
+              "displayConsistency",
               "clauseReference"
             ]
           },

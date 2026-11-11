@@ -23,3 +23,18 @@ L4「他法令との参照整合性」の検査を、Record間の参照につい
 
 - 他法令の条項・版を指定した参照の解決を、L4の区分として予約する。本版では正式化しない。
 - L2の参照の設計を定めた後の版で定める。
+
+## XREF-05 表示の整合
+
+- 版パッケージの`law.number`（[MAN-01](../../v1alpha2/02-manifest.md)）を、登録台帳の採用中の番号主張（[REG-03](../../loj-registry/v1alpha1/01-registry.md)）と比べる。対象は、Recordの法令リポジトリのすべての版パッケージとする。
+- 採用中の主張の`state`が`exists`または`illegible`の場合、`law.number`は、`raw`と一致するか、`structured.period.raw`の後に区切りを入れずに`raw`を続けた文字列と一致しなければならない（`structured.period`がなければ、`raw`との一致だけを見る）。一致しない場合（`law.number`が`null`の場合を含む）は、警告とする。
+- 採用中の主張の`state`が`nonexistent`または`unknown`の場合、`law.number`が`null`でなければ、警告とする。
+- 採用中の主張がない場合と、採用中の主張の`state`が`conflicting`の場合は、判定しない。
+- 表示用の値の誤りであり、不合格にしない。字は正規化せずに比べる。
+
+## XREF-06 公布の時点の整合
+
+- 同じ起点のRecord（`from`）を持つ関係が、複数のRecordの履歴マニフェストにある場合に、関係の`promulgated`（[HIST-03](../../loj-history/v1alpha1/01-history.md)）を比べる。一つの改正法令の公布の時点は一つだからである。
+- 起点が同じかは、`from`を[XREF-01](#xref-01-関係の解決)で解決した結果（登録空間とRecord IDの組。統合したRecordは統合先）で決める。分割したRecordに解決した関係は、比べない。
+- 両方が確定日（[TIME-03](06-time.md)）で食い違えば、違反とする。一方が確定日でない場合は、判定不能として報告する。一方だけが`promulgated`を持つ場合と、比べる関係のRecordを収録していない場合は、判定しない。
+- 撤回した関係（`status: retracted`）は比べない。同じRecordの履歴マニフェストの中の関係どうしも、本要件では比べない。
