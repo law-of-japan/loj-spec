@@ -15,7 +15,7 @@ Record・Revision・記録版を指す参照の形式と、解決の規則を定
 | 型 | フィールド | 要件 |
 |---|---|---|
 | RevisionRef | `record`（RecordRef）、`revision`（revision_id） | revision_idで指す。可読ラベルや施行日で指してはならない（MUST NOT）。`node`を持たない |
-| FixedRef | RevisionRefのフィールドと、`commit`（必須）、`node`（任意）、`path`（任意）、`repository`（任意） | `commit`は正本のcommitの完全なハッシュ。`path`と`repository`は検査と解決の補助であり、参照の同一性に含めない |
+| FixedRef | RevisionRefのフィールドと、`commit`（必須）、`node`（任意）、`path`（任意）、`repository`（任意） | `commit`は正本のcommitの完全なハッシュ。`path`と`repository`は検査と解決の補助であり、参照の同一性に含めない。`repository`の書式は定めない |
 
 - 版の中の特定のノードを指せるのは、固定参照だけである（[FIXREF-07](#fixref-07-ノードの指定)）。
 
@@ -47,7 +47,7 @@ loj:<space>/<record>/<revision>@<commit>#<node> # 固定参照とノード
 
 ## FIXREF-04 commitの条件
 
-- `commit`は完全なハッシュとする。短縮形、ブランチ名、タグ名を使ってはならない（MUST NOT）。ハッシュの長さでGitのオブジェクト形式（SHA-1は40桁、SHA-256は64桁）を区別する。
+- `commit`は完全なハッシュとする。短縮形、ブランチ名、タグ名を使ってはならない（MUST NOT）。ハッシュの長さでGitのオブジェクト形式（SHA-1は40桁、SHA-256は64桁）を区別する。ハッシュは小文字の16進数で書く（大文字を含むものは不合格とする）。
 - 固定参照に使えるcommitは、正本ブランチの履歴から到達できるものに限る。作業ブランチや派生ビューのcommitを、固定参照にしてはならない（MUST NOT）。
 
 ## FIXREF-05 Revision参照の解決
