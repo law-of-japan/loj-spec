@@ -232,7 +232,9 @@
                 }
               ]
             },
-            "minItems": 1
+            "minItems": 1,
+            "maxItems": 1,
+            "$comment": "HIST-05: exactly one item, either a relation and its items or the staged enactment."
           },
           "effective": {
             "$ref": "https://law-of-japan.github.io/loj-spec/schemas/common/v1alpha1/types.schema.json#/$defs/TimePoint"
@@ -347,7 +349,8 @@
               },
               "package": {
                 "type": "string",
-                "pattern": "^(?:[A-Za-z0-9_.-]+/)*law\\.yaml$"
+                "pattern": "^versions/[0-9a-hjkmnp-tv-z]{8}/law\\.yaml$",
+                "$comment": "HIST-08: the Revision's own revision_id (checked by the validator)."
               },
               "gaps": {
                 "type": "array",
@@ -367,7 +370,8 @@
               },
               "glyphNotes": {
                 "type": "string",
-                "pattern": "^(?:[A-Za-z0-9_.-]+/)*[A-Za-z0-9_.-]+\\.yaml$"
+                "pattern": "^versions/[0-9a-hjkmnp-tv-z]{8}/glyphs\\.yaml$",
+                "$comment": "HIST-08, GLYPH-01: the Revision's own revision_id (checked by the validator)."
               }
             },
             "required": [
@@ -537,8 +541,17 @@
             },
             "then": {
               "not": {
-                "required": [
-                  "basedOn"
+                "anyOf": [
+                  {
+                    "required": [
+                      "basedOn"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "basis"
+                    ]
+                  }
                 ]
               }
             },
@@ -598,7 +611,7 @@
             }
           }
         ],
-        "$comment": "basis may accompany origin enactment (staged enforcement); validator checks HIST-05."
+        "$comment": "An origin has neither basedOn nor basis (HIST-04, HIST-05); the validator checks the references of basis and basedOn."
       },
       "minItems": 1
     },
