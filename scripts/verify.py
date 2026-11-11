@@ -563,6 +563,48 @@ def check_archive():
     return len(archived)
 
 
+def table_rows(text, heading):
+    """Rows of the first Markdown table in the `## heading` section, as dicts keyed by header cell.
+
+    Cells are split on every `|`, so a cell must not contain one (not even escaped as `\\|`).
+    A row broken that way fails check_states() instead of passing silently.
+    """
+    section = re.search(r"^## " + re.escape(heading) + r"\n(.*?)(?=^## |\Z)", text, re.M | re.S)
+    require(bool(section), "spec/README.md has no section: " + heading)
+    lines = [line for line in section[1].splitlines() if line.startswith("|")]
+    require(len(lines) > 2, "spec/README.md section has no table: " + heading)
+    cells = [[cell.strip() for cell in line.strip().strip("|").split("|")] for line in lines]
+    for row in cells[1:]:
+        require(len(row) == len(cells[0]), "spec/README.md table row has " + str(len(row)) + " cells, header has "
+                + str(len(cells[0])) + ": " + heading + ": " + row[0])
+    return [dict(zip(cells[0], row)) for row in cells[2:]]
+
+
+def check_states():
+    """Version states (spec/README.md) must be well-formed and cover every spec directory exactly once."""
+    spec = ROOT / "spec"
+    text = (spec / "README.md").read_text(encoding="utf-8")
+    states = {}
+    for heading, allowed in [("規範とするもの", ("草案", "公開")), ("凍結した版", ("凍結",))]:
+        for row in table_rows(text, heading):
+            name = re.match(r"\[([^\]]+)\]", next(iter(row.values())))
+            require(bool(name), "Version table row needs a linked directory: " + heading)
+            state = row.get("状態", "")
+            if heading == "凍結した版":
+                # The frozen table writes the state as a sentence followed by notes ("凍結。内容を変えない…");
+                # only the part before the first "。" is the state.
+                state = state.split("。")[0]
+            require(state in allowed, "Bad version state for " + name[1] + ": " + (state or "(none)"))
+            require(name[1] not in states, "Version listed twice: " + name[1])
+            states[name[1]] = state
+    # Deliberately strict: every directory under spec/ that holds Markdown is a version and needs a state.
+    # A subdirectory inside a version (e.g. an appendix folder) fails here until this rule is revisited.
+    folders = {path.parent.relative_to(spec).as_posix() for path in spec.rglob("*.md") if path.parent != spec}
+    require(folders == set(states), "Version tables and spec/ directories differ: "
+            + ", ".join(sorted(folders ^ set(states))))
+    return states
+
+
 def main():
     schemas = {path.name: read_json(path) for path in (ROOT / "schemas/v1alpha1").glob("*.json")}
     registry = Registry().with_resources((s["$id"], Resource.from_contents(s)) for s in schemas.values())
@@ -621,7 +663,11 @@ def main():
     next_lines, uncovered_next = audit_next(all_schemas())
     links = check_links()
     archived = check_archive()
+    states = check_states()
     print(f"Artifact audit PASS: {len(schemas)} schemas; {len(seen)} case definitions; {links} local links.")
+    labels = {"草案": "draft", "公開": "published", "凍結": "frozen"}  # ASCII: stdout may not encode Japanese
+    print("Version states: " + "; ".join(name + "=" + labels[state] for name, state in sorted(states.items()))
+          + " (tables only; publication tags are not checked).")
     print(f"Archived documents: {archived} (status lines present; not linked from spec/).")
     print(f"Positive source/tree audits: {positive}; executed L0 negatives: {negative_l0}.")
     print(f"L1 negative definitions only (NOT executed): {negative_l1}; informative L2: {illustrative}.")
