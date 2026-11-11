@@ -27,7 +27,7 @@ L4「他法令との参照整合性」の検査を、Record間の参照につい
 ## XREF-05 表示の整合
 
 - 版パッケージの`law.number`（[MAN-01](../../v1alpha2/02-manifest.md)）を、登録台帳の採用中の番号主張（[REG-03](../../loj-registry/v1alpha1/01-registry.md)）と比べる。対象は、Recordの法令リポジトリのすべての版パッケージとする。
-- 採用中の主張の`state`が`exists`または`illegible`の場合、`law.number`は、`raw`と一致するか、`structured.period.raw`と`raw`を続けた文字列と一致しなければならない。一致しない場合（`law.number`が`null`の場合を含む）は、警告とする。
+- 採用中の主張の`state`が`exists`または`illegible`の場合、`law.number`は、`raw`と一致するか、`structured.period.raw`の後に区切りを入れずに`raw`を続けた文字列と一致しなければならない（`structured.period`がなければ、`raw`との一致だけを見る）。一致しない場合（`law.number`が`null`の場合を含む）は、警告とする。
 - 採用中の主張の`state`が`nonexistent`または`unknown`の場合、`law.number`が`null`でなければ、警告とする。
 - 採用中の主張がない場合と、採用中の主張の`state`が`conflicting`の場合は、判定しない。
 - 表示用の値の誤りであり、不合格にしない。字は正規化せずに比べる。
