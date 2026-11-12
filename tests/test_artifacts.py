@@ -479,6 +479,47 @@ class SchemaMarkTests(unittest.TestCase):
         self.assertFalse(validator.is_valid(package))
 
 
+class DiagnosticLocationTests(unittest.TestCase):
+    """CONF-01/SRC-01: the shape of expected diagnostic locations (not which line a rule points at)."""
+
+    def setUp(self):
+        self.path = v.ROOT / "conformance/v1alpha2/invalid/pkg-146/law.yaml"
+        self.man = v.load_yaml(self.path.read_text(encoding="utf-8"))
+
+    def at(self, start, end, path="main.md"):
+        return v.location_problem(self.path, self.man, {"path": path, "start": start, "end": end})
+
+    def test_whole_line_with_crlf_passes(self):
+        self.assertIsNone(self.at(139, 160))
+        self.assertIsNone(self.at(0, 13))
+
+    def test_whole_manifest_passes(self):
+        self.assertIsNone(self.at(0, self.path.stat().st_size, "law.yaml"))
+
+    def test_partial_or_multiple_lines_rejected(self):
+        for start, end, reason in [(139, 159, "boundaries"), (139, 158, "boundaries"), (140, 160, "boundaries"),
+                                   (106, 160, "more than one line"), (160, 160, "out of range"), (0, 999, "out of range")]:
+            with self.subTest(start=start, end=end):
+                self.assertIn(reason, self.at(start, end))
+
+    def test_unknown_path_rejected(self):
+        self.assertIn("unknown path", self.at(0, 13, "other.md"))
+
+    def test_expected_schema_requires_full_location(self):
+        validator = v.all_schemas()["common/v1alpha1/expected.schema.json"]
+        diagnostic = {"rule": "DISP-01", "schemaVersion": "loj/v1alpha2", "class": "error",
+                      "location": {"path": "main.md", "start": 139, "end": 160}}
+        self.assertTrue(validator.is_valid({"diagnostics": [diagnostic]}))
+        for drop in ("path", "start", "end"):
+            broken = copy.deepcopy(diagnostic)
+            del broken["location"][drop]
+            with self.subTest(drop=drop):
+                self.assertFalse(validator.is_valid({"diagnostics": [broken]}))
+        extra = copy.deepcopy(diagnostic)
+        extra["location"]["line"] = 6
+        self.assertFalse(validator.is_valid({"diagnostics": [extra]}))
+
+
 if __name__ == "__main__":
     unittest.main()
 

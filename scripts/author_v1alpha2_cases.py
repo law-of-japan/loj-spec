@@ -274,6 +274,45 @@ case("ヰを使わないいろはの欠番と、括弧付きのASCIIの十進", 
                   level=1)])], numbering="explicit")], status="active")])}, True)
 case("二つの目次", ["TOC-01"], [("main.md", "main", TOC_MD + TOC_MD + ART + P1)], fail("TOC-01"), False)
 
+# 2026-11-12 (#1): L0 positives (no AST; CONF-01) and diagnostics with fixed locations (SRC-01).
+L0_PASS = {"results": [{"check": "L0", "result": "pass"}]}
+case("L0: 未対応の構造を申告した版パッケージ", ["BASIC-03", "VAL-01", "CONF-01"],
+     [("main.md", "main", ART + "<!-- loj:paragraph number=1 -->\n雲の種類は、次のとおりとする。\n<!-- loj:item number=1 -->\n"
+       "一　白雲\n<!-- loj:subitem level=1 number=1 -->\n（ｉ）　巻雲\n<!-- loj:end-subitem -->\n<!-- loj:end-item -->\n"
+       "<!-- loj:end-paragraph -->\n")],
+     L0_PASS, True, check="L0", man_extra={"unsupportedFeatures": ["ローマ数字の細分の表示"]})
+case("L0: L1の違反（項の未閉鎖、DIR-02）を含む本文", ["VAL-02", "CONF-01"],
+     [("main.md", "main", ART + "<!-- loj:paragraph number=1 -->\n" + BODY)], L0_PASS, True, check="L0")
+
+
+def fail_at(rule, path, start, end):
+    """One expected diagnostic with its location. The offsets are counted by hand (UTF-8 bytes, [start, end))."""
+    return {"diagnostics": [{"rule": rule, "schemaVersion": "loj/v1alpha2", "class": "error",
+                             "location": {"path": path, "start": start, "end": end}}]}
+
+
+# CRLF; the body line is ３(3) 　(3) 本(3) 文(3) U+1F600(4) 。(3) CRLF(2) = 21 bytes after 13+33+32+28+33 = 139.
+CRLF_P1 = "<!-- loj:paragraph number=1 -->\r\n架空の雲を保管する。\r\n<!-- loj:end-paragraph -->\r\n"
+case("表示の不一致の位置（CRLFと4バイトの文字）", ["DISP-01", "SRC-01"],
+     [("main.md", "main", "# 第一条\r\n" + CRLF_P1 + "<!-- loj:paragraph number=2 -->\r\n３　本文" + chr(0x1F600) + "。\r\n"
+       "<!-- loj:end-paragraph -->\r\n")], fail_at("DISP-01", "main.md", 139, 160), False)
+# LF; the unclosed start marker (32 bytes) follows 12+32+31+27 = 102 bytes.
+case("未閉鎖の位置（開始のマーカーの行）", ["DIR-02", "SRC-01"],
+     [("main.md", "main", ART + P1 + "<!-- loj:paragraph number=2 -->\n２　雲を返す。\n")],
+     fail_at("DIR-02", "main.md", 102, 134), False)
+# LF; the extra end marker (22 bytes) follows 12+32+26+27 = 97 bytes (雲(3) U+1F600(4) を保管する。(18) LF(1) = 26).
+case("対応しない終了の位置（4バイトの文字の後）", ["DIR-02", "SRC-01"],
+     [("main.md", "main", ART + "<!-- loj:paragraph number=1 -->\n雲" + chr(0x1F600) + "を保管する。\n"
+       "<!-- loj:end-paragraph -->\n<!-- loj:end-item -->\n")],
+     fail_at("DIR-02", "main.md", 97, 119), False)
+# LF; the marker with an unknown attribute (白 is 3 bytes; 42 bytes with LF) follows 102 bytes.
+case("属性の不正の位置", ["DIR-01", "SRC-01"],
+     [("main.md", "main", ART + P1 + "<!-- loj:paragraph number=2 color=白 -->\n２　雲を返す。\n<!-- loj:end-paragraph -->\n")],
+     fail_at("DIR-01", "main.md", 102, 144), False)
+# LF; the extra end marker is the last line without a line break (21 bytes, to the end of the file) after 102 bytes.
+case("対応しない終了の位置（改行のない最後の行）", ["DIR-02", "SRC-01"],
+     [("main.md", "main", ART + P1 + "<!-- loj:end-item -->")], fail_at("DIR-02", "main.md", 102, 123), False)
+
 
 def main():
     index_path = DST / "manifest.json"

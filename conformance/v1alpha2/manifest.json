@@ -2312,6 +2312,119 @@
       },
       "expected": "conformance/v1alpha2/expected/pkg-143.json",
       "success": false
+    },
+    {
+      "id": "pkg-144",
+      "title": "L0: 未対応の構造を申告した版パッケージ",
+      "requirements": [
+        "BASIC-03",
+        "VAL-01",
+        "CONF-01"
+      ],
+      "check": "L0",
+      "normative": true,
+      "input": {
+        "kind": "package",
+        "path": "conformance/v1alpha2/valid/pkg-144/law.yaml"
+      },
+      "expected": "conformance/v1alpha2/expected/pkg-144.json",
+      "success": true
+    },
+    {
+      "id": "pkg-145",
+      "title": "L0: L1の違反（項の未閉鎖、DIR-02）を含む本文",
+      "requirements": [
+        "VAL-02",
+        "CONF-01"
+      ],
+      "check": "L0",
+      "normative": true,
+      "input": {
+        "kind": "package",
+        "path": "conformance/v1alpha2/valid/pkg-145/law.yaml"
+      },
+      "expected": "conformance/v1alpha2/expected/pkg-145.json",
+      "success": true
+    },
+    {
+      "id": "pkg-146",
+      "title": "表示の不一致の位置（CRLFと4バイトの文字）",
+      "requirements": [
+        "DISP-01",
+        "SRC-01"
+      ],
+      "check": "L1",
+      "normative": true,
+      "input": {
+        "kind": "package",
+        "path": "conformance/v1alpha2/invalid/pkg-146/law.yaml"
+      },
+      "expected": "conformance/v1alpha2/expected/pkg-146.json",
+      "success": false
+    },
+    {
+      "id": "pkg-147",
+      "title": "未閉鎖の位置（開始のマーカーの行）",
+      "requirements": [
+        "DIR-02",
+        "SRC-01"
+      ],
+      "check": "L1",
+      "normative": true,
+      "input": {
+        "kind": "package",
+        "path": "conformance/v1alpha2/invalid/pkg-147/law.yaml"
+      },
+      "expected": "conformance/v1alpha2/expected/pkg-147.json",
+      "success": false
+    },
+    {
+      "id": "pkg-148",
+      "title": "対応しない終了の位置（4バイトの文字の後）",
+      "requirements": [
+        "DIR-02",
+        "SRC-01"
+      ],
+      "check": "L1",
+      "normative": true,
+      "input": {
+        "kind": "package",
+        "path": "conformance/v1alpha2/invalid/pkg-148/law.yaml"
+      },
+      "expected": "conformance/v1alpha2/expected/pkg-148.json",
+      "success": false
+    },
+    {
+      "id": "pkg-149",
+      "title": "属性の不正の位置",
+      "requirements": [
+        "DIR-01",
+        "SRC-01"
+      ],
+      "check": "L1",
+      "normative": true,
+      "input": {
+        "kind": "package",
+        "path": "conformance/v1alpha2/invalid/pkg-149/law.yaml"
+      },
+      "expected": "conformance/v1alpha2/expected/pkg-149.json",
+      "success": false
+    },
+    {
+      "id": "pkg-150",
+      "title": "対応しない終了の位置（改行のない最後の行）",
+      "requirements": [
+        "DIR-02",
+        "SRC-01"
+      ],
+      "check": "L1",
+      "normative": true,
+      "input": {
+        "kind": "package",
+        "path": "conformance/v1alpha2/invalid/pkg-150/law.yaml"
+      },
+      "expected": "conformance/v1alpha2/expected/pkg-150.json",
+      "success": false
     }
   ]
 }

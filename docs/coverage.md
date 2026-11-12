@@ -49,14 +49,14 @@ T076〜T105は承認されたMAN-03 B案の独立ケース。附属資料の通�
 
 | ディレクトリ | ケース | 内容 |
 |---|---|---|
-| [conformance/v1alpha2](../conformance/v1alpha2/manifest.json) | pkg-001〜143 | v1alpha1の106件を写したもの（pkg-001〜106）と、「條」「ノ」「附　則」、無番号の項、表、前文・制定文、目次、いろは・括弧付きの十進の細分、括弧書きを含む条の見出しとその違反（pkg-107〜143） |
+| [conformance/v1alpha2](../conformance/v1alpha2/manifest.json) | pkg-001〜150 | v1alpha1の106件を写したもの（pkg-001〜106）と、「條」「ノ」「附　則」、無番号の項、表、前文・制定文、目次、いろは・括弧付きの十進の細分、括弧書きを含む条の見出しとその違反（pkg-107〜143）、L0の正例と、診断の位置を固定した負例（pkg-144〜150） |
 | [conformance/loj-history/v1alpha1](../conformance/loj-history/v1alpha1/manifest.json) | hist-001〜051 | 祝日法の制定時と最初の改正後の版、履歴だけの法令リポジトリ三つ、その違反、共通の型と時点値の違反 |
 | [conformance/loj-glyphs/v1alpha1](../conformance/loj-glyphs/v1alpha1/manifest.json) | glyph-001〜009 | 祝日法の字体注記と、その違反。L1が不合格の版の字体注記（未完了） |
 | [conformance/loj-registry/v1alpha1](../conformance/loj-registry/v1alpha1/manifest.json) | reg-001〜010 | 三つのRecordの登録台帳、統合したRecordを残した登録台帳と、その違反 |
 | [conformance/loj-rebuild/v1alpha1](../conformance/loj-rebuild/v1alpha1/manifest.json) | rebuild-001〜004 | 祝日法の再構築報告と、その違反 |
 | [conformance/common/v1alpha1](../conformance/common/v1alpha1/manifest.json) | common-001〜026 | L4の時点の整合（T-04）、変更検査、固定参照（`git bundle`の架空の履歴） |
 
-`scripts/verify.py`は、すべての索引・期待結果・正例の入力の形と、要件IDの存在を検査し、v1alpha2の正例のASTを原文と突き合わせる。版パッケージのケースを除く負例は、索引の`rejectedBy: schema`の印のとおりに、入力のYAMLがschemaで落ちるか、schemaを通るかを検査する（[CONF-01](../spec/common/v1alpha1/04-conformance.md)）。v1alpha2のL1の負例と、L3・L4・登録台帳・再構築報告・変更検査・固定参照のケースの合否は判定しない。検査器で判定する。
+`scripts/verify.py`は、すべての索引・期待結果・正例の入力の形と、要件IDの存在を検査し、v1alpha2の正例のASTを原文と突き合わせる。v1alpha2のL0の正例は、ASTを持たずにL0の`pass`を挙げることと、ManifestがL0の検査を通ることを検査する。期待結果の診断の位置は、ファイルの中の一つの行（行末の改行を含む）か`law.yaml`の全体であることだけを検査し、規則が指すべき行かは判定しない。版パッケージのケースを除く負例は、索引の`rejectedBy: schema`の印のとおりに、入力のYAMLがschemaで落ちるか、schemaを通るかを検査する（[CONF-01](../spec/common/v1alpha1/04-conformance.md)）。v1alpha2のL1の負例と、L3・L4・登録台帳・再構築報告・変更検査・固定参照のケースの合否は判定しない。検査器で判定する。
 
 ### ケースのない要件
 
@@ -95,6 +95,8 @@ HIST-04・05・08の2026-11-11の追加（[law-of-japan/loj-spec#20](https://git
 v1alpha2の2026-11-11の追加（[law-of-japan/loj-spec#25](https://github.com/law-of-japan/loj-spec/issues/25)）のうち、マーカーの空白はpkg-125・126を代表例とし、`<!--`の後・`-->`の前・名前と最初の属性の間の負例は加えていない。番号のない第1項が数字で始まる場合の申告（DISP-01）は、`unsupportedFeatures`を申告した版のL1の不合格（BASIC-03）の既存のケースと同じ結果になるので、加えていない。`supplements[].title`を検査しないこと（MAN-01）は、既存の正例（附則の`title`が見出しと違う「制定附則」）が当たる。
 
 v1alpha2の2026-11-12の追加（[law-of-japan/loj-spec#27](https://github.com/law-of-japan/loj-spec/issues/27)）は、目次（pkg-129）、いろは・括弧付きの十進の細分（pkg-130）、括弧書きを含む条の見出し（pkg-131）、ヰを使わないいろはの欠番（ウ・ノ）とヱ・ス、括弧付きのASCIIの十進（pkg-142）の正例と、目次の位置・中身・数（pkg-132〜135、143）、細分の表示（pkg-136〜139）、条の見出しの括弧（pkg-140・141）の負例がある。目次の中のATX見出しの負例は、まだない。未対応の構造を申告した版の参考の集計（BASIC-03）は、L1の結果を変えない任意の報告であり、ケースを作らない。
+
+v1alpha2の2026-11-12の追加（[law-of-japan/loj-spec#1](https://github.com/law-of-japan/loj-spec/issues/1)）は、L0の正例（未対応の構造を申告した入力のpkg-144、L1の違反を含む入力のpkg-145。L0では成功するケースなので`valid/`に置く）と、診断の位置（SRC-01）を固定した負例（CRLFと4バイトの文字を含む表示の不一致のpkg-146、未閉鎖のpkg-147、対応しない終了のpkg-148、属性の不正のpkg-149、改行のない最後の行の対応しない終了のpkg-150）である。診断の位置のケースは一部だけで、重複・見出しの違反・Manifestの意味の違反の位置のケースは、まだない（[law-of-japan/loj-spec#67](https://github.com/law-of-japan/loj-spec/issues/67)）。既存の負例の期待結果には、位置を加えていない。
 
 GLYPH-05・GLYPH-07・GLYPH-10・GLYPH-11（2026-11-12、[law-of-japan/loj-spec#21](https://github.com/law-of-japan/loj-spec/issues/21)）: 正規分解を持たない互換漢字のブロックの字に注記がなくても合格する正例（glyph-010）と、字体を保持する資料を指さずに字体を照合済みにする負例（glyph-011）がある。`ivd`の必須、`variance`の`candidates`、`text.variances`・`text.correctionsSurveyed`はschemaにあるが、正例・負例はまだない。`text.correctionsSurveyed`は、hist-001の正例で使っている。
 

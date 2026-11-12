@@ -424,6 +424,31 @@ def check_positive(path, man, expected, v2=False):
     return len(ids)
 
 
+def location_problem(law_path, man, location):
+    """SRC-01/CONF-01: an expected diagnostic location names law.yaml or a listed document, stays inside it,
+    and covers one whole line (its line break included) or, for law.yaml, the whole document.
+    Returns None when the location is well formed; does not decide which line the rule points at.
+    The whole-law.yaml form (0, size) is accepted even when law.yaml is a single line: both readings are well formed.
+    Empty files and bare CR line breaks never reach here (BASIC-02 rejects them at L0), so start < end and LF suffice."""
+    name = location["path"]
+    if name != "law.yaml" and name not in [doc["path"] for doc in man["documents"]]:
+        return "unknown path " + name
+    raw = (law_path.parent / name).read_bytes()
+    start, end = location["start"], location["end"]
+    if not 0 <= start < end <= len(raw):
+        return "out of range"
+    if name == "law.yaml" and (start, end) == (0, len(raw)):
+        return None
+    if (start and raw[start - 1:start] != b"\n") or (end < len(raw) and raw[end - 1:end] != b"\n"):
+        return "not at line boundaries"
+    if b"\n" in raw[start:end - 1]:
+        return "more than one line"
+    return None
+
+
+L0_PASS = {"check": "L0", "result": "pass"}
+
+
 SUITES = {"loj/v1alpha2": ("v1alpha2", "pkg"), "common/v1alpha1": ("common/v1alpha1", "common"),
           "loj-history/v1alpha1": ("loj-history/v1alpha1", "hist"), "loj-glyphs/v1alpha1": ("loj-glyphs/v1alpha1", "glyph"),
           "loj-registry/v1alpha1": ("loj-registry/v1alpha1", "reg"), "loj-rebuild/v1alpha1": ("loj-rebuild/v1alpha1", "rebuild")}
@@ -547,12 +572,21 @@ def audit_suite(name, validators, rules):
             require(not failed and not errors, ident + " positive case expects failure")
         else:
             require(bool(errors), ident + " negative case needs an error diagnostic")
+        located = [d["location"] for d in expected.get("diagnostics", []) if "location" in d]
         if case["input"]["kind"] == "package":
             v2 = name == "loj/v1alpha2"
-            require(("ast" in expected) == (case["success"] and v2), ident + " AST presence")
+            # CONF-01: L1/L2 positives carry the full AST; L0 positives carry the L0 pass result and no AST.
+            require(("ast" in expected) == (case["success"] and v2 and case["check"] != "L0"), ident + " AST presence")
             path = ROOT / case["input"]["path"]
             issues, man = inspect_manifest(path, validators["v1alpha2/manifest.schema.json"], "loj/v1alpha2")
-            if case["success"]:
+            for location in located:
+                problem = location_problem(path, man, location)
+                require(problem is None, ident + " diagnostic location " + str(location) + ": " + str(problem))
+            if case["success"] and case["check"] == "L0":
+                # unsupportedFeatures may be declared: it fails L1 (BASIC-03), not L0.
+                require(not issues, ident + " invalid L0 positive Manifest: " + str(issues))
+                require(L0_PASS in expected.get("results", []), ident + " L0 positive must list the L0 pass result")
+            elif case["success"]:
                 require(not issues and not man.get("unsupportedFeatures"), ident + " invalid positive Manifest: " + str(issues))
                 validators["v1alpha2/ast.schema.json"].validate(expected["ast"])
                 check_positive(path, man, expected, v2=True)
@@ -562,6 +596,8 @@ def audit_suite(name, validators, rules):
             elif case["check"] == "L1":
                 require(not issues, ident + " unexpected L0 failure: " + str(issues))
         else:
+            # CONF-01: only SRC-01 (version packages) fixes diagnostic locations.
+            require(not located, ident + " diagnostic location outside a version package case")
             # Version package cases (L0-L2) never carry the mark: their schema violations are L0 failures,
             # checked through inspect_manifest above, and the index schema rejects the mark there.
             stats["files"] += check_schema_mark(ident, case, inputs, validators)
