@@ -86,9 +86,9 @@
 
 ## 未決の点
 
-試行で見つけた次の二つは、本書の時点で扱いが決まっていない。それぞれ作業用のissueを起こして決める。
+試行で見つけた次の二つは、本書の時点で扱いが決まっていない。それぞれ作業用のissue（[law-of-japan/loj-spec#56](https://github.com/law-of-japan/loj-spec/issues/56)、[law-of-japan/loj-spec#57](https://github.com/law-of-japan/loj-spec/issues/57)）で決める。
 
 | 点 | 決めること |
 |---|---|
-| 項の見出し | 型付けする（`paragraph`のマーカーの属性、または項の本文の前の見出しの行の規則等）か、未対応としてBASIC-03に挙げるか。型付けする場合の`display`・ASTの形と、条の見出し（HEAD-01）との関係 |
-| 空のセル | 空のセルを認める（Cellの本文を空にできるようにする）か、結合で表すことを求めるか、未対応として申告するか。認める場合、Cellの子をtextちょうど1とするAST-01の表と、DIR-02の改め方 |期待結果の確かめ方は[law-of-japan/loj-spec#32](https://github.com/law-of-japan/loj-spec/issues/32)で議論している。
+| 項の見出し（[law-of-japan/loj-spec#56](https://github.com/law-of-japan/loj-spec/issues/56)） | 型付けする（`paragraph`のマーカーの属性、または項の本文の前の見出しの行の規則等）か、未対応としてBASIC-03に挙げるか。型付けする場合の`display`・ASTの形と、条の見出し（HEAD-01）との関係 |
+| 空のセル（[law-of-japan/loj-spec#57](https://github.com/law-of-japan/loj-spec/issues/57)） | 空のセルを認める（Cellの本文を空にできるようにする）か、結合で表すことを求めるか、未対応として申告するか。認める場合、Cellの子をtextちょうど1とするAST-01の表と、DIR-02の改め方 |期待結果の確かめ方は[law-of-japan/loj-spec#32](https://github.com/law-of-japan/loj-spec/issues/32)で議論している。
