@@ -309,6 +309,9 @@ case("対応しない終了の位置（4バイトの文字の後）", ["DIR-02",
 case("属性の不正の位置", ["DIR-01", "SRC-01"],
      [("main.md", "main", ART + P1 + "<!-- loj:paragraph number=2 color=白 -->\n２　雲を返す。\n<!-- loj:end-paragraph -->\n")],
      fail_at("DIR-01", "main.md", 102, 144), False)
+# LF; the extra end marker is the last line without a line break (21 bytes, to the end of the file) after 102 bytes.
+case("対応しない終了の位置（改行のない最後の行）", ["DIR-02", "SRC-01"],
+     [("main.md", "main", ART + P1 + "<!-- loj:end-item -->")], fail_at("DIR-02", "main.md", 102, 123), False)
 
 
 def main():
