@@ -27,7 +27,7 @@ ASTは、`schemaVersion`・`law`・`root`への投影を、位置情報を除い
 | 種類 | 変更してよい範囲 | 検査 |
 |---|---|---|
 | `format` | 版パッケージのファイル（表現） | 変更前後で、すべての版のASTが一致する。履歴マニフェスト・登録台帳は変わらない |
-| `correction`／`officialCorrection` | 宣言した版の本文。従属して、その版の字体注記（[GLYPH-04](../../loj-glyphs/v1alpha1/01-glyphs.md)）、その版を指すScopeの`nodes`（[TYPE-08](05-types.md)）、当該Revisionの`text.sources`・`text.glyphs`、根拠のSource・Evidence | 宣言していない版のASTが一致する。宣言した版ごとに根拠（原典の箇所、官報正誤）がある |
+| `correction`／`officialCorrection` | 宣言した版の本文。従属して、その版の字体注記（[GLYPH-04](../../loj-glyphs/v1alpha1/01-glyphs.md)）、その版を指すScopeの`nodes`（[TYPE-08](05-types.md)）、当該Revisionの`text.sources`・`text.glyphCheck`、根拠のSource・Evidence | 宣言していない版のASTが一致する。宣言した版ごとに根拠（原典の箇所、官報正誤）がある |
 | `restoration` | 宣言した版の本文と本文の状態。従属して、`correction`と同じファイルと、当該Revisionの`text`の欠落範囲、再構築報告の対応 | 宣言していない版のASTが一致する。本文の状態・欠落範囲の宣言が更新されている |
 | `metadata` | 版パッケージ以外のファイル（登録台帳を含む） | すべての版のASTが一致する。登録台帳では、統合・分割・撤回したRecordのIDを再利用していない（[RID-05](../../loj-registry/v1alpha1/02-record-ids.md)） |
 | `revisionAdd` | 新しい版パッケージ（本文のない版（`text.status: absent`）では版パッケージを置かない）と、その履歴マニフェストの項目。従属して、新しい版の字体注記、`history.yaml`の新しいRevision・関係（`relations`）・Source、再構築報告の`mappings` | 既存のすべての版のASTが一致する。新しい版が版の順序の要件を満たす |

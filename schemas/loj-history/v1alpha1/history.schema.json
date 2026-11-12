@@ -384,7 +384,7 @@
               "sources": {
                 "$ref": "https://law-of-japan.github.io/loj-spec/schemas/common/v1alpha1/types.schema.json#/$defs/evidenceList"
               },
-              "glyphs": {
+              "glyphCheck": {
                 "enum": [
                   "verified",
                   "unverified"
@@ -534,7 +534,7 @@
                 "then": {
                   "required": [
                     "sources",
-                    "glyphs"
+                    "glyphCheck"
                   ],
                   "properties": {
                     "sources": {
@@ -557,7 +557,7 @@
                       },
                       {
                         "required": [
-                          "glyphs"
+                          "glyphCheck"
                         ]
                       },
                       {

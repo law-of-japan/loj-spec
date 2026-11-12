@@ -5,7 +5,7 @@ sources:
   - id: src-fixed-loj
     kind: other
     title: 架空雲保管法の制定時の版（LoJの記録版）
-    fixed: loj:loj/20990101-act-1/b7k2m9qd@02086ca793ace385b61e6fa5692709895e7e9b0e
+    fixed: loj:loj/20990101-act-1/b7k2m9qd@f1162fe2cfefa04e9a0d656706e37977fb3d0731
   - id: src-fixed-outside
     kind: other
     title: 適合ケースのための架空の外部資料

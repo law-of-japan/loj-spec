@@ -112,10 +112,10 @@
 
 ## GLYPH-10 照合状態との関係
 
-- 履歴マニフェストの`text.glyphs: verified`は、原典の字体と照合し、決められなかった字をすべて注記したことを表す。曖昧・判読困難の注記が残っていても`verified`にできる。
-- 注記の数や有無から、本文が原典どおりであることを推論してはならない（MUST NOT）。注記がないことは、照合していないことと区別できない。照合の有無は`text.glyphs`で示す。
-- 文字情報を保持しない資料から起こした本文の`text.glyphs`を`verified`にするには、文字情報を保持する資料と照合しなければならない（MUST。loj-rebuildのREBR-03）。
-- `text.glyphs: verified`のRevisionの`text.sources`は、`glyphPreservation: preserved`（[TYPE-02](../../common/v1alpha1/05-types.md)）のSourceを一つ以上指さなければならない（MUST）。指さなければ違反とする。再構築報告の有無によらず、Sourceで確かめる。
+- 履歴マニフェストの`text.glyphCheck: verified`は、原典の字体と照合し、決められなかった字をすべて注記したことを表す。曖昧・判読困難の注記が残っていても`verified`にできる。
+- 注記の数や有無から、本文が原典どおりであることを推論してはならない（MUST NOT）。注記がないことは、照合していないことと区別できない。照合の有無は`text.glyphCheck`で示す。
+- 文字情報を保持しない資料から起こした本文の`text.glyphCheck`を`verified`にするには、文字情報を保持する資料と照合しなければならない（MUST。loj-rebuildのREBR-03）。
+- `text.glyphCheck: verified`のRevisionの`text.sources`は、`glyphPreservation: preserved`（[TYPE-02](../../common/v1alpha1/05-types.md)）のSourceを一つ以上指さなければならない（MUST）。指さなければ違反とする。再構築報告の有無によらず、Sourceで確かめる。
 
 ## GLYPH-11 互換漢字と異体字セレクタの注記
 

@@ -7,7 +7,7 @@ sources:
     title: 架空雲保管法の制定時の版（LoJの記録版）
     fixed:
       record: {id: 20990101-act-1, label: 架空法律第一号}
-      commit: 02086ca793ace385b61e6fa5692709895e7e9b0e
+      commit: f1162fe2cfefa04e9a0d656706e37977fb3d0731
       node: 20990101-act-1/main/article/1/paragraph/1
   - id: src-fixed-outside
     kind: other

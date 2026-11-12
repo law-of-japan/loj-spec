@@ -2,6 +2,18 @@
 
 見出しの「草案」は、[草案の版](spec/README.md#版の状態)への変更であることを示す。版の状態の正は、[規範仕様の入口](spec/README.md#規範とするもの)の表にある。版を公開したときは、公開の日付の項目を加える。
 
+## 取り違えやすいフィールドの改名と命名の規則（2026-11-12、草案）
+
+[law-of-japan/loj-spec#29](https://github.com/law-of-japan/loj-spec/issues/29)の結論による変更である。草案の版への変更であり、版番号は上げない。旧名のフィールドは、閉じたschemaにより拒否される。
+
+- HIST-08: Revisionの`text.glyphs`（`verified`・`unverified`）を`text.glyphCheck`に改めた。字体注記のファイル（`glyphs.yaml`）、番号主張の`glyphs`（注記の配列）と名前が重なっていたためである。GLYPH-10、REB-05、REBR-03、CHG-02の表を合わせた。
+- REBR-03: 再構築報告の`sourceChecks[].glyphs`を`glyphPreservation`に改め、Source（TYPE-02）の`glyphPreservation`と名前と値をそろえた。
+- MAN-01: `law.yaml`の`sources`（出典のURIの文字列の配列）を`sourceUris`に改めた。ほかのファイルの`sources`はSourceの一覧で、型が違うためである。
+- REG-02: Recordの`text`（本文の取得状況`state`）を`collection`に改めた。Revisionの`text`（本文の状態）と意味が違うためである。
+- DDR-022に、`state`と`status`の使い分けの規則を加えた。Revisionの`text.status`は例外として名前を残した。`pending`・`evidence`・`basis`・`label`等の、出てくる型で意味が一つに決まる名前は改めず、用語集の区別で足りるとした。
+- 適合ケースの入力を新しい名前に改めた。変更・参照のケースの`git bundle`を作り直したため、commitのハッシュが変わった（期待結果と索引、hist-019の固定参照のcommitを合わせた）。ケースの成否は変わらない。
+- 用語集、移行の手引き、DDR-015・018・020・021を更新した。
+
 ## 実在の法令での試行（2026-11-12）
 
 [law-of-japan/loj-spec#27](https://github.com/law-of-japan/loj-spec/issues/27)の結論（3）による試行の記録である。規範は変えていない。

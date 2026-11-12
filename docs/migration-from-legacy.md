@@ -37,7 +37,7 @@
 - それより前のリポジトリの名前は`aliases`に入れ、各別名に根拠（旧本文のリンク、GitHubの転送等）を付ける。
 - `repository`に、法令リポジトリの`location`と`canonicalBranch: main`を書く。
 - 番号主張・外部識別子は、原典で確かめた根拠と共に記録する。旧`law.yaml`の値を、確かめずに写さない。原典で確かめられない番号は`state: unknown`の主張とし、旧`number`の値（`null`を含む）は確認状態の理由に手がかりとして書く（REB-06）。
-- 改正法など、本文を収録しないが関係の起点になるRecordも、ここで登録する（`text.state: notCollected`）。
+- 改正法など、本文を収録しないが関係の起点になるRecordも、ここで登録する（`collection.state: notCollected`）。
 
 ### 3. 原典資料の確認
 
@@ -63,7 +63,7 @@
 
 - 本文の字の字体について、原典の字形と、本文に置いたコードポイントの関係を記録する必要があれば、`glyphs.yaml`に注記する（GLYPH-02）。
 - 原典の中の訂正（GLYPH-09）、踊り字（GLYPH-08）、互換漢字と異体字セレクタ（GLYPH-11）の扱いもここで記録する。
-- 官報の字体と照合していない版は、`text.glyphs: unverified`のままにする。
+- 官報の字体と照合していない版は、`text.glyphCheck: unverified`のままにする。
 
 ### 7. 再構築報告
 

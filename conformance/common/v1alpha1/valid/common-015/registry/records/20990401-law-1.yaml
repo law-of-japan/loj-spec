@@ -5,7 +5,7 @@ status: active
 identity:
   evidence: [{source: src-fictional, locator: 題名}]
   verification: {state: confirmed}
-text: {state: notCollected}
+collection: {state: notCollected}
 repository: {location: example.invalid/20990401-law-1, canonicalBranch: main}
 sources:
   - {id: src-fictional, kind: other, title: 適合ケースのための架空の資料}

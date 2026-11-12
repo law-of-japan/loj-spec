@@ -30,7 +30,7 @@
 | `aliases` | 任意 | 旧リポジトリの以前の名前の一覧。各項目は`id`、`evidence`、`verification` |
 | `status` | 必須 | `provisional`（仮登録）／`active`／`merged`／`split`／`withdrawn` |
 | `identity` | 必須 | 同一性の確認。対象を指す資料・調査の記録（`evidence`）と`verification` |
-| `text` | 必須 | 本文の取得状況`state`。`collected`（法令リポジトリに本文がある）／`notCollected`（取得していない）／`nonexistentConfirmed`（本文が存在しないことを確認した） |
+| `collection` | 必須 | 本文の取得状況`state`。`collected`（法令リポジトリに本文がある）／`notCollected`（取得していない）／`nonexistentConfirmed`（本文が存在しないことを確認した） |
 | `repository` | 条件付き | 法令リポジトリの`location`（例: `github.com/law-of-japan/19480720-law-178`）と`canonicalBranch`（正本ブランチ。例: `main`） |
 | `sources` | 必須（空可） | Sourceの一覧 |
 | `numbers` | 必須（空可） | 番号主張の一覧（REG-03） |
@@ -38,13 +38,13 @@
 | `replacedBy` | `merged`・`split`で必須 | 統合先、または分割先の候補の一覧。各項目は`record`（RecordRef）、`evidence`、`verification` |
 
 - 本文のパッケージのないRecordも登録できる。
-- `repository`は、`text.state`が`collected`のとき、または法令リポジトリに関係・Revisionを記録するとき、持たなければならない（MUST）。法令リポジトリを持たないRecordは`repository`を持たない。リポジトリが移転したら更新する。
+- `repository`は、`collection.state`が`collected`のとき、または法令リポジトリに関係・Revisionを記録するとき、持たなければならない（MUST）。法令リポジトリを持たないRecordは`repository`を持たない。リポジトリが移転したら更新する。
 - `provisional`のRecordの`identity.verification.state`を、`confirmed`にしてはならない（MUST NOT）。
 - `notCollected`から、本文の不存在を推論してはならない（MUST NOT）。
 - 題名と法令の種別は、登録台帳に持たない。版ごとに版パッケージ（`law.yaml`の`title`・`type`）にあり、改正で変わり得るためである。表示には`label`を使う。
 - 分割先が確定していない候補は、`verification.state: unverified`で残す。
 - 効力の終了（廃止・失効）を`status`で表してはならない（MUST NOT。履歴マニフェストのHIST-12）。
-- `withdrawn`は、登録した対象が法令として存在しないこと（誤登録等）を確認して、登録を撤回したことを表す。L4では、不存在確認済みのRecordとする（[XREF-01](../../common/v1alpha1/10-cross-record.md)）。本文の不存在（`text.state: nonexistentConfirmed`）とは別である。
+- `withdrawn`は、登録した対象が法令として存在しないこと（誤登録等）を確認して、登録を撤回したことを表す。L4では、不存在確認済みのRecordとする（[XREF-01](../../common/v1alpha1/10-cross-record.md)）。本文の不存在（`collection.state: nonexistentConfirmed`）とは別である。
 
 ## REG-03 番号主張
 

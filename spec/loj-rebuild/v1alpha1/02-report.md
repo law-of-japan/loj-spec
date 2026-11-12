@@ -27,15 +27,15 @@
 
 ## REBR-03 資料の確認結果
 
-- `sourceChecks`の各項目は、`source`（Sourceの`id`）、`glyphs`、`evidence`、任意の`note`を持つ。`glyphs`は次のいずれかとする。
+- `sourceChecks`の各項目は、`source`（Sourceの`id`）、`glyphPreservation`、`evidence`、任意の`note`を持つ。`glyphPreservation`は次のいずれかとする。
 
-  | `glyphs` | 意味 |
+  | `glyphPreservation` | 意味 |
   |---|---|
   | `preserved` | 旧字体・異体字を保持している（例: 官報の画像） |
   | `normalized` | 新字体等に置き換えている（例: e-Gov） |
   | `unknown` | 確かめていない |
 
-- `glyphs`が`preserved`でない資料から起こした本文を、原典どおりと主張してはならない（MUST NOT）。その版の`text.glyphs`を`verified`にするには、`preserved`の資料と照合しなければならない（MUST。loj-glyphsのGLYPH-10）。
+- `glyphPreservation`が`preserved`でない資料から起こした本文を、原典どおりと主張してはならない（MUST NOT）。その版の`text.glyphCheck`を`verified`にするには、`preserved`の資料と照合しなければならない（MUST。loj-glyphsのGLYPH-10）。
 - `sourceChecks`は、旧リポジトリから移したときの資料の確認の記録である。GLYPH-10の条件は、Sourceの`glyphPreservation`（TYPE-02）で確かめる。両者が食い違っても、本版では違反としない。GLYPH-10の判定にはSourceの値を使う。
 
 ## REBR-04 旧commitとの対応と未再構築の改正

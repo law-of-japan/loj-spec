@@ -109,7 +109,7 @@
 | 適用関係 | `applicability` | 適用の条件の調査結果。`noneConfirmed`（ないことを確認）、`unsurveyed`（未調査）、`conditions`（条件あり） | [HIST-07](../spec/loj-history/v1alpha1/01-history.md#hist-07-適用関係) |
 | 経過措置による併存 | — | 新旧の状態が同時に適用される状態。`basedOn`の分岐と適用関係で表す | [HIST-04](../spec/loj-history/v1alpha1/01-history.md#hist-04-起点と基礎状態)、[HIST-07](../spec/loj-history/v1alpha1/01-history.md#hist-07-適用関係) |
 | 本文の状態 | `text.status` | `complete`（そろっている）、`partial`（一部欠ける。欠落は`gaps`）、`absent`（本文がない） | [HIST-08](../spec/loj-history/v1alpha1/01-history.md#hist-08-本文の状態) |
-| 字体の照合状態 | `text.glyphs` | `verified`（原典の字体と照合した）、`unverified`（照合していない）。`verified`には、字体を保持するSourceを`text.sources`で指す | [HIST-08](../spec/loj-history/v1alpha1/01-history.md#hist-08-本文の状態)、[GLYPH-10](../spec/loj-glyphs/v1alpha1/01-glyphs.md#glyph-10-照合状態との関係) |
+| 字体の照合状態 | `text.glyphCheck` | `verified`（原典の字体と照合した）、`unverified`（照合していない）。`verified`には、字体を保持するSourceを`text.sources`で指す | [HIST-08](../spec/loj-history/v1alpha1/01-history.md#hist-08-本文の状態)、[GLYPH-10](../spec/loj-glyphs/v1alpha1/01-glyphs.md#glyph-10-照合状態との関係) |
 | 資料の間の食い違い | `text.variances` | 原典資料の間で文言が違い、官報正誤で解けていないもの。資料ごとの文言を並べ、`disputed`として記録する | [HIST-08](../spec/loj-history/v1alpha1/01-history.md#hist-08-本文の状態)、[GLYPH-07](../spec/loj-glyphs/v1alpha1/01-glyphs.md#glyph-07-字体の根拠とする資料) |
 | 官報正誤の確認 | `text.correctionsSurveyed` | 版の本文について官報正誤を確かめたか。`surveyed`、`unsurveyed` | [HIST-08](../spec/loj-history/v1alpha1/01-history.md#hist-08-本文の状態)、[REB-05](../spec/loj-rebuild/v1alpha1/01-rebuild.md#reb-05-原典の入手経路と記録) |
 | 収録範囲 | `coverage` | 収録の網羅性の確認状態（`confirmed`／`unconfirmed`）と既知の欠落。Revisionの数を網羅性の根拠にしない | [HIST-11](../spec/loj-history/v1alpha1/01-history.md#hist-11-収録範囲) |
@@ -150,7 +150,7 @@
 | 同一性 | `identity` | Recordが指す対象の確認。資料・調査の記録と確認状態 | [REG-02](../spec/loj-registry/v1alpha1/01-registry.md#reg-02-recordのファイル) |
 | 仮登録 | `status: provisional` | 同一性が未確定の登録。IDはこの段階で発行し、確定しても変えない | [REG-02](../spec/loj-registry/v1alpha1/01-registry.md#reg-02-recordのファイル)、[RID-01](../spec/loj-registry/v1alpha1/02-record-ids.md#rid-01-新しいrecord-idの発行) |
 | Recordの状態 | `status` | `provisional`、`active`、`merged`（統合）、`split`（分割）、`withdrawn`（撤回）。登録の状態であり、効力の終了ではない | [REG-02](../spec/loj-registry/v1alpha1/01-registry.md#reg-02-recordのファイル)、[RID-05](../spec/loj-registry/v1alpha1/02-record-ids.md#rid-05-統合分割撤回) |
-| 本文の取得状況 | `text.state`（登録台帳） | `collected`（法令リポジトリに本文がある）、`notCollected`（取得していない）、`nonexistentConfirmed`（本文が存在しないことを確認した） | [REG-02](../spec/loj-registry/v1alpha1/01-registry.md#reg-02-recordのファイル) |
+| 本文の取得状況 | `collection.state`（登録台帳） | `collected`（法令リポジトリに本文がある）、`notCollected`（取得していない）、`nonexistentConfirmed`（本文が存在しないことを確認した） | [REG-02](../spec/loj-registry/v1alpha1/01-registry.md#reg-02-recordのファイル) |
 | 別名 | `aliases` | 旧リポジトリの以前の名前。参照の解決にだけ使う | [REG-02](../spec/loj-registry/v1alpha1/01-registry.md#reg-02-recordのファイル)、[REB-02](../spec/loj-rebuild/v1alpha1/01-rebuild.md#reb-02-idの維持) |
 
 ## 文字
@@ -212,7 +212,7 @@
 |---|---|---|---|
 | 再構築 | — | 旧リポジトリのRecordを、原典から履歴マニフェスト・版パッケージ・字体注記へ作り直して移す作業。旧本文は取り込まない | [REB-01](../spec/loj-rebuild/v1alpha1/01-rebuild.md#reb-01-対象と新しい版で書くこと)、[REB-03](../spec/loj-rebuild/v1alpha1/01-rebuild.md#reb-03-本文の出どころ) |
 | 凍結 | `legacy.frozenAt` | 旧リポジトリの規定のブランチをその時点で止め、以後pushしないこと。旧commitは到達できるように保つ | [REB-02](../spec/loj-rebuild/v1alpha1/01-rebuild.md#reb-02-idの維持)、[REB-08](../spec/loj-rebuild/v1alpha1/01-rebuild.md#reb-08-既存の参照の維持と旧形式)、[REBR-02](../spec/loj-rebuild/v1alpha1/02-report.md#rebr-02-項目) |
-| 資料の確認結果 | `sourceChecks`、`glyphs` | 旧リポジトリから移したときに、使った資料が旧字体・異体字を保持しているかを確かめた記録。`preserved`、`normalized`、`unknown` | [REBR-03](../spec/loj-rebuild/v1alpha1/02-report.md#rebr-03-資料の確認結果) |
+| 資料の確認結果 | `sourceChecks`、`glyphPreservation` | 旧リポジトリから移したときに、使った資料が旧字体・異体字を保持しているかを確かめた記録。`preserved`、`normalized`、`unknown` | [REBR-03](../spec/loj-rebuild/v1alpha1/02-report.md#rebr-03-資料の確認結果) |
 | 字体の保持 | `glyphPreservation`（Source） | 資料が旧字体・異体字を保持しているか。`preserved`、`normalized`、`unknown`。GLYPH-10の条件はこれで確かめる | [TYPE-02](../spec/common/v1alpha1/05-types.md#type-02-source)、[GLYPH-10](../spec/loj-glyphs/v1alpha1/01-glyphs.md#glyph-10-照合状態との関係) |
 | 旧commitとの対応 | `mappings` | 旧リポジトリの各commitと、対応するRevisionの一覧。対応しないcommitも省略しない | [REBR-04](../spec/loj-rebuild/v1alpha1/02-report.md#rebr-04-旧commitとの対応と未再構築の改正) |
 | 未再構築の改正 | `pending`（再構築報告） | 旧リポジトリにあるが、まだ再構築していない改正 | [REBR-04](../spec/loj-rebuild/v1alpha1/02-report.md#rebr-04-旧commitとの対応と未再構築の改正) |
@@ -253,10 +253,13 @@
 | 撤回 | 関係・Revision・番号主張・確認状態の`retracted`は撤回。登録台帳のRecordの撤回は`withdrawn` |
 | 登録台帳の状態と効力の終了 | 登録台帳の`status`は登録の状態。廃止・失効は履歴マニフェストの`termination`で表し、登録台帳には写さない |
 | `pending` | 時点値では「法令上まだ定まっていない」。番号主張の`decision`では「保留」。再構築報告では「未再構築の改正」。診断の`class`では「保留」 |
-| `unknown` | 時点値では「調査上不明」。番号主張の`state`、`basedOn`、資料の確認結果（`sourceChecks.glyphs`）でもそれぞれ「不明」を表す。いずれも推測で値を補わない |
-| `glyphs` | 履歴マニフェストの`text.glyphs`は字体の照合状態。`text.glyphNotes`は字体注記のファイルのパス。再構築報告の`sourceChecks.glyphs`は資料が字体を保持しているかの確認の記録（GLYPH-10の条件はSourceの`glyphPreservation`で確かめる）。番号主張の`glyphs`は`raw`の字体注記 |
+| `unknown` | 時点値では「調査上不明」。番号主張の`state`、`basedOn`、資料の確認結果（`sourceChecks.glyphPreservation`）でもそれぞれ「不明」を表す。いずれも推測で値を補わない |
+| `glyphs`と`glyph`で始まる名前 | `glyphs.yaml`は字体注記のファイル、番号主張の`glyphs`は`raw`の字体注記（注記の配列）。履歴マニフェストの`text.glyphCheck`は字体の照合状態、`text.glyphNotes`は字体注記のファイルのパス。`glyphPreservation`は資料が字体を保持しているかで、Sourceと再構築報告の`sourceChecks`で同じ値を使う（GLYPH-10の条件はSourceの値で確かめる） |
 | `basis` | Revisionの`basis`は成立根拠（関係と内訳）。字体注記の`basis`は曖昧な字の決め方 |
-| `text` | 版パッケージのASTの`text`は本文。履歴マニフェストの`text`は本文の状態。登録台帳の`text`は本文の取得状況。Scopeの`text`は対象範囲の原文 |
+| `text` | 版パッケージのASTの`text`は本文。履歴マニフェストの`text`は本文の状態。Scopeの`text`は対象範囲の原文、適用条件の`text`は条件の原文。登録台帳の本文の取得状況は`collection`であり、字体注記の`ivd.collection`（IVDのコレクションの名前）とは別である |
+| `sources` | 履歴マニフェストと登録台帳の`sources`はSourceの一覧（資料の定義）。Revisionの`text.sources`はEvidenceの一覧（定義した資料の箇所）。版パッケージの`law.yaml`の出典のURIは`sourceUris`であり、資料の定義ではない |
+| `state`と`status` | `state`は知識・判断の状態（時点値、適用関係、収録範囲、番号主張、確認状態、本文の取得状況）、`status`は記録の生存の状態（Revision、関係、Record、条の`active`・`retracted`・`deleted`等）。例外として、Revisionの`text.status`は本文の状態（`complete`等）を表す（[DDR-022](design-decisions/022-spec-structure.md)）。番号主張の`decision`は採否で、別の軸である |
+| `evidence` | フィールドの`evidence`は根拠（Evidenceの一覧）。L3の区分の`evidence`は、根拠を検査する区分の名前 |
 | 未取得と不存在 | 未取得（`notFetched`）はリポジトリ・commit・Recordを取得できなかったこと。不存在確認済み（`nonexistentConfirmed`）は存在しないことを確かめたこと。未取得を不存在とみなさない。登録台帳の`notCollected`（本文を取得していない）からも本文の不存在を推論しない |
 | 未完了、判定不能、処理不能 | 未完了はレベル・区分の結果の値。判定不能は個々の検査の結論が出ないことで、違反がなければ区分の結果を未完了にする（警告しか出さない検査の判定不能を除く）。処理不能は入力を扱えないことで、結果は未完了になる |
 | 確認状態と適合 | `verification.state: confirmed`は主張の出典を記録したことであり、L3の合格は判断の正しさを保証しない |

@@ -33,7 +33,7 @@
 - 版の本文の根拠は、公布された本文（官報と官報正誤）とする（loj-glyphsのGLYPH-07）。官報を入手できない場合は、御署名原本から本文を起こしてよい（MAY）。
 - 御署名原本から起こした版は、次のとおり記録する。
   - `text.sources`に御署名原本を示す。
-  - `text.glyphs`を`unverified`とする。官報の字体と照合していないためである。
+  - `text.glyphCheck`を`unverified`とする。官報の字体と照合していないためである。
   - 官報正誤を確かめていないことを、`text.correctionsSurveyed`（`state: unsurveyed`と`reason`）に書く。再構築報告の`sourceChecks`の`note`にも書いてよい（MAY）。
   - 官報を入手した時点で照合し、差があれば記録訂正（`correction`）または官報正誤（`officialCorrection`）として直す。
 - 有料のサービスや図書館で確かめた官報も、Sourceとして記録してよい（MAY）。その場合は、号・日付・頁を`locator`に書く。URIを持たない資料に`fixed`を設定できなくてもよい。照合した人と日時は、commitで追えるようにする。

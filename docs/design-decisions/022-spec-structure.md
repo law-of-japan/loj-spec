@@ -22,6 +22,21 @@
 - 制約: 日付を意図する値は引用する必要がある。
 - 再検討: なし。
 
+## フィールドの名前
+
+- 問題: 同じ名前のフィールドと値が、ファイルの種類によって別の意味で使われていた（[law-of-japan/loj-spec#29](https://github.com/law-of-japan/loj-spec/issues/29)）。例: `glyphs`が字体注記のファイル・照合状態・資料の保持状況・注記の配列を、`sources`がURIの文字列の配列とSourceの一覧を、`text`が本文の状態と本文の取得状況を表していた。状態のフィールドの名前も、型によって`state`と`status`に分かれていた。
+- 選択肢: 取り違えると誤った判定になるものだけを、草案のうちに改名し、残りは規則として書く（採用）／すべてを用語集の区別で足りるとする（実装とデータの入力での取り違えが残る）／状態のフィールドの名前をすべて`state`にそろえる（`status`の多くは規則に合っており、変更が大きい）／次の版まで改名を待つ（公開の後は互換を壊す変更になる）。
+- 判断基準: 取り違えの害、草案のうちに直せること、変更の大きさ。
+- 採用: 次の4件を改名した。Revisionの`text.glyphs`を`text.glyphCheck`、再構築報告の`sourceChecks[].glyphs`をSourceと同じ`glyphPreservation`、`law.yaml`の`sources`を`sourceUris`、Recordの`text`を`collection`とした。新しいフィールドには、次の規則を適用する。
+  - `state`は、知識・判断の状態（確定・不明・確認済み等）を表す。例: 時点値、適用関係、収録範囲、番号主張、確認状態（`verification.state`）、本文の取得状況（`collection.state`）。
+  - `status`は、記録の生存の状態（`active`・`retracted`等）を表す。例: Revision、関係、Record、条。
+  - 例外: Revisionの`text.status`（`complete`・`partial`・`absent`）は本文の状態であり、規則では`state`に当たるが、名前を残す。
+  - 撤回の`retracted`（記録の撤回）と、Recordの`withdrawn`（対象が法令として存在しないことを確認した登録の撤回）は意味が違うので、名前を分けたままにする。番号主張の`decision`は採否という別の軸なので、`state`・`status`と分ける。
+  - 出てくる型で意味が一つに決まる名前（`pending`、`evidence`、`basis`、`label`、Scope・適用条件・ASTの`text`）は改めず、用語集の「取り違えやすい用語」で区別を示す。
+- 理由: 改名した4件は、値の型か意味が違い、取り違えると誤った判定になる（例: REB-06は旧`sources`のURIを根拠に認定することを禁じている）。残りは、出てくる型が決まれば意味が一つに決まる。
+- 制約: 依存する実装（`loj-validator`）は改名に追随する必要がある。Recordの`collection`と、字体注記の`ivd.collection`（IVDのコレクションの名前）は、ファイルの種類が違うので名前を分けない。
+- 再検討: 新しい種類のファイルを加えるとき。
+
 ## schemaとvalidatorの分担、schemaの置き場所
 
 - 問題: どの検査をJSON Schemaに書き、どれを検査器の規則にするか。schemaをどこに置くか。
