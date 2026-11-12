@@ -869,6 +869,41 @@
       },
       "expected": "conformance/loj-history/v1alpha1/expected/hist-051.json",
       "success": false
+    },
+    {
+      "id": "hist-052",
+      "title": "効力の終了の時点より後に施行される版（撤回した内訳の時点より前。警告）（架空）",
+      "requirements": [
+        "HIST-12",
+        "HIST-03",
+        "CONF-01"
+      ],
+      "check": "L3",
+      "category": "historyStructure",
+      "normative": true,
+      "input": {
+        "kind": "repository",
+        "path": "conformance/loj-history/v1alpha1/valid/hist-052/repo"
+      },
+      "expected": "conformance/loj-history/v1alpha1/expected/hist-052.json",
+      "success": true
+    },
+    {
+      "id": "hist-053",
+      "title": "撤回していない内訳が二つある廃止の関係（架空）",
+      "requirements": [
+        "HIST-03",
+        "HIST-12"
+      ],
+      "check": "L3",
+      "category": "historyStructure",
+      "normative": true,
+      "input": {
+        "kind": "repository",
+        "path": "conformance/loj-history/v1alpha1/invalid/hist-053/repo"
+      },
+      "expected": "conformance/loj-history/v1alpha1/expected/hist-053.json",
+      "success": false
     }
   ]
 }

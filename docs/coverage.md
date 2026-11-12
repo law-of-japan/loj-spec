@@ -50,7 +50,7 @@ T076〜T105は承認されたMAN-03 B案の独立ケース。附属資料の通�
 | ディレクトリ | ケース | 内容 |
 |---|---|---|
 | [conformance/v1alpha2](../conformance/v1alpha2/manifest.json) | pkg-001〜154 | v1alpha1の106件を写したもの（pkg-001〜106。pkg-074の入力は2026-11-13に直した）と、「條」「ノ」「附　則」、無番号の項、表、前文・制定文、目次、いろは・括弧付きの十進の細分、括弧書きを含む条の見出しとその違反（pkg-107〜143）、L0の正例と、診断の位置を固定した負例（pkg-144〜150）、表の結合（pkg-151・152）、未対応の構造の申告の有無（pkg-153・154） |
-| [conformance/loj-history/v1alpha1](../conformance/loj-history/v1alpha1/manifest.json) | hist-001〜051 | 祝日法の制定時と最初の改正後の版、履歴だけの法令リポジトリ三つ、その違反、共通の型と時点値の違反 |
+| [conformance/loj-history/v1alpha1](../conformance/loj-history/v1alpha1/manifest.json) | hist-001〜053 | 祝日法の制定時と最初の改正後の版、履歴だけの法令リポジトリ三つ、その違反、共通の型と時点値の違反 |
 | [conformance/loj-glyphs/v1alpha1](../conformance/loj-glyphs/v1alpha1/manifest.json) | glyph-001〜009 | 祝日法の字体注記と、その違反。L1が不合格の版の字体注記（未完了） |
 | [conformance/loj-registry/v1alpha1](../conformance/loj-registry/v1alpha1/manifest.json) | reg-001〜010 | 三つのRecordの登録台帳、統合したRecordを残した登録台帳と、その違反 |
 | [conformance/loj-rebuild/v1alpha1](../conformance/loj-rebuild/v1alpha1/manifest.json) | rebuild-001〜004 | 祝日法の再構築報告と、その違反 |
@@ -86,7 +86,9 @@ RID-04・RID-05（2026-11-12）は、統合したRecordを残し、`replacedBy`�
 
 CHG-02・CHG-03（2026-11-12、[law-of-japan/loj-spec#18](https://github.com/law-of-japan/loj-spec/issues/18)）の従属するファイルの更新は、記録訂正で同じ版の`text.sources`を更新する正例（common-024）だけがある。common-024は、宣言した版だけのASTが変わり、従属する更新が宣言した版の`text.sources`に限られ、宣言した版の根拠（`text.sources`の箇所）があるので合格とする。Scopeの`nodes`・字体注記の更新、宣言していない版の従属するファイルを変える負例、登録台帳だけの`metadata`、mergeのcommit、最初のcommit、revertのcommitのケースは、まだない。登録台帳の`git bundle`と、親が二つのcommitを持つ`git bundle`が要るためである。
 
-HIST-12の撤回した関係・内訳の扱い（2026-11-12、[law-of-japan/loj-spec#46](https://github.com/law-of-japan/loj-spec/issues/46)）は、撤回した関係を根拠とする負例（hist-034）、内訳をすべて撤回した関係を根拠とする負例（hist-035）、内訳の一部を撤回した関係を根拠とする正例（hist-036）がある。hist-036は撤回した内訳の`effective`を有効な内訳より前にしているが、期待結果は区分の結果だけで、終了の時点そのものは比べない。撤回した内訳から時点を得る誤りは、このケースでは区別できない。関係を撤回して`termination`の項目を削らない状態はhist-034（L3）で検査する。撤回と削除を同じ変更で行うことを変更の検査で確かめるケースと、撤回の後に`termination`の項目を別の関係に置き換える変更のケースは、まだない。有効な内訳が二つ以上あり`effective`が異なる場合に、どの時点を終了の時点とするかは、本版では定めていない。
+HIST-12の撤回した関係・内訳の扱い（2026-11-12、[law-of-japan/loj-spec#46](https://github.com/law-of-japan/loj-spec/issues/46)）は、撤回した関係を根拠とする負例（hist-034）、内訳をすべて撤回した関係を根拠とする負例（hist-035）、内訳の一部を撤回した関係を根拠とする正例（hist-036）がある。hist-036は撤回した内訳の`effective`を有効な内訳より前にしているが、期待結果は区分の結果だけで、終了の時点そのものは比べない。撤回した内訳から時点を得る誤りは、hist-036では区別できず、hist-052で区別する（下の段落）。関係を撤回して`termination`の項目を削らない状態はhist-034（L3）で検査する。撤回と削除を同じ変更で行うことを変更の検査で確かめるケースと、撤回の後に`termination`の項目を別の関係に置き換える変更のケースは、まだない。
+
+HIST-12の終了の時点と警告（2026-11-13、[law-of-japan/loj-spec#53](https://github.com/law-of-japan/loj-spec/issues/53)）は、撤回していない内訳を一つに限る規則（HIST-03）の負例（hist-053）と、終了の時点より後に施行される版の警告の正例（hist-052）がある。hist-052は、有効な内訳の時点（1959-04-13）と撤回した内訳の時点（1960-04-01）の間に施行される版を持ち、期待結果にHIST-12の警告を挙げる。CONF-01により、成功するケースに挙げた警告は比べるので、撤回した内訳から時点を得る実装と、最も遅い時点を選ぶ実装は、警告を出さずにこのケースを満たさない。一方、警告を出さないことは比べないので、常に警告を出す実装は区別できない。終了の時点が確定日でない場合の判定不能を数えないことは、条件付きの失効（`pending`）と確定日の版を持つ既存の正例hist-003が当たるので、ケースを加えていない。
 
 HIST-13（2026-11-12、[law-of-japan/loj-spec#23](https://github.com/law-of-japan/loj-spec/issues/23)）は、削った行の`key`を使わずに行を加える正例（hist-031）と、削った`key`を後の版で再使用する負例（hist-032）と、本文が一部しかない版を挟んで飛ばす正例（hist-033）がある。本文のない版・L1が不合格の版を挟む場合、`basedOn`が分岐する場合と、表の番号が変わる場合のケースは、まだない。glyph-004（行の`key`を変えて注記が古くなる）は、字体注記の`node`の解決（GLYPH-04）の負例であり、`key`の維持そのものの検査ではない。
 
