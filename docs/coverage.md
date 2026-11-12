@@ -73,11 +73,13 @@ T076〜T105は承認されたMAN-03 B案の独立ケース。附属資料の通�
 
 [規範仕様の入口](../spec/README.md#版の状態)の版の状態の定め（要件IDなし）にも、ケースを作らない。仕様の資料そのものの管理の規則であり、法令の入力の成否として検査できないためである。状態の表の形は`scripts/verify.py`が検査する。タグを打つことは、公開の手順（[CONTRIBUTING](../CONTRIBUTING.md)）で確かめる。
 
-次の要件は機械で検査できるが、まだケースがない。今後加える: TIME-02、TIME-05、TIME-06、TYPE-01〜04、TYPE-06、HIST-09、CHG-04、CHG-05、RID-04、RID-05、XREF-02。
+次の要件は機械で検査できるが、まだケースがない。今後加える: TIME-02、TIME-05、TIME-06、TYPE-01〜04、TYPE-06、HIST-09、CHG-04、CHG-05、RID-04、RID-05。
 
 HIST-04・05・08の2026-11-11の追加（[law-of-japan/loj-spec#20](https://github.com/law-of-japan/loj-spec/issues/20)）は、ケースがあるが一部だけである（hist-023〜026）。`glyphNotes`のパスの不一致、`absent`のRevisionのディレクトリ、同じ関係・同じ施行時点の重複、統合・分割したRevisionを基礎状態とする版、撤回した内訳だけを参照する成立根拠の負例は、まだない。
 
 v1alpha2の2026-11-11の追加（[law-of-japan/loj-spec#25](https://github.com/law-of-japan/loj-spec/issues/25)）のうち、マーカーの空白はpkg-125・126を代表例とし、`<!--`の後・`-->`の前・名前と最初の属性の間の負例は加えていない。番号のない第1項が数字で始まる場合の申告（DISP-01）は、`unsupportedFeatures`を申告した版のL1の不合格（BASIC-03）の既存のケースと同じ結果になるので、加えていない。`supplements[].title`を検査しないこと（MAN-01）は、既存の正例（附則の`title`が見出しと違う「制定附則」）が当たる。
+
+XREF-02（2026-11-12、[law-of-japan/loj-spec#16](https://github.com/law-of-japan/loj-spec/issues/16)）は、全部改正の対応の合格と、存在しない関係・撤回した関係・全部改正でない関係を指す負例、起点が食い違う負例がある（common-017・018・020〜022）。統合先への解決、分割したRecordに解決した場合の判定不能、未取得のケースは、まだない。XREF-01の不存在確認済み（`withdrawn`）は、確定した関係の違反（common-019）と、未確認の関係で違反にならない境界（common-023）がある。どちらも起点の側で、終点のRecordが`withdrawn`の場合のケースは、まだない。
 
 XREF-05・XREF-06（2026-11-12、[law-of-japan/loj-spec#13](https://github.com/law-of-japan/loj-spec/issues/13)・[law-of-japan/loj-spec#19](https://github.com/law-of-japan/loj-spec/issues/19)）は、ケースがあるが一部だけである（common-013〜016）。common-013は`structured.period.raw`と`raw`を続けた文字列との一致に当たる。採用中の主張が`nonexistent`・`unknown`の場合の警告、`conflicting`等の判定しない場合、XREF-06の判定不能の場合のケースは、まだない。
 
