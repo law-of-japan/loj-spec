@@ -132,9 +132,11 @@ def inspect_manifest(path, validator, version="loj/v1alpha1"):
 
 RANK = {"Part": 1, "Chapter": 2, "Section": 3, "Subsection": 4, "Division": 5, "Article": 6}
 TEXT_KINDS = {"Paragraph", "Item", "Subitem", "AppendedMaterial"}
-TEXT_KINDS_V2 = TEXT_KINDS | {"Cell", "Preamble", "EnactStatement"}
+TEXT_KINDS_V2 = TEXT_KINDS | {"Cell", "Preamble", "EnactStatement", "Toc"}
 CONTAINERS_V2 = {"paragraph": "Paragraph", "item": "Item", "subitem": "Subitem", "table": "Table", "row": "Row",
-                 "cell": "Cell", "preamble": "Preamble", "enact-statement": "EnactStatement"}
+                 "cell": "Cell", "preamble": "Preamble", "enact-statement": "EnactStatement", "toc": "Toc"}
+# DISP-01: iroha subitem display numbers, valued by their position in this sequence (1..47).
+IROHA = "イロハニホヘトチリヌルヲワカヨタレソツネナラムウヰノオクヤマケフコエテアサキユメミシヱヒモセス"
 
 
 def japanese(value):
@@ -150,7 +152,24 @@ def japanese(value):
 JAPANESE = {japanese(value): str(value) for value in range(1, 10000)}
 
 
+def subitem_display_kind(value):
+    """DISP-01 (v1alpha2): kind of an iroha or parenthesized subitem display number, else None."""
+    if len(value) == 1 and value in IROHA:
+        return "iroha"
+    if re.fullmatch(r"（[1-9][0-9]{0,3}）", value):
+        return "parenAscii"
+    if re.fullmatch(r"（[１-９][０-９]{0,3}）", value):
+        return "parenFullwidth"
+    return None
+
+
 def normalized_display(value, kind, v2=False):
+    if v2 and kind == "Subitem":
+        display_kind = subitem_display_kind(value)
+        if display_kind == "iroha":
+            return str(IROHA.index(value) + 1)
+        if display_kind:
+            return str(int(value[1:-1]))
     parts = []
     for part in re.split("[のノ]" if v2 else "の", value):
         if re.fullmatch(r"[1-9][0-9]{0,3}", part):
@@ -162,6 +181,16 @@ def normalized_display(value, kind, v2=False):
         else:
             raise ValueError("Invalid display number: " + value)
     return "-".join(parts)
+
+
+def caption_balanced(value):
+    """HEAD-01 (v1alpha2): the opening "（" pairs with the final "）" and every parenthesis nests."""
+    depth = 0
+    for i, char in enumerate(value):
+        depth += {"（": 1, "）": -1}.get(char, 0)
+        if depth < 0 or depth == 0 and i < len(value) - 1:
+            return False
+    return depth == 0 and len(value) > 2
 
 
 def nodes(node):
@@ -182,7 +211,8 @@ def check_tree(ast, man, v2=False):
     require(root["kind"] == "Law" and root["id"] == lid and root["display"] == ast["law"]["title"], "Bad root")
     top = [(c.get("kind"), c.get("id")) for c in root["content"]]
     if v2:
-        lead = [x for x in [("EnactStatement", lid + "/enact-statement"), ("Preamble", lid + "/preamble")] if x in top]
+        lead = [x for x in [("EnactStatement", lid + "/enact-statement"), ("Toc", lid + "/toc"),
+                            ("Preamble", lid + "/preamble")] if x in top]
         scopes = lead + scopes
     require(top == scopes, "Scope order")
     text_kinds = TEXT_KINDS_V2 if v2 else TEXT_KINDS
@@ -193,8 +223,8 @@ def check_tree(ast, man, v2=False):
         seen.add(ident)
         if kind in ("MainProvision", "SupplementaryProvision", "AppendedMaterial"):
             scope = ident
-        elif kind in ("EnactStatement", "Preamble"):
-            require(node["number"] is None and node["display"] == "", "Preamble/enact fields")
+        elif kind in ("EnactStatement", "Preamble", "Toc"):
+            require(node["number"] is None and node["display"] == "", "Preamble/enact/toc fields")
         elif kind == "Row":
             require(ident == parent["id"] + "/row/" + node["key"] and node["number"] is None, "Row ID: " + ident)
         elif kind == "Cell":
@@ -211,7 +241,7 @@ def check_tree(ast, man, v2=False):
         require(all(not ("text" in x and "text" in y) for x, y in zip(content, content[1:])), "Adjacent text")
         if kind in text_kinds:
             require(bool("".join(texts).strip()), "Empty body")
-        if kind in ("Cell", "Preamble", "EnactStatement"):
+        if kind in ("Cell", "Preamble", "EnactStatement", "Toc"):
             require(not children and len(texts) == 1, "Text-only container")
         if kind in ("Table", "Row"):
             require(bool(children) and all(c["kind"] == ("Row" if kind == "Table" else "Cell") for c in children),
@@ -237,6 +267,9 @@ def check_tree(ast, man, v2=False):
             next_level = 1 if kind == "Item" else node["level"] + 1
             require(all(c["kind"] == "Subitem" and c["level"] == next_level or v2 and c["kind"] == "Table"
                         for c in children), "Subitem children")
+            if v2:
+                kinds = {subitem_display_kind(c["display"]) or "decimal" for c in children if c["kind"] == "Subitem"}
+                require(len(kinds) <= 1, "Sibling subitem displays mix character kinds (DISP-01): " + ident)
         elif kind == "AppendedMaterial":
             require(not children, "Opaque appendix children")
         if kind == "MainProvision":
@@ -246,9 +279,15 @@ def check_tree(ast, man, v2=False):
             if v2 and kind == "Article":
                 unit = "[条條]"
             sep = "[のノ]" if v2 else "の"
-            tail = r"(?:（[^（）\r\n]+）)?" if kind == "Article" else r"[ 　][^\r\n]+"
+            tail = r"(（[^\r\n]+）)?" if kind == "Article" else r"[ 　][^\r\n]+"
             match = re.fullmatch("第(.+?)" + unit + r"((?:" + sep + r"[^ 　（）]+)*)" + tail, node["display"])
             require(bool(match), "Invalid heading display")
+            if kind == "Article" and match[3]:
+                if v2:
+                    require(caption_balanced(match[3]),
+                            "Article caption: the opening parenthesis must pair with the final one, all nested")
+                else:
+                    require(bool(re.fullmatch(r"（[^（）]+）", match[3])), "Article caption: no parentheses inside (v1alpha1)")
             require(normalized_display(match[1] + match[2], kind, v2) == node["number"], "Heading number mismatch")
         if kind == "Paragraph" and v2:
             require(node["numbering"] in ("explicit", "implicit"), "Paragraph numbering")

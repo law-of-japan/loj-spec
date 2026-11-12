@@ -3,7 +3,7 @@
 ## ID-01 IDの導出
 
 - LawのIDは`law.id`とする。本則のscopeは`{law.id}/main`、附則は`{law.id}/supplement/{key}`、附属資料は`{law.id}/appendix/{key}`とする。
-- 制定文は`{law.id}/enact-statement`、前文は`{law.id}/preamble`とする。
+- 制定文は`{law.id}/enact-statement`、目次は`{law.id}/toc`、前文は`{law.id}/preamble`とする。
 - 分類は、親のIDに`/{kindの小文字}/{number}`を加える（Subsectionは`subsection`）。条だけは分類を飛ばし、scopeのIDに`/article/{number}`を加えなければならない（MUST）。
 - 項・号は親のIDに`/paragraph/{number}`、`/item/{number}`を、細分は`/subitem/{level}/{number}`を加える。枝番号のハイフンは番号の一部である。無番号の項も、属性の`number`から同じ形で導く。
 - 表は親のIDに`/table/{number}`を、行は表のIDに`/row/{key}`を、セルは行のIDに`/cell/{c}`（`c`は行の中での位置、1始まり）を加える。

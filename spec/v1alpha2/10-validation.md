@@ -7,7 +7,7 @@
 | 規則 | レベル | 対象 |
 |---|---|---|
 | BASIC-01、BASIC-02 | L0 | schemaVersion、入力のバイト |
-| BASIC-03 | L1 | 未対応の構造の申告（`unsupportedFeatures`があればL1は不合格） |
+| BASIC-03 | L1 | 未対応の構造の申告（`unsupportedFeatures`があればL1は不合格。ほかのL1の診断の参考の集計は、L1の結果を変えない） |
 | BASIC-04 | L0（Manifest）、L1（マーカー・見出し） | 拡張の禁止 |
 | MAN-01、MAN-02 | L0 | Manifestの形、パス |
 | MAN-03 | L0（読み込みの順序）、L1（ファイルの分割と附属資料のブロックの閉鎖） | 所属の順序、分割 |
@@ -18,7 +18,7 @@
 | SRC-01 | L1 | 位置と原文の保存 |
 | ID-01、ID-02 | L1 | IDの導出と安定性 |
 | REF-01 | L1 | L1で参照の解決を必須にしない |
-| PARA-01、TABLE-01〜TABLE-03、PRE-01、PRE-02 | L1 | 無番号の項、表、前文、制定文 |
+| PARA-01、TABLE-01〜TABLE-03、PRE-01、PRE-02、TOC-01 | L1 | 無番号の項、表、前文、制定文、目次 |
 
 - TABLE-02のうちL1で検査するのは、一つの版の中の`key`の形と一意性である。削った`key`の再使用はL3の履歴構造（loj-historyのHIST-13）で検査し、同じ行の`key`の維持は機械では検査しない（TABLE-02）。
 - L0は、Manifestの構造と意味の制約、ファイルとencodingを検査する。CommonMarkの構文解析は失敗しない（どの文字列も文書として解析できる）ので、L0の規則を置かない。読めないバイトはBASIC-02で扱う。CommonMarkの構文と法令の構造の区別はMD-03による。

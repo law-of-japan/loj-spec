@@ -36,7 +36,7 @@ LoJ（Law of Japan）のデータの規範仕様の入口である。本書は�
 | ディレクトリ | 系列 |
 |---|---|
 | common/v1alpha1 | CORE、CHAR、VAL、SRCM、CONF、TYPE、TIME、CHG、FIXREF、VIEW、XREF |
-| v1alpha2 | BASIC、MAN、MD、HEAD、NUM、DIR、DISP、AST、SRC、ID、REF、PARA、TABLE、PRE |
+| v1alpha2 | BASIC、MAN、MD、HEAD、NUM、DIR、DISP、AST、SRC、ID、REF、PARA、TABLE、PRE、TOC |
 | loj-history/v1alpha1 | HIST、REV |
 | loj-glyphs/v1alpha1 | GLYPH |
 | loj-registry/v1alpha1 | REG、RID |

@@ -85,7 +85,8 @@
 | 番号、枝番号 | `number` | 番号の成分は1〜9999。枝番号は`の`・`ノ`で連ねる（第十二条の二） | [NUM-01](../spec/v1alpha2/04-headings.md#num-01-番号) |
 | 正規の番号 | `number`（例: `12-2-3`） | 各成分をASCIIの十進にしてハイフンで連ねた形。区切りの字によらず同じ | [NUM-01](../spec/v1alpha2/04-headings.md#num-01-番号) |
 | 表示番号、display | `display` | 原文のラベルや番号のtokenをそのまま保持した値。番号の比較には使わない | [DISP-01](../spec/v1alpha2/05-directives.md#disp-01-表示番号)、[HEAD-01](../spec/v1alpha2/04-headings.md#head-01-見出しの形)、[AST-01](../spec/v1alpha2/06-semantic-model.md#ast-01-意味astの形) |
-| 未対応の構造 | `unsupportedFeatures` | 本版が型付けしない構造（目次、図、入れ子の表等）。含む入力は申告し、L1は不合格となる | [BASIC-03](../spec/v1alpha2/01-overview.md#basic-03-対象とする構造と収録しないもの) |
+| 目次 | Toc、`toc` | 本則の前に置く目次。中身を解析しない不透明な本文として保持する | [TOC-01](../spec/v1alpha2/09-structures.md#toc-01-目次) |
+| 未対応の構造 | `unsupportedFeatures` | 本版が型付けしない構造（図、入れ子の表等）。含む入力は申告し、L1は不合格となる。ほかのL1の診断は参考の集計として報告できる | [BASIC-03](../spec/v1alpha2/01-overview.md#basic-03-対象とする構造と収録しないもの) |
 | 意味AST | `root` | 版パッケージから導く規範のJSON表現。ノードは`kind`、`id`、`number`、`display`、`content`を持つ | [AST-01](../spec/v1alpha2/06-semantic-model.md#ast-01-意味astの形)、[AST-02](../spec/v1alpha2/06-semantic-model.md#ast-02-意味の検査) |
 | ソースの位置 | `{path, start, end}` | 元のファイルのUTF-8のバイト数による半開区間。行・列はその代わりにならない | [SRC-01](../spec/v1alpha2/06-semantic-model.md#src-01-ソースの保持と位置) |
 | ノードID（論理ID） | `id`（例: `…/main/article/2/paragraph/1`） | 版の中の位置を示すID。scope・番号・keyから導き、ファイル名や出現順を含めない。条の歴史的同一性を主張しない | [ID-01](../spec/v1alpha2/07-identifiers.md#id-01-idの導出)、[ID-02](../spec/v1alpha2/07-identifiers.md#id-02-idの安定性) |

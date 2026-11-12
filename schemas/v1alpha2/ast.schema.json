@@ -98,6 +98,7 @@
             "SupplementaryProvision",
             "AppendedMaterial",
             "EnactStatement",
+            "Toc",
             "Preamble",
             "Table",
             "Row",
@@ -237,6 +238,7 @@
                   "SupplementaryProvision",
                   "AppendedMaterial",
                   "EnactStatement",
+                  "Toc",
                   "Preamble",
                   "Row"
                 ]
@@ -336,6 +338,7 @@
                   "Row",
                   "Cell",
                   "EnactStatement",
+                  "Toc",
                   "Preamble"
                 ]
               }
