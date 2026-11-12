@@ -419,6 +419,13 @@ class RestatementTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             v.addressee_table_ids("## 別の節\n")
 
+    def test_addressee_mismatch_rejected(self):
+        v.compare_addressees({"AAA-01"}, {"AAA-01"})
+        with self.assertRaisesRegex(ValueError, "missing AAA-02; unknown $"):
+            v.compare_addressees({"AAA-01"}, {"AAA-01", "AAA-02"})
+        with self.assertRaisesRegex(ValueError, "missing ; unknown ZZZ-01"):
+            v.compare_addressees({"AAA-01", "ZZZ-01"}, {"AAA-01"})
+
     def test_repository_addressee_table(self):
         self.assertGreater(v.check_addressees(), 100)
 

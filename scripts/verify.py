@@ -796,9 +796,14 @@ def check_addressees():
         if (spec / "v1alpha1") not in path.parents:
             wanted.update(REQUIREMENT_HEADING.findall(path.read_text(encoding="utf-8")))
     listed = addressee_table_ids((ROOT / "docs/coverage.md").read_text(encoding="utf-8"))
+    compare_addressees(listed, wanted)
+    return len(wanted)
+
+
+def compare_addressees(listed, wanted):
+    """Fail when the table misses a requirement ID (wanted - listed) or names an unknown one (listed - wanted)."""
     require(listed == wanted, "docs/coverage.md addressee table and spec/ requirement IDs differ: missing "
             + ", ".join(sorted(wanted - listed)) + "; unknown " + ", ".join(sorted(listed - wanted)))
-    return len(wanted)
 
 
 def main():
