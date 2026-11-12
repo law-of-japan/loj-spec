@@ -48,7 +48,7 @@
   | `enact-statement`、`toc`、`preamble` | なし（文書の直下。位置は[PRE-01](09-structures.md)・[PRE-02](09-structures.md)・[TOC-01](09-structures.md)） |
 
 - 兄弟の同じ種類・同じlevelの`number`は一意とする。
-- Paragraph、Item、Subitem、Cell、Preamble、EnactStatement、Tocは、子を除く自身の本文に、空白以外の文字を持たなければならない（MUST）。コメントだけでも空でない原文となるが、法的な内容の有無は判定しない。
+- Paragraph、Item、Subitem、Cell、Preamble、EnactStatement、Tocは、子を除く自身の本文に、空白以外の文字を持たなければならない（MUST）。コメントだけでも空でない原文となるが、法的な内容の有無は判定しない。表のセルの空の欄の書き方は[TABLE-03](09-structures.md)による。
 - Tableは1つ以上のRowを、Rowは1つ以上のCellを持たなければならない（MUST）。TableとRowの直下に、空白だけの行以外の本文を置いてはならない（MUST NOT）。
 
 ## DISP-01 表示番号

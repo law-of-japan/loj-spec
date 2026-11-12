@@ -98,6 +98,8 @@ v1alpha2の2026-11-12の追加（[law-of-japan/loj-spec#27](https://github.com/l
 
 v1alpha2の2026-11-12の追加（[law-of-japan/loj-spec#1](https://github.com/law-of-japan/loj-spec/issues/1)）は、L0の正例（未対応の構造を申告した入力のpkg-144、L1の違反を含む入力のpkg-145。L0では成功するケースなので`valid/`に置く）と、診断の位置（SRC-01）を固定した負例（CRLFと4バイトの文字を含む表示の不一致のpkg-146、未閉鎖のpkg-147、対応しない終了のpkg-148、属性の不正のpkg-149、改行のない最後の行の対応しない終了のpkg-150）である。診断の位置のケースは一部だけで、重複・見出しの違反・Manifestの意味の違反の位置のケースは、まだない（[law-of-japan/loj-spec#67](https://github.com/law-of-japan/loj-spec/issues/67)）。既存の負例の期待結果には、位置を加えていない。
 
+v1alpha2の表の空の欄（2026-11-12、[law-of-japan/loj-spec#57](https://github.com/law-of-japan/loj-spec/issues/57)）は、上の欄が続く読替えの表を`rowspan`で書く正例（pkg-151）と、空のセルの負例（pkg-152、DIR-02）がある。続く欄を結合で書くことと、空の欄をコメントや原典にない字で埋めないこと（TABLE-03）は、原典と比べないと判定できないので、ケースを作らない。罫線に囲まれた空の欄を申告した版のL1の不合格（BASIC-03）は、既存のケースと同じ結果になるので、加えていない。
+
 GLYPH-05・GLYPH-07・GLYPH-10・GLYPH-11（2026-11-12、[law-of-japan/loj-spec#21](https://github.com/law-of-japan/loj-spec/issues/21)）: 正規分解を持たない互換漢字のブロックの字に注記がなくても合格する正例（glyph-010）と、字体を保持する資料を指さずに字体を照合済みにする負例（glyph-011）がある。`ivd`の必須、`variance`の`candidates`、`text.variances`・`text.correctionsSurveyed`はschemaにあるが、正例・負例はまだない。`text.correctionsSurveyed`は、hist-001の正例で使っている。
 
 XREF-02（2026-11-12、[law-of-japan/loj-spec#16](https://github.com/law-of-japan/loj-spec/issues/16)）は、全部改正の対応の合格と、存在しない関係・撤回した関係・全部改正でない関係を指す負例、起点が食い違う負例がある（common-017・018・020〜022）。統合先への解決、分割したRecordに解決した場合の判定不能、未取得のケースは、まだない。XREF-01の不存在確認済み（`withdrawn`）は、確定した関係の違反（common-019）と、未確認の関係で違反にならない境界（common-023）がある。どちらも起点の側で、終点のRecordが`withdrawn`の場合のケースは、まだない。
@@ -187,6 +189,7 @@ TIME-03は、hist-004、hist-015〜018のほか、`pending`を基準とする`de
 | TABLE-02 | `key`の形と一意性 | データ | 機械検査（L1） |
 | TABLE-02 | 削った`key`の再使用 | データ | 機械検査（L3履歴構造、HIST-13） |
 | TABLE-02 | 既存の行の`key`の維持、`key`を内容から作らない | 入力者 | レビュー |
+| TABLE-03 | 続く欄を結合で書く。空の欄をコメント等で埋めない | 入力者 | 原典照合 |
 | TOC-01 | 位置と中身の形 | データ | 機械検査（L1） |
 | TOC-01 | 目次を構造として解析しない | 実装 | 適合ケース |
 | HIST-01〜HIST-03、HIST-05〜HIST-10、HIST-12、HIST-13、REV-01、REV-03 | 形、参照、整合 | データ | 機械検査（L3履歴構造） |
