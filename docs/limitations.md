@@ -17,10 +17,10 @@
 | L4の条項参照の解決（XREF-04） | 予約 |
 | 条を持たない本則、複雑な改正指示、ルビの意味型、図、表のセルの中の項・号・表、入れ子の表 | 版パッケージで未対応。`unsupportedFeatures`に記録し、L1は不合格。その版を持つRecordは、字体注記とScopeの`nodes`を判定できず、L3（根拠）が未完了になる。L3（履歴構造）は影響を受けない（VAL-05、TYPE-07、GLYPH-11）。L1のほかの規則の診断は、参考の集計として報告できるが、適合の主張に使えない（BASIC-03） |
 | 別表の内部構造（表の行・セル、見出しの行、結合） | 本版では見送り、次の版（v1alpha3）で扱う（[law-of-japan/loj-spec#27](https://github.com/law-of-japan/loj-spec/issues/27)、DDR-012）。別表は不透明な附属資料として書け、L1は不合格にならない |
-| ローマ数字等、DISP-01の表にない細分の表示と、いろは・括弧付きの十進の細分の枝番号 | 未対応（DISP-01）。`unsupportedFeatures`に記録し、L1は不合格 |
+| ローマ数字等、DISP-01の表にない細分の表示と、いろは・括弧付きの十進の細分の枝番号 | 未対応（DISP-01）。`unsupportedFeatures`に記録し、L1は不合格。記録がなければ、DISP-01の違反としてL1は不合格 |
 | 目次と本文の見出しの一致 | 検査しない（TOC-01）。目次は不透明な本文で、一致は原典照合で確かめる |
 | 項の見出し（`（施行期日）`等）、原典で空の表のセル | 書く方法がなく、BASIC-03の未対応の一覧にもない。扱いは未決（[試行の記録](trial-real-laws.md)、[law-of-japan/loj-spec#56](https://github.com/law-of-japan/loj-spec/issues/56)、[law-of-japan/loj-spec#57](https://github.com/law-of-japan/loj-spec/issues/57)） |
-| 番号のない第1項で、本文が数字のtokenで始まるもの | 未対応（DISP-01）。`unsupportedFeatures`に記録し、L1は不合格 |
+| 番号のない第1項で、本文が数字のtokenで始まるもの | 未対応（DISP-01）。`unsupportedFeatures`に記録し、L1は不合格。記録がなければ、DISP-01（またはPARA-01）の違反としてL1は不合格 |
 | 明治6年1月1日より前の日付のグレゴリオ暦への換算 | 規則を定めない。`unknown`とし、原表記を記録する（TIME-02） |
 | `space.yaml`（登録空間の識別子のファイル）の形 | 定めない（REG-01）。`space`を省略した参照の登録空間は、検査器が入力として受け取る（FIXREF-02） |
 | 統合案の§15の論点 | 次期仕様の範囲外。将来の版で扱う |

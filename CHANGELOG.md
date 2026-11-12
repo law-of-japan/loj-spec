@@ -2,6 +2,17 @@
 
 見出しの「草案」は、[草案の版](spec/README.md#版の状態)への変更であることを示す。版の状態の正は、[規範仕様の入口](spec/README.md#規範とするもの)の表にある。版を公開したときは、公開の日付の項目を加える。
 
+## 未対応の構造の申告の有無（2026-11-13、草案）
+
+[law-of-japan/loj-spec#50](https://github.com/law-of-japan/loj-spec/issues/50)による変更である。草案の版（`loj/v1alpha2`）への変更であり、版番号は上げない。空の`unsupportedFeatures`を持つ入力のL0の結果が変わる（不合格になる）。既存のケースの期待結果は変わらない。
+
+- BASIC-03: L1の検査は`unsupportedFeatures`の申告の有無だけを判定し、申告のない未対応の構造の検出を含めないとした。機械で認識できる未対応の構造は、申告がなければDISP-01・PARA-01等の違反として現れ、それ以外は原典照合に属する。申告はほかの規則の違反を免除せず、申告のある入力のほかのL1の規則の診断は参考の集計としてだけ扱うとした。`unsupportedFeatures`の値は構造と結び付けない。
+- MAN-01: `unsupportedFeatures`を1つ以上の要素を持つ配列とした。Manifest Schemaの`minItems`を1にした。
+- 検査の章: BASIC-03の要約を、申告の有無の検査に改めた。
+- pkg-074: 細分の字種にいろはを加えた変更（[law-of-japan/loj-spec#54](https://github.com/law-of-japan/loj-spec/pull/54)）の後、入力の`イ　細分。`がDISP-01に違反しなくなり、期待結果（DISP-01）と矛盾していた。入力をローマ数字の`（ｉ）　細分。`に直し、題を改めた。期待結果は変えない。
+- v1alpha2の索引に、申告したローマ数字の細分の表示の負例pkg-153（L1でBASIC-03だけ）と、空の`unsupportedFeatures`の負例pkg-154（L0でMAN-01）を加えた。
+- DDR-009・DDR-012、要件との対応表、制限を更新した。
+
 ## 表の空の欄（2026-11-12、草案）
 
 [law-of-japan/loj-spec#57](https://github.com/law-of-japan/loj-spec/issues/57)による変更である。草案の版（`loj/v1alpha2`）への変更であり、版番号は上げない。既存のケースの期待結果は変わらない。

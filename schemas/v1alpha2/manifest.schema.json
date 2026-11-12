@@ -150,7 +150,7 @@
         "type": "string",
         "minLength": 1
       },
-      "minItems": 0
+      "minItems": 1
     }
   },
   "required": [
