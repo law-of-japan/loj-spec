@@ -2445,7 +2445,7 @@
     },
     {
       "id": "pkg-152",
-      "title": "空のセル",
+      "title": "空のセル（L1の診断はDIR-02だけ。続く欄の結合はL3）",
       "requirements": [
         "DIR-02",
         "TABLE-03"

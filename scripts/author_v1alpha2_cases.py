@@ -338,7 +338,7 @@ def rowspan_children(p):
 case("上の欄が続く読替えの表（rowspan）", ["TABLE-03", "ID-01", "AST-01"],
      [("main.md", "main", ROWSPAN_MD)],
      {"ast": ast([article(MAIN, "1", "第一条", [lambda a: para(a, "1", READ_LEAD, children=rowspan_children)])])}, True)
-case("空のセル", ["DIR-02", "TABLE-03"],
+case("空のセル（L1の診断はDIR-02だけ。続く欄の結合はL3）", ["DIR-02", "TABLE-03"],
      [("main.md", "main", ROWSPAN_MD.replace("<!-- loj:cell -->\n倉庫\n<!-- loj:end-cell -->",
                                              "<!-- loj:cell -->\n\n<!-- loj:end-cell -->"))], fail("DIR-02"), False)
 
