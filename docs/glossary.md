@@ -257,7 +257,7 @@
 | `glyphs`と`glyph`で始まる名前 | `glyphs.yaml`は字体注記のファイル、番号主張の`glyphs`は`raw`の字体注記（注記の配列）。履歴マニフェストの`text.glyphCheck`は字体の照合状態、`text.glyphNotes`は字体注記のファイルのパス。`glyphPreservation`は資料が字体を保持しているかで、Sourceと再構築報告の`sourceChecks`で同じ値を使う（GLYPH-10の条件はSourceの値で確かめる） |
 | `basis` | Revisionの`basis`は成立根拠（関係と内訳）。字体注記の`basis`は曖昧な字の決め方 |
 | `text` | 版パッケージのASTの`text`は本文。履歴マニフェストの`text`は本文の状態。Scopeの`text`は対象範囲の原文、適用条件の`text`は条件の原文。登録台帳の本文の取得状況は`collection`であり、字体注記の`ivd.collection`（IVDのコレクションの名前）とは別である |
-| `sources` | 履歴マニフェストと登録台帳の`sources`はSourceの一覧（資料の定義）。Revisionの`text.sources`はEvidenceの一覧（定義した資料の箇所）。版パッケージの`law.yaml`の出典のURIは`sourceUris`であり、資料の定義ではない |
+| `sources` | 履歴マニフェストと登録台帳の`sources`はSourceの一覧（資料の定義）。Revisionの`text.sources`はEvidenceの一覧（定義した資料の箇所）。版パッケージの`law.yaml`の出典のURIは`sourceUris`であり、資料の定義ではない（凍結した`loj/v1alpha1`の`law.yaml`では`sources`）|
 | `state`と`status` | `state`は知識・判断の状態（時点値、適用関係、収録範囲、番号主張、確認状態、本文の取得状況）、`status`は記録の生存の状態（Revision、関係、Record、条の`active`・`retracted`・`deleted`等）。例外として、Revisionの`text.status`は本文の状態（`complete`等）を表す（[DDR-022](design-decisions/022-spec-structure.md)）。番号主張の`decision`は採否で、別の軸である |
 | `evidence` | フィールドの`evidence`は根拠（Evidenceの一覧）。L3の区分の`evidence`は、根拠を検査する区分の名前 |
 | 未取得と不存在 | 未取得（`notFetched`）はリポジトリ・commit・Recordを取得できなかったこと。不存在確認済み（`nonexistentConfirmed`）は存在しないことを確かめたこと。未取得を不存在とみなさない。登録台帳の`notCollected`（本文を取得していない）からも本文の不存在を推論しない |

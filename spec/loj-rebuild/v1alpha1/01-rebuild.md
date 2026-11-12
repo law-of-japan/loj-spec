@@ -44,7 +44,7 @@
 - 旧リポジトリの履歴の並び、commitメッセージ、`law.yaml`の値は、どの改正・資料を確かめるかの作業の一覧として使ってよい（MAY）。
 - 登録台帳と履歴マニフェストに記録する値（番号主張、施行時点、関係、本文）は、原典資料で確かめた根拠に基づいて記録しなければならない（MUST）。旧データだけを根拠に値を記録してはならない（MUST NOT）。原典で確かめられないものは、時点値の`unknown`・`pending`、本文の`absent`等で明示する。
 - 原典で確かめられなかった値は、確かめていないことを記録する。このとき、旧データにあった値を、手がかりとして確認状態の理由（`verification.reason`）に書いてよい（MAY）。旧データの値を、値の欄（番号主張の`raw`、時点値の`value`等）や根拠（`evidence`）に置いてはならない（MUST NOT）。
-- 旧`number`（`null`を含む）を原典で確かめられない場合は、番号主張を`state: unknown`、`verification.state: unverified`とし、理由に旧データの値（例: 「旧law.yamlのnumberはnull。原典で未確認」）を書く。旧`number: null`を、`state: nonexistent`（番号がないことを確認した）に読み替えてはならない（MUST NOT）。旧`sources`のURIを、個別の主張の根拠に自動で認定してはならない（MUST NOT）。
+- 旧`number`（`null`を含む）を原典で確かめられない場合は、番号主張を`state: unknown`、`verification.state: unverified`とし、理由に旧データの値（例: 「旧law.yamlのnumberはnull。原典で未確認」）を書く。旧`number: null`を、`state: nonexistent`（番号がないことを確認した）に読み替えてはならない（MUST NOT）。旧`law.yaml`（`loj/v1alpha1`）の`sources`のURIを、個別の主張の根拠に自動で認定してはならない（MUST NOT）。
 - 再構築報告を、登録台帳・履歴マニフェスト・版パッケージの値の根拠に使ってはならない（MUST NOT）。
 
 ## REB-07 収録範囲
