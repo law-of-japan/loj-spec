@@ -312,6 +312,18 @@ class OwnResultTests(unittest.TestCase):
         walk(schema)
         self.assertEqual(checks, set(v.OWN_RESULT_CHECKS) | {"L0", "L1", "L2", "reference"})
 
+    def test_every_listed_check_requires_its_result(self):
+        for check in v.OWN_RESULT_CHECKS:
+            with self.subTest(check=check):
+                case = {"check": check}
+                self.assertFalse(v.own_result_listed(case, {"results": []}))
+                self.assertTrue(v.own_result_listed(case, {"results": [{"check": check, "result": "pass"}]}))
+
+    def test_category_must_match_absence(self):
+        case = {"check": "change"}
+        stray = {"check": "change", "category": "historyStructure", "result": "pass"}
+        self.assertFalse(v.own_result_listed(case, {"results": [stray]}))
+
     def test_package_and_reference_cases_exempt(self):
         for check in ("L0", "L1", "L2", "reference"):
             with self.subTest(check=check):

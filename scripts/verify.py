@@ -477,6 +477,7 @@ def audit_suite(name, validators, rules):
         require(all(d["rule"] in rules for d in expected.get("diagnostics", [])), ident + " unknown diagnostic rule")
         require(own_result_listed(case, expected), ident + " expected result must list the case's own check once")
         if case["success"]:
+            # CONF-01: notApplicable and incomplete are allowed; the result values themselves are left to the schema.
             require(not failed and not errors, ident + " positive case expects failure")
         else:
             require(bool(errors), ident + " negative case needs an error diagnostic")
