@@ -281,7 +281,7 @@ case("L0: 未対応の構造を申告した版パッケージ", ["BASIC-03", "VA
        "一　白雲\n<!-- loj:subitem level=1 number=1 -->\n（ｉ）　巻雲\n<!-- loj:end-subitem -->\n<!-- loj:end-item -->\n"
        "<!-- loj:end-paragraph -->\n")],
      L0_PASS, True, check="L0", man_extra={"unsupportedFeatures": ["ローマ数字の細分の表示"]})
-case("L0: L1の違反を含む本文", ["VAL-02", "CONF-01"],
+case("L0: L1の違反（項の未閉鎖、DIR-02）を含む本文", ["VAL-02", "CONF-01"],
      [("main.md", "main", ART + "<!-- loj:paragraph number=1 -->\n" + BODY)], L0_PASS, True, check="L0")
 
 

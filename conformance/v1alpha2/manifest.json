@@ -2332,7 +2332,7 @@
     },
     {
       "id": "pkg-145",
-      "title": "L0: L1の違反を含む本文",
+      "title": "L0: L1の違反（項の未閉鎖、DIR-02）を含む本文",
       "requirements": [
         "VAL-02",
         "CONF-01"
