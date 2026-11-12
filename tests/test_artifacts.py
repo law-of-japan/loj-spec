@@ -1,5 +1,7 @@
 """Mutation/regression checks for the artifact auditor, not L1 conformance tests."""
 import copy
+import re
+import unicodedata
 import sys
 import tempfile
 import unittest
@@ -274,3 +276,17 @@ class VersionStateTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class CompatibilityIdeographTests(unittest.TestCase):
+    """GLYPH-11 lists the code points in the compatibility blocks that have no canonical decomposition."""
+
+    def test_listed_characters_match_unicode_data(self):
+        blocks = list(range(0xF900, 0xFB00)) + list(range(0x2F800, 0x2FA20))
+        expected = {c for c in blocks
+                    if unicodedata.name(chr(c), None) and not unicodedata.decomposition(chr(c))}
+        text = (v.ROOT / "spec/loj-glyphs/v1alpha1/01-glyphs.md").read_text(encoding="utf-8")
+        sentence = text[text.index("12字は、"):].split("である。")[0]
+        listed = {int(h, 16) for h in re.findall(r"U\+([0-9A-F]{4,6})", sentence)}
+        self.assertEqual(len(listed), 12)
+        self.assertEqual(listed, expected)

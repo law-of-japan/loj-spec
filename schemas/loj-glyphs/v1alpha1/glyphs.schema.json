@@ -67,7 +67,7 @@
             "minLength": 1
           },
           "ivd": {
-            "$comment": "GLYPH-05, GLYPH-06: required when recorded contains a variation selector (checked by the validator).",
+            "$comment": "GLYPH-05, GLYPH-06: required when recorded contains a variation selector, forbidden otherwise; sequence must match the code points of recorded. Both are checked by the validator.",
             "type": "object",
             "properties": {
               "collection": {

@@ -8,7 +8,7 @@
 
 - HIST-08: Revisionの`text`に、任意の`variances`（原典資料の間の文言の食い違い）と`correctionsSurveyed`（官報正誤を確かめたか）を加えた。確認の状況を`sources`の`locator`に書くことを禁じた。GLYPH-07とREB-05の記録先を、これらに改めた。
 - GLYPH-04・05: `law.number`の字体は注記しないとした。字体注記に`ivd`を加え、異体字セレクタを含む注記で必須とした。`variance`で`candidates`を必須とし、本文に置いた字と置かなかった字を書くとした。
-- TYPE-02: Sourceに任意の`glyphPreservation`を加えた。GLYPH-10: `text.glyphs: verified`のRevisionは、`glyphPreservation: preserved`のSourceを指すとした。REBR-03の`sourceChecks`を確認の記録とした。
+- TYPE-02: Sourceに任意の`glyphPreservation`を加えた。GLYPH-10: `text.glyphs: verified`のRevisionは、`glyphPreservation: preserved`のSourceを指すとした。`glyphPreservation`を持たないSourceだけを指す`verified`のデータは、L3（根拠）で不合格になる（本リポジトリの正例には該当がない）。REBR-03の`sourceChecks`を確認の記録とした。
 - GLYPH-06・GLYPH-11・VAL-08: 互換漢字の範囲を、正規分解を持つ字に限った（12字を除く）。Unicodeの版を15.1に固定した。
 - 共通の型、履歴マニフェスト、字体注記のschemaを更新した。
 - 正例hist-001の資料に`glyphPreservation`を加え、確認の状況を`locator`から`correctionsSurveyed`に移した（hist-001を写したケースも同じ行が変わる。期待結果は変わらない）。適合ケースglyph-010（注記のないU+FA11）とglyph-011（字体を保持する資料を指さない`verified`）を加えた。

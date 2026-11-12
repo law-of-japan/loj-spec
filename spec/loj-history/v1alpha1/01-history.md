@@ -124,7 +124,7 @@
 | `glyphs` | `complete`・`partial`で必須 | 字体の照合状態。`verified`（原典の字体と照合した）／`unverified`（新字体化された資料等に由来し、照合していない） |
 | `glyphNotes` | 注記がある場合は必須 | 字体注記のファイルのパス。`versions/<revision_id>/glyphs.yaml`（自身のrevision_id）でなければならない（MUST） |
 | `variances` | 任意 | 原典資料の間の文言の食い違い（loj-glyphsのGLYPH-07）。各項目は`scope`（Scope）、`readings`（資料ごとの文言。2件以上。各項目は`source`、`locator`、`raw`）、`verification`と、任意の`resolvedBy`（食い違いを解いた官報正誤のEvidence） |
-| `correctionsSurveyed` | 任意 | 官報正誤を確かめたか。`state`（`surveyed`／`unsurveyed`）と、`surveyed`では`evidence`（確かめた資料）、`unsurveyed`では`reason` |
+| `correctionsSurveyed` | 任意 | 官報正誤を確かめたか。`state`（`surveyed`／`unsurveyed`）と、`surveyed`では`evidence`（確かめた資料）、`unsurveyed`では`reason`。`surveyed`は`reason`を、`unsurveyed`は`evidence`を持たない |
 
 - `complete`・`partial`のRevisionの版パッケージは、存在しなければならない（MUST）。存在しなければ違反とする。版パッケージが存在するが読めない場合は、L3では判定せず、版パッケージのL0で扱う。
 - `absent`のRevisionに、版パッケージを置いてはならない（MUST NOT）。

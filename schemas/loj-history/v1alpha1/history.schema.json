@@ -485,6 +485,11 @@
                         "evidence": {
                           "minItems": 1
                         }
+                      },
+                      "not": {
+                        "required": [
+                          "reason"
+                        ]
                       }
                     }
                   },
@@ -499,7 +504,12 @@
                     "then": {
                       "required": [
                         "reason"
-                      ]
+                      ],
+                      "not": {
+                        "required": [
+                          "evidence"
+                        ]
+                      }
                     }
                   }
                 ]
