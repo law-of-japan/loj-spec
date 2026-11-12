@@ -29,7 +29,7 @@ sources:
 relations:
   - id: rel-s41-86
     type: amends
-    from: {id: github.com/law-of-japan/19660625-act-86, label: 昭和四十一年法律第八十六号}
+    from: {id: https://github.com/law-of-japan/19660625-act-86, label: 昭和四十一年法律第八十六号}
     promulgated:
       state: date
       value: "1966-06-25"

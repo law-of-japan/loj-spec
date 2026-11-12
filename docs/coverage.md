@@ -78,7 +78,7 @@ T076〜T105は承認されたMAN-03 B案の独立ケース。附属資料の通�
 
 次の要件は機械で検査できるが、まだケースがない。今後加える: CHG-04、RID-05。RID-04は、履歴マニフェストの正例（hist-037）で登録空間を書いた参照があるが、登録台帳の側のケースはない。
 
-共通の型と時点値（2026-11-12、[law-of-japan/loj-spec#32](https://github.com/law-of-japan/loj-spec/issues/32)）は、履歴マニフェストの中で確かめる。登録空間と版の外部識別子の正例（hist-037）と、リポジトリの所在で指すRecord（TYPE-01、hist-038）、Sourceのidの重複（TYPE-02、hist-039）、同じファイルにないSource（TYPE-03、hist-040）、Verificationの未知の状態（TYPE-04、hist-041）、原文のないScope（TYPE-06、hist-042）、精度と書式の不一致（TIME-02、hist-043）、版を対象としない外部識別子（HIST-09、hist-046）の負例がある。確認済みの時点値の根拠（TIME-06）は、hist-013が当たる。登録台帳・再構築報告の中の共通の型の違反のケースは、まだない。
+共通の型と時点値（2026-11-12、[law-of-japan/loj-spec#32](https://github.com/law-of-japan/loj-spec/issues/32)）は、履歴マニフェストの中で確かめる。登録空間と版の外部識別子の正例（hist-037）と、リポジトリの所在で指すRecord（TYPE-01、hist-038）、Sourceのidの重複（HIST-02、hist-039）、同じファイルにないSource（TYPE-03、hist-040）、Verificationの未知の状態（TYPE-04、hist-041）、原文のないScope（TYPE-06、hist-042）、精度と書式の不一致（TIME-02、hist-043）、版を対象としない外部識別子（HIST-01・HIST-09、hist-046）の負例がある。確認済みの時点値の根拠（TIME-06）は、hist-013が当たる。登録台帳・再構築報告の中の共通の型の違反のケースは、まだない。
 
 CHG-02・CHG-03（2026-11-12、[law-of-japan/loj-spec#18](https://github.com/law-of-japan/loj-spec/issues/18)）の従属するファイルの更新は、記録訂正で同じ版の`text.sources`を更新する正例（common-024）だけがある。common-024は、宣言した版だけのASTが変わり、従属する更新が宣言した版の`text.sources`に限られ、宣言した版の根拠（`text.sources`の箇所）があるので合格とする。Scopeの`nodes`・字体注記の更新、宣言していない版の従属するファイルを変える負例、登録台帳だけの`metadata`、mergeのcommit、最初のcommit、revertのcommitのケースは、まだない。登録台帳の`git bundle`と、親が二つのcommitを持つ`git bundle`が要るためである。
 

@@ -660,10 +660,10 @@
       "id": "hist-039",
       "title": "ファイルの中で重複するSourceのid",
       "requirements": [
-        "TYPE-02"
+        "HIST-02"
       ],
       "check": "L3",
-      "category": "evidence",
+      "category": "historyStructure",
       "normative": true,
       "input": {
         "kind": "repository",
@@ -776,6 +776,7 @@
       "id": "hist-046",
       "title": "版を対象としない外部識別子",
       "requirements": [
+        "HIST-01",
         "HIST-09"
       ],
       "check": "L3",

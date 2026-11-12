@@ -8,7 +8,7 @@
   ],
   "diagnostics": [
     {
-      "rule": "HIST-09",
+      "rule": "HIST-01",
       "schemaVersion": "loj-history/v1alpha1",
       "class": "error"
     }

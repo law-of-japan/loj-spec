@@ -6,9 +6,9 @@
 
 [law-of-japan/loj-spec#32](https://github.com/law-of-japan/loj-spec/issues/32)の結論（4）による変更である。草案の版への変更であり、版番号は上げない。既存のケースの期待結果は変わらない。
 
-- 履歴マニフェストの索引に、hist-037〜046を加えた。登録空間を書いたRecordの参照と版の外部識別子の正例（hist-037）と、TYPE-01〜04・06、TIME-02、TIME-03（`pending`の基準、`value`の書式）、HIST-09の負例である。hist-038・041〜043・045・046に`rejectedBy: schema`の印を付けた。
+- 履歴マニフェストの索引に、hist-037〜046を加えた。登録空間を書いたRecordの参照と版の外部識別子の正例（hist-037）と、TYPE-01・03・04・06、HIST-02（Sourceのidの重複）、TIME-02、TIME-03（`pending`の基準、`value`の書式）、HIST-01・HIST-09（Recordを対象とする外部識別子）の負例である。hist-038・041〜043・045・046に`rejectedBy: schema`の印を付けた。
 - hist-013（根拠のない確認済みの時点）の要件にTIME-06を加えた。診断の規則はTYPE-05のままである。
-- HIST-09: 外部識別子の`kind`は`revision`とし、履歴マニフェストに`kind`が`revision`でない外部識別子を置くことを禁じた。履歴マニフェストのschemaの`kind`を`const: revision`にした。Recordを対象とする外部識別子は登録台帳に置く、という既存の定めを、検査できる形にしたものである。
+- HIST-09: 外部識別子の`kind`は`revision`とした。履歴マニフェストのschemaの`kind`を`const: revision`にした。Recordの外部識別子を履歴マニフェストに写さない、というHIST-01の既存の禁止を、schemaで検査できる形にしたものである。規則の正はHIST-01のままとし、HIST-09は要約とリンクにした。
 - 要件との対応表: TIME-05（理由の中身）とCHG-05（適合の主張）を、ケースを作らない要件に移した。名宛人と確かめ方の区分（レビュー）による。
 
 ## 公開の条件と期待結果の確かめ方（2026-11-12、草案）

@@ -701,8 +701,8 @@ def common_types():
                     "        verification: {state: unverified, reason: 適合ケースのための架空の変更}\n")
     for title, rule, edits in [
         ("リポジトリの所在で指すRecord", "TYPE-01",
-         [("history.yaml", "from: {id: 19660625-act-86, label:", "from: {id: github.com/law-of-japan/19660625-act-86, label:")]),
-        ("ファイルの中で重複するSourceのid", "TYPE-02",
+         [("history.yaml", "from: {id: 19660625-act-86, label:", "from: {id: https://github.com/law-of-japan/19660625-act-86, label:")]),
+        ("ファイルの中で重複するSourceのid", "HIST-02",
          [("history.yaml", "relations:\n", "  - id: src-goshomei\n    kind: other\n    title: 同じidの別の資料（適合ケース）\nrelations:\n")]),
         ("同じファイルにないSourceを指すEvidence", "TYPE-03",
          [("history.yaml", "{source: src-kanpo-19480720, locator: 附則第一項}", "{source: src-kanpo-19480721, locator: 附則第一項}")]),
@@ -711,20 +711,23 @@ def common_types():
            "    verification: {state: checked}\n    status: active\n    items:")]),
         ("原文のないScope", "TYPE-06",
          [("history.yaml", "scope: {text: 第二条秋分の日の項の次に体育の日の項を加える}", "scope: {nodes: [19480720-law-178/main/article/2]}")]),
+        # The promulgation of a relation is no base of a derived time point, so TIME-03 does not follow.
         ("精度と書式が合わない日付", "TIME-02",
-         [("history.yaml", "        raw: 昭和二十三年七月二十日\n        precision: day\n",
-           "        raw: 昭和二十三年七月二十日\n        precision: month\n")]),
+         [("history.yaml", "      raw: 昭和四十一年六月二十五日\n      precision: day\n",
+           "      raw: 昭和四十一年六月二十五日\n      precision: month\n")]),
         ("確定日でない基準から計算したvalue（pendingの基準）", "TIME-03", [("history.yaml", enacted_base, pending_base)]),
         ("日の書式でないderivedのvalue", "TIME-03",
          [("history.yaml", '      value: "1948-07-20"\n      raw: 公布の日からこれを施行する\n',
            '      value: "1948-07"\n      raw: 公布の日からこれを施行する\n')]),
-        ("版を対象としない外部識別子", "HIST-09", [("history.yaml", external[0], external[1].format("record"))]),
+        ("版を対象としない外部識別子", "HIST-01", [("history.yaml", external[0], external[1].format("record"))]),
     ]:
         dest = next_dir("hist", False) / "repo"
         mutate(dest, HIST_POS, edits)
         sv = SV["common"] if rule.startswith(("TIME", "TYPE")) else SV["hist"]
         category = "evidence" if rule.startswith("TYPE") else "historyStructure"
-        add("hist", title, [rule], "L3", {"kind": "repository", "path": rel(dest)},
+        # HIST-01 is the source of the ban on Record identifiers in the history manifest; HIST-09 restates it.
+        requirements = ["HIST-01", "HIST-09"] if rule == "HIST-01" else [rule]
+        add("hist", title, requirements, "L3", {"kind": "repository", "path": rel(dest)},
             {"results": [l3(category, "fail")], "diagnostics": [diag(rule, sv)]}, False, category)
 
 

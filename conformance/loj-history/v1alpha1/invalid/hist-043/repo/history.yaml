@@ -34,7 +34,7 @@ relations:
       state: date
       value: "1966-06-25"
       raw: 昭和四十一年六月二十五日
-      precision: day
+      precision: month
       evidence: [{source: src-goshomei-s41-86, locator: "1画像 公布文の日付"}]
       verification: {state: unverified, reason: 官報の発行日と未照合（REB-05）}
     evidence: [{source: src-goshomei-s41-86, locator: "本則"}]
@@ -106,7 +106,7 @@ revisions:
         state: date
         value: "1948-07-20"
         raw: 昭和二十三年七月二十日
-        precision: month
+        precision: day
         evidence: [{source: src-kanpo-19480720, locator: 1コマ 発行日}]
         verification: {state: confirmed}
       value: "1948-07-20"
