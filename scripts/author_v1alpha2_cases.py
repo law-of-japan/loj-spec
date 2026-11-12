@@ -257,6 +257,22 @@ case("号の表示番号にいろは", ["DISP-01"],
        "<!-- loj:end-item -->\n<!-- loj:end-paragraph -->\n")], fail("DISP-01"), False)
 case("条の見出しの対応しない括弧", ["HEAD-01"], [("main.md", "main", "# 第一条（雲（白雲の保管）\n" + P1)], fail("HEAD-01"), False)
 case("条の見出しの後に続く括弧", ["HEAD-01"], [("main.md", "main", "# 第一条（定義）（略）\n" + P1)], fail("HEAD-01"), False)
+# Review of #54: iroha values around ヰ・ヱ with gaps, parenthesized ASCII decimal, a second table of contents.
+IROHA_CASE = [("24", "ウ"), ("26", "ノ"), ("43", "ヱ"), ("47", "ス")]
+case("ヰを使わないいろはの欠番と、括弧付きのASCIIの十進", ["DISP-01", "HEAD-02"],
+     [("main.md", "main", ART + "<!-- loj:paragraph number=1 -->\n" + BODY + "<!-- loj:item number=1 -->\n一　白雲\n" +
+       "".join("<!-- loj:subitem level=1 number=%s -->\n%s　雲\n<!-- loj:end-subitem -->\n" % (n, d) for n, d in IROHA_CASE[:-1]) +
+       "<!-- loj:subitem level=1 number=47 -->\nス　雲\n<!-- loj:subitem level=2 number=12 -->\n（12）　小さな雲\n"
+       "<!-- loj:end-subitem -->\n<!-- loj:end-subitem -->\n<!-- loj:end-item -->\n<!-- loj:end-paragraph -->\n")],
+     {"ast": ast([node("Article", A1, "1", "第一条", [node("Paragraph", P1ID, "1", "", [
+         text(BODY),
+         node("Item", I1, "1", "一", [text("一　白雲\n")] + [
+             node("Subitem", I1 + "/subitem/1/" + n, n, d, [text(d + "　雲\n")], level=1) for n, d in IROHA_CASE[:-1]] + [
+             node("Subitem", I1 + "/subitem/1/47", "47", "ス", [
+                 text("ス　雲\n"),
+                 node("Subitem", I1 + "/subitem/1/47/subitem/2/12", "12", "（12）", [text("（12）　小さな雲\n")], level=2)],
+                  level=1)])], numbering="explicit")], status="active")])}, True)
+case("二つの目次", ["TOC-01"], [("main.md", "main", TOC_MD + TOC_MD + ART + P1)], fail("TOC-01"), False)
 
 
 def main():

@@ -2281,6 +2281,37 @@
       },
       "expected": "conformance/v1alpha2/expected/pkg-141.json",
       "success": false
+    },
+    {
+      "id": "pkg-142",
+      "title": "ヰを使わないいろはの欠番と、括弧付きのASCIIの十進",
+      "requirements": [
+        "DISP-01",
+        "HEAD-02"
+      ],
+      "check": "L1",
+      "normative": true,
+      "input": {
+        "kind": "package",
+        "path": "conformance/v1alpha2/valid/pkg-142/law.yaml"
+      },
+      "expected": "conformance/v1alpha2/expected/pkg-142.json",
+      "success": true
+    },
+    {
+      "id": "pkg-143",
+      "title": "二つの目次",
+      "requirements": [
+        "TOC-01"
+      ],
+      "check": "L1",
+      "normative": true,
+      "input": {
+        "kind": "package",
+        "path": "conformance/v1alpha2/invalid/pkg-143/law.yaml"
+      },
+      "expected": "conformance/v1alpha2/expected/pkg-143.json",
+      "success": false
     }
   ]
 }

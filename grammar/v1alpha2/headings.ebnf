@@ -11,8 +11,9 @@ ascii_decimal = ? ASCII decimal 1..9999, no leading zero ? ;
 fullwidth_decimal = ? Fullwidth decimal １..９９９９, no leading zero ? ;
 japanese = ? Canonical positional Japanese 1..9999 per NUM-01 ? ;
 title = ? Nonempty plain text, no inline markup, CR/LF or trailing whitespace ? ;
-caption = caption_part, {caption_part} ;   (* HEAD-01: fullwidth parentheses nest and balance;
-                                             the "（" after the number pairs with the final "）" *)
+caption = caption_part, {caption_part} ;   (* HEAD-01: fullwidth parentheses nest and balance.
+   Because caption is balanced and article ends after the closing "）", the "（" after the number
+   always pairs with the final "）"; e.g. "（定義）（略）" and "（雲（白雲の保管）" are not derivable. *)
 caption_part = caption_char | "（", caption, "）" ;
 caption_char = ? Plain text character other than "（" (U+FF08), "）" (U+FF09), CR or LF; no inline markup ? ;
 (* Appendix: hashes + SPACE + exact manifest title; see HEAD-03.
