@@ -2,7 +2,9 @@
 
 Authoring helper (O-15). Not a validator: each negative case is a copy of a
 checked-in positive input with one hand-written change, and its expected rule
-and result are written here by hand from the spec text. The fictional Git
+and result are written here by hand from the spec text. Each copy is listed in
+the index (derivedFrom: its source and the changes), and verify.py rebuilds it
+from the source to find copies left behind by a changed source (CONF-01). The fictional Git
 history for the change and reference cases is built with fixed authors and
 dates so that the bundle and the commit hashes are reproducible.
 CI does not run this script; it reads the checked-in files.
@@ -24,6 +26,8 @@ SV = {"hist": "loj-history/v1alpha1", "glyph": "loj-glyphs/v1alpha1", "reg": "lo
 FOLDER = {"hist": "loj-history/v1alpha1", "glyph": "loj-glyphs/v1alpha1", "reg": "loj-registry/v1alpha1",
           "rebuild": "loj-rebuild/v1alpha1", "common": "common/v1alpha1"}
 INDEX = {key: [] for key in FOLDER}
+# CONF-01: the source and the changes of every copied input, by the copy's path; add() moves them to the index.
+DERIVED = {}
 ZWG = "versions/zwgmz1rt/"
 # CONF-01: negatives whose input breaks the schema of its schemaVersion. Written by hand: the schema error
 # of each one was checked to be the violation of the case's expected rule (law-of-japan/loj-spec#32).
@@ -37,15 +41,30 @@ def write_json(path, value):
     path.write_bytes((json.dumps(value, ensure_ascii=False, indent=2) + "\n").encode("utf-8"))
 
 
-def mutate(dest, source, edits):
+def mutate(dest, source, edits, files=None):
+    """Copy the directory source to dest, replace the first old with new in order, then write whole files."""
+    source = source if isinstance(source, str) else rel(source)
     if dest.exists():
         shutil.rmtree(dest)
     shutil.copytree(ROOT / source, dest)
+    record = []
     for name, old, new in edits:
         path = dest / name
         text = path.read_bytes().decode("utf-8")
         assert old in text, (dest, name, old)
         path.write_bytes(text.replace(old, new, 1).encode("utf-8"))
+        record.append({"file": name, "old": old, "new": new})
+    for name, body in (files or {}).items():
+        (dest / name).write_bytes(body.encode("utf-8"))
+        record.append({"file": name, "content": body})
+    DERIVED[rel(dest)] = {"path": rel(dest), "from": source, "edits": record}
+
+
+def copy_file(dest, source):
+    """Copy one file (a git bundle) unchanged."""
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy(source, dest)
+    DERIVED[rel(dest)] = {"path": rel(dest), "from": rel(source), "edits": []}
 
 
 def diag(rule, schema_version, klass="error"):
@@ -63,6 +82,12 @@ def add(suite, title, requirements, check, inp, expected, success, category=None
     if ident in SCHEMA_REJECTED:
         assert not success, ident
         case["rejectedBy"] = "schema"
+    # A copy belongs to the case whose directory holds it; other cases may read it as a shared input.
+    own = "conformance/%s/%s/%s/" % (FOLDER[suite], "valid" if success else "invalid", ident)
+    paths = [inp[key] for key in ("path", "registry", "bundle") if key in inp] + inp.get("repositories", [])
+    derived = [DERIVED.pop(path) for path in paths if path.startswith(own) and path in DERIVED]
+    if derived:
+        case["derivedFrom"] = derived
     INDEX[suite].append(case)
     return ident
 
@@ -401,8 +426,7 @@ def changes_and_references():
         {"kind": "change", "bundle": bundle, "base": c2, "head": c3}, {"results": [{"check": "change", "result": "pass"}]}, True)
     for title, rule, base, head in [("変更の種類の宣言がない", "CHG-03", c3, c4), ("書式変更と宣言してASTを変える", "CHG-02", c4, c5)]:
         dest = next_dir("common", False) / "repo.bundle"
-        dest.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy(bundle_pos, dest)
+        copy_file(dest, bundle_pos)
         add("common", title, [rule], "change", {"kind": "change", "bundle": rel(dest), "base": base, "head": head},
             {"results": [{"check": "change", "result": "fail"}], "diagnostics": [diag(rule, SV["common"])]}, False)
     registry = next_dir("common", True) / "registry/records/20990101-act-1.yaml"
@@ -424,9 +448,8 @@ def changes_and_references():
                                    ("短縮したcommit", "FIXREF-04", ref + "@" + c1[:7]),
                                    ("そのcommitにないRevision", "FIXREF-06", "loj:loj/20990101-act-1/zzzzzzzz@" + c1)]:
         dest = next_dir("common", False)
-        dest.mkdir(parents=True, exist_ok=True)
-        shutil.copy(bundle_pos, dest / "repo.bundle")
-        shutil.copytree(registry.parent.parent, dest / "registry", dirs_exist_ok=True)
+        copy_file(dest / "repo.bundle", bundle_pos)
+        mutate(dest / "registry", reg, [])
         add("common", title, list(dict.fromkeys([rule, "FIXREF-06"])), "reference",
             {"kind": "reference", "bundle": rel(dest / "repo.bundle"), "registry": rel(dest / "registry"), "reference": reference},
             {"resolution": {"result": "error"}, "diagnostics": [diag(rule, SV["common"])]}, False)
@@ -782,8 +805,7 @@ def registry_ids():
         (False, "大文字を含む登録空間の識別子", ["RID-04"], "space: LoJ, "),
     ]:
         dest = next_dir("reg", success) / "registry"
-        mutate(dest, REG_POS, [])
-        (dest / "records/k7m2p9qd3x.yaml").write_bytes(merged_record(space).encode("utf-8"))
+        mutate(dest, REG_POS, [], {"records/k7m2p9qd3x.yaml": merged_record(space)})
         if success:
             expected = {"results": [{"check": "registry", "result": "pass"}]}
         else:
@@ -809,8 +831,7 @@ def change_without_ast():
         {"kind": "change", "bundle": rel(bundle_pos), "base": c1, "head": c2},
         {"results": [{"check": "change", "result": "incomplete"}]}, True)
     dest = next_dir("common", False) / "repo.bundle"
-    dest.parent.mkdir(parents=True, exist_ok=True)
-    shutil.copy(bundle_pos, dest)
+    copy_file(dest, bundle_pos)
     add("common", "ASTを生成できない版のファイルを書式変更で変える", ["CHG-04"], "change",
         {"kind": "change", "bundle": rel(dest), "base": c2, "head": c3},
         {"results": [{"check": "change", "result": "fail"}], "diagnostics": [diag("CHG-04", SV["common"])]}, False)
@@ -865,6 +886,7 @@ def main():
     registry_ids()
     change_without_ast()
     termination_time()
+    assert not DERIVED, sorted(DERIVED)  # every copy is listed by the case that owns it
     marked = {case["id"] for cases in INDEX.values() for case in cases if "rejectedBy" in case}
     assert marked == SCHEMA_REJECTED, SCHEMA_REJECTED - marked
     for suite, folder in FOLDER.items():

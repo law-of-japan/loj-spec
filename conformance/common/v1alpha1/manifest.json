@@ -42,7 +42,25 @@
         ]
       },
       "expected": "conformance/common/v1alpha1/expected/common-002.json",
-      "success": false
+      "success": false,
+      "derivedFrom": [
+        {
+          "path": "conformance/common/v1alpha1/invalid/common-002/hist-004",
+          "from": "conformance/loj-history/v1alpha1/valid/hist-004/repo",
+          "edits": [
+            {
+              "file": "history.yaml",
+              "old": "            value: \"2019-04-30\"\n",
+              "new": "            value: \"2019-04-29\"\n"
+            },
+            {
+              "file": "history.yaml",
+              "old": "        value: \"2019-04-30\"\n",
+              "new": "        value: \"2019-04-29\"\n"
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "common-003",
@@ -117,7 +135,14 @@
         "head": "bb9a472cb68b07334308c394d024e29570a3f103"
       },
       "expected": "conformance/common/v1alpha1/expected/common-006.json",
-      "success": false
+      "success": false,
+      "derivedFrom": [
+        {
+          "path": "conformance/common/v1alpha1/invalid/common-006/repo.bundle",
+          "from": "conformance/common/v1alpha1/valid/common-004/repo.bundle",
+          "edits": []
+        }
+      ]
     },
     {
       "id": "common-007",
@@ -134,7 +159,14 @@
         "head": "64394c4a5759dbfb2f76ac624934c47c5f74b994"
       },
       "expected": "conformance/common/v1alpha1/expected/common-007.json",
-      "success": false
+      "success": false,
+      "derivedFrom": [
+        {
+          "path": "conformance/common/v1alpha1/invalid/common-007/repo.bundle",
+          "from": "conformance/common/v1alpha1/valid/common-004/repo.bundle",
+          "edits": []
+        }
+      ]
     },
     {
       "id": "common-008",
@@ -188,7 +220,19 @@
         "reference": "loj:loj/20990101-act-1/b7k2m9qd#20990101-act-1/main/article/1/paragraph/1"
       },
       "expected": "conformance/common/v1alpha1/expected/common-010.json",
-      "success": false
+      "success": false,
+      "derivedFrom": [
+        {
+          "path": "conformance/common/v1alpha1/invalid/common-010/registry",
+          "from": "conformance/common/v1alpha1/valid/common-008/registry",
+          "edits": []
+        },
+        {
+          "path": "conformance/common/v1alpha1/invalid/common-010/repo.bundle",
+          "from": "conformance/common/v1alpha1/valid/common-004/repo.bundle",
+          "edits": []
+        }
+      ]
     },
     {
       "id": "common-011",
@@ -206,7 +250,19 @@
         "reference": "loj:loj/20990101-act-1/b7k2m9qd@f1162fe"
       },
       "expected": "conformance/common/v1alpha1/expected/common-011.json",
-      "success": false
+      "success": false,
+      "derivedFrom": [
+        {
+          "path": "conformance/common/v1alpha1/invalid/common-011/registry",
+          "from": "conformance/common/v1alpha1/valid/common-008/registry",
+          "edits": []
+        },
+        {
+          "path": "conformance/common/v1alpha1/invalid/common-011/repo.bundle",
+          "from": "conformance/common/v1alpha1/valid/common-004/repo.bundle",
+          "edits": []
+        }
+      ]
     },
     {
       "id": "common-012",
@@ -223,7 +279,19 @@
         "reference": "loj:loj/20990101-act-1/zzzzzzzz@f1162fe2cfefa04e9a0d656706e37977fb3d0731"
       },
       "expected": "conformance/common/v1alpha1/expected/common-012.json",
-      "success": false
+      "success": false,
+      "derivedFrom": [
+        {
+          "path": "conformance/common/v1alpha1/invalid/common-012/registry",
+          "from": "conformance/common/v1alpha1/valid/common-008/registry",
+          "edits": []
+        },
+        {
+          "path": "conformance/common/v1alpha1/invalid/common-012/repo.bundle",
+          "from": "conformance/common/v1alpha1/valid/common-004/repo.bundle",
+          "edits": []
+        }
+      ]
     },
     {
       "id": "common-013",
@@ -264,7 +332,20 @@
         ]
       },
       "expected": "conformance/common/v1alpha1/expected/common-014.json",
-      "success": true
+      "success": true,
+      "derivedFrom": [
+        {
+          "path": "conformance/common/v1alpha1/valid/common-014/hist-001",
+          "from": "conformance/loj-history/v1alpha1/valid/hist-001/repo",
+          "edits": [
+            {
+              "file": "versions/zwgmz1rt/law.yaml",
+              "old": "\"昭和二十三年法律第百七十八号\"",
+              "new": "\"昭和二十三年法律第百七十九号\""
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "common-015",
@@ -285,7 +366,20 @@
         ]
       },
       "expected": "conformance/common/v1alpha1/expected/common-015.json",
-      "success": true
+      "success": true,
+      "derivedFrom": [
+        {
+          "path": "conformance/common/v1alpha1/valid/common-015/hist-016b",
+          "from": "conformance/loj-history/v1alpha1/valid/hist-016/repo",
+          "edits": [
+            {
+              "file": "history.yaml",
+              "old": "record: {id: 20990401-law-1, label: 架空の法律（時点の計算の例）}",
+              "new": "record: {id: 20990402-law-3, label: 架空の法律（公布の時点の比較の例）}"
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "common-016",
@@ -305,7 +399,20 @@
         ]
       },
       "expected": "conformance/common/v1alpha1/expected/common-016.json",
-      "success": false
+      "success": false,
+      "derivedFrom": [
+        {
+          "path": "conformance/common/v1alpha1/invalid/common-016/hist-016b",
+          "from": "conformance/common/v1alpha1/valid/common-015/hist-016b",
+          "edits": [
+            {
+              "file": "history.yaml",
+              "old": "      value: \"2099-06-01\"\n      raw: 令和八十一年六月一日\n",
+              "new": "      value: \"2099-06-02\"\n      raw: 令和八十一年六月二日\n"
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "common-017",
@@ -347,7 +454,20 @@
         ]
       },
       "expected": "conformance/common/v1alpha1/expected/common-018.json",
-      "success": false
+      "success": false,
+      "derivedFrom": [
+        {
+          "path": "conformance/common/v1alpha1/invalid/common-018/20991001-law-9",
+          "from": "conformance/common/v1alpha1/valid/common-017/20991001-law-9",
+          "edits": [
+            {
+              "file": "history.yaml",
+              "old": "relation: rel-total}",
+              "new": "relation: rel-nowhere}"
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "common-019",
@@ -369,7 +489,31 @@
         ]
       },
       "expected": "conformance/common/v1alpha1/expected/common-019.json",
-      "success": false
+      "success": false,
+      "derivedFrom": [
+        {
+          "path": "conformance/common/v1alpha1/invalid/common-019/registry",
+          "from": "conformance/common/v1alpha1/valid/common-017/registry",
+          "edits": [
+            {
+              "file": "records/20991001-law-9.yaml",
+              "old": "status: active\n",
+              "new": "status: withdrawn\n"
+            }
+          ]
+        },
+        {
+          "path": "conformance/common/v1alpha1/invalid/common-019/20990101-law-5",
+          "from": "conformance/common/v1alpha1/valid/common-017/20990101-law-5",
+          "edits": [
+            {
+              "file": "history.yaml",
+              "old": "    verification: {state: unverified, reason: 架空の資料}\n    status: active\n",
+              "new": "    verification: {state: confirmed}\n    status: active\n"
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "common-020",
@@ -389,7 +533,25 @@
         ]
       },
       "expected": "conformance/common/v1alpha1/expected/common-020.json",
-      "success": false
+      "success": false,
+      "derivedFrom": [
+        {
+          "path": "conformance/common/v1alpha1/invalid/common-020/20990101-law-5",
+          "from": "conformance/common/v1alpha1/valid/common-017/20990101-law-5",
+          "edits": [
+            {
+              "file": "history.yaml",
+              "old": "    verification: {state: unverified, reason: 架空の資料}\n    status: active\n",
+              "new": "    verification: {state: unverified, reason: 架空の資料による撤回}\n    status: retracted\n"
+            },
+            {
+              "file": "history.yaml",
+              "old": "termination:\n  - {type: totallyRevised, relation: rel-total}\n",
+              "new": ""
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "common-021",
@@ -409,7 +571,25 @@
         ]
       },
       "expected": "conformance/common/v1alpha1/expected/common-021.json",
-      "success": false
+      "success": false,
+      "derivedFrom": [
+        {
+          "path": "conformance/common/v1alpha1/invalid/common-021/20990101-law-5",
+          "from": "conformance/common/v1alpha1/valid/common-017/20990101-law-5",
+          "edits": [
+            {
+              "file": "history.yaml",
+              "old": "    type: totallyRevises\n",
+              "new": "    type: repeals\n"
+            },
+            {
+              "file": "history.yaml",
+              "old": "type: totallyRevised, relation",
+              "new": "type: repealed, relation"
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "common-022",
@@ -429,7 +609,20 @@
         ]
       },
       "expected": "conformance/common/v1alpha1/expected/common-022.json",
-      "success": false
+      "success": false,
+      "derivedFrom": [
+        {
+          "path": "conformance/common/v1alpha1/invalid/common-022/20990101-law-5",
+          "from": "conformance/common/v1alpha1/valid/common-017/20990101-law-5",
+          "edits": [
+            {
+              "file": "history.yaml",
+              "old": "    from: {id: 20991001-law-9, label: 架空の新法（全部改正の例）}\n",
+              "new": "    from: {id: 20990101-law-5, label: 架空の旧法（全部改正の例）}\n"
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "common-023",
@@ -450,7 +643,20 @@
         ]
       },
       "expected": "conformance/common/v1alpha1/expected/common-023.json",
-      "success": true
+      "success": true,
+      "derivedFrom": [
+        {
+          "path": "conformance/common/v1alpha1/valid/common-023/registry",
+          "from": "conformance/common/v1alpha1/valid/common-017/registry",
+          "edits": [
+            {
+              "file": "records/20991001-law-9.yaml",
+              "old": "status: active\n",
+              "new": "status: withdrawn\n"
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "common-024",
@@ -503,7 +709,14 @@
         "head": "a933fe6b04f6a664ca8fb5f93bd7f153362913e3"
       },
       "expected": "conformance/common/v1alpha1/expected/common-026.json",
-      "success": false
+      "success": false,
+      "derivedFrom": [
+        {
+          "path": "conformance/common/v1alpha1/invalid/common-026/repo.bundle",
+          "from": "conformance/common/v1alpha1/valid/common-025/repo.bundle",
+          "edits": []
+        }
+      ]
     }
   ]
 }

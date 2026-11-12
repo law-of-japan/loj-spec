@@ -523,6 +523,54 @@ def check_schema_mark(ident, case, inputs, validators):
     return count
 
 
+def tree_bytes(path):
+    """The files below a directory by their relative path, or a single file under the empty name."""
+    if path.is_file():
+        return {"": path.read_bytes()}
+    return {p.relative_to(path).as_posix(): p.read_bytes() for p in sorted(path.rglob("*")) if p.is_file()}
+
+
+def derivation_problem(entry):
+    """CONF-01: applying the edits in order to a copy of from gives path, byte for byte. Returns the problem or None."""
+    source, target = ROOT / entry["from"], ROOT / entry["path"]
+    if not source.exists():
+        return "missing source " + entry["from"]
+    if source.is_file() and entry["edits"]:
+        return "edits on a file source"
+    built = tree_bytes(source)
+    for number, edit in enumerate(entry["edits"], 1):
+        name = edit["file"]
+        if "content" in edit:
+            built[name] = edit["content"].encode("utf-8")
+            continue
+        text = built[name].decode("utf-8") if name in built else None
+        if text is None or edit["old"] not in text:
+            return "edit %d: old text not found in %s" % (number, name)
+        built[name] = text.replace(edit["old"], edit["new"], 1).encode("utf-8")
+    actual = tree_bytes(target) if target.exists() else {}
+    if set(built) != set(actual):
+        return "file set differs: " + ", ".join(sorted(set(built) ^ set(actual)))
+    changed = sorted(name for name in built if built[name] != actual[name])
+    if changed:
+        return "content differs from the source with the edits: " + ", ".join(changed)
+    return None
+
+
+def check_derivations(ident, case):
+    """CONF-01: each listed copy is an input of the case inside the case's own directory, and matches its source."""
+    group = "valid" if case["success"] else "invalid"
+    own = case["expected"].rsplit("/expected/", 1)[0] + "/" + group + "/" + ident + "/"
+    paths = [path.relative_to(ROOT).as_posix() for path in input_files(case)]
+    seen = set()
+    for entry in case.get("derivedFrom", []):
+        require(entry["path"] in paths and entry["path"].startswith(own) and entry["path"] not in seen,
+                ident + " derivedFrom path is not an own input of the case: " + entry["path"])
+        seen.add(entry["path"])
+        problem = derivation_problem(entry)
+        require(problem is None, ident + " derivedFrom " + entry["path"] + ": " + str(problem))
+    return len(seen)
+
+
 # CONF-01: these checks list their own result. Version package cases (L0-L2) compare the AST and diagnostics,
 # and reference cases compare references.
 OWN_RESULT_CHECKS = ("L3", "L4", "change", "registry", "rebuild")
@@ -543,7 +591,8 @@ def audit_suite(name, validators, rules):
     index = read_json(base / "manifest.json")
     validators["common/v1alpha1/conformance.schema.json"].validate(index)
     require(index["suite"] == name, "Suite mismatch: " + folder)
-    seen, covered, expected_paths, stats = set(), set(), set(), {"positive": 0, "negative": 0, "files": 0}
+    seen, covered, expected_paths = set(), set(), set()
+    stats = {"positive": 0, "negative": 0, "files": 0, "derived": 0}
     for case in index["cases"]:
         ident = case["id"]
         require(ident.startswith(prefix + "-") and ident not in seen, "Bad or duplicate case ID: " + ident)
@@ -556,6 +605,7 @@ def audit_suite(name, validators, rules):
         inputs = input_files(case)
         for path in inputs:
             require(path.exists(), ident + " missing input: " + str(path))
+        stats["derived"] += check_derivations(ident, case)
         # Inputs may share checked-in positive fixtures; the case's own input must sit in its group.
         require(any(group in "/" + path.relative_to(ROOT).as_posix() for path in inputs), ident + " case directory mismatch")
         exp_path = ROOT / case["expected"]
@@ -616,7 +666,7 @@ def audit_next(validators):
         count, cov, stats = audit_suite(name, validators, rules)
         covered |= cov
         lines.append(f"{folder}: {count} cases ({stats['positive']} positive, {stats['negative']} negative; "
-                     f"{stats['files']} input YAML files schema-checked)")
+                     f"{stats['files']} input YAML files schema-checked; {stats['derived']} copied inputs match their source)")
     return lines, sorted(rules - covered)
 
 
