@@ -4,7 +4,7 @@
 
 ## 取り違えやすいフィールドの改名と命名の規則（2026-11-12、草案）
 
-[law-of-japan/loj-spec#29](https://github.com/law-of-japan/loj-spec/issues/29)の結論による変更である。草案の版への変更であり、版番号は上げない。旧名のフィールドは、閉じたschemaにより拒否される。
+[law-of-japan/loj-spec#29](https://github.com/law-of-japan/loj-spec/issues/29)の結論による変更である。草案の版への変更であり、版番号は上げない。旧名のフィールドは、閉じたschemaにより拒否される。依存する実装（`loj-validator`）は、改名への追随が要る。
 
 - HIST-08: Revisionの`text.glyphs`（`verified`・`unverified`）を`text.glyphCheck`に改めた。字体注記のファイル（`glyphs.yaml`）、番号主張の`glyphs`（注記の配列）と名前が重なっていたためである。GLYPH-10、REB-05、REBR-03、CHG-02の表を合わせた。
 - REBR-03: 再構築報告の`sourceChecks[].glyphs`を`glyphPreservation`に改め、Source（TYPE-02）の`glyphPreservation`と名前と値をそろえた。

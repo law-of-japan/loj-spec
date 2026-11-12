@@ -117,7 +117,7 @@
 
 | フィールド | 必須 | 内容 |
 |---|---|---|
-| `status` | 必須 | `complete`（本文がそろっている）／`partial`（一部が欠けている）／`absent`（本文がない） |
+| `status` | 必須 | `complete`（本文がそろっている）／`partial`（一部が欠けている）／`absent`（本文がない）。本文の状態であり、Revisionの`status`（記録の生存の状態）とは別である（名前の例外は[DDR-022](../../../docs/design-decisions/022-spec-structure.md)） |
 | `package` | 任意 | 版パッケージの`law.yaml`のパス。書く場合は`versions/<revision_id>/law.yaml`（自身のrevision_id）でなければならない（MUST）。省略時も同じパスとする |
 | `gaps` | `partial`で必須 | 欠落の範囲（Scopeの一覧） |
 | `sources` | `complete`・`partial`で必須 | 本文を起こした原典資料（Evidenceの一覧） |
