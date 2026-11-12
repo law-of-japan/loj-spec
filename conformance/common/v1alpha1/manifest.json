@@ -451,6 +451,24 @@
       },
       "expected": "conformance/common/v1alpha1/expected/common-023.json",
       "success": true
+    },
+    {
+      "id": "common-024",
+      "title": "記録訂正で、同じ版の本文の出典（history.yamlのtext.sources）を併せて更新する",
+      "requirements": [
+        "CHG-02",
+        "CHG-03"
+      ],
+      "check": "change",
+      "normative": true,
+      "input": {
+        "kind": "change",
+        "bundle": "conformance/common/v1alpha1/valid/common-024/repo.bundle",
+        "base": "02086ca793ace385b61e6fa5692709895e7e9b0e",
+        "head": "4eefc91ff85b2603011a895eb91f2de8b9b4476f"
+      },
+      "expected": "conformance/common/v1alpha1/expected/common-024.json",
+      "success": true
     }
   ]
 }

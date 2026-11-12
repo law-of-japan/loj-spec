@@ -2,6 +2,17 @@
 
 見出しの「草案」は、[草案の版](spec/README.md#版の状態)への変更であることを示す。版の状態の正は、[規範仕様の入口](spec/README.md#規範とするもの)の表にある。版を公開したときは、公開の日付の項目を加える。
 
+## 変更の種類の範囲、登録台帳の変更、正本ブランチの統合の方法（2026-11-12、草案）
+
+[law-of-japan/loj-spec#18](https://github.com/law-of-japan/loj-spec/issues/18)と[law-of-japan/loj-spec#33](https://github.com/law-of-japan/loj-spec/issues/33)の修正である。草案の版への変更であり、版番号は上げない。
+
+- CHG-02: `correction`・`officialCorrection`・`restoration`・`revisionAdd`の変更してよい範囲に、従属して更新するファイル（字体注記、Scopeの`nodes`、`text.sources`・`text.glyphs`、根拠、再構築報告の対応等）を加えた。従属する更新は別の種類として分けない。
+- CHG-01・CHG-02: 登録台帳の変更を`metadata`に含め、検査にRID-05（IDの再利用の禁止）を適用した。`migration`は、ASTの対応表を提供する版の組に限るとし、v1alpha1からv1alpha2への移行で宣言することを禁じた。
+- CHG-03: 正本ブランチへの統合をsquash・rebaseに限り、mergeのcommitを禁じた。法令リポジトリの最初のcommitを`revisionAdd`とした。revertを意味の上の取り消しと定め、取り消す変更と同じ種類とした。`revisionAdd`の取り消しは`revisionFix`（撤回）とし、Revisionを削除しない。変更検査は各commitをその親と比べるとした。従属して更新できるのは宣言した版の部分に限るとした。
+- FIXREF-04: 正本ブランチのオブジェクト形式の変更を禁じた。作業ブランチのcommitが統合後に到達できないことを書いた。
+- 適合ケースcommon-024（記録訂正で同じ版の本文の出典を併せて更新する）を加えた。既存の`git bundle`は変えていない。
+- DDR-015・019、制限（commitの日時、複数のリポジトリにまたがる変更、オブジェクト形式）、要件との対応表を更新した。
+
 ## L4の関係の整合と不存在確認済み、他のRecordへの固定参照（2026-11-12、草案）
 
 [law-of-japan/loj-spec#16](https://github.com/law-of-japan/loj-spec/issues/16)の修正である。草案の版への変更であり、版番号は上げない。
