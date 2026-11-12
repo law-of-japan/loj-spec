@@ -2,6 +2,15 @@
 
 見出しの「草案」は、[草案の版](spec/README.md#版の状態)への変更であることを示す。版の状態の正は、[規範仕様の入口](spec/README.md#規範とするもの)の表にある。版を公開したときは、公開の日付の項目を加える。
 
+## 撤回した関係を根拠とする効力の終了（2026-11-12、草案）
+
+[law-of-japan/loj-spec#46](https://github.com/law-of-japan/loj-spec/issues/46)の修正である。草案の版への変更であり、版番号は上げない。
+
+- HIST-12: `repealed`・`totallyRevised`の`relation`は`status: active`の関係とした。終了の時点を、撤回していない内訳から得るとした。すべての内訳を撤回した関係を根拠にすることを禁じた。関係を撤回するときは、同じ`revisionFix`で`termination`の項目を削るか置き換えるとした。
+- 適合ケースhist-034（撤回した関係）、hist-035（内訳をすべて撤回した関係）、hist-036（内訳の一部を撤回した関係）を加えた。
+- common-020（XREF-02の負例）の旧Recordから、撤回した関係を根拠とする`termination`の項目を削った（入力だけの変更。期待結果は変わらない）。
+- DDR-017、要件との対応表を更新した。
+
 ## 適合ケースの結果の比べ方（2026-11-12、草案）
 
 [law-of-japan/loj-spec#45](https://github.com/law-of-japan/loj-spec/issues/45)の修正である。草案の版への変更であり、版番号は上げない。

@@ -28,6 +28,4 @@ revisions:
     applicability: {state: unsurveyed}
     text: {status: absent}
     status: active
-termination:
-  - {type: totallyRevised, relation: rel-total}
 coverage: {state: unconfirmed}

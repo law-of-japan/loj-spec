@@ -532,9 +532,11 @@ def total_revision():
         "relationResolution")
     # The old Record's relation is changed instead of the reference (XREF-02: status and type).
     for title, *edits in [
+        # HIST-12: retracting the relation removes the termination item in the same change.
         ("totallyRevisesが撤回した関係を指す（架空）",
          ("    verification: {state: unverified, reason: 架空の資料}\n    status: active\n",
-          "    verification: {state: unverified, reason: 架空の資料による撤回}\n    status: retracted\n")),
+          "    verification: {state: unverified, reason: 架空の資料による撤回}\n    status: retracted\n"),
+         ("termination:\n  - {type: totallyRevised, relation: rel-total}\n", "")),
         # HIST-12: the termination follows the relation type, so that only XREF-02 is broken.
         ("totallyRevisesが全部改正でない関係を指す（架空）", ("    type: totallyRevises\n", "    type: repeals\n"),
          ("type: totallyRevised, relation", "type: repealed, relation")),
@@ -635,6 +637,37 @@ def row_keys():
         {"kind": "repository", "path": rel(dest)}, {"results": [l3("historyStructure")]}, True, "historyStructure")
 
 
+def termination_retraction():
+    """HIST-12: termination does not rest on a retracted relation or on retracted items only."""
+    source = "conformance/loj-history/v1alpha1/valid/hist-002/repo"
+    item_check = "\n        verification: {state: unverified, reason: 官報と未照合}\n"
+    for title, edits in [
+        ("撤回した関係を根拠とする効力の終了（架空）",
+         [("    verification: {state: unverified, reason: 官報と未照合}\n    status: active\n",
+           "    verification: {state: unverified, reason: 適合ケースのための架空の撤回}\n    status: retracted\n")]),
+        ("内訳をすべて撤回した関係を根拠とする効力の終了（架空）",
+         [(item_check, "\n        verification: {state: retracted, reason: 適合ケースのための架空の撤回}\n")]),
+    ]:
+        dest = next_dir("hist", False) / "repo"
+        mutate(dest, source, [("history.yaml", a, b) for a, b in edits])
+        add("hist", title, ["HIST-12"], "L3", {"kind": "repository", "path": rel(dest)},
+            {"results": [l3("historyStructure", "fail")], "diagnostics": [diag("HIST-12", SV["hist"])]}, False,
+            "historyStructure")
+    # One retracted item next to an active one: the time comes from the active item only.
+    dest = next_dir("hist", True) / "repo"
+    mutate(dest, source, [("history.yaml", item_check + "termination:",
+                           item_check
+                           + "      - id: i2\n        scope: {text: 第一条}\n        effective:\n          state: date\n"
+                           '          value: "1959-04-13"\n          raw: 昭和三十四年四月十三日\n          precision: day\n'
+                           "          evidence: [{source: src-egov-s34-122, locator: 附則}]\n"
+                           "          verification: {state: unverified, reason: 官報と未照合}\n"
+                           "        evidence: [{source: src-egov-s34-122, locator: 第二条}]\n"
+                           "        verification: {state: retracted, reason: 適合ケースのための架空の撤回}\n"
+                           "termination:")])
+    add("hist", "内訳の一部を撤回した関係を根拠とする効力の終了（架空）", ["HIST-12", "HIST-03"], "L3",
+        {"kind": "repository", "path": rel(dest)}, {"results": [l3("historyStructure")]}, True, "historyStructure")
+
+
 def main():
     for suite, folder in FOLDER.items():
         for group in ("invalid", "expected"):
@@ -650,6 +683,7 @@ def main():
     total_revision()
     change_dependents()
     row_keys()
+    termination_retraction()
     for suite, folder in FOLDER.items():
         write_json(C / folder / "manifest.json", {"suite": SV[suite], "cases": INDEX[suite]})
     print("Authored " + ", ".join(f"{k}: {len(v)}" for k, v in INDEX.items()) + "; no validator invoked.")
