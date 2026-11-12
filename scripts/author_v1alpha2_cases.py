@@ -313,6 +313,37 @@ case("属性の不正の位置", ["DIR-01", "SRC-01"],
 case("対応しない終了の位置（改行のない最後の行）", ["DIR-02", "SRC-01"],
      [("main.md", "main", ART + P1 + "<!-- loj:end-item -->")], fail_at("DIR-02", "main.md", 102, 123), False)
 
+# 2026-11-12 (#57): a column that continues into the next row is a merged cell (TABLE-03), not an empty one.
+READ_LEAD = "雲の保管の規定の適用については、次の表の上欄に掲げる規定中同表の中欄に掲げる字句は、それぞれ同表の下欄に掲げる字句とする。\n"
+ROWSPAN_MD = (ART + "<!-- loj:paragraph number=1 -->\n" + READ_LEAD +
+              "<!-- loj:table number=1 -->\n<!-- loj:row key=m4qa -->\n<!-- loj:cell rowspan=2 -->\n第二条第一項\n<!-- loj:end-cell -->\n"
+              "<!-- loj:cell -->\n白雲\n<!-- loj:end-cell -->\n<!-- loj:cell -->\n白雲（巻雲を含む。）\n<!-- loj:end-cell -->\n"
+              "<!-- loj:end-row -->\n<!-- loj:row key=7tzd -->\n<!-- loj:cell -->\n倉庫\n<!-- loj:end-cell -->\n"
+              "<!-- loj:cell -->\n倉庫（国内にあるものに限る。）\n<!-- loj:end-cell -->\n<!-- loj:end-row -->\n"
+              "<!-- loj:end-table -->\n<!-- loj:end-paragraph -->\n")
+
+
+def rowspan_children(p):
+    t = p + "/table/1"
+    r1, r2 = t + "/row/m4qa", t + "/row/7tzd"
+    return [node("Table", t, "1", "", [
+        node("Row", r1, None, "", [node("Cell", r1 + "/cell/1", "1", "", [text("第二条第一項\n")], rowspan=2),
+                                   node("Cell", r1 + "/cell/2", "2", "", [text("白雲\n")]),
+                                   node("Cell", r1 + "/cell/3", "3", "", [text("白雲（巻雲を含む。）\n")])], key="m4qa"),
+        node("Row", r2, None, "", [node("Cell", r2 + "/cell/1", "1", "", [text("倉庫\n")]),
+                                   node("Cell", r2 + "/cell/2", "2", "", [text("倉庫（国内にあるものに限る。）\n")])],
+             key="7tzd")])]
+
+
+case("上の欄が続く読替えの表（rowspan）", ["TABLE-03", "ID-01", "AST-01"],
+     [("main.md", "main", ROWSPAN_MD)],
+     {"ast": ast([article(MAIN, "1", "第一条", [lambda a: para(a, "1", READ_LEAD, children=rowspan_children)])])}, True)
+case("空のセル（L1の診断はDIR-02だけ。続く欄の結合はL3）", ["DIR-02", "TABLE-03"],
+     # The continued column is written as an empty cell instead of rowspan=2 on the cell above.
+     [("main.md", "main", ROWSPAN_MD.replace("<!-- loj:cell rowspan=2 -->", "<!-- loj:cell -->")
+       .replace("<!-- loj:row key=7tzd -->\n", "<!-- loj:row key=7tzd -->\n<!-- loj:cell -->\n\n<!-- loj:end-cell -->\n"))],
+     fail("DIR-02"), False)
+
 
 def main():
     index_path = DST / "manifest.json"

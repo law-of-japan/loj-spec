@@ -22,7 +22,7 @@ e-Govの本文は新字体に置き換えている。版の本文の根拠は公
 | Item / ItemTitle | `Item` | 表示番号の範囲はDISP-01 |
 | Subitem1〜Subitem10 | `Subitem`（level 1〜10） | 表示はASCIIの十進、いろは、括弧付きの十進（DISP-01）。ローマ数字等は未対応 |
 | Sentence等の本文 | `text` | 原文のMarkdown。文・列の型は再現しない |
-| TableStruct / Table / TableRow / TableColumn | `Table` / `Row` / `Cell` | 項・号・細分の本文の中の表（TABLE-01〜03）。罫線・配置・列の幅は記録しない。セルの中の項・号・表、入れ子の表は未対応 |
+| TableStruct / Table / TableRow / TableColumn | `Table` / `Row` / `Cell` | 項・号・細分の本文の中の表（TABLE-01〜03）。罫線・配置・列の幅は記録しない。罫線を省いて上の欄が続く空の`TableColumn`は、上の欄の結合（`rowspan`）として書く（原典で確かめる）。罫線に囲まれた空の欄、セルの中の項・号・表、入れ子の表は未対応 |
 | SupplProvision | `SupplementaryProvision` | `law.yaml`の永続key。その法令自身の附則だけを収録する |
 | SupplProvision（`AmendLawNum`を持つ改正法の附則） | 収録しない | 改正法のRecordに属する（BASIC-03）。施行時点は履歴マニフェストの関係（`relations`）に記録する |
 | AppdxTable / AppdxNote / AppdxStyle / Appdx / AppdxFig / AppdxFormat | `AppendedMaterial` | 不透明な本文だけ。表のセル、図・様式の構造は未対応 |

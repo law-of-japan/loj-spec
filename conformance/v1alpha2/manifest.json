@@ -2425,6 +2425,39 @@
       },
       "expected": "conformance/v1alpha2/expected/pkg-150.json",
       "success": false
+    },
+    {
+      "id": "pkg-151",
+      "title": "上の欄が続く読替えの表（rowspan）",
+      "requirements": [
+        "TABLE-03",
+        "ID-01",
+        "AST-01"
+      ],
+      "check": "L1",
+      "normative": true,
+      "input": {
+        "kind": "package",
+        "path": "conformance/v1alpha2/valid/pkg-151/law.yaml"
+      },
+      "expected": "conformance/v1alpha2/expected/pkg-151.json",
+      "success": true
+    },
+    {
+      "id": "pkg-152",
+      "title": "空のセル（L1の診断はDIR-02だけ。続く欄の結合はL3）",
+      "requirements": [
+        "DIR-02",
+        "TABLE-03"
+      ],
+      "check": "L1",
+      "normative": true,
+      "input": {
+        "kind": "package",
+        "path": "conformance/v1alpha2/invalid/pkg-152/law.yaml"
+      },
+      "expected": "conformance/v1alpha2/expected/pkg-152.json",
+      "success": false
     }
   ]
 }
