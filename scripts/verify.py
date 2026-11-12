@@ -703,6 +703,51 @@ def check_states():
     return states
 
 
+REQUIREMENT_HEADING = re.compile(r"^## ([A-Z]+-\d+) ")
+REQUIREMENT_WORD = re.compile(r"MUST|SHOULD|MAY")
+REQUIREMENT_REF = re.compile(r"(?<![A-Z])([A-Z]+-\d{2})(?!\d)")
+# A sentence ends at 。 outside full-width parentheses (「（MUST NOT。HIST-12）」 is one sentence).
+SENTENCE_END = re.compile(r"(?<=。)(?![^（]*）)")
+
+
+def restated_requirement_words(texts):
+    """Sentences that use a requirement word (MUST, MUST NOT, SHOULD, MAY) and also cite another
+    requirement ID, as (name, line, own ID, cited IDs).
+
+    A rule's requirement word belongs to one requirement, its source; other requirements summarize it
+    without a requirement word and link to the source (DDR-022). A hit is a warning, not a failure:
+    a sentence may rightly set its own rule and cite a related one (e.g. "satisfy TYPE-05"). Only
+    sentences under a requirement heading are read; citations of unknown IDs are ignored.
+    """
+    ids = set()
+    for text in texts.values():
+        ids.update(re.findall(r"^## ([A-Z]+-\d+) ", text, re.M))
+    found = []
+    for name, text in sorted(texts.items()):
+        own = None
+        for number, line in enumerate(text.splitlines(), 1):
+            heading = REQUIREMENT_HEADING.match(line)
+            if heading or line.startswith("## ") or line.startswith("# "):
+                own = heading[1] if heading else None
+                continue
+            if own is None:
+                continue
+            for sentence in SENTENCE_END.split(line):
+                if REQUIREMENT_WORD.search(sentence):
+                    cited = sorted({ref for ref in REQUIREMENT_REF.findall(sentence) if ref in ids and ref != own})
+                    if cited:
+                        found.append((name, number, own, cited))
+    return found
+
+
+def check_restatements():
+    """Warn about requirement words restated outside their source requirement (frozen versions excluded)."""
+    spec = ROOT / "spec"
+    texts = {path.relative_to(ROOT).as_posix(): path.read_text(encoding="utf-8")
+             for path in spec.rglob("*.md") if (spec / "v1alpha1") not in path.parents}
+    return restated_requirement_words(texts)
+
+
 def main():
     schemas = {path.name: read_json(path) for path in (ROOT / "schemas/v1alpha1").glob("*.json")}
     registry = Registry().with_resources((s["$id"], Resource.from_contents(s)) for s in schemas.values())
@@ -778,6 +823,11 @@ def main():
     print("L1 negatives and L3/L4/registry/rebuild/change/reference cases are checked for shape only; "
           "their outcomes need a validator.")
     print("This is not full L1 conformance certification or an egov round-trip test.")
+    restated = check_restatements()
+    print(f"WARNING (not a failure): {len(restated)} sentences use a requirement word and cite another "
+          "requirement; keep the requirement word only in the source requirement (DDR-022).")
+    for name, number, own, cited in restated:
+        print(f"  {name}:{number} {own} cites {', '.join(cited)}")
 
 
 if __name__ == "__main__":

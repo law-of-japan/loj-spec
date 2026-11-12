@@ -382,6 +382,32 @@ class CompatibilityIdeographTests(unittest.TestCase):
         self.assertEqual(listed, expected, "unicodedata " + unicodedata.unidata_version)
 
 
+class RestatementTests(unittest.TestCase):
+    """DDR-022: a requirement word next to another requirement's ID is reported as a warning."""
+
+    TEXTS = {
+        "a.md": "# A\n\n## AAA-01 正\n\n- 項は表示番号を置いてはならない（MUST NOT）。\n\n"
+                "## AAA-02 要約\n\n- 項は表示番号を置かない（[AAA-01](a.md)）。\n"
+                "- 項は表示番号を置いてはならない（MUST NOT。AAA-01）。\n"
+                "- 別の規則がある（MAY）。番号はAAA-01による。\n"
+                "- 自身の番号AAA-02を引く（MUST）。未知のZZZ-09を引く（MUST）。\n\n"
+                "## 要件の外\n\n- AAA-01を引く（MUST）。\n",
+    }
+
+    def test_restatement_reported(self):
+        found = v.restated_requirement_words(self.TEXTS)
+        self.assertEqual(found, [("a.md", 10, "AAA-02", ["AAA-01"])])
+
+    def test_parenthesized_period_stays_in_sentence(self):
+        text = {"b.md": "## BBB-01 x\n\nx\n\n## BBB-02 y\n\n- 写さない（MUST NOT。BBB-01）。次の文。\n"}
+        self.assertEqual(v.restated_requirement_words(text), [("b.md", 7, "BBB-02", ["BBB-01"])])
+
+    def test_repository_check_runs(self):
+        for name, number, own, cited in v.check_restatements():
+            self.assertNotIn(own, cited)
+            self.assertFalse(name.startswith("spec/v1alpha1/"), name)
+
+
 if __name__ == "__main__":
     unittest.main()
 

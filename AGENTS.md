@@ -56,6 +56,7 @@ python -m unittest discover -s tests -v
 - 要件IDは`## <ID> <名前>`の見出しで付け、系列とディレクトリの対応は[spec/README.md](spec/README.md)の表に従う。要件IDの見出しは`spec/`の中だけに置く。
 - `spec/`から`docs/archive/`へリンクしない。要件は規範を、設計の理由はDDRを引く。
 - 規範の間の矛盾を見つけたら、どちらかに合わせて黙って直さず、仕様の欠陥として報告する。
+- 一つの規則の要求の語（MUST等）は、正の要件の一か所だけに書く。ほかの要件では、要求の語を使わずに要約し、正へリンクする（[DDR-022](docs/design-decisions/022-spec-structure.md)）。`verify.py`の警告（要求の語と別の要件IDを含む文）が増えていないかを確かめる。
 
 ## 適合ケースを扱うとき
 

@@ -54,7 +54,7 @@
 - 内訳の`id`は、その関係の中で一意とし、再利用しない。
 - 関係の撤回は、削除せず`status: retracted`とし、理由を`verification.reason`に残す。内訳の一部だけの撤回は、その項目の`verification.state`を`retracted`とし、関係全体の撤回と区別する。
 - `repeals`・`totallyRevises`の`items`は、通常、終点のRecord全体を対象範囲（`scope.text`例: 「全部」）とする一項目で、`effective`に廃止・全部改正の効力の発生の時点を書く。一部だけを廃止する規定は`amends`（削る改正）とする。
-- 改正法の附則のうち、被改正法令の状態に関わる規定（施行期日、経過措置）は、関係・内訳の根拠として`evidence`で参照する（`locator`に「附則第一項」等）。改正法の附則を版パッケージに写してはならない（MUST NOT。v1alpha2のBASIC-03）。
+- 改正法の附則のうち、被改正法令の状態に関わる規定（施行期日、経過措置）は、関係・内訳の根拠として`evidence`で参照する（`locator`に「附則第一項」等）。改正法の附則は、版パッケージに写さない（[BASIC-03](../../v1alpha2/01-overview.md)）。
 
 ## HIST-04 起点と基礎状態
 

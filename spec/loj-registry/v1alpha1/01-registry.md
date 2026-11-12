@@ -43,7 +43,7 @@
 - `notCollected`から、本文の不存在を推論してはならない（MUST NOT）。
 - 題名と法令の種別は、登録台帳に持たない。版ごとに版パッケージ（`law.yaml`の`title`・`type`）にあり、改正で変わり得るためである。表示には`label`を使う。
 - 分割先が確定していない候補は、`verification.state: unverified`で残す。
-- 効力の終了（廃止・失効）を`status`で表してはならない（MUST NOT。履歴マニフェストのHIST-12）。
+- 効力の終了（廃止・失効）は、`status`で表さない（[HIST-12](../../loj-history/v1alpha1/01-history.md)）。
 - `withdrawn`は、登録した対象が法令として存在しないこと（誤登録等）を確認して、登録を撤回したことを表す。L4では、不存在確認済みのRecordとする（[XREF-01](../../common/v1alpha1/10-cross-record.md)）。本文の不存在（`collection.state: nonexistentConfirmed`）とは別である。
 
 ## REG-03 番号主張
