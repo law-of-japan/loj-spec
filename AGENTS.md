@@ -62,6 +62,8 @@ python -m unittest discover -s tests -v
 
 - `conformance/`と`examples/`は、`.gitattributes`で改行と文字の変換を禁止している（`-text`）。CRLFのfixtureがある。一括の改行変換、整形、文字の正規化をかけない。
 - 互換漢字（例: U+FA51）と異体字セレクタは、保存時に統合漢字へ正規化されることがある。スクリプトの中では`chr(0xFA51)`のようにコードポイントで書き、書いた後でファイルのコードポイントを確かめる。
+- 新しく加えた負例と、規則が二つ以上関係しうる負例は、期待結果を書いた人と別のセッションが規範だけを読んで期待結果を書き、突き合わせる（[CONTRIBUTING](CONTRIBUTING.md#期待結果の確かめ方)）。検査器と期待結果が食い違ったら、規範の本文で決め、検査器の出力を根拠にしない。
+- 版パッケージのケースを除く負例で、入力のYAMLがschemaに合わないものには、索引の`rejectedBy: schema`の印を付ける（`author_next_cases.py`の`SCHEMA_REJECTED`）。schemaの誤りが期待する規則の違反と対応するかを確かめてから付ける。
 - 負例と索引は`scripts/author_*.py`が展開する。対象と実行の順は[CONTRIBUTING](CONTRIBUTING.md)の表にある。CIはこれらを実行しないので、実行したら生成された差分を確かめる。`author_data.py`（v1alpha1）は実行しない。
 - `git bundle`を作り直すとcommitのハッシュが変わる。ハッシュを参照する索引と期待結果も確かめる。
 - 大文字・小文字だけが違うファイル名を作らない（Windowsで区別できない）。

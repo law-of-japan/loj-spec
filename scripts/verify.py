@@ -458,16 +458,43 @@ def input_files(case):
     return [ROOT / value for value in paths]
 
 
-def check_yaml_files(folder, validators):
-    """Schema-check every LoJ YAML file below a positive repository/registry input."""
-    count = 0
+def schema_failures(folder, validators):
+    """Schema-check every LoJ YAML file below a repository/registry input.
+
+    Returns the number of files checked and, for each file that breaks the schema of its
+    schemaVersion, its path and the first error message.
+    """
+    count, failures = 0, []
+    # CORE-03: LoJ YAML files use the .yaml extension (load_yaml rejects other YAML forms).
     for path in sorted(folder.rglob("*.yaml")):
         data = load_yaml(check_bytes(path.read_bytes()))
         version = data.get("schemaVersion") if isinstance(data, dict) else None
-        require(version in KIND_SCHEMAS, "Unknown schemaVersion in positive input: " + str(path))
-        errors = list(validators[KIND_SCHEMAS[version]].iter_errors(data))
-        require(not errors, "Positive input fails its schema: " + str(path) + ": " + (errors[0].message if errors else ""))
         count += 1
+        if version not in KIND_SCHEMAS:
+            # A missing or unknown schemaVersion has no schema to fit, so it counts as a schema failure.
+            failures.append((path, "unknown schemaVersion: " + repr(version)))
+            continue
+        errors = list(validators[KIND_SCHEMAS[version]].iter_errors(data))
+        if errors:
+            failures.append((path, errors[0].message))
+    return count, failures
+
+
+def check_schema_mark(ident, case, inputs, validators):
+    """CONF-01: a case marked rejectedBy: schema has an input YAML file that breaks its schema;
+    every input YAML file of any other case conforms to its schema. Returns the files checked."""
+    count, failures = 0, []
+    # Directory inputs hold the YAML files; file inputs are git bundles, whose YAML is not unpacked here.
+    for path in inputs:
+        if path.is_dir():
+            checked, failed = schema_failures(path, validators)
+            count += checked
+            failures += failed
+    if case.get("rejectedBy") == "schema":
+        require(bool(failures), ident + " is marked rejectedBy: schema, but every input YAML file fits its schema")
+    else:
+        require(not failures, ident + " input fails its schema without rejectedBy: schema (" + str(len(failures))
+                + " files): " + "; ".join(str(path) + ": " + message for path, message in failures))
     return count
 
 
@@ -534,10 +561,10 @@ def audit_suite(name, validators, rules):
                 require(wanted <= set(issues), ident + " expected L0 rejection absent: " + str(issues))
             elif case["check"] == "L1":
                 require(not issues, ident + " unexpected L0 failure: " + str(issues))
-        elif case["success"]:
-            for path in input_files(case):
-                if path.is_dir():
-                    stats["files"] += check_yaml_files(path, validators)
+        else:
+            # Version package cases (L0-L2) never carry the mark: their schema violations are L0 failures,
+            # checked through inspect_manifest above, and the index schema rejects the mark there.
+            stats["files"] += check_schema_mark(ident, case, inputs, validators)
         stats["positive" if case["success"] else "negative"] += 1
     on_disk = {p.relative_to(ROOT).as_posix() for p in (base / "expected").glob("*.json")}
     require(expected_paths == on_disk, folder + " orphan expected file")
@@ -553,7 +580,7 @@ def audit_next(validators):
         count, cov, stats = audit_suite(name, validators, rules)
         covered |= cov
         lines.append(f"{folder}: {count} cases ({stats['positive']} positive, {stats['negative']} negative; "
-                     f"{stats['files']} positive YAML files schema-checked)")
+                     f"{stats['files']} input YAML files schema-checked)")
     return lines, sorted(rules - covered)
 
 

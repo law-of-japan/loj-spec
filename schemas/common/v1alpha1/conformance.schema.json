@@ -215,6 +215,10 @@
           },
           "success": {
             "type": "boolean"
+          },
+          "rejectedBy": {
+            "description": "CONF-01: the negative case's input does not conform to the schema of its schemaVersion. Used by the self-consistency checks of the spec artefacts only; it does not change how a case is satisfied.",
+            "const": "schema"
           }
         },
         "required": [
@@ -229,6 +233,29 @@
         ],
         "additionalProperties": false,
         "allOf": [
+          {
+            "if": {
+              "required": [
+                "rejectedBy"
+              ]
+            },
+            "then": {
+              "properties": {
+                "success": {
+                  "const": false
+                },
+                "input": {
+                  "properties": {
+                    "kind": {
+                      "not": {
+                        "const": "package"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
           {
             "if": {
               "properties": {
