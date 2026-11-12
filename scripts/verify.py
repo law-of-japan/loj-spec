@@ -267,6 +267,9 @@ def check_tree(ast, man, v2=False):
             next_level = 1 if kind == "Item" else node["level"] + 1
             require(all(c["kind"] == "Subitem" and c["level"] == next_level or v2 and c["kind"] == "Table"
                         for c in children), "Subitem children")
+            if v2:
+                kinds = {subitem_display_kind(c["display"]) or "decimal" for c in children if c["kind"] == "Subitem"}
+                require(len(kinds) <= 1, "Sibling subitem displays mix character kinds (DISP-01): " + ident)
         elif kind == "AppendedMaterial":
             require(not children, "Opaque appendix children")
         if kind == "MainProvision":
@@ -280,8 +283,11 @@ def check_tree(ast, man, v2=False):
             match = re.fullmatch("第(.+?)" + unit + r"((?:" + sep + r"[^ 　（）]+)*)" + tail, node["display"])
             require(bool(match), "Invalid heading display")
             if kind == "Article" and match[3]:
-                require(v2 and caption_balanced(match[3]) or not v2 and re.fullmatch(r"（[^（）]+）", match[3]),
-                        "Article caption parentheses")
+                if v2:
+                    require(caption_balanced(match[3]),
+                            "Article caption: the opening parenthesis must pair with the final one, all nested")
+                else:
+                    require(bool(re.fullmatch(r"（[^（）]+）", match[3])), "Article caption: no parentheses inside (v1alpha1)")
             require(normalized_display(match[1] + match[2], kind, v2) == node["number"], "Heading number mismatch")
         if kind == "Paragraph" and v2:
             require(node["numbering"] in ("explicit", "implicit"), "Paragraph numbering")

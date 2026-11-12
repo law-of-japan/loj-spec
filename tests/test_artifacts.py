@@ -128,6 +128,21 @@ class ArtifactAuditTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             v.normalized_display("イ", "Item", v2=True)
 
+    def test_v1alpha2_subitem_display_kind(self):
+        for value, kind in (("イ", "iroha"), ("（１）", "parenFullwidth"), ("（1）", "parenAscii"), ("1", None), ("(1)", None)):
+            with self.subTest(value=value):
+                self.assertEqual(v.subitem_display_kind(value), kind)
+
+    def test_v1alpha2_sibling_subitem_kinds(self):
+        path = v.ROOT / "conformance/v1alpha2/valid/pkg-130/law.yaml"
+        man = v.load_yaml(path.read_bytes())
+        ast = v.read_json(v.ROOT / "conformance/v1alpha2/expected/pkg-130.json")["ast"]
+        v.check_tree(ast, man, v2=True)
+        level2 = ast["root"]["content"][0]["content"][0]["content"][0]["content"][1]["content"][2]["content"][1]
+        level2["display"], level2["content"][0]["text"] = "イ", "イ　小さな積雲\n"
+        with self.assertRaises(ValueError):
+            v.check_tree(ast, man, v2=True)
+
     def test_v1alpha2_caption_parentheses(self):
         for value in ("（定義）", "（雲（白雲を除く。）の保管）", "（a(b)）"):
             with self.subTest(value=value):
