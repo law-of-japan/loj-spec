@@ -661,7 +661,9 @@ class NextSuiteAuditTests(unittest.TestCase):
             return v.audit_suite(name, self.validators, self.rules)
 
     def case(self, name, success):
-        return next(c for c in self.indexes[name]["cases"] if c["success"] == success)
+        case = next((c for c in self.indexes[name]["cases"] if c["success"] == success), None)
+        self.assertIsNotNone(case, "%s has no %s case" % (name, "positive" if success else "negative"))
+        return case
 
     def assert_rejected(self, pattern, name, index=None, expected=None):
         with self.assertRaisesRegex(ValueError, pattern):
@@ -696,8 +698,8 @@ class NextSuiteAuditTests(unittest.TestCase):
         for name, index in self.indexes.items():
             broken = copy.deepcopy(index)
             case = broken["cases"][0]
-            key = "registry" if case["input"]["kind"] == "records" else next(
-                k for k in ("path", "bundle") if k in case["input"])
+            key = next((k for k in ("path", "registry", "bundle") if k in case["input"]), None)
+            self.assertIsNotNone(key, "%s: no input path key in %s" % (case["id"], case["input"]))
             case["input"][key] += "-missing"
             with self.subTest(suite=name):
                 self.assert_rejected("missing input", name, broken)
@@ -753,8 +755,9 @@ class NextSuiteAuditTests(unittest.TestCase):
             # A negative read as a positive: its input sits in invalid/. The schema mark and the copy record would
             # fail first, so the case is taken without the mark and its copy record is dropped. A case that also
             # reads a shared positive input (common-002) has an input in valid/, so one with only its own input is taken.
-            case = next(c for c in broken["cases"] if not c["success"] and "rejectedBy" not in c
-                        and all("/invalid/" in path.as_posix() for path in v.input_files(c)))
+            case = next((c for c in broken["cases"] if not c["success"] and "rejectedBy" not in c
+                         and all("/invalid/" in path.as_posix() for path in v.input_files(c))), None)
+            self.assertIsNotNone(case, name + ": no negative reads only its own input outside rejectedBy")
             case["success"] = True
             case.pop("derivedFrom", None)
             with self.subTest(suite=name):
