@@ -1,5 +1,6 @@
 """Mutation/regression checks for the artifact auditor, not L1 conformance tests."""
 import copy
+import json
 import re
 import sys
 import tempfile
@@ -292,6 +293,24 @@ class OwnResultTests(unittest.TestCase):
                         [self.result("relationConsistency"), self.result("relationConsistency", "fail")]):
             with self.subTest(results=results):
                 self.assertFalse(v.own_result_listed(self.CASE, {"results": results}))
+
+    def test_checks_match_index_schema(self):
+        schema = json.loads((v.ROOT / "schemas/common/v1alpha1/conformance.schema.json").read_text(encoding="utf-8"))
+        checks = set()
+
+        def walk(node):
+            if isinstance(node, dict):
+                enum = node.get("properties", {}).get("check", {}).get("enum")
+                if enum:
+                    checks.update(enum)
+                for value in node.values():
+                    walk(value)
+            elif isinstance(node, list):
+                for value in node:
+                    walk(value)
+
+        walk(schema)
+        self.assertEqual(checks, set(v.OWN_RESULT_CHECKS) | {"L0", "L1", "L2", "reference"})
 
     def test_package_and_reference_cases_exempt(self):
         for check in ("L0", "L1", "L2", "reference"):

@@ -432,13 +432,14 @@ def check_yaml_files(folder, validators):
     return count
 
 
-# CONF-01: version package cases compare the AST and diagnostics, reference cases compare references.
-OWN_RESULT_EXEMPT = ("L0", "L1", "L2", "reference")
+# CONF-01: these checks list their own result. Version package cases (L0-L2) compare the AST and diagnostics,
+# and reference cases compare references.
+OWN_RESULT_CHECKS = ("L3", "L4", "change", "registry", "rebuild")
 
 
 def own_result_listed(case, expected):
     """CONF-01: L3/L4, change, registry and rebuild cases list their own check (and category) exactly once."""
-    if case["check"] in OWN_RESULT_EXEMPT:
+    if case["check"] not in OWN_RESULT_CHECKS:
         return True
     own = [r for r in expected.get("results", [])
            if r["check"] == case["check"] and r.get("category") == case.get("category")]
