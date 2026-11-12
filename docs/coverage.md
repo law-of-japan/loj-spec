@@ -96,7 +96,7 @@ v1alpha2の2026-11-11の追加（[law-of-japan/loj-spec#25](https://github.com/l
 
 v1alpha2の2026-11-12の追加（[law-of-japan/loj-spec#27](https://github.com/law-of-japan/loj-spec/issues/27)）は、目次（pkg-129）、いろは・括弧付きの十進の細分（pkg-130）、括弧書きを含む条の見出し（pkg-131）、ヰを使わないいろはの欠番（ウ・ノ）とヱ・ス、括弧付きのASCIIの十進（pkg-142）の正例と、目次の位置・中身・数（pkg-132〜135、143）、細分の表示（pkg-136〜139）、条の見出しの括弧（pkg-140・141）の負例がある。目次の中のATX見出しの負例は、まだない。未対応の構造を申告した版の参考の集計（BASIC-03）は、L1の結果を変えない任意の報告であり、ケースを作らない。
 
-v1alpha2の2026-11-12の追加（[law-of-japan/loj-spec#1](https://github.com/law-of-japan/loj-spec/issues/1)）は、L0の正例（未対応の構造を申告した入力のpkg-144、L1の違反を含む入力のpkg-145。L0では成功するケースなので`valid/`に置く）と、診断の位置（SRC-01）を固定した負例（CRLFと4バイトの文字を含む表示の不一致のpkg-146、未閉鎖のpkg-147、対応しない終了のpkg-148、属性の不正のpkg-149、改行のない最後の行の対応しない終了のpkg-150）である。診断の位置のケースは一部だけで、重複・見出しの違反・Manifestの意味の違反の位置のケースは、まだない。既存の負例の期待結果には、位置を加えていない。
+v1alpha2の2026-11-12の追加（[law-of-japan/loj-spec#1](https://github.com/law-of-japan/loj-spec/issues/1)）は、L0の正例（未対応の構造を申告した入力のpkg-144、L1の違反を含む入力のpkg-145。L0では成功するケースなので`valid/`に置く）と、診断の位置（SRC-01）を固定した負例（CRLFと4バイトの文字を含む表示の不一致のpkg-146、未閉鎖のpkg-147、対応しない終了のpkg-148、属性の不正のpkg-149、改行のない最後の行の対応しない終了のpkg-150）である。診断の位置のケースは一部だけで、重複・見出しの違反・Manifestの意味の違反の位置のケースは、まだない（[law-of-japan/loj-spec#67](https://github.com/law-of-japan/loj-spec/issues/67)）。既存の負例の期待結果には、位置を加えていない。
 
 GLYPH-05・GLYPH-07・GLYPH-10・GLYPH-11（2026-11-12、[law-of-japan/loj-spec#21](https://github.com/law-of-japan/loj-spec/issues/21)）: 正規分解を持たない互換漢字のブロックの字に注記がなくても合格する正例（glyph-010）と、字体を保持する資料を指さずに字体を照合済みにする負例（glyph-011）がある。`ivd`の必須、`variance`の`candidates`、`text.variances`・`text.correctionsSurveyed`はschemaにあるが、正例・負例はまだない。`text.correctionsSurveyed`は、hist-001の正例で使っている。
 
