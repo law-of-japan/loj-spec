@@ -427,7 +427,9 @@ def check_positive(path, man, expected, v2=False):
 def location_problem(law_path, man, location):
     """SRC-01/CONF-01: an expected diagnostic location names law.yaml or a listed document, stays inside it,
     and covers one whole line (its line break included) or, for law.yaml, the whole document.
-    Returns None when the location is well formed; does not decide which line the rule points at."""
+    Returns None when the location is well formed; does not decide which line the rule points at.
+    The whole-law.yaml form (0, size) is accepted even when law.yaml is a single line: both readings are well formed.
+    Empty files and bare CR line breaks never reach here (BASIC-02 rejects them at L0), so start < end and LF suffice."""
     name = location["path"]
     if name != "law.yaml" and name not in [doc["path"] for doc in man["documents"]]:
         return "unknown path " + name
