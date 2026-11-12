@@ -410,6 +410,47 @@
       },
       "expected": "conformance/common/v1alpha1/expected/common-021.json",
       "success": false
+    },
+    {
+      "id": "common-022",
+      "title": "全部改正の関係の起点が別のRecord（架空）",
+      "requirements": [
+        "XREF-02"
+      ],
+      "check": "L4",
+      "category": "relationConsistency",
+      "normative": true,
+      "input": {
+        "kind": "records",
+        "registry": "conformance/common/v1alpha1/valid/common-017/registry",
+        "repositories": [
+          "conformance/common/v1alpha1/invalid/common-022/20990101-law-5",
+          "conformance/common/v1alpha1/valid/common-017/20991001-law-9"
+        ]
+      },
+      "expected": "conformance/common/v1alpha1/expected/common-022.json",
+      "success": false
+    },
+    {
+      "id": "common-023",
+      "title": "未確認の関係の起点が登録を撤回したRecord（架空）",
+      "requirements": [
+        "XREF-01",
+        "VAL-06"
+      ],
+      "check": "L4",
+      "category": "relationResolution",
+      "normative": true,
+      "input": {
+        "kind": "records",
+        "registry": "conformance/common/v1alpha1/valid/common-023/registry",
+        "repositories": [
+          "conformance/common/v1alpha1/valid/common-017/20990101-law-5",
+          "conformance/common/v1alpha1/valid/common-017/20991001-law-9"
+        ]
+      },
+      "expected": "conformance/common/v1alpha1/expected/common-023.json",
+      "success": true
     }
   ]
 }

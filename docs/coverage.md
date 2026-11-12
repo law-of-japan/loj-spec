@@ -79,7 +79,7 @@ HIST-04・05・08の2026-11-11の追加（[law-of-japan/loj-spec#20](https://git
 
 v1alpha2の2026-11-11の追加（[law-of-japan/loj-spec#25](https://github.com/law-of-japan/loj-spec/issues/25)）のうち、マーカーの空白はpkg-125・126を代表例とし、`<!--`の後・`-->`の前・名前と最初の属性の間の負例は加えていない。番号のない第1項が数字で始まる場合の申告（DISP-01）は、`unsupportedFeatures`を申告した版のL1の不合格（BASIC-03）の既存のケースと同じ結果になるので、加えていない。`supplements[].title`を検査しないこと（MAN-01）は、既存の正例（附則の`title`が見出しと違う「制定附則」）が当たる。
 
-XREF-02（2026-11-12、[law-of-japan/loj-spec#16](https://github.com/law-of-japan/loj-spec/issues/16)）は、全部改正の対応の合格と、存在しない関係・撤回した関係・全部改正でない関係を指す負例がある（common-017・018・020・021）。起点が食い違う場合、分割したRecordに解決した場合の判定不能、未取得のケースは、まだない。XREF-01の不存在確認済み（`withdrawn`）は、common-019にある。
+XREF-02（2026-11-12、[law-of-japan/loj-spec#16](https://github.com/law-of-japan/loj-spec/issues/16)）は、全部改正の対応の合格と、存在しない関係・撤回した関係・全部改正でない関係を指す負例、起点が食い違う負例がある（common-017・018・020〜022）。統合先への解決、分割したRecordに解決した場合の判定不能、未取得のケースは、まだない。XREF-01の不存在確認済み（`withdrawn`）は、確定した関係の違反（common-019）と、未確認の関係で違反にならない境界（common-023）がある。
 
 XREF-05・XREF-06（2026-11-12、[law-of-japan/loj-spec#13](https://github.com/law-of-japan/loj-spec/issues/13)・[law-of-japan/loj-spec#19](https://github.com/law-of-japan/loj-spec/issues/19)）は、ケースがあるが一部だけである（common-013〜016）。common-013は`structured.period.raw`と`raw`を続けた文字列との一致に当たる。採用中の主張が`nonexistent`・`unknown`の場合の警告、`conflicting`等の判定しない場合、XREF-06の判定不能の場合のケースは、まだない。
 

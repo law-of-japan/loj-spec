@@ -523,6 +523,8 @@ def total_revision():
          "    verification: {state: unverified, reason: 架空の資料}\n    status: active\n",
          "    verification: {state: unverified, reason: 架空の資料による撤回}\n    status: retracted\n"),
         ("totallyRevisesが全部改正でない関係を指す（架空）", "    type: totallyRevises\n", "    type: repeals\n"),
+        ("全部改正の関係の起点が別のRecord（架空）", "    from: {id: %s, label: %s}\n" % NEW_LAW,
+         "    from: {id: %s, label: %s}\n" % OLD_LAW),
     ]:
         dest = next_dir("common", False) / OLD_LAW[0]
         mutate(dest, old, [("history.yaml", old_text, new_text)])
@@ -530,6 +532,14 @@ def total_revision():
             {"kind": "records", "registry": registry, "repositories": [rel(dest), new]},
             {"results": [dict(consistency, result="fail")], "diagnostics": [diag("XREF-02", SV["common"])]}, False,
             "relationConsistency")
+    # Boundary of XREF-01: a withdrawn Record referenced by an unconfirmed relation is not a violation.
+    dest = next_dir("common", True) / "registry"
+    mutate(dest, registry, [("records/%s.yaml" % NEW_LAW[0], "status: active\n", "status: withdrawn\n")])
+    add("common", "未確認の関係の起点が登録を撤回したRecord（架空）", ["XREF-01", "VAL-06"], "L4",
+        {"kind": "records", "registry": rel(dest), "repositories": [old, new]},
+        {"results": [dict(resolution, result="pass")],
+         "references": [{"target": "loj:loj/" + NEW_LAW[0], "result": "nonexistentConfirmed"}]}, True,
+        "relationResolution")
 
 
 def main():
