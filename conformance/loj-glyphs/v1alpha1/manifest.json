@@ -153,6 +153,40 @@
       },
       "expected": "conformance/loj-glyphs/v1alpha1/expected/glyph-009.json",
       "success": false
+    },
+    {
+      "id": "glyph-010",
+      "title": "正規分解を持たない互換漢字のブロックの字（U+FA11）に注記がない",
+      "requirements": [
+        "GLYPH-11",
+        "VAL-08"
+      ],
+      "check": "L3",
+      "category": "evidence",
+      "normative": true,
+      "input": {
+        "kind": "repository",
+        "path": "conformance/loj-glyphs/v1alpha1/valid/glyph-010/repo"
+      },
+      "expected": "conformance/loj-glyphs/v1alpha1/expected/glyph-010.json",
+      "success": true
+    },
+    {
+      "id": "glyph-011",
+      "title": "字体を保持する資料を指さずに字体を照合済みにする",
+      "requirements": [
+        "GLYPH-10",
+        "TYPE-02"
+      ],
+      "check": "L3",
+      "category": "evidence",
+      "normative": true,
+      "input": {
+        "kind": "repository",
+        "path": "conformance/loj-glyphs/v1alpha1/invalid/glyph-011/repo"
+      },
+      "expected": "conformance/loj-glyphs/v1alpha1/expected/glyph-011.json",
+      "success": false
     }
   ]
 }

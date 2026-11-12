@@ -2,6 +2,18 @@
 
 見出しの「草案」は、[草案の版](spec/README.md#版の状態)への変更であることを示す。版の状態の正は、[規範仕様の入口](spec/README.md#規範とするもの)の表にある。版を公開したときは、公開の日付の項目を加える。
 
+## 字体注記の記録先と、互換漢字の範囲（2026-11-12、草案）
+
+[law-of-japan/loj-spec#21](https://github.com/law-of-japan/loj-spec/issues/21)の修正である。草案の版への変更であり、版番号は上げない。
+
+- HIST-08: Revisionの`text`に、任意の`variances`（原典資料の間の文言の食い違い）と`correctionsSurveyed`（官報正誤を確かめたか）を加えた。確認の状況を`sources`の`locator`に書くことを禁じた。GLYPH-07とREB-05の記録先を、これらに改めた。
+- GLYPH-04・05: `law.number`の字体は注記しないとした。字体注記に`ivd`を加え、異体字セレクタを含む注記で必須とした。`variance`で`candidates`を必須とし、本文に置いた字と置かなかった字を書くとした。
+- TYPE-02: Sourceに任意の`glyphPreservation`を加えた。GLYPH-10: `text.glyphs: verified`のRevisionは、`glyphPreservation: preserved`のSourceを指すとした。REBR-03の`sourceChecks`を確認の記録とした。
+- GLYPH-06・GLYPH-11・VAL-08: 互換漢字の範囲を、正規分解を持つ字に限った（12字を除く）。Unicodeの版を15.1に固定した。
+- 共通の型、履歴マニフェスト、字体注記のschemaを更新した。
+- 正例hist-001の資料に`glyphPreservation`を加え、確認の状況を`locator`から`correctionsSurveyed`に移した（hist-001を写したケースも同じ行が変わる。期待結果は変わらない）。適合ケースglyph-010（注記のないU+FA11）とglyph-011（字体を保持する資料を指さない`verified`）を加えた。
+- DDR-021、用語集、要件との対応表を更新した。
+
 ## 変更の種類の範囲、登録台帳の変更、正本ブランチの統合の方法（2026-11-12、草案）
 
 [law-of-japan/loj-spec#18](https://github.com/law-of-japan/loj-spec/issues/18)と[law-of-japan/loj-spec#33](https://github.com/law-of-japan/loj-spec/issues/33)の修正である。草案の版への変更であり、版番号は上げない。

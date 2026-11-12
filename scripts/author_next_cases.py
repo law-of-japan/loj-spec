@@ -234,6 +234,19 @@ def glyphs():
         {"kind": "repository", "path": rel(dest)},
         {"results": [{"check": "L1", "result": "fail"}, l3("evidence", "incomplete"), l3("historyStructure")],
          "diagnostics": [diag("HEAD-01", SV["pkg"])]}, False, "evidence")
+    # GLYPH-11: U+FA11 is in the compatibility block but has no canonical decomposition (#21).
+    dest = next_dir("glyph", True) / "repo"
+    mutate(dest, HIST_POS, [(ZWG + "main.md", "元日\n", "元日" + chr(0xFA11) + "\n")])
+    add("glyph", "正規分解を持たない互換漢字のブロックの字（U+FA11）に注記がない", ["GLYPH-11", "VAL-08"], "L3",
+        {"kind": "repository", "path": rel(dest)}, {"results": [l3("evidence")]}, True, "evidence")
+    # GLYPH-10: verified glyphs need a Source with glyphPreservation: preserved (#21).
+    dest = next_dir("glyph", False) / "repo"
+    mutate(dest, HIST_POS, [("history.yaml", "    glyphPreservation: preserved\nrelations:\n", "relations:\n"),
+                            ("history.yaml", "      glyphs: unverified\n      glyphNotes: versions/zwgmz1rt/",
+                             "      glyphs: verified\n      glyphNotes: versions/zwgmz1rt/")])
+    add("glyph", "字体を保持する資料を指さずに字体を照合済みにする", ["GLYPH-10", "TYPE-02"], "L3",
+        {"kind": "repository", "path": rel(dest)},
+        {"results": [l3("evidence", "fail")], "diagnostics": [diag("GLYPH-10", SV["glyph"])]}, False, "evidence")
 
 
 # --- loj-registry ------------------------------------------------------------

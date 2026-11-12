@@ -93,6 +93,14 @@
           "type": "string",
           "format": "uri"
         },
+        "glyphPreservation": {
+          "$comment": "TYPE-02, GLYPH-10: whether the material preserves glyph forms; omitted means unknown.",
+          "enum": [
+            "preserved",
+            "normalized",
+            "unknown"
+          ]
+        },
         "fixed": {
           "$comment": "TYPE-02: a FixedRef for material in LoJ; otherwise a description that fixes the content (hash, archive and commit, ...).",
           "oneOf": [

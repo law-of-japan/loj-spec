@@ -21,6 +21,7 @@
 | `kind` | 必須 | `promulgation`（公布の原典）／`officialCorrection`（官報正誤）／`index`（索引）／`egov`（e-Gov）／`other` |
 | `title` | 必須 | 資料の名前 |
 | `uri` | 任意 | 資料の所在 |
+| `glyphPreservation` | 任意 | 資料が字体を保持するか。`preserved`（旧字体・異体字を保持している。例: 官報の画像）／`normalized`（新字体等に置き換えている。例: e-Gov）／`unknown`（確かめていない）。省略は`unknown`と同じ |
 | `fixed` | 任意 | 資料の内容を固定する手段。LoJの中の資料はFixedRef（[FIXREF-01](08-references.md)）のmappingで、LoJの外の資料は固定の手段を記述した文字列（ハッシュ、保存先とcommit等）で書く |
 
 - `uri`だけでは、過去の内容の固定を保証しない。
