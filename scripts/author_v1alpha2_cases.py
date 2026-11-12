@@ -345,6 +345,17 @@ case("空のセル（L1の診断はDIR-02だけ。続く欄の結合はL3）", [
      fail("DIR-02"), False)
 
 
+# 2026-11-13 (#50): the pair of pkg-074 (no declaration; DISP-01 only) and pkg-144 (declared; L0 pass).
+ROMAN_MD = (ART + "<!-- loj:paragraph number=1 -->\n雲の種類は、次のとおりとする。\n<!-- loj:item number=1 -->\n"
+            "一　白雲\n<!-- loj:subitem level=1 number=1 -->\n（ｉ）　巻雲\n<!-- loj:end-subitem -->\n<!-- loj:end-item -->\n"
+            "<!-- loj:end-paragraph -->\n")
+case("申告したローマ数字の細分の表示（L1の診断はBASIC-03だけ）", ["BASIC-03", "DISP-01"],
+     [("main.md", "main", ROMAN_MD)], fail("BASIC-03"), False,
+     man_extra={"unsupportedFeatures": ["ローマ数字の細分の表示"]})
+case("L0: 空のunsupportedFeatures", ["MAN-01", "BASIC-03"],
+     [("main.md", "main", ART + P1)], fail("MAN-01"), False, check="L0", man_extra={"unsupportedFeatures": []})
+
+
 def main():
     index_path = DST / "manifest.json"
     index = json.loads(index_path.read_text(encoding="utf-8"))

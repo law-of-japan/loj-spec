@@ -1146,7 +1146,7 @@
     },
     {
       "id": "pkg-074",
-      "title": "字母細分は未対応",
+      "title": "申告のないローマ数字の細分の表示（DISP-01）",
       "requirements": [
         "DISP-01",
         "BASIC-03"
@@ -2457,6 +2457,38 @@
         "path": "conformance/v1alpha2/invalid/pkg-152/law.yaml"
       },
       "expected": "conformance/v1alpha2/expected/pkg-152.json",
+      "success": false
+    },
+    {
+      "id": "pkg-153",
+      "title": "申告したローマ数字の細分の表示（L1の診断はBASIC-03だけ）",
+      "requirements": [
+        "BASIC-03",
+        "DISP-01"
+      ],
+      "check": "L1",
+      "normative": true,
+      "input": {
+        "kind": "package",
+        "path": "conformance/v1alpha2/invalid/pkg-153/law.yaml"
+      },
+      "expected": "conformance/v1alpha2/expected/pkg-153.json",
+      "success": false
+    },
+    {
+      "id": "pkg-154",
+      "title": "L0: 空のunsupportedFeatures",
+      "requirements": [
+        "MAN-01",
+        "BASIC-03"
+      ],
+      "check": "L0",
+      "normative": true,
+      "input": {
+        "kind": "package",
+        "path": "conformance/v1alpha2/invalid/pkg-154/law.yaml"
+      },
+      "expected": "conformance/v1alpha2/expected/pkg-154.json",
       "success": false
     }
   ]

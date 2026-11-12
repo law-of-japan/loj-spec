@@ -49,7 +49,7 @@ T076〜T105は承認されたMAN-03 B案の独立ケース。附属資料の通�
 
 | ディレクトリ | ケース | 内容 |
 |---|---|---|
-| [conformance/v1alpha2](../conformance/v1alpha2/manifest.json) | pkg-001〜150 | v1alpha1の106件を写したもの（pkg-001〜106）と、「條」「ノ」「附　則」、無番号の項、表、前文・制定文、目次、いろは・括弧付きの十進の細分、括弧書きを含む条の見出しとその違反（pkg-107〜143）、L0の正例と、診断の位置を固定した負例（pkg-144〜150） |
+| [conformance/v1alpha2](../conformance/v1alpha2/manifest.json) | pkg-001〜154 | v1alpha1の106件を写したもの（pkg-001〜106。pkg-074の入力は2026-11-13に直した）と、「條」「ノ」「附　則」、無番号の項、表、前文・制定文、目次、いろは・括弧付きの十進の細分、括弧書きを含む条の見出しとその違反（pkg-107〜143）、L0の正例と、診断の位置を固定した負例（pkg-144〜150）、表の結合（pkg-151・152）、未対応の構造の申告の有無（pkg-153・154） |
 | [conformance/loj-history/v1alpha1](../conformance/loj-history/v1alpha1/manifest.json) | hist-001〜051 | 祝日法の制定時と最初の改正後の版、履歴だけの法令リポジトリ三つ、その違反、共通の型と時点値の違反 |
 | [conformance/loj-glyphs/v1alpha1](../conformance/loj-glyphs/v1alpha1/manifest.json) | glyph-001〜009 | 祝日法の字体注記と、その違反。L1が不合格の版の字体注記（未完了） |
 | [conformance/loj-registry/v1alpha1](../conformance/loj-registry/v1alpha1/manifest.json) | reg-001〜010 | 三つのRecordの登録台帳、統合したRecordを残した登録台帳と、その違反 |
@@ -99,6 +99,8 @@ v1alpha2の2026-11-12の追加（[law-of-japan/loj-spec#27](https://github.com/l
 v1alpha2の2026-11-12の追加（[law-of-japan/loj-spec#1](https://github.com/law-of-japan/loj-spec/issues/1)）は、L0の正例（未対応の構造を申告した入力のpkg-144、L1の違反を含む入力のpkg-145。L0では成功するケースなので`valid/`に置く）と、診断の位置（SRC-01）を固定した負例（CRLFと4バイトの文字を含む表示の不一致のpkg-146、未閉鎖のpkg-147、対応しない終了のpkg-148、属性の不正のpkg-149、改行のない最後の行の対応しない終了のpkg-150）である。診断の位置のケースは一部だけで、重複・見出しの違反・Manifestの意味の違反の位置のケースは、まだない（[law-of-japan/loj-spec#67](https://github.com/law-of-japan/loj-spec/issues/67)）。既存の負例の期待結果には、位置を加えていない。
 
 v1alpha2の表の空の欄（2026-11-12、[law-of-japan/loj-spec#57](https://github.com/law-of-japan/loj-spec/issues/57)）は、上の欄が続く読替えの表を`rowspan`で書く正例（pkg-151）と、空のセルの負例（pkg-152、DIR-02）がある。pkg-151がL1で確かめるのは、結合したセルの書式（属性、セルの`c`の数え方、ID、AST）だけで、欄が続くことを結合で書いたかどうかではない。pkg-152の`requirements`のTABLE-03は、入力の背景（続く欄を空のセルで書いた形）を示すもので、L1の診断はDIR-02だけである。左の欄が右へ続く場合（`colspan`）は同じ規則で、書式は既存の正例pkg-110の`colspan=2`が当たるので、加えていない。続く欄を結合で書くことと、空の欄をコメントや原典にない字で埋めないこと（TABLE-03）は、原典と比べないと判定できないので、ケースを作らない。罫線に囲まれた空の欄を申告した版のL1の不合格（BASIC-03）は、既存のケースと同じ結果になるので、加えていない。
+
+v1alpha2の未対応の構造の申告の有無（2026-11-13、[law-of-japan/loj-spec#50](https://github.com/law-of-japan/loj-spec/issues/50)）は、ローマ数字の細分の表示`（ｉ）`を、申告せずに書いた負例（pkg-074、L1でDISP-01）と、申告して書いた負例（pkg-153、L1でBASIC-03）・L0の正例（pkg-144）の対と、空の`unsupportedFeatures`の負例（pkg-154、L0でMAN-01）がある。pkg-074の入力は、細分の字種にいろはを加えた変更（[law-of-japan/loj-spec#54](https://github.com/law-of-japan/loj-spec/pull/54)）の後、`イ　細分。`がDISP-01に違反しなくなっていたので、`（ｉ）　細分。`に直した（期待結果は変わらない）。[CONF-01](../spec/common/v1alpha1/04-conformance.md)は期待結果に挙げていない診断が加わることを許すので、申告のないpkg-074でBASIC-03を報告する実装と、申告のあるpkg-153でDISP-01をL1の診断として報告する実装を、固定ケースでは区別できない。
 
 GLYPH-05・GLYPH-07・GLYPH-10・GLYPH-11（2026-11-12、[law-of-japan/loj-spec#21](https://github.com/law-of-japan/loj-spec/issues/21)）: 正規分解を持たない互換漢字のブロックの字に注記がなくても合格する正例（glyph-010）と、字体を保持する資料を指さずに字体を照合済みにする負例（glyph-011）がある。`ivd`の必須、`variance`の`candidates`、`text.variances`・`text.correctionsSurveyed`はschemaにあるが、正例・負例はまだない。`text.correctionsSurveyed`は、hist-001の正例で使っている。
 
@@ -169,7 +171,8 @@ TIME-03は、hist-004、hist-015〜018のほか、`pending`を基準とする`de
 | BASIC-01、BASIC-04 | 全体 | データ | 機械検査（L0・L1） |
 | BASIC-02 | 入力のバイト | データ | 機械検査（L0） |
 | BASIC-02 | 文字列と位置の保持。文字の存在を違反にしない | 実装 | 適合ケース |
-| BASIC-03 | `unsupportedFeatures`の申告がある版を不合格とする | データ | 機械検査（L1） |
+| BASIC-03 | `unsupportedFeatures`の申告がある版を不合格とする（申告の有無だけを判定する） | データ | 機械検査（L1） |
+| BASIC-03 | 未対応の構造を`unsupportedFeatures`に記録する（申告の漏れ） | 入力者 | 原典照合。機械で認識できる構造は、DISP-01等の違反としてL1で現れる |
 | BASIC-03 | 未表現の構造を本文に隠さない。改正法の附則を写さない | 入力者 | 原典照合 |
 | BASIC-03 | 参考の集計（MAY）と、それを適合の主張に使わないこと | 実装 | レビュー |
 | MAN-01〜MAN-03 | 全体 | データ | 機械検査（L0・L1。`law.id`とRecord IDの一致はHIST-02） |
