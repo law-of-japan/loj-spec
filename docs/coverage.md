@@ -98,7 +98,7 @@ v1alpha2の2026-11-12の追加（[law-of-japan/loj-spec#27](https://github.com/l
 
 v1alpha2の2026-11-12の追加（[law-of-japan/loj-spec#1](https://github.com/law-of-japan/loj-spec/issues/1)）は、L0の正例（未対応の構造を申告した入力のpkg-144、L1の違反を含む入力のpkg-145。L0では成功するケースなので`valid/`に置く）と、診断の位置（SRC-01）を固定した負例（CRLFと4バイトの文字を含む表示の不一致のpkg-146、未閉鎖のpkg-147、対応しない終了のpkg-148、属性の不正のpkg-149、改行のない最後の行の対応しない終了のpkg-150）である。診断の位置のケースは一部だけで、重複・見出しの違反・Manifestの意味の違反の位置のケースは、まだない（[law-of-japan/loj-spec#67](https://github.com/law-of-japan/loj-spec/issues/67)）。既存の負例の期待結果には、位置を加えていない。
 
-v1alpha2の表の空の欄（2026-11-12、[law-of-japan/loj-spec#57](https://github.com/law-of-japan/loj-spec/issues/57)）は、上の欄が続く読替えの表を`rowspan`で書く正例（pkg-151）と、空のセルの負例（pkg-152、DIR-02）がある。続く欄を結合で書くことと、空の欄をコメントや原典にない字で埋めないこと（TABLE-03）は、原典と比べないと判定できないので、ケースを作らない。罫線に囲まれた空の欄を申告した版のL1の不合格（BASIC-03）は、既存のケースと同じ結果になるので、加えていない。
+v1alpha2の表の空の欄（2026-11-12、[law-of-japan/loj-spec#57](https://github.com/law-of-japan/loj-spec/issues/57)）は、上の欄が続く読替えの表を`rowspan`で書く正例（pkg-151）と、空のセルの負例（pkg-152、DIR-02）がある。pkg-151がL1で確かめるのは、結合したセルの書式（属性、セルの`c`の数え方、ID、AST）だけで、欄が続くことを結合で書いたかどうかではない。左の欄が右へ続く場合（`colspan`）は同じ規則で、書式は既存の正例pkg-110の`colspan=2`が当たるので、加えていない。続く欄を結合で書くことと、空の欄をコメントや原典にない字で埋めないこと（TABLE-03）は、原典と比べないと判定できないので、ケースを作らない。罫線に囲まれた空の欄を申告した版のL1の不合格（BASIC-03）は、既存のケースと同じ結果になるので、加えていない。
 
 GLYPH-05・GLYPH-07・GLYPH-10・GLYPH-11（2026-11-12、[law-of-japan/loj-spec#21](https://github.com/law-of-japan/loj-spec/issues/21)）: 正規分解を持たない互換漢字のブロックの字に注記がなくても合格する正例（glyph-010）と、字体を保持する資料を指さずに字体を照合済みにする負例（glyph-011）がある。`ivd`の必須、`variance`の`candidates`、`text.variances`・`text.correctionsSurveyed`はschemaにあるが、正例・負例はまだない。`text.correctionsSurveyed`は、hist-001の正例で使っている。
 
