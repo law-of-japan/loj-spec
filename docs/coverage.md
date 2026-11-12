@@ -78,7 +78,7 @@ T076〜T105は承認されたMAN-03 B案の独立ケース。附属資料の通�
 
 CHG-02・CHG-03（2026-11-12、[law-of-japan/loj-spec#18](https://github.com/law-of-japan/loj-spec/issues/18)）の従属するファイルの更新は、記録訂正で同じ版の`text.sources`を更新する正例（common-024）だけがある。common-024は、宣言した版だけのASTが変わり、従属する更新が宣言した版の`text.sources`に限られ、宣言した版の根拠（`text.sources`の箇所）があるので合格とする。Scopeの`nodes`・字体注記の更新、宣言していない版の従属するファイルを変える負例、登録台帳だけの`metadata`、mergeのcommit、最初のcommit、revertのcommitのケースは、まだない。登録台帳の`git bundle`と、親が二つのcommitを持つ`git bundle`が要るためである。
 
-HIST-13（2026-11-12、[law-of-japan/loj-spec#23](https://github.com/law-of-japan/loj-spec/issues/23)）は、削った行の`key`を使わずに行を加える正例（hist-031）と、削った`key`を後の版で再使用する負例（hist-032）がある。飛ばす版（本文のない版、L1が不合格の版）を挟む場合と、表の番号が変わる場合のケースは、まだない。glyph-004（行の`key`を変えて注記が古くなる）は、字体注記の`node`の解決（GLYPH-04）の負例であり、`key`の維持そのものの検査ではない。
+HIST-13（2026-11-12、[law-of-japan/loj-spec#23](https://github.com/law-of-japan/loj-spec/issues/23)）は、削った行の`key`を使わずに行を加える正例（hist-031）と、削った`key`を後の版で再使用する負例（hist-032）と、本文が一部しかない版を挟んで飛ばす正例（hist-033）がある。本文のない版・L1が不合格の版を挟む場合、`basedOn`が分岐する場合と、表の番号が変わる場合のケースは、まだない。glyph-004（行の`key`を変えて注記が古くなる）は、字体注記の`node`の解決（GLYPH-04）の負例であり、`key`の維持そのものの検査ではない。
 
 HIST-04・05・08の2026-11-11の追加（[law-of-japan/loj-spec#20](https://github.com/law-of-japan/loj-spec/issues/20)）は、ケースがあるが一部だけである（hist-023〜026）。`glyphNotes`のパスの不一致、`absent`のRevisionのディレクトリ、同じ関係・同じ施行時点の重複、統合・分割したRevisionを基礎状態とする版、撤回した内訳だけを参照する成立根拠の負例は、まだない。
 

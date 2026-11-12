@@ -542,6 +542,23 @@
       },
       "expected": "conformance/loj-history/v1alpha1/expected/hist-032.json",
       "success": false
+    },
+    {
+      "id": "hist-033",
+      "title": "本文が一部しかない版で行がなくても、削ったとみなさない（架空）",
+      "requirements": [
+        "HIST-13",
+        "HIST-08"
+      ],
+      "check": "L3",
+      "category": "historyStructure",
+      "normative": true,
+      "input": {
+        "kind": "repository",
+        "path": "conformance/loj-history/v1alpha1/valid/hist-033/repo"
+      },
+      "expected": "conformance/loj-history/v1alpha1/expected/hist-033.json",
+      "success": true
     }
   ]
 }

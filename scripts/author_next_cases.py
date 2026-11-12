@@ -575,7 +575,7 @@ ROW_REVS = ["c4f7h2k9", "d5g8j3m6", "e6h9k4n7"]
 CLOUDS = {"a1b2": "積雲", "c3d4": "層雲", "e5f6": "巻雲"}
 
 
-def row_key_files(base, key_sets):
+def row_key_files(base, key_sets, partial=None):
     """Three fictional versions of one table (TABLE-02, HIST-13). key_sets: row keys of each version."""
     fict = "      evidence: [{source: src-fiction, locator: %s}]\n      verification: {state: unverified, reason: 架空の資料}\n"
     rels, revs = "", ""
@@ -597,7 +597,8 @@ def row_key_files(base, key_sets):
         revs += "  - id: " + rev + "\n"
         revs += ("    origin: enactment\n" if not i else
                  "    basedOn: " + ROW_REVS[i - 1] + "\n    basis: [{relation: rel-%d, items: [i1]}]\n" % i)
-        revs += (effective + "    applicability: {state: unsurveyed}\n    text:\n      status: complete\n"
+        status = "partial\n      gaps: [{text: 第一条の表の一部}]" if i == partial else "complete"
+        revs += (effective + "    applicability: {state: unsurveyed}\n    text:\n      status: " + status + "\n"
                  "      sources: [{source: src-fiction, locator: 本則}]\n      glyphs: unverified\n    status: active\n")
         rows = "".join("<!-- loj:row key=" + k + " -->\n<!-- loj:cell -->\n" + CLOUDS[k] + "\n<!-- loj:end-cell -->\n"
                        "<!-- loj:end-row -->\n" for k in keys)
@@ -628,6 +629,10 @@ def row_keys():
         {"kind": "repository", "path": rel(dest)},
         {"results": [l3("historyStructure", "fail")], "diagnostics": [diag("HIST-13", SV["hist"])]}, False,
         "historyStructure")
+    dest = next_dir("hist", True) / "repo"
+    row_key_files(dest, [["a1b2", "c3d4"], ["a1b2"], ["a1b2", "c3d4"]], partial=1)
+    add("hist", "本文が一部しかない版で行がなくても、削ったとみなさない（架空）", ["HIST-13", "HIST-08"], "L3",
+        {"kind": "repository", "path": rel(dest)}, {"results": [l3("historyStructure")]}, True, "historyStructure")
 
 
 def main():
