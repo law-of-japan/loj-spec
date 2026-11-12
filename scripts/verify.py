@@ -706,7 +706,7 @@ def check_states():
 REQUIREMENT_HEADING = re.compile(r"^## ([A-Z]+-\d+) ", re.M)
 # ASCII boundaries: \b would fail next to Japanese letters (「MUST等」).
 REQUIREMENT_WORD = re.compile(r"(?<![A-Za-z0-9_])(?:MUST|SHOULD|MAY)(?![A-Za-z0-9_])")
-REQUIREMENT_REF = re.compile(r"(?<![A-Z])([A-Z]+-\d{2})(?!\d)")
+REQUIREMENT_REF = re.compile(r"(?<![A-Z])([A-Z]+-\d+)")
 
 
 def sentences(line):
