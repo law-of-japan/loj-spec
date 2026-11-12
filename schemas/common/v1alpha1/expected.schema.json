@@ -103,6 +103,7 @@
             ]
           },
           "location": {
+            "description": "UTF-8 byte offsets in the file named by path, half-open [start, end), 0-based (SRC-01). A line includes its line break (CRLF is 2 bytes).",
             "$comment": "CONF-01: listed only where a requirement fixes the diagnostic location (SRC-01 of loj/v1alpha2). UTF-8 byte offsets, half-open [start, end).",
             "type": "object",
             "properties": {

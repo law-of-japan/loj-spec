@@ -126,6 +126,7 @@
             "type": "string"
           },
           "location": {
+            "description": "UTF-8 byte offsets in the file named by path, half-open [start, end), 0-based (SRC-01). A line includes its line break (CRLF is 2 bytes).",
             "$comment": "SRC-01 of loj/v1alpha2: {path, start, end} in UTF-8 bytes, half-open [start, end). Line and column are optional extras and do not replace the byte offsets. CONF-01 compares path, start and end.",
             "type": "object",
             "properties": {
