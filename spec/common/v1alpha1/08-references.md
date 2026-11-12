@@ -67,7 +67,8 @@ loj:<space>/<record>/<revision>@<commit>#<node> # 固定参照とノード
 | 解決の誤り | commitを取得できたが、そのcommitに当該Revisionがない。`path`が一致しない。commitが正本ブランチから到達できない。または`commit`のない参照に`node`がある |
 
 - 解決の誤りを、最新の記録版へ黙って解決してはならない（MUST NOT）。
-- 他のRecordへの参照の解決は、L4の関係の解決で検査する。自身のRecordへの参照の解決は、指定のcommitの取得を伴うため、L3の履歴構造とは別の検査とする。
+- 他のRecordへの参照も、自身のRecordへの参照も、参照の解決の検査（適合レベルとは別に報告する。[VAL-07](03-validation.md)）で扱う。対象は、Sourceの`fixed`のFixedRefと、時点値の`determinedBy`の`record`（RecordRef）である。固定参照の解決は指定のcommitの取得を伴い、L3・L4の入力（記録版）に収まらないため、L4に区分を設けない。
+- 時点値の`sameAs`は、時点の比較を伴うため、L4の時点の整合（[XREF-03](10-cross-record.md)）で扱う。
 
 ## FIXREF-07 ノードの指定
 

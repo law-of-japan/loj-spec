@@ -2,6 +2,16 @@
 
 見出しの「草案」は、[草案の版](spec/README.md#版の状態)への変更であることを示す。版の状態の正は、[規範仕様の入口](spec/README.md#規範とするもの)の表にある。版を公開したときは、公開の日付の項目を加える。
 
+## L4の関係の整合と不存在確認済み、他のRecordへの固定参照（2026-11-12、草案）
+
+[law-of-japan/loj-spec#16](https://github.com/law-of-japan/loj-spec/issues/16)の修正である。草案の版への変更であり、版番号は上げない。
+
+- XREF-02: 比べる記録のなかった「成立根拠が参照する関係と登録台帳・起点の記録」の比較を、全部改正後のRecordの`totallyRevises`が指す関係の対応（存在、種類、状態、起点）に改めた。対象範囲の比較を削った。VAL-06の表の説明を合わせた。
+- XREF-01: 不存在確認済みのRecordを登録台帳の`status: withdrawn`とし、確定した関係を`status: active`かつ`verification.state: confirmed`の関係と定めた。登録台帳にないIDは未取得とした。REG-02に`withdrawn`の意味を書いた。
+- FIXREF-06・VAL-07: 他のRecordへの参照の解決を、L4ではなく参照の解決の検査（適合レベルの外）で扱うとした。`sameAs`はXREF-03のままとした。
+- 適合ケースcommon-017（全部改正の対応）、common-018（存在しない関係を指す`totallyRevises`）、common-019（確定した関係の起点が`withdrawn`のRecord）を加えた。
+- DDR-016、用語集、要件との対応表を更新した。
+
 ## 検査の結果の決め方と、L1が不合格の版のL3根拠（2026-11-12、草案）
 
 [law-of-japan/loj-spec#15](https://github.com/law-of-japan/loj-spec/issues/15)と[law-of-japan/loj-spec#24](https://github.com/law-of-japan/loj-spec/issues/24)の修正である。草案の版への変更であり、版番号は上げない。

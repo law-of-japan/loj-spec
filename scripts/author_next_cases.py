@@ -453,6 +453,72 @@ def display_and_promulgation():
         "timeConsistency")
 
 
+OLD_LAW = ("20990101-law-5", "架空の旧法（全部改正の例）")
+NEW_LAW = ("20991001-law-9", "架空の新法（全部改正の例）")
+FICT = "      evidence: [{source: src-fictional, locator: %s}]\n      verification: {state: unverified, reason: 架空の資料}\n"
+
+
+def total_revision_files(base):
+    """Old and new fictional Records of one total revision (HIST-04, HIST-12)."""
+    old = ("schemaVersion: loj-history/v1alpha1\nrecord: {id: %s, label: %s}\n" % OLD_LAW
+           + "sources:\n  - {id: src-fictional, kind: other, title: 適合ケースのための架空の資料}\n"
+           "relations:\n  - id: rel-total\n    type: totallyRevises\n    from: {id: %s, label: %s}\n" % NEW_LAW
+           + "    evidence: [{source: src-fictional, locator: 附則第一条}]\n"
+           "    verification: {state: unverified, reason: 架空の資料}\n    status: active\n    items:\n"
+           "      - id: i1\n        scope: {text: 全部}\n        effective:\n          state: date\n"
+           '          value: "2099-10-01"\n          raw: 令和八十一年十月一日\n          precision: day\n'
+           "          evidence: [{source: src-fictional, locator: 附則第一条}]\n"
+           "          verification: {state: unverified, reason: 架空の資料}\n"
+           "        evidence: [{source: src-fictional, locator: 附則第一条}]\n"
+           "        verification: {state: unverified, reason: 架空の資料}\n"
+           "revisions:\n  - id: 2p6r8v4x\n    origin: coverageStart\n"
+           "    effective: {state: unknown, reason: 適合ケースで省略}\n    applicability: {state: unsurveyed}\n"
+           "    text: {status: absent}\n    status: active\n"
+           "termination:\n  - {type: totallyRevised, relation: rel-total}\n"
+           "coverage: {state: unconfirmed}\n")
+    new = ("schemaVersion: loj-history/v1alpha1\nrecord: {id: %s, label: %s}\n" % NEW_LAW
+           + "sources:\n  - {id: src-fictional, kind: other, title: 適合ケースのための架空の資料}\n"
+           "relations: []\n"
+           "revisions:\n  - id: 7c3j5m9q\n    origin: totalRevision\n"
+           "    totallyRevises: {record: {id: %s, label: %s}, relation: rel-total}\n" % OLD_LAW
+           + "    effective:\n      state: date\n      value: \"2099-10-01\"\n      raw: 令和八十一年十月一日\n"
+           "      precision: day\n" + FICT % "附則第一条"
+           + "    applicability: {state: unsurveyed}\n    text: {status: absent}\n    status: active\n"
+           "coverage: {state: unconfirmed}\n")
+    for ident, body in ((OLD_LAW[0], old), (NEW_LAW[0], new)):
+        path = base / ident / "history.yaml"
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(body.encode("utf-8"))
+    fictional_record(base / "registry", OLD_LAW[0], OLD_LAW[1], True)
+    fictional_record(base / "registry", NEW_LAW[0], NEW_LAW[1], True)
+
+
+def total_revision():
+    base = next_dir("common", True)
+    total_revision_files(base)
+    registry, old, new = rel(base / "registry"), rel(base / OLD_LAW[0]), rel(base / NEW_LAW[0])
+    resolution = {"check": "L4", "category": "relationResolution"}
+    consistency = {"check": "L4", "category": "relationConsistency"}
+    add("common", "全部改正後のRecordと旧Recordの全部改正の関係が対応する（架空）", ["XREF-01", "XREF-02", "HIST-04"], "L4",
+        {"kind": "records", "registry": registry, "repositories": [old, new]},
+        {"results": [dict(resolution, result="pass"), dict(consistency, result="pass")]}, True, "relationConsistency")
+    dest = next_dir("common", False) / NEW_LAW[0]
+    mutate(dest, new, [("history.yaml", "relation: rel-total}", "relation: rel-nowhere}")])
+    add("common", "totallyRevisesが旧Recordにない関係を指す（架空）", ["XREF-02"], "L4",
+        {"kind": "records", "registry": registry, "repositories": [old, rel(dest)]},
+        {"results": [dict(consistency, result="fail")], "diagnostics": [diag("XREF-02", SV["common"])]}, False,
+        "relationConsistency")
+    dest = next_dir("common", False)
+    mutate(dest / "registry", registry, [("records/%s.yaml" % NEW_LAW[0], "status: active\n", "status: withdrawn\n")])
+    mutate(dest / OLD_LAW[0], old, [("history.yaml", "    verification: {state: unverified, reason: 架空の資料}\n    status: active\n",
+                                     "    verification: {state: confirmed}\n    status: active\n")])
+    add("common", "確定した関係の起点が登録を撤回したRecord（架空）", ["XREF-01", "REG-02", "VAL-06"], "L4",
+        {"kind": "records", "registry": rel(dest / "registry"), "repositories": [rel(dest / OLD_LAW[0]), new]},
+        {"results": [dict(resolution, result="fail")], "diagnostics": [diag("XREF-01", SV["common"])],
+         "references": [{"target": "loj:loj/" + NEW_LAW[0], "result": "nonexistentConfirmed"}]}, False,
+        "relationResolution")
+
+
 def main():
     for suite, folder in FOLDER.items():
         for group in ("invalid", "expected"):
@@ -465,6 +531,7 @@ def main():
     cross_record()
     changes_and_references()
     display_and_promulgation()
+    total_revision()
     for suite, folder in FOLDER.items():
         write_json(C / folder / "manifest.json", {"suite": SV[suite], "cases": INDEX[suite]})
     print("Authored " + ", ".join(f"{k}: {len(v)}" for k, v in INDEX.items()) + "; no validator invoked.")
