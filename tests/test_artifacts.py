@@ -1,9 +1,9 @@
 """Mutation/regression checks for the artifact auditor, not L1 conformance tests."""
 import copy
 import re
-import unicodedata
 import sys
 import tempfile
+import unicodedata
 import unittest
 from pathlib import Path
 
@@ -274,12 +274,13 @@ class VersionStateTests(unittest.TestCase):
                 self.run_check(**change)
 
 
-if __name__ == "__main__":
-    unittest.main()
-
-
 class CompatibilityIdeographTests(unittest.TestCase):
-    """GLYPH-11 lists the code points in the compatibility blocks that have no canonical decomposition."""
+    """GLYPH-11 lists the code points in the compatibility blocks that have no canonical decomposition.
+
+    VAL-08 fixes Unicode 15.1, but this test reads the running Python's unicodedata (13.0 on 3.9,
+    15.0 on 3.12). No character was added to or changed in these blocks after Unicode 6.1, so any of
+    those versions gives the same answer; the version actually used is in the failure message.
+    """
 
     def test_listed_characters_match_unicode_data(self):
         blocks = list(range(0xF900, 0xFB00)) + list(range(0x2F800, 0x2FA20))
@@ -289,4 +290,9 @@ class CompatibilityIdeographTests(unittest.TestCase):
         sentence = text[text.index("12字は、"):].split("である。")[0]
         listed = {int(h, 16) for h in re.findall(r"U\+([0-9A-F]{4,6})", sentence)}
         self.assertEqual(len(listed), 12)
-        self.assertEqual(listed, expected)
+        self.assertEqual(listed, expected, "unicodedata " + unicodedata.unidata_version)
+
+
+if __name__ == "__main__":
+    unittest.main()
+

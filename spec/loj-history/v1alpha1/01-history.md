@@ -131,6 +131,7 @@
 - 版パッケージのディレクトリ`versions/<revision_id>/`は、履歴マニフェストの`complete`・`partial`のRevisionと一対一に対応しなければならない（MUST）。`absent`のRevisionは、ディレクトリを持たない。
 - `glyphs: verified`の意味は、字体注記の要件（loj-glyphs）による。
 - `variances`の項目は、官報正誤が見つからない間は`verification.state`を`disputed`とする。官報正誤で解いた場合は`resolvedBy`を持ち、本文を正誤後の文言にする（GLYPH-07）。`readings`の`source`は、同じ履歴マニフェストのSourceを指す（TYPE-03）。
+- `variances`と`correctionsSurveyed`は、本文のあるRevision（`complete`・`partial`）に書く。`absent`のRevisionは、これらを持ってはならない（MUST NOT）。
 - 本文の状態の確認の状況（官報正誤を確かめていない等）を、`sources`の`locator`に書いてはならない（MUST NOT）。`locator`は箇所の原文表記である（TYPE-03）。官報正誤の確認の状況は`correctionsSurveyed`に書く。
 
 ## HIST-09 外部識別子

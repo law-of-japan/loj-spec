@@ -589,6 +589,32 @@
                     ]
                   }
                 }
+              },
+              {
+                "$comment": "HIST-08: a Revision without text records neither variances nor correctionsSurveyed.",
+                "if": {
+                  "properties": {
+                    "status": {
+                      "const": "absent"
+                    }
+                  }
+                },
+                "then": {
+                  "not": {
+                    "anyOf": [
+                      {
+                        "required": [
+                          "variances"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "correctionsSurveyed"
+                        ]
+                      }
+                    ]
+                  }
+                }
               }
             ]
           },
