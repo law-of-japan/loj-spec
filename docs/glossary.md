@@ -236,7 +236,7 @@
 | 処理不能 | — | 読めない入力、知らないschemaVersion（知っている種類の知らない版を含む）、対応表にない組み合わせ。結果は未完了とし、不合格にしない。理由はschemaVersionの規則の診断で示す | [VAL-04](../spec/common/v1alpha1/03-validation.md#val-04-結果の値)、[CORE-05](../spec/common/v1alpha1/01-overview.md#core-05-種類ごとの版と対応表) |
 | 警告、判定不能、保留 | `warning`、`undetermined`、`pending` | 不合格の診断と区別して報告するもの。警告・保留だけなら合格。判定不能があれば未完了（警告しか出さない検査の判定不能を除く） | [VAL-04](../spec/common/v1alpha1/03-validation.md#val-04-結果の値)、[HIST-06](../spec/loj-history/v1alpha1/01-history.md#hist-06-版の時間の情報と順序) |
 | 適合ケース、適合データ | `conformance/` | 索引を入口とする固定の入力と期待結果。期待結果は規範から人が書き、検査器の出力を写さない | [CONF-01](../spec/common/v1alpha1/04-conformance.md#conf-01-適合ケース) |
-| 正例、負例 | `valid/`、`invalid/` | 成功するケースと失敗するケース。負例の期待結果は期待する規則の診断の集合 | [CONF-01](../spec/common/v1alpha1/04-conformance.md#conf-01-適合ケース) |
+| 正例、負例 | `valid/`、`invalid/` | 成功するケースと失敗するケース。負例の期待結果は期待する規則の診断の集合で、位置の定まる診断は位置も持てる。版パッケージのL0の正例は意味ASTを持たず、L0の合格を挙げる | [CONF-01](../spec/common/v1alpha1/04-conformance.md#conf-01-適合ケース) |
 | 規範のケース、参考のケース | normative、informative | 参考のケースの成否を、正式なレベルの結果に混ぜない | [CONF-01](../spec/common/v1alpha1/04-conformance.md#conf-01-適合ケース)、[CONF-02](../spec/common/v1alpha1/04-conformance.md#conf-02-レベルごとの適合の主張) |
 | DDR | Design Decision Record | 設計判断の記録。規範ではないが、判断の理由を引くときに参照する | [設計判断](design-decisions/README.md) |
 

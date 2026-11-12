@@ -50,8 +50,8 @@
 - 索引は種類ごとにある（`conformance/<種類>/<版>/manifest.json`）。形は[索引のschema](../schemas/common/v1alpha1/conformance.schema.json)、期待結果は[期待結果のschema](../schemas/common/v1alpha1/expected.schema.json)にある。
 - 入力の`kind`は、`package`（`law.yaml`）、`repository`（法令リポジトリのディレクトリ）、`registry`（登録台帳のディレクトリ）、`records`（登録台帳と複数の法令リポジトリ）、`change`（`git bundle`と、比べる二つのcommit）、`reference`（`git bundle`、登録台帳、参照の文字列）である。
 - `git bundle`は、`git clone <bundle> <dir>`で取り出す。commitのハッシュは固定であり、作り直すと変わる。
-- 成功するケースは、期待結果に挙げた`results`がすべて報告にあって一致し、ケースの検査（L3・L4は区分）に属する規則の`error`の診断がないことを確かめる。期待結果に挙げていない検査（区分）の結果と診断は比べない（CONF-01）。版パッケージでは、意味ASTを位置情報を除いて完全一致で比べ、`positions`をソースのバイトで照合する。
-- 失敗するケースは、期待する`error`の診断（`rule`と`schemaVersion`の組）をすべて含むことを確かめる。ほかの診断が加わってもよい。部分的なASTは比べない。
+- 成功するケースは、期待結果に挙げた`results`がすべて報告にあって一致し、ケースの検査（L3・L4は区分）に属する規則の`error`の診断がないことを確かめる。期待結果に挙げていない検査（区分）の結果と診断は比べない（CONF-01）。版パッケージのL1の正例では、意味ASTを位置情報を除いて完全一致で比べ、`positions`をソースのバイトで照合する。L0の正例はASTを持たず、L0の`pass`だけを比べる。L1の違反を含む入力も、L0では合格する（pkg-145）。
+- 失敗するケースは、期待する`error`の診断（`rule`と`schemaVersion`の組）をすべて含むことを確かめる。ほかの診断が加わってもよい。部分的なASTは比べない。期待結果の診断に`location`があれば、同じ規則の診断の`location`の`path`・`start`・`end`も一致させる。位置はUTF-8のバイトで数え、行は行末の改行（CRLFは2バイト）まで含む（SRC-01）。
 - 索引の`rejectedBy: schema`は、入力がschemaに合わない負例の印である。資料の検査のためのもので、ケースを満たすかの判定には使わない。schemaの違反でも、期待結果の規則の診断を報告する必要がある（CONF-01）。
 - 結果は検査（L3・L4は区分）ごとに集計する（CONF-02）。予約の区分、L2、参考のケースを、正式な結果に混ぜない。
 - どの要件にケースがないかは[要件との対応表](coverage.md)にある。
