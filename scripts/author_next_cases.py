@@ -331,7 +331,7 @@ def fictional_files(body1, files_split=False, label="制定", locator="本則"):
 
 
 def build_bundle(path, steps=None):
-    steps = steps or [
+    steps = steps if steps is not None else [
         ("制定時の版を加える", "revisionAdd", True, fictional_files("架空の雲を保管すろ。\n")),
         ("第一条の誤転記を直す", "correction", True, fictional_files("架空の雲を保管する。\n")),
         ("条ごとにファイルを分ける", "format", False, fictional_files("架空の雲を保管する。\n", files_split=True)),

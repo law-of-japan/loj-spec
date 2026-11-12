@@ -8,7 +8,7 @@
 
 - CHG-02: `correction`・`officialCorrection`・`restoration`・`revisionAdd`の変更してよい範囲に、従属して更新するファイル（字体注記、Scopeの`nodes`、`text.sources`・`text.glyphs`、根拠、再構築報告の対応等）を加えた。従属する更新は別の種類として分けない。
 - CHG-01・CHG-02: 登録台帳の変更を`metadata`に含め、検査にRID-05（IDの再利用の禁止）を加えた。`migration`は、ASTの対応表を提供する版の組に限るとし、v1alpha1からv1alpha2への移行で宣言することを禁じた。
-- CHG-03: 正本ブランチへの統合をsquash・rebaseに限り、mergeのcommitを禁じた。法令リポジトリの最初のcommitを`revisionAdd`とした。revertのcommitは取り消した結果の種類とし、`revisionAdd`で加えたRevisionはrevertで削除せず`revisionFix`で撤回するとした。
+- CHG-03: 正本ブランチへの統合をsquash・rebaseに限り、mergeのcommitを禁じた。法令リポジトリの最初のcommitを`revisionAdd`とした。revertのcommitは取り消す変更と同じ種類とし、`revisionAdd`で加えたRevisionはrevertで削除せず`revisionFix`で撤回するとした。従属して更新できるのは宣言した版の部分に限るとした。
 - FIXREF-04: 正本ブランチのオブジェクト形式の変更を禁じた。作業ブランチのcommitが統合後に到達できないことを書いた。
 - 適合ケースcommon-024（記録訂正で同じ版の本文の出典を併せて更新する）を加えた。既存の`git bundle`は変えていない。
 - DDR-015・019、制限（commitの日時、複数のリポジトリにまたがる変更、オブジェクト形式）、要件との対応表を更新した。

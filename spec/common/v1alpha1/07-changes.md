@@ -35,6 +35,7 @@ ASTは、`schemaVersion`・`law`・`root`への投影を、位置情報を除い
 | `migration` | すべての版 | 新しい仕様の版が規範として提供するASTの対応表で変換した旧ASTが、新ASTと一致する |
 
 - 従属するファイルの更新は、宣言した種類の変更に含まれ、別の種類として分けない（[CHG-01](#chg-01-変更の種類)の「種類ごとに別のcommitに分ける」には当たらない）。従属するファイルは、ASTの一致の検査の対象ではない。宣言していない版のASTは、従属するファイルを更新しても、変わってはならない（MUST NOT）。
+- 従属して更新できるのは、宣言した版（`revisionAdd`では加えた版）に関する部分に限る。宣言していない版のRevisionの項目、字体注記、再構築報告の対応を変えた場合は、変更検査で不合格とする。
 - `loj/v1alpha2`は、`loj/v1alpha1`からのASTの対応表を提供しない。`loj/v1alpha1`から`loj/v1alpha2`への移行は再構築（[REB-01](../../loj-rebuild/v1alpha1/01-rebuild.md)）で行い、`migration`を宣言してはならない（MUST NOT）。
 
 - 誤りが後続の版へ引き継がれている場合、記録訂正は、影響するすべての版を宣言して一度に直してよい（MAY）。
@@ -54,10 +55,12 @@ ASTは、`schemaVersion`・`law`・`root`への投影を、位置情報を除い
 - `LoJ-Revisions`は、対象のrevision_idをカンマと空白（`, `）で区切って並べる。版を対象にしない変更（`format`、登録台帳だけの`metadata`等）では、省略してよい（MAY）。
 - commitメッセージとtrailerは、UTF-8で書く。
 - 種類の宣言を、ホスティングサービスのラベル等だけに置いてはならない（MUST NOT）。cloneした先でも記録版の履歴として読めるようにするためである。
-- 一つのcommitの種類は一つとする。PRを統合するときにcommitをまとめる場合は、種類が同じcommitに限る。
+- 一つのcommitの種類は一つとする。PRを統合するときにcommitをまとめる（squash）場合は、種類が同じcommitに限る。種類の違うcommitを含むPRは、rebaseで統合する。その場合、正本ブランチに並ぶ各commitが、それぞれ単独で変更検査を受ける。
 - 正本ブランチへの統合は、正本ブランチの履歴が一本になる方法（squash、rebase）で行う。正本ブランチにmergeのcommit（親が二つ以上のcommit）を置いてはならない（MUST NOT）。種類の宣言を一つのcommitに一つとし、比べる変更前の記録版を親のcommitに一意に定めるためである。
 - 法令リポジトリの最初のcommitは、`revisionAdd`とする。変更前の版はないものとみなして検査する（履歴だけで本文のない版を加える場合も同じ）。
-- 変更を取り消すcommit（revert）は、取り消した結果の変更が当たる種類を宣言し、その種類の検査を受ける。`correction`・`officialCorrection`・`restoration`・`format`・`metadata`の取り消しは、取り消す変更と同じ種類とする。
+- 変更を取り消すcommit（revert）は、取り消す変更と同じ種類を宣言し、その種類の検査を受ける（例: `correction`の取り消しは`correction`）。ただし、次による。
+  - `revisionFix`の取り消し（撤回・統合・分割の取り消し）は、`revisionFix`とし、Revisionの`status`と`replacedBy`を戻す。Revisionを削除しない。
+  - `migration`の取り消しは、`migration`とし、旧い版への対応表を規範として提供する版の組に限る。
 - `revisionAdd`で加えたRevisionを、revertで履歴マニフェストから削除してはならない（MUST NOT。[HIST-10](../../loj-history/v1alpha1/01-history.md)）。取り消す場合は、`revisionFix`でRevisionを撤回する（`status: retracted`）。
 - 宣言のないcommit、宣言と検査の結果が合わないcommit、mergeのcommitは、変更検査で不合格とする。
 
