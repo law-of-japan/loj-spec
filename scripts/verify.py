@@ -765,6 +765,47 @@ def check_restatements():
     return restated_requirement_words(texts)
 
 
+# 「CHAR-02〜CHAR-04」「FIXREF-03」: one ID or an inclusive range within one series.
+ID_OR_RANGE = re.compile(r"([A-Z]+)-(\d+)(?:〜(?:\1-)?(\d+))?")
+ADDRESSEE_HEADING = "要件の名宛人と確かめ方"
+
+
+def addressee_table_ids(text):
+    """Requirement IDs named in the first column of the docs/coverage.md addressee table."""
+    section = re.search(r"^## " + ADDRESSEE_HEADING + r"\n(.*?)(?=^## |\Z)", text, re.M | re.S)
+    require(bool(section), "docs/coverage.md has no section: " + ADDRESSEE_HEADING)
+    rows = [line for line in section[1].splitlines() if line.startswith("|")][2:]
+    require(rows, "docs/coverage.md addressee table is empty")
+    ids = set()
+    for row in rows:
+        for series, first, last in ID_OR_RANGE.findall(row.strip("|").split("|")[0]):
+            for number in range(int(first), int(last or first) + 1):
+                ids.add("%s-%02d" % (series, number))
+    return ids
+
+
+def check_addressees():
+    """Every requirement ID of the non-frozen versions appears in the addressee table, and no other ID does.
+
+    The classification itself is a human judgment (reference only); this keeps the list from going stale
+    when requirements are added or removed.
+    """
+    spec = ROOT / "spec"
+    wanted = set()
+    for path in spec.rglob("*.md"):
+        if (spec / "v1alpha1") not in path.parents:
+            wanted.update(REQUIREMENT_HEADING.findall(path.read_text(encoding="utf-8")))
+    listed = addressee_table_ids((ROOT / "docs/coverage.md").read_text(encoding="utf-8"))
+    compare_addressees(listed, wanted)
+    return len(wanted)
+
+
+def compare_addressees(listed, wanted):
+    """Fail when the table misses a requirement ID (wanted - listed) or names an unknown one (listed - wanted)."""
+    require(listed == wanted, "docs/coverage.md addressee table and spec/ requirement IDs differ: missing "
+            + ", ".join(sorted(wanted - listed)) + "; unknown " + ", ".join(sorted(listed - wanted)))
+
+
 def main():
     schemas = {path.name: read_json(path) for path in (ROOT / "schemas/v1alpha1").glob("*.json")}
     registry = Registry().with_resources((s["$id"], Resource.from_contents(s)) for s in schemas.values())
@@ -825,11 +866,13 @@ def main():
     archived = check_archive()
     noted = check_codepoints()
     states = check_states()
+    addressed = check_addressees()
     print(f"Artifact audit PASS: {len(schemas)} schemas; {len(seen)} case definitions; {links} local links.")
     labels = {"草案": "draft", "公開": "published", "凍結": "frozen"}  # ASCII: stdout may not encode Japanese
     print("Version states: " + "; ".join(name + "=" + labels[state] for name, state in sorted(states.items()))
           + " (tables only; publication tags are not checked).")
     print(f"Code point notations match their characters in {noted} documents (docs/archive excluded).")
+    print(f"Addressee table lists all {addressed} requirement IDs (the classification itself is not checked).")
     print(f"Archived documents: {archived} (status lines present; not linked from spec/).")
     print(f"Positive source/tree audits: {positive}; executed L0 negatives: {negative_l0}.")
     print(f"L1 negative definitions only (NOT executed): {negative_l1}; informative L2: {illustrative}.")

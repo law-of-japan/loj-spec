@@ -411,6 +411,24 @@ class RestatementTests(unittest.TestCase):
         self.assertTrue(v.REQUIREMENT_WORD.search("要求の語（MUST等）"))
         self.assertFalse(v.REQUIREMENT_WORD.search("MUSTARD、MAYBE、XMAY"))
 
+    def test_addressee_table_ids(self):
+        text = ("## 要件の名宛人と確かめ方\n\n| 要件 | 対象 |\n|---|---|\n"
+                "| CHAR-02〜CHAR-04 | 全体 |\n| VAL-01、VAL-06 | 定義 |\n| REB-01〜08 | x |\n\n## 次\n\n| CORE-09 | y |\n")
+        expected = {"CHAR-02", "CHAR-03", "CHAR-04", "VAL-01", "VAL-06"} | {"REB-%02d" % n for n in range(1, 9)}
+        self.assertEqual(v.addressee_table_ids(text), expected)
+        with self.assertRaises(ValueError):
+            v.addressee_table_ids("## 別の節\n")
+
+    def test_addressee_mismatch_rejected(self):
+        v.compare_addressees({"AAA-01"}, {"AAA-01"})
+        with self.assertRaisesRegex(ValueError, "missing AAA-02; unknown $"):
+            v.compare_addressees({"AAA-01"}, {"AAA-01", "AAA-02"})
+        with self.assertRaisesRegex(ValueError, "missing ; unknown ZZZ-01"):
+            v.compare_addressees({"AAA-01", "ZZZ-01"}, {"AAA-01"})
+
+    def test_repository_addressee_table(self):
+        self.assertGreater(v.check_addressees(), 100)
+
     def test_repository_check_runs(self):
         for name, number, own, cited in v.check_restatements():
             self.assertNotIn(own, cited)
