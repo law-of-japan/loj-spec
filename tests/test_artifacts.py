@@ -402,6 +402,15 @@ class RestatementTests(unittest.TestCase):
         text = {"b.md": "## BBB-01 x\n\nx\n\n## BBB-02 y\n\n- 写さない（MUST NOT。BBB-01）。次の文。\n"}
         self.assertEqual(v.restated_requirement_words(text), [("b.md", 7, "BBB-02", ["BBB-01"])])
 
+    def test_sentence_split_by_parenthesis_depth(self):
+        self.assertEqual(v.sentences("甲（乙。丙）。丁。"), ["甲（乙。丙）。", "丁。"])
+        # An unpaired ） does not join the following sentences.
+        self.assertEqual(v.sentences("甲）。乙（MUST）。丙"), ["甲）。", "乙（MUST）。", "丙"])
+
+    def test_requirement_word_boundary(self):
+        self.assertTrue(v.REQUIREMENT_WORD.search("要求の語（MUST等）"))
+        self.assertFalse(v.REQUIREMENT_WORD.search("MUSTARD、MAYBE、XMAY"))
+
     def test_repository_check_runs(self):
         for name, number, own, cited in v.check_restatements():
             self.assertNotIn(own, cited)

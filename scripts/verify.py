@@ -703,11 +703,28 @@ def check_states():
     return states
 
 
-REQUIREMENT_HEADING = re.compile(r"^## ([A-Z]+-\d+) ")
-REQUIREMENT_WORD = re.compile(r"MUST|SHOULD|MAY")
+REQUIREMENT_HEADING = re.compile(r"^## ([A-Z]+-\d+) ", re.M)
+# ASCII boundaries: \b would fail next to Japanese letters (「MUST等」).
+REQUIREMENT_WORD = re.compile(r"(?<![A-Za-z0-9_])(?:MUST|SHOULD|MAY)(?![A-Za-z0-9_])")
 REQUIREMENT_REF = re.compile(r"(?<![A-Z])([A-Z]+-\d{2})(?!\d)")
-# A sentence ends at 。 outside full-width parentheses (「（MUST NOT。HIST-12）」 is one sentence).
-SENTENCE_END = re.compile(r"(?<=。)(?![^（]*）)")
+
+
+def sentences(line):
+    """Split a line at 。 outside full-width parentheses (「（MUST NOT。HIST-12）」 is one sentence).
+
+    Parentheses are counted by depth; an unpaired ） is ignored, so it cannot join later sentences.
+    """
+    parts, depth, start = [], 0, 0
+    for index, char in enumerate(line):
+        if char == "（":
+            depth += 1
+        elif char == "）":
+            depth = max(0, depth - 1)
+        elif char == "。" and depth == 0:
+            parts.append(line[start:index + 1])
+            start = index + 1
+    parts.append(line[start:])
+    return [part for part in parts if part]
 
 
 def restated_requirement_words(texts):
@@ -721,7 +738,7 @@ def restated_requirement_words(texts):
     """
     ids = set()
     for text in texts.values():
-        ids.update(re.findall(r"^## ([A-Z]+-\d+) ", text, re.M))
+        ids.update(REQUIREMENT_HEADING.findall(text))
     found = []
     for name, text in sorted(texts.items()):
         own = None
@@ -732,7 +749,7 @@ def restated_requirement_words(texts):
                 continue
             if own is None:
                 continue
-            for sentence in SENTENCE_END.split(line):
+            for sentence in sentences(line):
                 if REQUIREMENT_WORD.search(sentence):
                     cited = sorted({ref for ref in REQUIREMENT_REF.findall(sentence) if ref in ids and ref != own})
                     if cited:
