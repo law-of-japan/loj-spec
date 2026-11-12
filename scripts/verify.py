@@ -432,6 +432,20 @@ def check_yaml_files(folder, validators):
     return count
 
 
+# CONF-01: these checks list their own result. Version package cases (L0-L2) compare the AST and diagnostics,
+# and reference cases compare references.
+OWN_RESULT_CHECKS = ("L3", "L4", "change", "registry", "rebuild")
+
+
+def own_result_listed(case, expected):
+    """CONF-01: L3/L4, change, registry and rebuild cases list their own check (and category) exactly once."""
+    if case["check"] not in OWN_RESULT_CHECKS:
+        return True
+    own = [r for r in expected.get("results", [])
+           if r["check"] == case["check"] and r.get("category") == case.get("category")]
+    return len(own) == 1
+
+
 def audit_suite(name, validators, rules):
     folder, prefix = SUITES[name]
     base = ROOT / "conformance" / folder
@@ -461,7 +475,9 @@ def audit_suite(name, validators, rules):
         failed = any(r["result"] == "fail" for r in expected.get("results", []))
         errors = [d for d in expected.get("diagnostics", []) if d["class"] == "error"]
         require(all(d["rule"] in rules for d in expected.get("diagnostics", [])), ident + " unknown diagnostic rule")
+        require(own_result_listed(case, expected), ident + " expected result must list the case's own check once")
         if case["success"]:
+            # CONF-01: notApplicable and incomplete are allowed; the result values themselves are left to the schema.
             require(not failed and not errors, ident + " positive case expects failure")
         else:
             require(bool(errors), ident + " negative case needs an error diagnostic")

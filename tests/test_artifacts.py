@@ -1,5 +1,6 @@
 """Mutation/regression checks for the artifact auditor, not L1 conformance tests."""
 import copy
+import json
 import re
 import sys
 import tempfile
@@ -272,6 +273,61 @@ class VersionStateTests(unittest.TestCase):
         for label, change in cases.items():
             with self.subTest(label), self.assertRaises(ValueError):
                 self.run_check(**change)
+
+
+class OwnResultTests(unittest.TestCase):
+    """CONF-01: the expected result lists the case's own check (and category) once."""
+
+    CASE = {"check": "L4", "category": "relationConsistency"}
+
+    @staticmethod
+    def result(category, value="pass"):
+        return {"check": "L4", "category": category, "result": value}
+
+    def test_own_result_with_others_passes(self):
+        expected = {"results": [self.result("relationResolution"), self.result("relationConsistency")]}
+        self.assertTrue(v.own_result_listed(self.CASE, expected))
+
+    def test_missing_or_duplicated_own_result_rejected(self):
+        for results in ([], [self.result("relationResolution")],
+                        [self.result("relationConsistency"), self.result("relationConsistency", "fail")]):
+            with self.subTest(results=results):
+                self.assertFalse(v.own_result_listed(self.CASE, {"results": results}))
+
+    def test_checks_match_index_schema(self):
+        schema = json.loads((v.ROOT / "schemas/common/v1alpha1/conformance.schema.json").read_text(encoding="utf-8"))
+        checks = set()
+
+        def walk(node):
+            if isinstance(node, dict):
+                enum = node.get("properties", {}).get("check", {}).get("enum")
+                if enum:
+                    checks.update(enum)
+                for value in node.values():
+                    walk(value)
+            elif isinstance(node, list):
+                for value in node:
+                    walk(value)
+
+        walk(schema)
+        self.assertEqual(checks, set(v.OWN_RESULT_CHECKS) | {"L0", "L1", "L2", "reference"})
+
+    def test_every_listed_check_requires_its_result(self):
+        for check in v.OWN_RESULT_CHECKS:
+            with self.subTest(check=check):
+                case = {"check": check}
+                self.assertFalse(v.own_result_listed(case, {"results": []}))
+                self.assertTrue(v.own_result_listed(case, {"results": [{"check": check, "result": "pass"}]}))
+
+    def test_category_must_match_absence(self):
+        case = {"check": "change"}
+        stray = {"check": "change", "category": "historyStructure", "result": "pass"}
+        self.assertFalse(v.own_result_listed(case, {"results": [stray]}))
+
+    def test_package_and_reference_cases_exempt(self):
+        for check in ("L0", "L1", "L2", "reference"):
+            with self.subTest(check=check):
+                self.assertTrue(v.own_result_listed({"check": check}, {}))
 
 
 class CompatibilityIdeographTests(unittest.TestCase):
