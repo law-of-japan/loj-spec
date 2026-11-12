@@ -455,6 +455,17 @@ class SchemaMarkTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "without rejectedBy: schema"):
             v.check_schema_mark("x", {}, [self.bad], self.validators)
 
+    def test_unknown_schema_version_counts_as_failure(self):
+        with tempfile.TemporaryDirectory() as folder:
+            base = Path(folder)
+            (base / "good.yaml").write_bytes((self.good / "history.yaml").read_bytes())
+            (base / "bare.yaml").write_bytes(b"record: x\n")
+            count, failures = v.schema_failures(base, self.validators)
+            self.assertEqual(count, 2)
+            self.assertEqual([path.name for path, _ in failures], ["bare.yaml"])
+            self.assertIn("unknown schemaVersion", failures[0][1])
+            self.assertGreater(v.check_schema_mark("x", {"rejectedBy": "schema"}, [base], self.validators), 0)
+
     def test_index_schema_limits_mark(self):
         index = v.read_json(v.ROOT / "conformance/loj-history/v1alpha1/manifest.json")
         validator = self.validators["common/v1alpha1/conformance.schema.json"]
