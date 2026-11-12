@@ -274,6 +274,31 @@ class VersionStateTests(unittest.TestCase):
                 self.run_check(**change)
 
 
+class OwnResultTests(unittest.TestCase):
+    """CONF-01: the expected result lists the case's own check (and category) once."""
+
+    CASE = {"check": "L4", "category": "relationConsistency"}
+
+    @staticmethod
+    def result(category, value="pass"):
+        return {"check": "L4", "category": category, "result": value}
+
+    def test_own_result_with_others_passes(self):
+        expected = {"results": [self.result("relationResolution"), self.result("relationConsistency")]}
+        self.assertTrue(v.own_result_listed(self.CASE, expected))
+
+    def test_missing_or_duplicated_own_result_rejected(self):
+        for results in ([], [self.result("relationResolution")],
+                        [self.result("relationConsistency"), self.result("relationConsistency", "fail")]):
+            with self.subTest(results=results):
+                self.assertFalse(v.own_result_listed(self.CASE, {"results": results}))
+
+    def test_package_and_reference_cases_exempt(self):
+        for check in ("L0", "L1", "L2", "reference"):
+            with self.subTest(check=check):
+                self.assertTrue(v.own_result_listed({"check": check}, {}))
+
+
 class CompatibilityIdeographTests(unittest.TestCase):
     """GLYPH-11 lists the code points in the compatibility blocks that have no canonical decomposition.
 

@@ -432,6 +432,19 @@ def check_yaml_files(folder, validators):
     return count
 
 
+# CONF-01: version package cases compare the AST and diagnostics, reference cases compare references.
+OWN_RESULT_EXEMPT = ("L0", "L1", "L2", "reference")
+
+
+def own_result_listed(case, expected):
+    """CONF-01: L3/L4, change, registry and rebuild cases list their own check (and category) exactly once."""
+    if case["check"] in OWN_RESULT_EXEMPT:
+        return True
+    own = [r for r in expected.get("results", [])
+           if r["check"] == case["check"] and r.get("category") == case.get("category")]
+    return len(own) == 1
+
+
 def audit_suite(name, validators, rules):
     folder, prefix = SUITES[name]
     base = ROOT / "conformance" / folder
@@ -461,11 +474,7 @@ def audit_suite(name, validators, rules):
         failed = any(r["result"] == "fail" for r in expected.get("results", []))
         errors = [d for d in expected.get("diagnostics", []) if d["class"] == "error"]
         require(all(d["rule"] in rules for d in expected.get("diagnostics", [])), ident + " unknown diagnostic rule")
-        if case["input"]["kind"] not in ("package", "reference"):
-            # CONF-01: the case's own check (and category) must be listed exactly once.
-            own = [r for r in expected.get("results", [])
-                   if r["check"] == case["check"] and r.get("category") == case.get("category")]
-            require(len(own) == 1, ident + " expected result must list the case's own check once")
+        require(own_result_listed(case, expected), ident + " expected result must list the case's own check once")
         if case["success"]:
             require(not failed and not errors, ident + " positive case expects failure")
         else:
