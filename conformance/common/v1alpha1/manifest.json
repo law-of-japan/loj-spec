@@ -370,6 +370,46 @@
       },
       "expected": "conformance/common/v1alpha1/expected/common-019.json",
       "success": false
+    },
+    {
+      "id": "common-020",
+      "title": "totallyRevisesが撤回した関係を指す（架空）",
+      "requirements": [
+        "XREF-02"
+      ],
+      "check": "L4",
+      "category": "relationConsistency",
+      "normative": true,
+      "input": {
+        "kind": "records",
+        "registry": "conformance/common/v1alpha1/valid/common-017/registry",
+        "repositories": [
+          "conformance/common/v1alpha1/invalid/common-020/20990101-law-5",
+          "conformance/common/v1alpha1/valid/common-017/20991001-law-9"
+        ]
+      },
+      "expected": "conformance/common/v1alpha1/expected/common-020.json",
+      "success": false
+    },
+    {
+      "id": "common-021",
+      "title": "totallyRevisesが全部改正でない関係を指す（架空）",
+      "requirements": [
+        "XREF-02"
+      ],
+      "check": "L4",
+      "category": "relationConsistency",
+      "normative": true,
+      "input": {
+        "kind": "records",
+        "registry": "conformance/common/v1alpha1/valid/common-017/registry",
+        "repositories": [
+          "conformance/common/v1alpha1/invalid/common-021/20990101-law-5",
+          "conformance/common/v1alpha1/valid/common-017/20991001-law-9"
+        ]
+      },
+      "expected": "conformance/common/v1alpha1/expected/common-021.json",
+      "success": false
     }
   ]
 }

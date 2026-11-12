@@ -9,7 +9,7 @@
 - XREF-02: 比べる記録のなかった「成立根拠が参照する関係と登録台帳・起点の記録」の比較を、全部改正後のRecordの`totallyRevises`が指す関係の対応（存在、種類、状態、起点）に改めた。対象範囲の比較を削った。VAL-06の表の説明を合わせた。
 - XREF-01: 不存在確認済みのRecordを登録台帳の`status: withdrawn`とし、確定した関係を`status: active`かつ`verification.state: confirmed`の関係と定めた。登録台帳にないIDは未取得とした。REG-02に`withdrawn`の意味を書いた。
 - FIXREF-06・VAL-07: 他のRecordへの参照の解決を、L4ではなく参照の解決の検査（適合レベルの外）で扱うとした。`sameAs`はXREF-03のままとした。
-- 適合ケースcommon-017（全部改正の対応）、common-018（存在しない関係を指す`totallyRevises`）、common-019（確定した関係の起点が`withdrawn`のRecord）を加えた。
+- 適合ケースcommon-017（全部改正の対応）、common-018（存在しない関係を指す`totallyRevises`）、common-019（確定した関係の起点が`withdrawn`のRecord）、common-020・021（撤回した関係、全部改正でない関係を指す`totallyRevises`）を加えた。
 - DDR-016、用語集、要件との対応表を更新した。
 
 ## 検査の結果の決め方と、L1が不合格の版のL3根拠（2026-11-12、草案）

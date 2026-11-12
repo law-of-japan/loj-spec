@@ -517,6 +517,19 @@ def total_revision():
         {"results": [dict(resolution, result="fail")], "diagnostics": [diag("XREF-01", SV["common"])],
          "references": [{"target": "loj:loj/" + NEW_LAW[0], "result": "nonexistentConfirmed"}]}, False,
         "relationResolution")
+    # The old Record's relation is changed instead of the reference (XREF-02: status and type).
+    for title, old_text, new_text in [
+        ("totallyRevisesが撤回した関係を指す（架空）",
+         "    verification: {state: unverified, reason: 架空の資料}\n    status: active\n",
+         "    verification: {state: unverified, reason: 架空の資料による撤回}\n    status: retracted\n"),
+        ("totallyRevisesが全部改正でない関係を指す（架空）", "    type: totallyRevises\n", "    type: repeals\n"),
+    ]:
+        dest = next_dir("common", False) / OLD_LAW[0]
+        mutate(dest, old, [("history.yaml", old_text, new_text)])
+        add("common", title, ["XREF-02"], "L4",
+            {"kind": "records", "registry": registry, "repositories": [rel(dest), new]},
+            {"results": [dict(consistency, result="fail")], "diagnostics": [diag("XREF-02", SV["common"])]}, False,
+            "relationConsistency")
 
 
 def main():
