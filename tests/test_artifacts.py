@@ -579,6 +579,21 @@ class DerivationTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "not an own input"):
             v.check_derivations("glyph-002", case)
 
+    def test_expected_path_shape_required(self):
+        index = v.read_json(v.ROOT / "conformance/loj-glyphs/v1alpha1/manifest.json")
+        case = copy.deepcopy(next(c for c in index["cases"] if c["id"] == "glyph-002"))
+        case["expected"] = "conformance/loj-glyphs/v1alpha1/results/glyph-002.json"
+        with self.assertRaisesRegex(ValueError, "expected path"):
+            v.check_derivations("glyph-002", case)
+
+    def test_symbolic_link_rejected(self):
+        try:
+            (self.copy / "link.md").symlink_to(self.copy / "same.md")
+        except (OSError, NotImplementedError):
+            self.skipTest("symbolic links are not available")
+        with self.assertRaisesRegex(ValueError, "symbolic link"):
+            v.derivation_problem(self.entry)
+
     def test_duplicate_or_broken_entry_rejected(self):
         index = v.read_json(v.ROOT / "conformance/loj-glyphs/v1alpha1/manifest.json")
         case = copy.deepcopy(next(c for c in index["cases"] if c["id"] == "glyph-002"))

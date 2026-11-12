@@ -526,10 +526,14 @@ def check_schema_mark(ident, case, inputs, validators):
 def tree_bytes(path):
     """The files below a directory by their relative path, or a single file under the empty name.
 
-    Only files are compared (CONF-01 compares the set of files); Git keeps no empty directories."""
+    Only files are compared (CONF-01 compares the set of files); Git keeps no empty directories.
+    Symbolic links are rejected: Git on Windows may check them out as plain files."""
+    entries = [path] + (sorted(path.rglob("*")) if path.is_dir() else [])
+    links = [p for p in entries if p.is_symlink()]
+    require(not links, "symbolic link in a copied input or its source: " + ", ".join(map(str, links)))
     if path.is_file():
         return {"": path.read_bytes()}
-    return {p.relative_to(path).as_posix(): p.read_bytes() for p in sorted(path.rglob("*")) if p.is_file()}
+    return {p.relative_to(path).as_posix(): p.read_bytes() for p in entries[1:] if p.is_file()}
 
 
 def derivation_problem(entry):
@@ -564,8 +568,9 @@ def derivation_problem(entry):
 
 def check_derivations(ident, case):
     """CONF-01: each listed copy is an input of the case inside the case's own directory, and matches its source."""
-    group = "valid" if case["success"] else "invalid"
-    own = case["expected"].rsplit("/expected/", 1)[0] + "/" + group + "/" + ident + "/"
+    match = re.fullmatch(r"(conformance/.+)/expected/" + re.escape(ident) + r"\.json", case["expected"])
+    require(match is not None, ident + " expected path is not <suite folder>/expected/<case ID>.json: " + case["expected"])
+    own = match.group(1) + "/" + ("valid" if case["success"] else "invalid") + "/" + ident + "/"
     paths = [path.relative_to(ROOT).as_posix() for path in input_files(case)]
     seen = set()
     for entry in case.get("derivedFrom", []):
