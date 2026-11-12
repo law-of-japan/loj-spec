@@ -310,7 +310,7 @@ REV = "b7k2m9qd"
 NODE = "20990101-act-1/main/article/1/paragraph/1"
 
 
-def fictional_files(body1, files_split=False, label="制定"):
+def fictional_files(body1, files_split=False, label="制定", locator="本則"):
     docs = [{"path": "one.md", "parent": "main"}, {"path": "two.md", "parent": "main"}] if files_split else \
         [{"path": "main.md", "parent": "main"}]
     law = {"schemaVersion": "loj/v1alpha2", "law": FIX_LAW, "documents": docs}
@@ -323,15 +323,15 @@ def fictional_files(body1, files_split=False, label="制定"):
                "      value: \"2099-01-01\"\n      raw: 二千九十九年一月一日\n      precision: day\n"
                "      evidence: [{source: src-fiction, locator: 附則}]\n      verification: {state: confirmed}\n"
                "    applicability: {state: unsurveyed}\n    text:\n      status: complete\n"
-               "      sources: [{source: src-fiction, locator: 本則}]\n      glyphs: unverified\n    status: active\n"
+               "      sources: [{source: src-fiction, locator: " + locator + "}]\n      glyphs: unverified\n    status: active\n"
                "coverage: {state: unconfirmed}\n")
     out = {"history.yaml": history, "versions/" + REV + "/law.yaml": json.dumps(law, ensure_ascii=False, indent=2) + "\n"}
     out.update({"versions/" + REV + "/" + k: v for k, v in md.items()})
     return out
 
 
-def build_bundle(path):
-    steps = [
+def build_bundle(path, steps=None):
+    steps = steps or [
         ("制定時の版を加える", "revisionAdd", True, fictional_files("架空の雲を保管すろ。\n")),
         ("第一条の誤転記を直す", "correction", True, fictional_files("架空の雲を保管する。\n")),
         ("条ごとにファイルを分ける", "format", False, fictional_files("架空の雲を保管する。\n", files_split=True)),
@@ -544,6 +544,19 @@ def total_revision():
         "relationResolution")
 
 
+def change_dependents():
+    """CHG-02: a correction that also updates a dependent file (text.sources of the same Revision)."""
+    bundle = next_dir("common", True) / "repo.bundle"
+    c1, c2 = build_bundle(bundle, [
+        ("制定時の版を加える", "revisionAdd", True, fictional_files("架空の雲を保管すろ。\n")),
+        ("第一条の誤転記を直し、本文の出典の箇所を改める", "correction", True,
+         fictional_files("架空の雲を保管する。\n", locator="本則第一条")),
+    ])
+    add("common", "記録訂正で、同じ版の本文の出典を併せて更新する", ["CHG-02", "CHG-03"], "change",
+        {"kind": "change", "bundle": rel(bundle), "base": c1, "head": c2},
+        {"results": [{"check": "change", "result": "pass"}]}, True)
+
+
 def main():
     for suite, folder in FOLDER.items():
         for group in ("invalid", "expected"):
@@ -557,6 +570,7 @@ def main():
     changes_and_references()
     display_and_promulgation()
     total_revision()
+    change_dependents()
     for suite, folder in FOLDER.items():
         write_json(C / folder / "manifest.json", {"suite": SV[suite], "cases": INDEX[suite]})
     print("Authored " + ", ".join(f"{k}: {len(v)}" for k, v in INDEX.items()) + "; no validator invoked.")
