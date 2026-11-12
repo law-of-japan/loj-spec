@@ -559,6 +559,55 @@
       },
       "expected": "conformance/loj-history/v1alpha1/expected/hist-033.json",
       "success": true
+    },
+    {
+      "id": "hist-034",
+      "title": "撤回した関係を根拠とする効力の終了（架空）",
+      "requirements": [
+        "HIST-12"
+      ],
+      "check": "L3",
+      "category": "historyStructure",
+      "normative": true,
+      "input": {
+        "kind": "repository",
+        "path": "conformance/loj-history/v1alpha1/invalid/hist-034/repo"
+      },
+      "expected": "conformance/loj-history/v1alpha1/expected/hist-034.json",
+      "success": false
+    },
+    {
+      "id": "hist-035",
+      "title": "内訳をすべて撤回した関係を根拠とする効力の終了（架空）",
+      "requirements": [
+        "HIST-12"
+      ],
+      "check": "L3",
+      "category": "historyStructure",
+      "normative": true,
+      "input": {
+        "kind": "repository",
+        "path": "conformance/loj-history/v1alpha1/invalid/hist-035/repo"
+      },
+      "expected": "conformance/loj-history/v1alpha1/expected/hist-035.json",
+      "success": false
+    },
+    {
+      "id": "hist-036",
+      "title": "内訳の一部を撤回した関係を根拠とする効力の終了（架空）",
+      "requirements": [
+        "HIST-12",
+        "HIST-03"
+      ],
+      "check": "L3",
+      "category": "historyStructure",
+      "normative": true,
+      "input": {
+        "kind": "repository",
+        "path": "conformance/loj-history/v1alpha1/valid/hist-036/repo"
+      },
+      "expected": "conformance/loj-history/v1alpha1/expected/hist-036.json",
+      "success": true
     }
   ]
 }
