@@ -30,12 +30,12 @@ ASTは、`schemaVersion`・`law`・`root`への投影を、位置情報を除い
 | `correction`／`officialCorrection` | 宣言した版の本文。従属して、その版の字体注記（[GLYPH-04](../../loj-glyphs/v1alpha1/01-glyphs.md)）、その版を指すScopeの`nodes`（[TYPE-08](05-types.md)）、当該Revisionの`text.sources`・`text.glyphs`、根拠のSource・Evidence | 宣言していない版のASTが一致する。宣言した版ごとに根拠（原典の箇所、官報正誤）がある |
 | `restoration` | 宣言した版の本文と本文の状態。従属して、`correction`と同じファイルと、当該Revisionの`text`の欠落範囲、再構築報告の対応 | 宣言していない版のASTが一致する。本文の状態・欠落範囲の宣言が更新されている |
 | `metadata` | 版パッケージ以外のファイル（登録台帳を含む） | すべての版のASTが一致する。登録台帳では、統合・分割・撤回したRecordのIDを再利用していない（[RID-05](../../loj-registry/v1alpha1/02-record-ids.md)） |
-| `revisionAdd` | 新しい版パッケージと、その履歴マニフェストの項目。従属して、新しい版の字体注記、`history.yaml`の新しいRevision・関係（`relations`）・Source、再構築報告の`mappings` | 既存のすべての版のASTが一致する。新しい版が版の順序の要件を満たす |
+| `revisionAdd` | 新しい版パッケージ（本文のない版（`text.status: absent`）では版パッケージを置かない）と、その履歴マニフェストの項目。従属して、新しい版の字体注記、`history.yaml`の新しいRevision・関係（`relations`）・Source、再構築報告の`mappings` | 既存のすべての版のASTが一致する。新しい版が版の順序の要件を満たす |
 | `revisionFix` | 宣言した版と、撤回・統合・分割の対応の記録 | 宣言していない版のASTが一致する。撤回・統合・分割した旧IDを再利用していない |
 | `migration` | すべての版 | 新しい仕様の版が規範として提供するASTの対応表で変換した旧ASTが、新ASTと一致する |
 
-- 従属するファイルの更新は、宣言した種類の変更に含まれ、別の種類として分けない（[CHG-01](#chg-01-変更の種類)の「種類ごとに別のcommitに分ける」には当たらない）。従属するファイルの更新を、宣言していない版のASTの一致の検査で違反としてはならない（MUST NOT）。
-- 本版で、ASTの対応表を提供する版の組はない。`loj/v1alpha1`から`loj/v1alpha2`への移行は再構築（[REB-01](../../loj-rebuild/v1alpha1/01-rebuild.md)）で行い、`migration`を宣言してはならない（MUST NOT）。
+- 従属するファイルの更新は、宣言した種類の変更に含まれ、別の種類として分けない（[CHG-01](#chg-01-変更の種類)の「種類ごとに別のcommitに分ける」には当たらない）。従属するファイルは、ASTの一致の検査の対象ではない。宣言していない版のASTは、従属するファイルを更新しても、変わってはならない（MUST NOT）。
+- `loj/v1alpha2`は、`loj/v1alpha1`からのASTの対応表を提供しない。`loj/v1alpha1`から`loj/v1alpha2`への移行は再構築（[REB-01](../../loj-rebuild/v1alpha1/01-rebuild.md)）で行い、`migration`を宣言してはならない（MUST NOT）。
 
 - 誤りが後続の版へ引き継がれている場合、記録訂正は、影響するすべての版を宣言して一度に直してよい（MAY）。
 - 異体字・旧字体の新字体への置換、空白や改行の正規化は、ASTが変わるので`format`ではない。原典に照らした`correction`としてだけ行える。
@@ -57,7 +57,8 @@ ASTは、`schemaVersion`・`law`・`root`への投影を、位置情報を除い
 - 一つのcommitの種類は一つとする。PRを統合するときにcommitをまとめる場合は、種類が同じcommitに限る。
 - 正本ブランチへの統合は、正本ブランチの履歴が一本になる方法（squash、rebase）で行う。正本ブランチにmergeのcommit（親が二つ以上のcommit）を置いてはならない（MUST NOT）。種類の宣言を一つのcommitに一つとし、比べる変更前の記録版を親のcommitに一意に定めるためである。
 - 法令リポジトリの最初のcommitは、`revisionAdd`とする。変更前の版はないものとみなして検査する（履歴だけで本文のない版を加える場合も同じ）。
-- 変更を取り消すcommit（revert）は、取り消す変更と同じ種類を宣言し、同じ検査を受ける（例: `correction`の取り消しは`correction`）。
+- 変更を取り消すcommit（revert）は、取り消した結果の変更が当たる種類を宣言し、その種類の検査を受ける。`correction`・`officialCorrection`・`restoration`・`format`・`metadata`の取り消しは、取り消す変更と同じ種類とする。
+- `revisionAdd`で加えたRevisionを、revertで履歴マニフェストから削除してはならない（MUST NOT。[HIST-10](../../loj-history/v1alpha1/01-history.md)）。取り消す場合は、`revisionFix`でRevisionを撤回する（`status: retracted`）。
 - 宣言のないcommit、宣言と検査の結果が合わないcommit、mergeのcommitは、変更検査で不合格とする。
 
 ## CHG-04 ASTを生成できない版

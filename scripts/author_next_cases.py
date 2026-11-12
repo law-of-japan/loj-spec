@@ -552,7 +552,7 @@ def change_dependents():
         ("第一条の誤転記を直し、本文の出典の箇所を改める", "correction", True,
          fictional_files("架空の雲を保管する。\n", locator="本則第一条")),
     ])
-    add("common", "記録訂正で、同じ版の本文の出典を併せて更新する", ["CHG-02", "CHG-03"], "change",
+    add("common", "記録訂正で、同じ版の本文の出典（history.yamlのtext.sources）を併せて更新する", ["CHG-02", "CHG-03"], "change",
         {"kind": "change", "bundle": rel(bundle), "base": c1, "head": c2},
         {"results": [{"check": "change", "result": "pass"}]}, True)
 

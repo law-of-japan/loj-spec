@@ -454,7 +454,7 @@
     },
     {
       "id": "common-024",
-      "title": "記録訂正で、同じ版の本文の出典を併せて更新する",
+      "title": "記録訂正で、同じ版の本文の出典（history.yamlのtext.sources）を併せて更新する",
       "requirements": [
         "CHG-02",
         "CHG-03"
