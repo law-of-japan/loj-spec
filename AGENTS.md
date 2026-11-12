@@ -65,6 +65,7 @@ python -m unittest discover -s tests -v
 - 新しく加えた負例と、規則が二つ以上関係しうる負例は、期待結果を書いた人と別のセッションが規範だけを読んで期待結果を書き、突き合わせる（[CONTRIBUTING](CONTRIBUTING.md#期待結果の確かめ方)）。検査器と期待結果が食い違ったら、規範の本文で決め、検査器の出力を根拠にしない。
 - 版パッケージのケースを除く負例で、入力のYAMLがschemaに合わないものには、索引の`rejectedBy: schema`の印を付ける（`author_next_cases.py`の`SCHEMA_REJECTED`）。schemaの誤りが期待する規則の違反と対応するかを確かめてから付ける。
 - 負例と索引は`scripts/author_*.py`が展開する。対象と実行の順は[CONTRIBUTING](CONTRIBUTING.md)の表にある。CIはこれらを実行しないので、実行したら生成された差分を確かめる。`author_data.py`（v1alpha1）は実行しない。
+- 負例の多くは正例の写しであり、元と変更が索引の`derivedFrom`にある。正例を直したら`author_next_cases.py`を実行し直す。忘れると`verify.py`が写しの食い違いとして失敗する。写しのファイルを手で直さない。
 - `git bundle`を作り直すとcommitのハッシュが変わる。ハッシュを参照する索引と期待結果も確かめる。
 - 大文字・小文字だけが違うファイル名を作らない（Windowsで区別できない）。
 

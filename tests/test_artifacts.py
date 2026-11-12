@@ -520,6 +520,119 @@ class DiagnosticLocationTests(unittest.TestCase):
         self.assertFalse(validator.is_valid({"diagnostics": [extra]}))
 
 
+class DerivationTests(unittest.TestCase):
+    """CONF-01: a copied input listed in derivedFrom is its source with the listed edits, byte for byte."""
+
+    def setUp(self):
+        self.folder = tempfile.TemporaryDirectory()
+        base = Path(self.folder.name)
+        self.source, self.copy = base / "source", base / "copy"
+        for folder, body in ((self.source, b"a: 1\r\nb: 2\r\n"), (self.copy, b"a: 1\r\nb: 3\r\n")):
+            (folder / "sub").mkdir(parents=True)
+            (folder / "sub/data.yaml").write_bytes(body)
+            (folder / "same.md").write_bytes("雲\n".encode("utf-8"))
+        self.entry = {"path": self.copy.as_posix(), "from": self.source.as_posix(),
+                      "edits": [{"file": "sub/data.yaml", "old": "b: 2", "new": "b: 3"}]}
+
+    def tearDown(self):
+        self.folder.cleanup()
+
+    def test_matching_copy_passes(self):
+        self.assertIsNone(v.derivation_problem(self.entry))
+        (self.copy / "new.yaml").write_bytes(b"c: 4\n")
+        entry = dict(self.entry, edits=self.entry["edits"] + [{"file": "new.yaml", "content": "c: 4\n"}])
+        self.assertIsNone(v.derivation_problem(entry))
+
+    def test_changed_source_rejected(self):
+        # The source was edited after the copy was made, and the copy was not made again.
+        (self.source / "same.md").write_bytes("雲。\n".encode("utf-8"))
+        self.assertIn("content differs", v.derivation_problem(self.entry))
+
+    def test_unlisted_change_or_file_rejected(self):
+        self.assertIn("content differs", v.derivation_problem(dict(self.entry, edits=[])))
+        (self.copy / "extra.yaml").write_bytes(b"x: 1\n")
+        self.assertIn("file set differs", v.derivation_problem(self.entry))
+
+    def test_missing_old_text_rejected(self):
+        for file, old in (("sub/data.yaml", "b: 9"), ("none.yaml", "b: 2")):
+            entry = dict(self.entry, edits=[{"file": file, "old": old, "new": "b: 3"}])
+            with self.subTest(file=file):
+                self.assertIn("old text not found", v.derivation_problem(entry))
+
+    def test_line_endings_compared_as_bytes(self):
+        (self.copy / "sub/data.yaml").write_bytes(b"a: 1\nb: 3\n")
+        self.assertIn("content differs", v.derivation_problem(self.entry))
+
+    def test_file_source(self):
+        source, target = (self.source / "same.md").as_posix(), (self.copy / "same.md").as_posix()
+        self.assertIsNone(v.derivation_problem({"path": target, "from": source, "edits": []}))
+        edits = [{"file": "", "old": "雲", "new": "雨"}]
+        self.assertIn("edits on a file", v.derivation_problem({"path": target, "from": source, "edits": edits}))
+        self.assertIn("missing source", v.derivation_problem({"path": target, "from": "none.md", "edits": []}))
+
+    def test_path_must_be_own_input(self):
+        index = v.read_json(v.ROOT / "conformance/loj-glyphs/v1alpha1/manifest.json")
+        case = copy.deepcopy(next(c for c in index["cases"] if c["id"] == "glyph-002"))
+        self.assertEqual(v.check_derivations("glyph-002", case), 1)
+        # The shared positive is an input of other cases too, not a copy owned by this case.
+        case["derivedFrom"][0]["path"] = "conformance/loj-history/v1alpha1/valid/hist-001/repo"
+        with self.assertRaisesRegex(ValueError, "not an own input"):
+            v.check_derivations("glyph-002", case)
+
+    def test_expected_path_shape_required(self):
+        index = v.read_json(v.ROOT / "conformance/loj-glyphs/v1alpha1/manifest.json")
+        case = copy.deepcopy(next(c for c in index["cases"] if c["id"] == "glyph-002"))
+        case["expected"] = "conformance/loj-glyphs/v1alpha1/results/glyph-002.json"
+        with self.assertRaisesRegex(ValueError, "expected path"):
+            v.check_derivations("glyph-002", case)
+
+    def test_symbolic_link_rejected(self):
+        try:
+            (self.copy / "link.md").symlink_to(self.copy / "same.md")
+        except (OSError, NotImplementedError):
+            self.skipTest("symbolic links are not available")
+        with self.assertRaisesRegex(ValueError, "symbolic link"):
+            v.derivation_problem(self.entry)
+
+    def test_duplicate_or_broken_entry_rejected(self):
+        index = v.read_json(v.ROOT / "conformance/loj-glyphs/v1alpha1/manifest.json")
+        case = copy.deepcopy(next(c for c in index["cases"] if c["id"] == "glyph-002"))
+        twice = copy.deepcopy(case)
+        twice["derivedFrom"].append(copy.deepcopy(case["derivedFrom"][0]))
+        with self.assertRaisesRegex(ValueError, "not an own input"):
+            v.check_derivations("glyph-002", twice)
+        case["derivedFrom"][0]["edits"] = []
+        with self.assertRaisesRegex(ValueError, "content differs"):
+            v.check_derivations("glyph-002", case)
+
+    def test_dot_segments_rejected(self):
+        for key, value in (("from", "conformance/../../x"), ("path", "./copy"), ("file", "../x.yaml")):
+            entry = copy.deepcopy(self.entry)
+            if key == "file":
+                entry["edits"][0]["file"] = value
+            else:
+                entry[key] = value
+            with self.subTest(key=key):
+                self.assertIn(". or .. segment", v.derivation_problem(entry))
+        validator = v.all_schemas()["common/v1alpha1/conformance.schema.json"]
+        index = v.read_json(v.ROOT / "conformance/loj-glyphs/v1alpha1/manifest.json")
+        self.assertTrue(validator.is_valid(index))
+        case = next(c for c in index["cases"] if "derivedFrom" in c)
+        for value in ("../x", "a/../x", "a/./x", ".", "a/.."):
+            case["derivedFrom"][0]["from"] = value
+            with self.subTest(value=value):
+                self.assertFalse(validator.is_valid(index))
+        case["derivedFrom"][0]["from"] = "a/.hidden/x..y"
+        self.assertTrue(validator.is_valid(index))
+
+    def test_repository_copies_match(self):
+        count = 0
+        for folder, _ in v.SUITES.values():
+            index = v.read_json(v.ROOT / "conformance" / folder / "manifest.json")
+            count += sum(v.check_derivations(case["id"], case) for case in index["cases"])
+        self.assertGreater(count, 0)
+
+
 if __name__ == "__main__":
     unittest.main()
 
