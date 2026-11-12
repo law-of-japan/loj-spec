@@ -14,7 +14,7 @@
   - `id`は、英数字で始まるASCIIの英数字とハイフンで、大小文字を区別し、永続的な登録キーとする。法令リポジトリの版パッケージでは、Record IDと一致しなければならない（MUST。履歴マニフェストの要件で検査する）。`id`から種別・日付を導いてはならない（MUST NOT）。
 - 任意のフィールドは、`sourceUris`（出典のURIの文字列の配列）、`unsupportedFeatures`（空でない文字列の配列）、`supplements`（`key`と`title`）、`appendices`（`key`と`title`）である。
   - `supplements[].title`は、附則を区別するための表示用の名前（例: 「制定附則」「平成十一年法律第百六十号附則」）である。附則の見出し（HEAD-03）とも意味ASTとも比べず、検査しない。意味ASTを変えないので、値の変更は変更の種類の`format`に当たる。
-  - `appendices[].title`は、附属資料の最初の見出しと完全に一致しなければならない（MUST。HEAD-03）。
+  - `appendices[].title`は、附属資料の最初の見出しと完全に一致しなければならない（MUST）。附属資料の最初の見出しの形は、[HEAD-03](04-headings.md)による。
 - 各`documents`の項目は、`path`と`parent`だけを持つ。`parent`は`main`、`supplement/<key>`、`appendix/<key>`のいずれかでなければならない（MUST）。
 - `key`は小文字のASCII英字で始まり、小文字の英数字とハイフンからなる。定義したkeyだけを参照でき、各keyは同じ種類の配列の中で一意でなければならない（MUST）。`original`は制定時の附則の推奨のkeyである。位置による自動の採番を禁止する。
 

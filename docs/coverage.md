@@ -97,3 +97,5 @@ XREF-05・XREF-06（2026-11-12、[law-of-japan/loj-spec#13](https://github.com/l
 TIME-03は、ケースがあるが一部だけである（hist-004、hist-015〜018）。`pending`等を基準とする`derived`に`value`を書いた負例と、`value`の書式（`YYYY-MM-DD`）に反する負例は、まだない。
 
 フィールドの改名（2026-11-12、[law-of-japan/loj-spec#29](https://github.com/law-of-japan/loj-spec/issues/29)）は、改めたschemaで正例のYAMLを検査して確かめる。`law.yaml`の`sourceUris`（旧`sources`）は任意のフィールドで、v1alpha2の正例に使用例がなく、まだケースがない。旧名は閉じたschemaにより未知のフィールドとして拒否されるが、旧名を使う負例は加えていない（未知のフィールドの負例は、Manifestのpkgのケースと、Revisionのhist-005にある）。
+
+規則の正の整理（2026-11-12、[law-of-japan/loj-spec#30](https://github.com/law-of-japan/loj-spec/issues/30)）で、二つの規則の正が変わった。改正法の附則を版パッケージに写さない規則（HIST-03からBASIC-03へ）と、L0・L1で文字の存在を違反にしない規則（版パッケージの検査の章からBASIC-02へ）である。前者は原典と比べないと確かめられず、後者は違反を出さないことの定めなので、どちらも負例を作れない。後者は、互換漢字・異体字セレクタを含む正例（pkg-106等）がL0・L1に合格することで確かめる。

@@ -59,7 +59,7 @@ ASTは、`schemaVersion`・`law`・`root`への投影を、位置情報を除い
 - 正本ブランチへの統合は、正本ブランチの履歴が一本になる方法（squash、rebase）で行う。正本ブランチにmergeのcommit（親が二つ以上のcommit）を置いてはならない（MUST NOT）。種類の宣言を一つのcommitに一つとし、比べる変更前の記録版を親のcommitに一意に定めるためである。
 - 法令リポジトリの最初のcommitは、`revisionAdd`とする。変更前の版はないものとみなして検査する（履歴だけで本文のない版を加える場合も同じ）。
 - 変更の取り消し（revert）は、前の変更を意味の上で取り消すcommitをいう。`git revert`が生成する差分そのものを指さない。取り消しのcommitは、原則として取り消す変更と同じ種類を宣言し、その種類の検査を受ける。例外は`revisionAdd`の取り消しで、`revisionFix`とする。
-  - `revisionAdd`の取り消し: `revisionFix`とし、加えたRevisionを撤回する（`status: retracted`）。Revisionを履歴マニフェストから削除してはならない（MUST NOT。[HIST-10](../../loj-history/v1alpha1/01-history.md)）。版パッケージを削除する差分（`git revert`の差分）は、この要件に反する。
+  - `revisionAdd`の取り消し: `revisionFix`とし、加えたRevisionを撤回する（`status: retracted`）。Revisionは、履歴マニフェストから削除しない（[HIST-10](../../loj-history/v1alpha1/01-history.md)）。版パッケージを削除する差分（`git revert`の差分）は、この要件に反する。
   - `revisionFix`の取り消し（撤回・統合・分割の取り消し）: `revisionFix`とし、Revisionの`status`と`replacedBy`を戻す。Revisionを削除しない。
   - `migration`の取り消し: `migration`とし、旧い版への対応表を規範として提供する版の組に限る。対応表を提供する組がない本版では、`migration`もその取り消しも宣言できない。
   - そのほかの種類の取り消し: 取り消す変更と同じ種類とする（例: `correction`の取り消しは`correction`）。

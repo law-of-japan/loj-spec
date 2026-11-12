@@ -27,4 +27,4 @@
   - 同じ施行時点に複数の改正法令が施行される場合は、改正法令ごとに別のRevisionとし、相互の順序を`basedOn`で表す。
   - 一つの改正法令が同じ施行時点に複数の範囲を改正する場合は、一つのRevisionとし、範囲の一覧を成立根拠に持つ。
   - 施行時点が`pending`の改正も、一つのRevisionとして登録できる（MAY）。施行時点が確定しても、revision_idは変わらない。
-- 官報正誤と記録訂正は法令の改正ではないので、新しいRevisionを作ってはならない（MUST NOT。[CHG-01](../../common/v1alpha1/07-changes.md)）。
+- 官報正誤と記録訂正は法令の改正ではないので、新しいRevisionを作らない（[CHG-01](../../common/v1alpha1/07-changes.md)）。
