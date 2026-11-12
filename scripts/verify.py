@@ -461,6 +461,11 @@ def audit_suite(name, validators, rules):
         failed = any(r["result"] == "fail" for r in expected.get("results", []))
         errors = [d for d in expected.get("diagnostics", []) if d["class"] == "error"]
         require(all(d["rule"] in rules for d in expected.get("diagnostics", [])), ident + " unknown diagnostic rule")
+        if case["input"]["kind"] not in ("package", "reference"):
+            # CONF-01: the case's own check (and category) must be listed exactly once.
+            own = [r for r in expected.get("results", [])
+                   if r["check"] == case["check"] and r.get("category") == case.get("category")]
+            require(len(own) == 1, ident + " expected result must list the case's own check once")
         if case["success"]:
             require(not failed and not errors, ident + " positive case expects failure")
         else:
