@@ -524,7 +524,9 @@ def check_schema_mark(ident, case, inputs, validators):
 
 
 def tree_bytes(path):
-    """The files below a directory by their relative path, or a single file under the empty name."""
+    """The files below a directory by their relative path, or a single file under the empty name.
+
+    Only files are compared (CONF-01 compares the set of files); Git keeps no empty directories."""
     if path.is_file():
         return {"": path.read_bytes()}
     return {p.relative_to(path).as_posix(): p.read_bytes() for p in sorted(path.rglob("*")) if p.is_file()}
@@ -532,6 +534,10 @@ def tree_bytes(path):
 
 def derivation_problem(entry):
     """CONF-01: applying the edits in order to a copy of from gives path, byte for byte. Returns the problem or None."""
+    # The index schema's path pattern admits "." and ".." segments; a copy and its source stay inside the repository.
+    for name in [entry["from"], entry["path"]] + [edit["file"] for edit in entry["edits"]]:
+        if any(part in (".", "..") for part in name.split("/")):
+            return "path with a . or .. segment: " + name
     source, target = ROOT / entry["from"], ROOT / entry["path"]
     if not source.exists():
         return "missing source " + entry["from"]

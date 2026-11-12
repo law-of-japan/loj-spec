@@ -230,12 +230,12 @@
                 "path": {
                   "type": "string",
                   "minLength": 1,
-                  "pattern": "^[A-Za-z0-9_.-]+(/[A-Za-z0-9_.-]+)*$"
+                  "pattern": "^(?!\\.\\.?(/|$))(?!.*/\\.\\.?(/|$))[A-Za-z0-9_.-]+(/[A-Za-z0-9_.-]+)*$"
                 },
                 "from": {
                   "type": "string",
                   "minLength": 1,
-                  "pattern": "^[A-Za-z0-9_.-]+(/[A-Za-z0-9_.-]+)*$"
+                  "pattern": "^(?!\\.\\.?(/|$))(?!.*/\\.\\.?(/|$))[A-Za-z0-9_.-]+(/[A-Za-z0-9_.-]+)*$"
                 },
                 "edits": {
                   "type": "array",
@@ -247,7 +247,7 @@
                           "file": {
                             "type": "string",
                             "minLength": 1,
-                            "pattern": "^[A-Za-z0-9_.-]+(/[A-Za-z0-9_.-]+)*$"
+                            "pattern": "^(?!\\.\\.?(/|$))(?!.*/\\.\\.?(/|$))[A-Za-z0-9_.-]+(/[A-Za-z0-9_.-]+)*$"
                           },
                           "old": {
                             "type": "string",
@@ -270,7 +270,7 @@
                           "file": {
                             "type": "string",
                             "minLength": 1,
-                            "pattern": "^[A-Za-z0-9_.-]+(/[A-Za-z0-9_.-]+)*$"
+                            "pattern": "^(?!\\.\\.?(/|$))(?!.*/\\.\\.?(/|$))[A-Za-z0-9_.-]+(/[A-Za-z0-9_.-]+)*$"
                           },
                           "content": {
                             "type": "string"

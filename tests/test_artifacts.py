@@ -579,6 +579,37 @@ class DerivationTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "not an own input"):
             v.check_derivations("glyph-002", case)
 
+    def test_duplicate_or_broken_entry_rejected(self):
+        index = v.read_json(v.ROOT / "conformance/loj-glyphs/v1alpha1/manifest.json")
+        case = copy.deepcopy(next(c for c in index["cases"] if c["id"] == "glyph-002"))
+        twice = copy.deepcopy(case)
+        twice["derivedFrom"].append(copy.deepcopy(case["derivedFrom"][0]))
+        with self.assertRaisesRegex(ValueError, "not an own input"):
+            v.check_derivations("glyph-002", twice)
+        case["derivedFrom"][0]["edits"] = []
+        with self.assertRaisesRegex(ValueError, "content differs"):
+            v.check_derivations("glyph-002", case)
+
+    def test_dot_segments_rejected(self):
+        for key, value in (("from", "conformance/../../x"), ("path", "./copy"), ("file", "../x.yaml")):
+            entry = copy.deepcopy(self.entry)
+            if key == "file":
+                entry["edits"][0]["file"] = value
+            else:
+                entry[key] = value
+            with self.subTest(key=key):
+                self.assertIn(". or .. segment", v.derivation_problem(entry))
+        validator = v.all_schemas()["common/v1alpha1/conformance.schema.json"]
+        index = v.read_json(v.ROOT / "conformance/loj-glyphs/v1alpha1/manifest.json")
+        self.assertTrue(validator.is_valid(index))
+        case = next(c for c in index["cases"] if "derivedFrom" in c)
+        for value in ("../x", "a/../x", "a/./x", ".", "a/.."):
+            case["derivedFrom"][0]["from"] = value
+            with self.subTest(value=value):
+                self.assertFalse(validator.is_valid(index))
+        case["derivedFrom"][0]["from"] = "a/.hidden/x..y"
+        self.assertTrue(validator.is_valid(index))
+
     def test_repository_copies_match(self):
         count = 0
         for folder, _ in v.SUITES.values():

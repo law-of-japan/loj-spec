@@ -4,9 +4,10 @@ Authoring helper (O-15). Not a validator: each negative case is a copy of a
 checked-in positive input with one hand-written change, and its expected rule
 and result are written here by hand from the spec text. Each copy is listed in
 the index (derivedFrom: its source and the changes), and verify.py rebuilds it
-from the source to find copies left behind by a changed source (CONF-01). The fictional Git
-history for the change and reference cases is built with fixed authors and
-dates so that the bundle and the commit hashes are reproducible.
+from the source to find copies left behind by a changed source (CONF-01).
+The fictional Git history for the change and reference cases is built with
+fixed authors and dates so that the bundle and the commit hashes are
+reproducible.
 CI does not run this script; it reads the checked-in files.
 """
 import json
@@ -51,7 +52,7 @@ def mutate(dest, source, edits, files=None):
     for name, old, new in edits:
         path = dest / name
         text = path.read_bytes().decode("utf-8")
-        assert old in text, (dest, name, old)
+        assert old and old in text, (dest, name, old)  # the index schema requires a non-empty old
         path.write_bytes(text.replace(old, new, 1).encode("utf-8"))
         record.append({"file": name, "old": old, "new": new})
     for name, body in (files or {}).items():
