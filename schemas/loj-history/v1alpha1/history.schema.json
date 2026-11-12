@@ -394,6 +394,125 @@
                 "type": "string",
                 "pattern": "^versions/[0-9a-hjkmnp-tv-z]{8}/glyphs\\.yaml$",
                 "$comment": "HIST-08, GLYPH-01: the Revision's own revision_id (checked by the validator)."
+              },
+              "variances": {
+                "$comment": "HIST-08, GLYPH-07: wording differences between source materials.",
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "scope": {
+                      "$ref": "https://law-of-japan.github.io/loj-spec/schemas/common/v1alpha1/types.schema.json#/$defs/Scope"
+                    },
+                    "readings": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "source": {
+                            "$ref": "https://law-of-japan.github.io/loj-spec/schemas/common/v1alpha1/types.schema.json#/$defs/localId"
+                          },
+                          "locator": {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          "raw": {
+                            "type": "string",
+                            "minLength": 1
+                          }
+                        },
+                        "additionalProperties": false,
+                        "required": [
+                          "source",
+                          "locator",
+                          "raw"
+                        ]
+                      },
+                      "minItems": 2
+                    },
+                    "verification": {
+                      "$ref": "https://law-of-japan.github.io/loj-spec/schemas/common/v1alpha1/types.schema.json#/$defs/Verification"
+                    },
+                    "resolvedBy": {
+                      "$ref": "https://law-of-japan.github.io/loj-spec/schemas/common/v1alpha1/types.schema.json#/$defs/Evidence"
+                    }
+                  },
+                  "additionalProperties": false,
+                  "required": [
+                    "scope",
+                    "readings",
+                    "verification"
+                  ]
+                },
+                "minItems": 1
+              },
+              "correctionsSurveyed": {
+                "$comment": "HIST-08, REB-05: whether official corrections were surveyed.",
+                "type": "object",
+                "properties": {
+                  "state": {
+                    "enum": [
+                      "surveyed",
+                      "unsurveyed"
+                    ]
+                  },
+                  "evidence": {
+                    "$ref": "https://law-of-japan.github.io/loj-spec/schemas/common/v1alpha1/types.schema.json#/$defs/evidenceList"
+                  },
+                  "reason": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "additionalProperties": false,
+                "required": [
+                  "state"
+                ],
+                "allOf": [
+                  {
+                    "if": {
+                      "properties": {
+                        "state": {
+                          "const": "surveyed"
+                        }
+                      }
+                    },
+                    "then": {
+                      "required": [
+                        "evidence"
+                      ],
+                      "properties": {
+                        "evidence": {
+                          "minItems": 1
+                        }
+                      },
+                      "not": {
+                        "required": [
+                          "reason"
+                        ]
+                      }
+                    }
+                  },
+                  {
+                    "if": {
+                      "properties": {
+                        "state": {
+                          "const": "unsurveyed"
+                        }
+                      }
+                    },
+                    "then": {
+                      "required": [
+                        "reason"
+                      ],
+                      "not": {
+                        "required": [
+                          "evidence"
+                        ]
+                      }
+                    }
+                  }
+                ]
               }
             },
             "required": [
@@ -467,6 +586,32 @@
                   "not": {
                     "required": [
                       "gaps"
+                    ]
+                  }
+                }
+              },
+              {
+                "$comment": "HIST-08: a Revision without text records neither variances nor correctionsSurveyed.",
+                "if": {
+                  "properties": {
+                    "status": {
+                      "const": "absent"
+                    }
+                  }
+                },
+                "then": {
+                  "not": {
+                    "anyOf": [
+                      {
+                        "required": [
+                          "variances"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "correctionsSurveyed"
+                        ]
+                      }
                     ]
                   }
                 }

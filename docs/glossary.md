@@ -108,7 +108,9 @@
 | 適用関係 | `applicability` | 適用の条件の調査結果。`noneConfirmed`（ないことを確認）、`unsurveyed`（未調査）、`conditions`（条件あり） | [HIST-07](../spec/loj-history/v1alpha1/01-history.md#hist-07-適用関係) |
 | 経過措置による併存 | — | 新旧の状態が同時に適用される状態。`basedOn`の分岐と適用関係で表す | [HIST-04](../spec/loj-history/v1alpha1/01-history.md#hist-04-起点と基礎状態)、[HIST-07](../spec/loj-history/v1alpha1/01-history.md#hist-07-適用関係) |
 | 本文の状態 | `text.status` | `complete`（そろっている）、`partial`（一部欠ける。欠落は`gaps`）、`absent`（本文がない） | [HIST-08](../spec/loj-history/v1alpha1/01-history.md#hist-08-本文の状態) |
-| 字体の照合状態 | `text.glyphs` | `verified`（原典の字体と照合した）、`unverified`（照合していない） | [HIST-08](../spec/loj-history/v1alpha1/01-history.md#hist-08-本文の状態)、[GLYPH-10](../spec/loj-glyphs/v1alpha1/01-glyphs.md#glyph-10-照合状態との関係) |
+| 字体の照合状態 | `text.glyphs` | `verified`（原典の字体と照合した）、`unverified`（照合していない）。`verified`には、字体を保持するSourceを`text.sources`で指す | [HIST-08](../spec/loj-history/v1alpha1/01-history.md#hist-08-本文の状態)、[GLYPH-10](../spec/loj-glyphs/v1alpha1/01-glyphs.md#glyph-10-照合状態との関係) |
+| 資料の間の食い違い | `text.variances` | 原典資料の間で文言が違い、官報正誤で解けていないもの。資料ごとの文言を並べ、`disputed`として記録する | [HIST-08](../spec/loj-history/v1alpha1/01-history.md#hist-08-本文の状態)、[GLYPH-07](../spec/loj-glyphs/v1alpha1/01-glyphs.md#glyph-07-字体の根拠とする資料) |
+| 官報正誤の確認 | `text.correctionsSurveyed` | 版の本文について官報正誤を確かめたか。`surveyed`、`unsurveyed` | [HIST-08](../spec/loj-history/v1alpha1/01-history.md#hist-08-本文の状態)、[REB-05](../spec/loj-rebuild/v1alpha1/01-rebuild.md#reb-05-原典の入手経路と記録) |
 | 収録範囲 | `coverage` | 収録の網羅性の確認状態（`confirmed`／`unconfirmed`）と既知の欠落。Revisionの数を網羅性の根拠にしない | [HIST-11](../spec/loj-history/v1alpha1/01-history.md#hist-11-収録範囲) |
 | 効力の終了 | `termination` | `repealed`、`totallyRevised`、`expired`（自身の規定による失効）。登録台帳には写さない | [HIST-12](../spec/loj-history/v1alpha1/01-history.md#hist-12-効力の終了) |
 | Revisionの状態 | `status` | `active`、`retracted`（撤回）、`merged`（統合）、`split`（分割）。撤回等をしても削除しない | [HIST-10](../spec/loj-history/v1alpha1/01-history.md#hist-10-revisionの状態) |
@@ -155,8 +157,8 @@
 | 用語 | 表記 | 意味 | 定義 |
 |---|---|---|---|
 | コードポイント列の保持 | — | 原典から選んだ字をUnicodeのコードポイント列のまま保持すること。正規化（NFC等）を正本に適用しない | [CHAR-01](../spec/common/v1alpha1/02-characters.md#char-01-コードポイント列の保持) |
-| 統合漢字、CJK互換漢字 | U+F900〜U+FAFF、U+2F800〜U+2FA1F | 互換漢字は正規化で統合漢字に変わるため、特に注意する。本文の互換漢字には字体注記が要る | [CHAR-01](../spec/common/v1alpha1/02-characters.md#char-01-コードポイント列の保持)、[GLYPH-11](../spec/loj-glyphs/v1alpha1/01-glyphs.md#glyph-11-互換漢字と異体字セレクタの注記) |
-| 異体字セレクタ、IVS | Variation Selector | 字形を指定する符号。原典に対応して記録したものを保持し、自動で付け外ししない | [CHAR-03](../spec/common/v1alpha1/02-characters.md#char-03-異体字セレクタ)、[GLYPH-06](../spec/loj-glyphs/v1alpha1/01-glyphs.md#glyph-06-コードポイントの選択基準) |
+| 統合漢字、CJK互換漢字 | U+F900〜U+FAFF、U+2F800〜U+2FA1F | 互換漢字は正規化で統合漢字に変わるため、特に注意する。本文の互換漢字には字体注記が要る。本仕様の互換漢字は、この範囲の字のうち正規分解を持つもの（Unicode 15.1）である。範囲にあって正規分解を持たない12字は、統合漢字として扱う（GLYPH-11に一覧がある） | [CHAR-01](../spec/common/v1alpha1/02-characters.md#char-01-コードポイント列の保持)、[GLYPH-11](../spec/loj-glyphs/v1alpha1/01-glyphs.md#glyph-11-互換漢字と異体字セレクタの注記)、[VAL-08](../spec/common/v1alpha1/03-validation.md#val-08-unicodeの版) |
+| 異体字セレクタ、IVS | Variation Selector、`ivd`（字体注記） | 字形を指定する符号。原典に対応して記録したものを保持し、自動で付け外ししない。付けた字の注記には、使ったIVDのコレクションと並びを`ivd`に書く | [CHAR-03](../spec/common/v1alpha1/02-characters.md#char-03-異体字セレクタ)、[GLYPH-06](../spec/loj-glyphs/v1alpha1/01-glyphs.md#glyph-06-コードポイントの選択基準) |
 | 踊り字 | 々、〻、ゝ、〳〵等 | 原典に印刷された記号のまま転記し、展開しない | [CHAR-02](../spec/common/v1alpha1/02-characters.md#char-02-字体の自動変換の禁止)、[GLYPH-08](../spec/loj-glyphs/v1alpha1/01-glyphs.md#glyph-08-踊り字) |
 | 〓（ゲタ） | U+3013 | 判読困難・符号化不能の字の代わりに本文に置く字。本文の〓にはすべて注記が要る | [GLYPH-03](../spec/loj-glyphs/v1alpha1/01-glyphs.md#glyph-03-本文に置く字)、[GLYPH-02](../spec/loj-glyphs/v1alpha1/01-glyphs.md#glyph-02-注記する場合) |
 | 字体注記の種類 | `kind` | `ambiguous`、`illegible`、`unencodable`、`literal`、`spacing`、`variance`、`sourceEdit`、`selected` | [GLYPH-02](../spec/loj-glyphs/v1alpha1/01-glyphs.md#glyph-02-注記する場合) |
@@ -209,7 +211,8 @@
 |---|---|---|---|
 | 再構築 | — | 旧リポジトリのRecordを、原典から履歴マニフェスト・版パッケージ・字体注記へ作り直して移す作業。旧本文は取り込まない | [REB-01](../spec/loj-rebuild/v1alpha1/01-rebuild.md#reb-01-対象と新しい版で書くこと)、[REB-03](../spec/loj-rebuild/v1alpha1/01-rebuild.md#reb-03-本文の出どころ) |
 | 凍結 | `legacy.frozenAt` | 旧リポジトリの規定のブランチをその時点で止め、以後pushしないこと。旧commitは到達できるように保つ | [REB-02](../spec/loj-rebuild/v1alpha1/01-rebuild.md#reb-02-idの維持)、[REB-08](../spec/loj-rebuild/v1alpha1/01-rebuild.md#reb-08-既存の参照の維持と旧形式)、[REBR-02](../spec/loj-rebuild/v1alpha1/02-report.md#rebr-02-項目) |
-| 資料の確認結果 | `sourceChecks`、`glyphs` | 使った資料が旧字体・異体字を保持しているか。`preserved`、`normalized`、`unknown` | [REBR-03](../spec/loj-rebuild/v1alpha1/02-report.md#rebr-03-資料の確認結果) |
+| 資料の確認結果 | `sourceChecks`、`glyphs` | 旧リポジトリから移したときに、使った資料が旧字体・異体字を保持しているかを確かめた記録。`preserved`、`normalized`、`unknown` | [REBR-03](../spec/loj-rebuild/v1alpha1/02-report.md#rebr-03-資料の確認結果) |
+| 字体の保持 | `glyphPreservation`（Source） | 資料が旧字体・異体字を保持しているか。`preserved`、`normalized`、`unknown`。GLYPH-10の条件はこれで確かめる | [TYPE-02](../spec/common/v1alpha1/05-types.md#type-02-source)、[GLYPH-10](../spec/loj-glyphs/v1alpha1/01-glyphs.md#glyph-10-照合状態との関係) |
 | 旧commitとの対応 | `mappings` | 旧リポジトリの各commitと、対応するRevisionの一覧。対応しないcommitも省略しない | [REBR-04](../spec/loj-rebuild/v1alpha1/02-report.md#rebr-04-旧commitとの対応と未再構築の改正) |
 | 未再構築の改正 | `pending`（再構築報告） | 旧リポジトリにあるが、まだ再構築していない改正 | [REBR-04](../spec/loj-rebuild/v1alpha1/02-report.md#rebr-04-旧commitとの対応と未再構築の改正) |
 | 原典と旧本文の差 | `differences`、`class` | `wording`（文言）、`structure`（構造）、`omission`（欠落）、`glyph`（字体だけ） | [REBR-05](../spec/loj-rebuild/v1alpha1/02-report.md#rebr-05-原典と旧本文の差) |
@@ -250,7 +253,7 @@
 | 登録台帳の状態と効力の終了 | 登録台帳の`status`は登録の状態。廃止・失効は履歴マニフェストの`termination`で表し、登録台帳には写さない |
 | `pending` | 時点値では「法令上まだ定まっていない」。番号主張の`decision`では「保留」。再構築報告では「未再構築の改正」。診断の`class`では「保留」 |
 | `unknown` | 時点値では「調査上不明」。番号主張の`state`、`basedOn`、資料の確認結果（`sourceChecks.glyphs`）でもそれぞれ「不明」を表す。いずれも推測で値を補わない |
-| `glyphs` | 履歴マニフェストの`text.glyphs`は字体の照合状態。`text.glyphNotes`は字体注記のファイルのパス。再構築報告の`sourceChecks.glyphs`は資料が字体を保持しているか。番号主張の`glyphs`は`raw`の字体注記 |
+| `glyphs` | 履歴マニフェストの`text.glyphs`は字体の照合状態。`text.glyphNotes`は字体注記のファイルのパス。再構築報告の`sourceChecks.glyphs`は資料が字体を保持しているかの確認の記録（GLYPH-10の条件はSourceの`glyphPreservation`で確かめる）。番号主張の`glyphs`は`raw`の字体注記 |
 | `basis` | Revisionの`basis`は成立根拠（関係と内訳）。字体注記の`basis`は曖昧な字の決め方 |
 | `text` | 版パッケージのASTの`text`は本文。履歴マニフェストの`text`は本文の状態。登録台帳の`text`は本文の取得状況。Scopeの`text`は対象範囲の原文 |
 | 未取得と不存在 | 未取得（`notFetched`）はリポジトリ・commit・Recordを取得できなかったこと。不存在確認済み（`nonexistentConfirmed`）は存在しないことを確かめたこと。未取得を不存在とみなさない。登録台帳の`notCollected`（本文を取得していない）からも本文の不存在を推論しない |
