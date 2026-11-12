@@ -28,7 +28,8 @@ ZWG = "versions/zwgmz1rt/"
 # CONF-01: negatives whose input breaks the schema of its schemaVersion. Written by hand: the schema error
 # of each one was checked to be the violation of the case's expected rule (law-of-japan/loj-spec#32).
 SCHEMA_REJECTED = {"hist-005", "hist-006", "hist-010", "hist-012", "hist-013", "hist-020", "hist-021", "hist-022",
-                   "hist-026", "glyph-005", "reg-005", "reg-006", "reg-007", "rebuild-002"}
+                   "hist-026", "hist-038", "hist-041", "hist-042", "hist-043", "hist-045", "hist-046", "glyph-005", "reg-005",
+                   "reg-006", "reg-007", "rebuild-002"}
 
 
 def write_json(path, value):
@@ -113,7 +114,9 @@ def history():
         mutate(dest, HIST_POS, edits)
         sv = SV["common"] if rule.startswith(("TIME", "TYPE")) else SV["hist"]
         category = "evidence" if rule.startswith("TYPE") else "historyStructure"
-        add("hist", title, [rule], "L3", {"kind": "repository", "path": rel(dest)},
+        # TIME-06 makes TYPE-05 apply to time points; TYPE-05 stays the rule of the diagnostic.
+        requirements = [rule, "TIME-06"] if rule == "TYPE-05" else [rule]
+        add("hist", title, requirements, "L3", {"kind": "repository", "path": rel(dest)},
             {"results": [l3(category, "fail")], "diagnostics": [diag(rule, sv)]}, False, category)
     dest = next_dir("hist", False) / "repo"
     mutate(dest, "conformance/loj-history/v1alpha1/valid/hist-002/repo",
@@ -675,6 +678,59 @@ def termination_retraction():
         {"kind": "repository", "path": rel(dest)}, {"results": [l3("historyStructure")]}, True, "historyStructure")
 
 
+# --- 2026-11-12 (#32): common types and time points in the history manifest -----------------
+def common_types():
+    space = [("history.yaml", "record: {id: 19480720-law-178, label:", "record: {id: 19480720-law-178, space: loj, label:"),
+             ("history.yaml", "from: {id: 19660625-act-86, label:", "from: {id: 19660625-act-86, space: loj, label:")]
+    external = ("    status: active\ncoverage:",
+                "    externalIds:\n      - issuer: egov\n        kind: {}\n        value: 323AC1000000178_19660625_341AC0000000086\n"
+                "        evidence: [{{source: src-egov, locator: 法令履歴}}]\n"
+                "        verification: {{state: unverified, reason: 適合ケースのための形の例（e-Govと未照合）}}\n"
+                "    status: active\ncoverage:")
+    dest = next_dir("hist", True) / "repo"
+    mutate(dest, HIST_POS, space + [("history.yaml", external[0], external[1].format("revision"))])
+    add("hist", "登録空間を書いたRecordの参照と、版の外部識別子", ["HIST-09", "RID-04", "TYPE-01", "TYPE-03", "TYPE-04"], "L3",
+        {"kind": "repository", "path": rel(dest)}, {"results": [l3("historyStructure"), l3("evidence")]}, True,
+        "historyStructure")
+    enacted_base = ("      base:\n        state: date\n        value: \"1948-07-20\"\n        raw: 昭和二十三年七月二十日\n"
+                    "        precision: day\n        evidence: [{source: src-kanpo-19480720, locator: 1コマ 発行日}]\n"
+                    "        verification: {state: confirmed}\n")
+    pending_base = ("      base:\n        state: pending\n        raw: 別に政令で定める日\n"
+                    "        delegation: {raw: 別に政令で定める日, evidence: [{source: src-kanpo-19480720, locator: 附則第一項}]}\n"
+                    "        evidence: [{source: src-kanpo-19480720, locator: 附則第一項}]\n"
+                    "        verification: {state: unverified, reason: 適合ケースのための架空の変更}\n")
+    for title, rule, edits in [
+        ("リポジトリの所在で指すRecord", "TYPE-01",
+         [("history.yaml", "from: {id: 19660625-act-86, label:", "from: {id: https://github.com/law-of-japan/19660625-act-86, label:")]),
+        ("ファイルの中で重複するSourceのid", "HIST-02",
+         [("history.yaml", "relations:\n", "  - id: src-goshomei\n    kind: other\n    title: 同じidの別の資料（適合ケース）\nrelations:\n")]),
+        ("同じファイルにないSourceを指すEvidence", "TYPE-03",
+         [("history.yaml", "{source: src-kanpo-19480720, locator: 附則第一項}", "{source: src-kanpo-19480721, locator: 附則第一項}")]),
+        ("Verificationの未知の状態", "TYPE-04",
+         [("history.yaml", "    verification: {state: confirmed}\n    status: active\n    items:",
+           "    verification: {state: checked}\n    status: active\n    items:")]),
+        ("原文のないScope", "TYPE-06",
+         [("history.yaml", "scope: {text: 第二条秋分の日の項の次に体育の日の項を加える}", "scope: {nodes: [19480720-law-178/main/article/2]}")]),
+        # The promulgation of a relation is no base of a derived time point, so TIME-03 does not follow.
+        ("精度と書式が合わない日付", "TIME-02",
+         [("history.yaml", "      raw: 昭和四十一年六月二十五日\n      precision: day\n",
+           "      raw: 昭和四十一年六月二十五日\n      precision: month\n")]),
+        ("確定日でない基準から計算したvalue（pendingの基準）", "TIME-03", [("history.yaml", enacted_base, pending_base)]),
+        ("日の書式でないderivedのvalue", "TIME-03",
+         [("history.yaml", '      value: "1948-07-20"\n      raw: 公布の日からこれを施行する\n',
+           '      value: "1948-07"\n      raw: 公布の日からこれを施行する\n')]),
+        ("版を対象としない外部識別子", "HIST-01", [("history.yaml", external[0], external[1].format("record"))]),
+    ]:
+        dest = next_dir("hist", False) / "repo"
+        mutate(dest, HIST_POS, edits)
+        sv = SV["common"] if rule.startswith(("TIME", "TYPE")) else SV["hist"]
+        category = "evidence" if rule.startswith("TYPE") else "historyStructure"
+        # HIST-01 is the source of the ban on Record identifiers in the history manifest; HIST-09 restates it.
+        requirements = ["HIST-01", "HIST-09"] if rule == "HIST-01" else [rule]
+        add("hist", title, requirements, "L3", {"kind": "repository", "path": rel(dest)},
+            {"results": [l3(category, "fail")], "diagnostics": [diag(rule, sv)]}, False, category)
+
+
 def main():
     for suite, folder in FOLDER.items():
         for group in ("invalid", "expected"):
@@ -691,6 +747,7 @@ def main():
     change_dependents()
     row_keys()
     termination_retraction()
+    common_types()
     marked = {case["id"] for cases in INDEX.values() for case in cases if "rejectedBy" in case}
     assert marked == SCHEMA_REJECTED, SCHEMA_REJECTED - marked
     for suite, folder in FOLDER.items():

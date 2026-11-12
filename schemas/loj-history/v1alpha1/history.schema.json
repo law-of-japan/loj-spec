@@ -628,8 +628,8 @@
                   "minLength": 1
                 },
                 "kind": {
-                  "type": "string",
-                  "minLength": 1
+                  "$comment": "HIST-09: identifiers of a Record belong in the registry, so a Revision only carries kind revision.",
+                  "const": "revision"
                 },
                 "value": {
                   "type": "string",

@@ -219,7 +219,8 @@
       "id": "hist-013",
       "title": "根拠のない確認済みの時点",
       "requirements": [
-        "TYPE-05"
+        "TYPE-05",
+        "TIME-06"
       ],
       "check": "L3",
       "category": "evidence",
@@ -617,6 +618,177 @@
       },
       "expected": "conformance/loj-history/v1alpha1/expected/hist-036.json",
       "success": true
+    },
+    {
+      "id": "hist-037",
+      "title": "登録空間を書いたRecordの参照と、版の外部識別子",
+      "requirements": [
+        "HIST-09",
+        "RID-04",
+        "TYPE-01",
+        "TYPE-03",
+        "TYPE-04"
+      ],
+      "check": "L3",
+      "category": "historyStructure",
+      "normative": true,
+      "input": {
+        "kind": "repository",
+        "path": "conformance/loj-history/v1alpha1/valid/hist-037/repo"
+      },
+      "expected": "conformance/loj-history/v1alpha1/expected/hist-037.json",
+      "success": true
+    },
+    {
+      "id": "hist-038",
+      "title": "リポジトリの所在で指すRecord",
+      "requirements": [
+        "TYPE-01"
+      ],
+      "check": "L3",
+      "category": "evidence",
+      "normative": true,
+      "input": {
+        "kind": "repository",
+        "path": "conformance/loj-history/v1alpha1/invalid/hist-038/repo"
+      },
+      "expected": "conformance/loj-history/v1alpha1/expected/hist-038.json",
+      "success": false,
+      "rejectedBy": "schema"
+    },
+    {
+      "id": "hist-039",
+      "title": "ファイルの中で重複するSourceのid",
+      "requirements": [
+        "HIST-02"
+      ],
+      "check": "L3",
+      "category": "historyStructure",
+      "normative": true,
+      "input": {
+        "kind": "repository",
+        "path": "conformance/loj-history/v1alpha1/invalid/hist-039/repo"
+      },
+      "expected": "conformance/loj-history/v1alpha1/expected/hist-039.json",
+      "success": false
+    },
+    {
+      "id": "hist-040",
+      "title": "同じファイルにないSourceを指すEvidence",
+      "requirements": [
+        "TYPE-03"
+      ],
+      "check": "L3",
+      "category": "evidence",
+      "normative": true,
+      "input": {
+        "kind": "repository",
+        "path": "conformance/loj-history/v1alpha1/invalid/hist-040/repo"
+      },
+      "expected": "conformance/loj-history/v1alpha1/expected/hist-040.json",
+      "success": false
+    },
+    {
+      "id": "hist-041",
+      "title": "Verificationの未知の状態",
+      "requirements": [
+        "TYPE-04"
+      ],
+      "check": "L3",
+      "category": "evidence",
+      "normative": true,
+      "input": {
+        "kind": "repository",
+        "path": "conformance/loj-history/v1alpha1/invalid/hist-041/repo"
+      },
+      "expected": "conformance/loj-history/v1alpha1/expected/hist-041.json",
+      "success": false,
+      "rejectedBy": "schema"
+    },
+    {
+      "id": "hist-042",
+      "title": "原文のないScope",
+      "requirements": [
+        "TYPE-06"
+      ],
+      "check": "L3",
+      "category": "evidence",
+      "normative": true,
+      "input": {
+        "kind": "repository",
+        "path": "conformance/loj-history/v1alpha1/invalid/hist-042/repo"
+      },
+      "expected": "conformance/loj-history/v1alpha1/expected/hist-042.json",
+      "success": false,
+      "rejectedBy": "schema"
+    },
+    {
+      "id": "hist-043",
+      "title": "精度と書式が合わない日付",
+      "requirements": [
+        "TIME-02"
+      ],
+      "check": "L3",
+      "category": "historyStructure",
+      "normative": true,
+      "input": {
+        "kind": "repository",
+        "path": "conformance/loj-history/v1alpha1/invalid/hist-043/repo"
+      },
+      "expected": "conformance/loj-history/v1alpha1/expected/hist-043.json",
+      "success": false,
+      "rejectedBy": "schema"
+    },
+    {
+      "id": "hist-044",
+      "title": "確定日でない基準から計算したvalue（pendingの基準）",
+      "requirements": [
+        "TIME-03"
+      ],
+      "check": "L3",
+      "category": "historyStructure",
+      "normative": true,
+      "input": {
+        "kind": "repository",
+        "path": "conformance/loj-history/v1alpha1/invalid/hist-044/repo"
+      },
+      "expected": "conformance/loj-history/v1alpha1/expected/hist-044.json",
+      "success": false
+    },
+    {
+      "id": "hist-045",
+      "title": "日の書式でないderivedのvalue",
+      "requirements": [
+        "TIME-03"
+      ],
+      "check": "L3",
+      "category": "historyStructure",
+      "normative": true,
+      "input": {
+        "kind": "repository",
+        "path": "conformance/loj-history/v1alpha1/invalid/hist-045/repo"
+      },
+      "expected": "conformance/loj-history/v1alpha1/expected/hist-045.json",
+      "success": false,
+      "rejectedBy": "schema"
+    },
+    {
+      "id": "hist-046",
+      "title": "版を対象としない外部識別子",
+      "requirements": [
+        "HIST-01",
+        "HIST-09"
+      ],
+      "check": "L3",
+      "category": "historyStructure",
+      "normative": true,
+      "input": {
+        "kind": "repository",
+        "path": "conformance/loj-history/v1alpha1/invalid/hist-046/repo"
+      },
+      "expected": "conformance/loj-history/v1alpha1/expected/hist-046.json",
+      "success": false,
+      "rejectedBy": "schema"
     }
   ]
 }
