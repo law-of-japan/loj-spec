@@ -56,7 +56,7 @@ T076〜T105は承認されたMAN-03 B案の独立ケース。附属資料の通�
 | [conformance/loj-rebuild/v1alpha1](../conformance/loj-rebuild/v1alpha1/manifest.json) | rebuild-001〜004 | 祝日法の再構築報告と、その違反 |
 | [conformance/common/v1alpha1](../conformance/common/v1alpha1/manifest.json) | common-001〜012 | L4の時点の整合（T-04）、変更検査、固定参照（`git bundle`の架空の履歴） |
 
-`scripts/verify.py`は、すべての索引・期待結果・正例の入力の形と、要件IDの存在を検査し、v1alpha2の正例のASTを原文と突き合わせる。v1alpha2のL1の負例と、L3・L4・登録台帳・再構築報告・変更検査・固定参照のケースの合否は判定しない。検査器で判定する。
+`scripts/verify.py`は、すべての索引・期待結果・正例の入力の形と、要件IDの存在を検査し、v1alpha2の正例のASTを原文と突き合わせる。版パッケージのケースを除く負例は、索引の`rejectedBy: schema`の印のとおりに、入力のYAMLがschemaで落ちるか、schemaを通るかを検査する（[CONF-01](../spec/common/v1alpha1/04-conformance.md)）。v1alpha2のL1の負例と、L3・L4・登録台帳・再構築報告・変更検査・固定参照のケースの合否は判定しない。検査器で判定する。
 
 ### ケースのない要件
 

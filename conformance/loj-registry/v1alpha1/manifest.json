@@ -78,7 +78,8 @@
         "path": "conformance/loj-registry/v1alpha1/invalid/reg-005/registry"
       },
       "expected": "conformance/loj-registry/v1alpha1/expected/reg-005.json",
-      "success": false
+      "success": false,
+      "rejectedBy": "schema"
     },
     {
       "id": "reg-006",
@@ -93,7 +94,8 @@
         "path": "conformance/loj-registry/v1alpha1/invalid/reg-006/registry"
       },
       "expected": "conformance/loj-registry/v1alpha1/expected/reg-006.json",
-      "success": false
+      "success": false,
+      "rejectedBy": "schema"
     },
     {
       "id": "reg-007",
@@ -108,7 +110,8 @@
         "path": "conformance/loj-registry/v1alpha1/invalid/reg-007/registry"
       },
       "expected": "conformance/loj-registry/v1alpha1/expected/reg-007.json",
-      "success": false
+      "success": false,
+      "rejectedBy": "schema"
     },
     {
       "id": "reg-008",

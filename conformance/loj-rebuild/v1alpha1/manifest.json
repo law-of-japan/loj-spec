@@ -33,7 +33,8 @@
         "path": "conformance/loj-rebuild/v1alpha1/invalid/rebuild-002/repo"
       },
       "expected": "conformance/loj-rebuild/v1alpha1/expected/rebuild-002.json",
-      "success": false
+      "success": false,
+      "rejectedBy": "schema"
     },
     {
       "id": "rebuild-003",

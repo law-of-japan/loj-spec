@@ -97,7 +97,8 @@
         "path": "conformance/loj-history/v1alpha1/invalid/hist-005/repo"
       },
       "expected": "conformance/loj-history/v1alpha1/expected/hist-005.json",
-      "success": false
+      "success": false,
+      "rejectedBy": "schema"
     },
     {
       "id": "hist-006",
@@ -113,7 +114,8 @@
         "path": "conformance/loj-history/v1alpha1/invalid/hist-006/repo"
       },
       "expected": "conformance/loj-history/v1alpha1/expected/hist-006.json",
-      "success": false
+      "success": false,
+      "rejectedBy": "schema"
     },
     {
       "id": "hist-007",
@@ -177,7 +179,8 @@
         "path": "conformance/loj-history/v1alpha1/invalid/hist-010/repo"
       },
       "expected": "conformance/loj-history/v1alpha1/expected/hist-010.json",
-      "success": false
+      "success": false,
+      "rejectedBy": "schema"
     },
     {
       "id": "hist-011",
@@ -209,7 +212,8 @@
         "path": "conformance/loj-history/v1alpha1/invalid/hist-012/repo"
       },
       "expected": "conformance/loj-history/v1alpha1/expected/hist-012.json",
-      "success": false
+      "success": false,
+      "rejectedBy": "schema"
     },
     {
       "id": "hist-013",
@@ -225,7 +229,8 @@
         "path": "conformance/loj-history/v1alpha1/invalid/hist-013/repo"
       },
       "expected": "conformance/loj-history/v1alpha1/expected/hist-013.json",
-      "success": false
+      "success": false,
+      "rejectedBy": "schema"
     },
     {
       "id": "hist-014",
@@ -339,7 +344,8 @@
         "path": "conformance/loj-history/v1alpha1/invalid/hist-020/repo"
       },
       "expected": "conformance/loj-history/v1alpha1/expected/hist-020.json",
-      "success": false
+      "success": false,
+      "rejectedBy": "schema"
     },
     {
       "id": "hist-021",
@@ -356,7 +362,8 @@
         "path": "conformance/loj-history/v1alpha1/invalid/hist-021/repo"
       },
       "expected": "conformance/loj-history/v1alpha1/expected/hist-021.json",
-      "success": false
+      "success": false,
+      "rejectedBy": "schema"
     },
     {
       "id": "hist-022",
@@ -373,7 +380,8 @@
         "path": "conformance/loj-history/v1alpha1/invalid/hist-022/repo"
       },
       "expected": "conformance/loj-history/v1alpha1/expected/hist-022.json",
-      "success": false
+      "success": false,
+      "rejectedBy": "schema"
     },
     {
       "id": "hist-023",
@@ -437,7 +445,8 @@
         "path": "conformance/loj-history/v1alpha1/invalid/hist-026/repo"
       },
       "expected": "conformance/loj-history/v1alpha1/expected/hist-026.json",
-      "success": false
+      "success": false,
+      "rejectedBy": "schema"
     },
     {
       "id": "hist-027",

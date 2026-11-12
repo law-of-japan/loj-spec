@@ -25,6 +25,10 @@ FOLDER = {"hist": "loj-history/v1alpha1", "glyph": "loj-glyphs/v1alpha1", "reg":
           "rebuild": "loj-rebuild/v1alpha1", "common": "common/v1alpha1"}
 INDEX = {key: [] for key in FOLDER}
 ZWG = "versions/zwgmz1rt/"
+# CONF-01: negatives whose input breaks the schema of its schemaVersion. Written by hand: the schema error
+# of each one was checked to be the violation of the case's expected rule (law-of-japan/loj-spec#32).
+SCHEMA_REJECTED = {"hist-005", "hist-006", "hist-010", "hist-012", "hist-013", "hist-020", "hist-021", "hist-022",
+                   "hist-026", "glyph-005", "reg-005", "reg-006", "reg-007", "rebuild-002"}
 
 
 def write_json(path, value):
@@ -55,6 +59,9 @@ def add(suite, title, requirements, check, inp, expected, success, category=None
     if category:
         case["category"] = category
     case.update({"normative": normative, "input": inp, "expected": exp_path, "success": success})
+    if ident in SCHEMA_REJECTED:
+        assert not success, ident
+        case["rejectedBy"] = "schema"
     INDEX[suite].append(case)
     return ident
 
@@ -684,6 +691,8 @@ def main():
     change_dependents()
     row_keys()
     termination_retraction()
+    marked = {case["id"] for cases in INDEX.values() for case in cases if "rejectedBy" in case}
+    assert marked == SCHEMA_REJECTED, SCHEMA_REJECTED - marked
     for suite, folder in FOLDER.items():
         write_json(C / folder / "manifest.json", {"suite": SV[suite], "cases": INDEX[suite]})
     print("Authored " + ", ".join(f"{k}: {len(v)}" for k, v in INDEX.items()) + "; no validator invoked.")

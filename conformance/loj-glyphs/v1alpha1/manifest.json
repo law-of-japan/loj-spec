@@ -86,7 +86,8 @@
         "path": "conformance/loj-glyphs/v1alpha1/invalid/glyph-005/repo"
       },
       "expected": "conformance/loj-glyphs/v1alpha1/expected/glyph-005.json",
-      "success": false
+      "success": false,
+      "rejectedBy": "schema"
     },
     {
       "id": "glyph-006",

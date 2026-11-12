@@ -435,6 +435,39 @@ class RestatementTests(unittest.TestCase):
             self.assertFalse(name.startswith("spec/v1alpha1/"), name)
 
 
+class SchemaMarkTests(unittest.TestCase):
+    """CONF-01: rejectedBy: schema matches whether an input YAML file breaks its schema."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.validators = v.all_schemas()
+        cls.good = v.ROOT / "conformance/loj-history/v1alpha1/valid/hist-001/repo"
+        cls.bad = v.ROOT / "conformance/loj-history/v1alpha1/invalid/hist-005/repo"
+
+    def test_marked_case_needs_schema_failure(self):
+        marked = {"rejectedBy": "schema"}
+        self.assertGreater(v.check_schema_mark("x", marked, [self.bad], self.validators), 0)
+        with self.assertRaisesRegex(ValueError, "marked rejectedBy: schema"):
+            v.check_schema_mark("x", marked, [self.good], self.validators)
+
+    def test_unmarked_case_must_fit_schema(self):
+        self.assertGreater(v.check_schema_mark("x", {}, [self.good], self.validators), 0)
+        with self.assertRaisesRegex(ValueError, "without rejectedBy: schema"):
+            v.check_schema_mark("x", {}, [self.bad], self.validators)
+
+    def test_index_schema_limits_mark(self):
+        index = v.read_json(v.ROOT / "conformance/loj-history/v1alpha1/manifest.json")
+        validator = self.validators["common/v1alpha1/conformance.schema.json"]
+        validator.validate(index)
+        positive = copy.deepcopy(index)
+        positive["cases"][0]["rejectedBy"] = "schema"
+        self.assertFalse(validator.is_valid(positive))
+        package = copy.deepcopy(index)
+        case = next(c for c in package["cases"] if c.get("rejectedBy"))
+        case["input"] = {"kind": "package", "path": "x/law.yaml"}
+        self.assertFalse(validator.is_valid(package))
+
+
 if __name__ == "__main__":
     unittest.main()
 
