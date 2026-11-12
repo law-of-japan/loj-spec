@@ -339,8 +339,10 @@ case("上の欄が続く読替えの表（rowspan）", ["TABLE-03", "ID-01", "AS
      [("main.md", "main", ROWSPAN_MD)],
      {"ast": ast([article(MAIN, "1", "第一条", [lambda a: para(a, "1", READ_LEAD, children=rowspan_children)])])}, True)
 case("空のセル（L1の診断はDIR-02だけ。続く欄の結合はL3）", ["DIR-02", "TABLE-03"],
-     [("main.md", "main", ROWSPAN_MD.replace("<!-- loj:cell -->\n倉庫\n<!-- loj:end-cell -->",
-                                             "<!-- loj:cell -->\n\n<!-- loj:end-cell -->"))], fail("DIR-02"), False)
+     # The continued column is written as an empty cell instead of rowspan=2 on the cell above.
+     [("main.md", "main", ROWSPAN_MD.replace("<!-- loj:cell rowspan=2 -->", "<!-- loj:cell -->")
+       .replace("<!-- loj:row key=7tzd -->\n", "<!-- loj:row key=7tzd -->\n<!-- loj:cell -->\n\n<!-- loj:end-cell -->\n"))],
+     fail("DIR-02"), False)
 
 
 def main():
