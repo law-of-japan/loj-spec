@@ -58,7 +58,7 @@
 ## v1alpha1から流用できる部分
 
 - 版パッケージのMarkdownの扱い（CommonMarkの領域、予約コメント、見出し、マーカー、ID、ソースの位置）は、v1alpha1から大きく変わっていない。v1alpha1の実装を土台にできる。
-- 変わる点: `schemaVersion`が`loj/v1alpha2`、`Paragraph`の`numbering`（`explicit`、無番号の項は`implicit`。PARA-01）、前文・制定文（PRE）、表の構造（TABLE）、診断に`schemaVersion`と`class`が加わる。規則と各レベルの対応は[v1alpha2の検証](../spec/v1alpha2/10-validation.md)にある。
+- 変わる点: `schemaVersion`が`loj/v1alpha2`、`Paragraph`の`numbering`（`explicit`、無番号の項は`implicit`。PARA-01）、前文・制定文（PRE）、目次（TOC）、表の構造（TABLE）、細分の表示のいろは・括弧付きの十進（DISP-01）、条の見出しの括弧書き（HEAD-01）、診断に`schemaVersion`と`class`が加わる。規則と各レベルの対応は[v1alpha2の検証](../spec/v1alpha2/10-validation.md)にある。
 - 履歴マニフェスト・字体注記・登録台帳・再構築報告と、L3・L4・変更・参照の検査は、新しく作る。
 
 ## 実装上の注意

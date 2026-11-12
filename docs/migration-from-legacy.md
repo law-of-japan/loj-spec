@@ -56,7 +56,7 @@
 
 - 各版を`versions/<revision_id>/`に、`loj/v1alpha2`の版パッケージ（`law.yaml`と本文のMarkdown）として置く。
 - 本文は原典の文字をそのまま写す。旧字体・異体字を新字体に置き換えない。決められない字は、CHAR-04に従って記録する。
-- 前文・制定文・表・無番号の項は、v1alpha2の構造（PRE、TABLE、PARA）で書く。
+- 前文・制定文・目次・表・無番号の項は、v1alpha2の構造（PRE、TOC、TABLE、PARA）で書く。
 - 既存の条のIDは、`loj/v1alpha2`のIDの導出（ID-01）で決まる。
 
 ### 6. 字体注記

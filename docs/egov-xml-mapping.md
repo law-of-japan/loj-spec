@@ -14,13 +14,13 @@ e-Govの本文は新字体に置き換えている。版の本文の根拠は公
 | LawBody | `Law`の内容 | 独立したノードを作らない |
 | EnactStatement | `EnactStatement` | PRE-02。`Law`の最初の子 |
 | Preamble | `Preamble` | PRE-01。`MainProvision`の前 |
-| TOC | 未対応 | 目次は本版で型付けしない |
+| TOC | `Toc` | TOC-01。中身は不透明な本文で、TOCLabel・TOCChapter等の構造を型付けしない。`EnactStatement`の後、`Preamble`の前 |
 | MainProvision | `MainProvision` | 条を含む構造だけ。条を持たない本則は未対応 |
 | Part / Chapter / Section / Subsection / Division | `Part` / `Chapter` / `Section` / `Subsection` / `Division` | 編・章・節・款・目 |
-| Article / ArticleTitle / ArticleCaption | `Article`と表示 | 番号と見出し。削除条を含む |
+| Article / ArticleTitle / ArticleCaption | `Article`と表示 | 番号と見出し。見出しの括弧書きを含む（HEAD-01）。削除条を含む |
 | Paragraph / ParagraphNum | `Paragraph` | 番号のある項は`numbering: explicit`。ParagraphNumが空の項は`implicit`（PARA-01） |
 | Item / ItemTitle | `Item` | 表示番号の範囲はDISP-01 |
-| Subitem1〜Subitem10 | `Subitem`（level 1〜10） | いろは等の表示は未対応 |
+| Subitem1〜Subitem10 | `Subitem`（level 1〜10） | 表示はASCIIの十進、いろは、括弧付きの十進（DISP-01）。ローマ数字等は未対応 |
 | Sentence等の本文 | `text` | 原文のMarkdown。文・列の型は再現しない |
 | TableStruct / Table / TableRow / TableColumn | `Table` / `Row` / `Cell` | 項・号・細分の本文の中の表（TABLE-01〜03）。罫線・配置・列の幅は記録しない。セルの中の項・号・表、入れ子の表は未対応 |
 | SupplProvision | `SupplementaryProvision` | `law.yaml`の永続key。その法令自身の附則だけを収録する |

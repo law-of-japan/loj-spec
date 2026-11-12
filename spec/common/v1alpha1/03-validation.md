@@ -95,7 +95,7 @@ L3を次の区分に分け、区分ごとに判定・報告する。
   |---|---|
   | BASIC、MAN | L0（一部の規則はL1。版パッケージの要件で定める） |
   | MD | L1 |
-  | HEAD、NUM、DIR、DISP、AST、SRC、ID、REF、PARA、TABLE、PRE | L1 |
+  | HEAD、NUM、DIR、DISP、AST、SRC、ID、REF、PARA、TABLE、PRE、TOC | L1 |
   | HIST、REV、TIME | L3履歴構造 |
   | TYPE、GLYPH | L3根拠 |
   | SRCM | L3原典照合（予約） |

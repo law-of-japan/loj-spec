@@ -193,6 +193,71 @@ case("号の表示番号に全角の十進", ["DISP-01"],
        "<!-- loj:end-item -->\n<!-- loj:end-paragraph -->\n")], fail("DISP-01"), False)
 case("条の番号の成分の間の字種の混在", ["NUM-01", "HEAD-01"], [("main.md", "main", "# 第十二条の２\n" + P1)], fail("NUM-01"), False)
 
+# 2026-11-12 (#27): table of contents, iroha / parenthesized subitem displays, parentheses in article captions.
+ENACT_MD = "<!-- loj:enact-statement -->\n内閣は、架空の法律に基づき、この政令を制定する。\n<!-- loj:end-enact-statement -->\n"
+TOC_BODY = "目次\n第一章　総則（第一条）\n附則\n"
+TOC_MD = "<!-- loj:toc -->\n" + TOC_BODY + "<!-- loj:end-toc -->\n"
+PREAMBLE_MD = "<!-- loj:preamble -->\n雲は、すべての者の共有である。\n<!-- loj:end-preamble -->\n"
+CHAPTER = MAIN + "/chapter/1"
+case("目次（制定文と前文の間）", ["TOC-01", "PRE-01", "PRE-02", "ID-01", "AST-01"],
+     [("main.md", "main", ENACT_MD + TOC_MD + PREAMBLE_MD + "# 第一章　総則\n## 第一条\n" + P1)],
+     {"ast": ast([node("Chapter", CHAPTER, "1", "第一章　総則",
+                       [node("Article", MAIN + "/article/1", "1", "第一条", [para(MAIN + "/article/1", "1", BODY)],
+                             status="active")])],
+                 lead=[node("EnactStatement", LID + "/enact-statement", None, "",
+                            [text("内閣は、架空の法律に基づき、この政令を制定する。\n")]),
+                       node("Toc", LID + "/toc", None, "", [text(TOC_BODY)]),
+                       node("Preamble", LID + "/preamble", None, "", [text("雲は、すべての者の共有である。\n")])])}, True)
+
+A1 = MAIN + "/article/1"
+P1ID = A1 + "/paragraph/1"
+I1 = P1ID + "/item/1"
+S1, S2 = I1 + "/subitem/1/1", I1 + "/subitem/1/2"
+SUBITEM_MD = ("<!-- loj:paragraph number=1 -->\n雲の種類は、次のとおりとする。\n<!-- loj:item number=1 -->\n一　白雲\n"
+              "<!-- loj:subitem level=1 number=1 -->\nイ　巻雲\n<!-- loj:end-subitem -->\n"
+              "<!-- loj:subitem level=1 number=2 -->\nロ　積雲\n"
+              "<!-- loj:subitem level=2 number=1 -->\n（１）　小さな積雲\n<!-- loj:end-subitem -->\n"
+              "<!-- loj:subitem level=2 number=2 -->\n（２）　大きな積雲\n<!-- loj:end-subitem -->\n"
+              "<!-- loj:end-subitem -->\n<!-- loj:end-item -->\n<!-- loj:end-paragraph -->\n")
+case("いろはと括弧付きの十進の細分の表示", ["DISP-01", "ID-01"],
+     [("main.md", "main", ART + SUBITEM_MD)],
+     {"ast": ast([node("Article", A1, "1", "第一条", [node("Paragraph", P1ID, "1", "", [
+         text("雲の種類は、次のとおりとする。\n"),
+         node("Item", I1, "1", "一", [
+             text("一　白雲\n"),
+             node("Subitem", S1, "1", "イ", [text("イ　巻雲\n")], level=1),
+             node("Subitem", S2, "2", "ロ", [
+                 text("ロ　積雲\n"),
+                 node("Subitem", S2 + "/subitem/2/1", "1", "（１）", [text("（１）　小さな積雲\n")], level=2),
+                 node("Subitem", S2 + "/subitem/2/2", "2", "（２）", [text("（２）　大きな積雲\n")], level=2)], level=1)])],
+         numbering="explicit")], status="active")])}, True)
+
+case("括弧書きを含む条の見出し", ["HEAD-01", "AST-01"],
+     [("main.md", "main", "# 第一条（雲（白雲を除く。）の保管）\n" + P1)],
+     {"ast": ast([article(MAIN, "1", "第一条（雲（白雲を除く。）の保管）", [lambda a: para(a, "1", BODY)])])}, True)
+
+case("目次の後の制定文", ["TOC-01"], [("main.md", "main", TOC_MD + ENACT_MD + ART + P1)], fail("TOC-01"), False)
+case("前文の後の目次", ["TOC-01"], [("main.md", "main", PREAMBLE_MD + TOC_MD + ART + P1)], fail("TOC-01"), False)
+case("附則の中の目次", ["TOC-01"],
+     [("main.md", "main", ART + P1),
+      ("supp.md", "supplement/original", "# 附則\n" + TOC_MD + "<!-- loj:paragraph number=1 -->\nこの法律は、公布の日から施行する。\n"
+       "<!-- loj:end-paragraph -->\n")], fail("TOC-01"), False,
+     man_extra={"supplements": [{"key": "original", "title": "制定附則"}]})
+case("目次の中の項", ["TOC-01", "DIR-02"],
+     [("main.md", "main", "<!-- loj:toc -->\n目次\n" + P1 + "<!-- loj:end-toc -->\n" + ART + P1)], fail("DIR-02"), False)
+case("細分の兄弟の表示番号の字種の混在", ["DISP-01"],
+     [("main.md", "main", ART + SUBITEM_MD.replace("（１）　小さな", "イ　小さな"))], fail("DISP-01"), False)
+case("いろはの表示番号と番号の不一致", ["DISP-01"],
+     [("main.md", "main", ART + SUBITEM_MD.replace("ロ　積雲", "ハ　積雲"))], fail("DISP-01"), False)
+case("細分の表示番号にASCIIの括弧", ["DISP-01"],
+     [("main.md", "main", ART + SUBITEM_MD.replace("（１）　小さな", "(1)　小さな").replace("（２）　大きな", "(2)　大きな"))],
+     fail("DISP-01"), False)
+case("号の表示番号にいろは", ["DISP-01"],
+     [("main.md", "main", ART + "<!-- loj:paragraph number=1 -->\n" + BODY + "<!-- loj:item number=1 -->\nイ　白雲\n"
+       "<!-- loj:end-item -->\n<!-- loj:end-paragraph -->\n")], fail("DISP-01"), False)
+case("条の見出しの対応しない括弧", ["HEAD-01"], [("main.md", "main", "# 第一条（雲（白雲の保管）\n" + P1)], fail("HEAD-01"), False)
+case("条の見出しの後に続く括弧", ["HEAD-01"], [("main.md", "main", "# 第一条（定義）（略）\n" + P1)], fail("HEAD-01"), False)
+
 
 def main():
     index_path = DST / "manifest.json"
