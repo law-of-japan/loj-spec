@@ -50,7 +50,7 @@ T076〜T105は承認されたMAN-03 B案の独立ケース。附属資料の通�
 | ディレクトリ | ケース | 内容 |
 |---|---|---|
 | [conformance/v1alpha2](../conformance/v1alpha2/manifest.json) | pkg-001〜143 | v1alpha1の106件を写したもの（pkg-001〜106）と、「條」「ノ」「附　則」、無番号の項、表、前文・制定文、目次、いろは・括弧付きの十進の細分、括弧書きを含む条の見出しとその違反（pkg-107〜143） |
-| [conformance/loj-history/v1alpha1](../conformance/loj-history/v1alpha1/manifest.json) | hist-001〜015 | 祝日法の制定時と最初の改正後の版、履歴だけの法令リポジトリ三つ、その違反 |
+| [conformance/loj-history/v1alpha1](../conformance/loj-history/v1alpha1/manifest.json) | hist-001〜046 | 祝日法の制定時と最初の改正後の版、履歴だけの法令リポジトリ三つ、その違反、共通の型と時点値の違反 |
 | [conformance/loj-glyphs/v1alpha1](../conformance/loj-glyphs/v1alpha1/manifest.json) | glyph-001〜009 | 祝日法の字体注記と、その違反。L1が不合格の版の字体注記（未完了） |
 | [conformance/loj-registry/v1alpha1](../conformance/loj-registry/v1alpha1/manifest.json) | reg-001〜008 | 三つのRecordの登録台帳と、その違反 |
 | [conformance/loj-rebuild/v1alpha1](../conformance/loj-rebuild/v1alpha1/manifest.json) | rebuild-001〜004 | 祝日法の再構築報告と、その違反 |
@@ -70,11 +70,15 @@ T076〜T105は承認されたMAN-03 B案の独立ケース。附属資料の通�
 | SRCM-01、XREF-04 | 予約の区分 |
 | GLYPH-03、GLYPH-07、GLYPH-08 | 本文に置く字の選び方は原典と比べないと判定できない（原典照合） |
 | RID-03、REV-02 | リポジトリの名前と可読ラベルは参照の解決に使わない、という制約 |
+| TIME-05 | `reason`に書く理由の中身と、確認した範囲（SHOULD）は、レビューで確かめる。`reason`があることはTIME-01の必須のフィールドとして検査する（2026-11-12、[law-of-japan/loj-spec#32](https://github.com/law-of-japan/loj-spec/issues/32)） |
+| CHG-05 | 変更検査の結果を適合レベルとして主張しないことは、実装と適合の主張への要求であり、レビューで確かめる（同上） |
 | TABLE-02の一部（既存の行の`key`の維持、基礎の版の同じ行が同じ`key`を持つこと） | 行の同一性は法的な判断であり、機械では確かめられない。入力者への要件とする（2026-11-12、[law-of-japan/loj-spec#23](https://github.com/law-of-japan/loj-spec/issues/23)） |
 
 [規範仕様の入口](../spec/README.md#版の状態)の版の状態の定め（要件IDなし）にも、ケースを作らない。仕様の資料そのものの管理の規則であり、法令の入力の成否として検査できないためである。状態の表の形は`scripts/verify.py`が検査する。タグを打つことは、公開の手順（[CONTRIBUTING](../CONTRIBUTING.md)）で確かめる。
 
-次の要件は機械で検査できるが、まだケースがない。今後加える: TIME-02、TIME-05、TIME-06、TYPE-01〜04、TYPE-06、HIST-09、CHG-04、CHG-05、RID-04、RID-05。
+次の要件は機械で検査できるが、まだケースがない。今後加える: CHG-04、RID-05。RID-04は、履歴マニフェストの正例（hist-037）で登録空間を書いた参照があるが、登録台帳の側のケースはない。
+
+共通の型と時点値（2026-11-12、[law-of-japan/loj-spec#32](https://github.com/law-of-japan/loj-spec/issues/32)）は、履歴マニフェストの中で確かめる。登録空間と版の外部識別子の正例（hist-037）と、リポジトリの所在で指すRecord（TYPE-01、hist-038）、Sourceのidの重複（TYPE-02、hist-039）、同じファイルにないSource（TYPE-03、hist-040）、Verificationの未知の状態（TYPE-04、hist-041）、原文のないScope（TYPE-06、hist-042）、精度と書式の不一致（TIME-02、hist-043）、版を対象としない外部識別子（HIST-09、hist-046）の負例がある。確認済みの時点値の根拠（TIME-06）は、hist-013が当たる。登録台帳・再構築報告の中の共通の型の違反のケースは、まだない。
 
 CHG-02・CHG-03（2026-11-12、[law-of-japan/loj-spec#18](https://github.com/law-of-japan/loj-spec/issues/18)）の従属するファイルの更新は、記録訂正で同じ版の`text.sources`を更新する正例（common-024）だけがある。common-024は、宣言した版だけのASTが変わり、従属する更新が宣言した版の`text.sources`に限られ、宣言した版の根拠（`text.sources`の箇所）があるので合格とする。Scopeの`nodes`・字体注記の更新、宣言していない版の従属するファイルを変える負例、登録台帳だけの`metadata`、mergeのcommit、最初のcommit、revertのcommitのケースは、まだない。登録台帳の`git bundle`と、親が二つのcommitを持つ`git bundle`が要るためである。
 
@@ -94,7 +98,7 @@ XREF-02（2026-11-12、[law-of-japan/loj-spec#16](https://github.com/law-of-japa
 
 XREF-05・XREF-06（2026-11-12、[law-of-japan/loj-spec#13](https://github.com/law-of-japan/loj-spec/issues/13)・[law-of-japan/loj-spec#19](https://github.com/law-of-japan/loj-spec/issues/19)）は、ケースがあるが一部だけである（common-013〜016）。common-013は`structured.period.raw`と`raw`を続けた文字列との一致に当たる。採用中の主張が`nonexistent`・`unknown`の場合の警告、`conflicting`等の判定しない場合、XREF-06の判定不能の場合のケースは、まだない。
 
-TIME-03は、ケースがあるが一部だけである（hist-004、hist-015〜018）。`pending`等を基準とする`derived`に`value`を書いた負例と、`value`の書式（`YYYY-MM-DD`）に反する負例は、まだない。
+TIME-03は、hist-004、hist-015〜018のほか、`pending`を基準とする`derived`に`value`を書いた負例（hist-044）と、`value`の書式（`YYYY-MM-DD`）に反する負例（hist-045）がある。
 
 フィールドの改名（2026-11-12、[law-of-japan/loj-spec#29](https://github.com/law-of-japan/loj-spec/issues/29)）は、改めたschemaで正例のYAMLを検査して確かめる。`law.yaml`の`sourceUris`（旧`sources`）は任意のフィールドで、v1alpha2の正例に使用例がなく、まだケースがない。旧名は閉じたschemaにより未知のフィールドとして拒否されるが、旧名を使う負例は加えていない（未知のフィールドの負例は、Manifestのpkgのケースと、Revisionのhist-005にある）。
 

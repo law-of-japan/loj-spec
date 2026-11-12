@@ -136,10 +136,10 @@
 
 ## HIST-09 外部識別子
 
-- Revisionは、版を対象とする外部識別子（e-Govの法令履歴ID等）を`externalIds`に持てる（MAY）。各項目は`issuer`（発行元。例: `egov`）、`kind`（`revision`）、`value`、`evidence`、`verification`を持つ。
+- Revisionは、版を対象とする外部識別子（e-Govの法令履歴ID等）を`externalIds`に持てる（MAY）。各項目は`issuer`（発行元。例: `egov`）、`kind`、`value`、`evidence`、`verification`を持つ。`kind`は`revision`とする。
 - 外部識別子をrevision_idの代わりに使ってはならない（MUST NOT）。
 - 版の粒度をそろえているため、e-Govの版とRevisionは原則として一対一に対応する。ただし、LoJが確かめた施行時点・順序とe-Govの収録が異なる場合や、e-Govが基準日の時点から収録している場合は、対応なし・複数の候補を許す。
-- Recordを対象とする外部識別子は、登録台帳に置く。
+- Recordを対象とする外部識別子は、登録台帳に置く。履歴マニフェストに、`kind`が`revision`でない外部識別子を置いてはならない（MUST NOT）。
 
 ## HIST-10 Revisionの状態
 
