@@ -29,7 +29,7 @@ ZWG = "versions/zwgmz1rt/"
 # of each one was checked to be the violation of the case's expected rule (law-of-japan/loj-spec#32).
 SCHEMA_REJECTED = {"hist-005", "hist-006", "hist-010", "hist-012", "hist-013", "hist-020", "hist-021", "hist-022",
                    "hist-026", "hist-038", "hist-041", "hist-042", "hist-043", "hist-045", "hist-046", "glyph-005", "reg-005",
-                   "reg-006", "reg-007", "rebuild-002"}
+                   "reg-006", "reg-007", "reg-010", "rebuild-002"}
 
 
 def write_json(path, value):
@@ -731,6 +731,91 @@ def common_types():
             {"results": [l3(category, "fail")], "diagnostics": [diag(rule, sv)]}, False, category)
 
 
+# --- 2026-11-12 (#32): parts of HIST-04, HIST-05 and HIST-08 that had no case -------------------
+def history_gaps():
+    package_text = ("    text:\n      status: complete\n      sources:\n        - {source: src-goshomei-s41-86, locator: 2画像 本則（改正の内容）}\n"
+                    "      glyphCheck: unverified\n      glyphNotes: versions/zwgmz1rt/glyphs.yaml\n"
+                    "      correctionsSurveyed: {state: unsurveyed, reason: 官報（昭和41年6月25日）を入手していない（REB-05）}\n")
+    duplicate = ("  - id: k3d8w2xn\n    label: 同じ関係と施行時点の二つ目の版（適合ケース）\n    basedOn: zwgmz1rt\n"
+                 "    basis: [{relation: rel-s41-86, items: [i1]}]\n    effective:\n      state: derived\n      rule: 公布の日から\n"
+                 "      base: {state: date, value: \"1966-06-25\", raw: 昭和四十一年六月二十五日, precision: day,\n"
+                 "             evidence: [{source: src-goshomei-s41-86, locator: \"1画像 公布文の日付\"}],\n"
+                 "             verification: {state: unverified, reason: 官報の発行日と未照合（REB-05）}}\n"
+                 "      value: \"1966-06-25\"\n      raw: この法律は、公布の日から施行する\n"
+                 "      evidence: [{source: src-goshomei-s41-86, locator: 附則第一項}]\n      verification: {state: confirmed}\n"
+                 "    applicability: {state: unsurveyed}\n    text:\n      status: absent\n    status: active\n")
+    item = ("        evidence: [{source: src-goshomei-s41-86, locator: 本則}]\n        verification: {state: confirmed}\n",
+            "        evidence: [{source: src-goshomei-s41-86, locator: 本則}]\n"
+            "        verification: {state: retracted, reason: 適合ケースのための架空の撤回}\n")
+    for title, rule, edits in [
+        ("自身のrevision_idのパスでない字体注記", "HIST-08",
+         [("history.yaml", "      glyphNotes: versions/zwgmz1rt/glyphs.yaml\n", "      glyphNotes: versions/98mj5vgx/glyphs.yaml\n")]),
+        ("本文のない版のディレクトリ", "HIST-08", [("history.yaml", package_text, "    text:\n      status: absent\n")]),
+        ("同じ関係・同じ施行時点の二つの有効な版", "HIST-05", [("history.yaml", "coverage:\n", duplicate + "coverage:\n")]),
+        ("統合したRevisionを基礎状態とする有効なRevision", "HIST-04",
+         [("history.yaml", "      glyphNotes: versions/98mj5vgx/glyphs.yaml\n    status: active\n",
+           "      glyphNotes: versions/98mj5vgx/glyphs.yaml\n    status: merged\n    replacedBy:\n      revisions: [zwgmz1rt]\n"
+           "      evidence: [{source: src-goshomei-s41-86, locator: 本則}]\n"
+           "      verification: {state: unverified, reason: 適合ケースのための架空の統合}\n")]),
+        ("撤回した内訳だけを参照する成立根拠", "HIST-05", [("history.yaml",) + item] * 3),
+    ]:
+        dest = next_dir("hist", False) / "repo"
+        mutate(dest, HIST_POS, edits)
+        add("hist", title, [rule], "L3", {"kind": "repository", "path": rel(dest)},
+            {"results": [l3("historyStructure", "fail")], "diagnostics": [diag(rule, SV["hist"])]}, False,
+            "historyStructure")
+
+
+# --- 2026-11-12 (#32): a merged Record kept in the registry (RID-04, RID-05) ---------------------
+def merged_record(space=""):
+    return ("schemaVersion: loj-registry/v1alpha1\nid: k7m2p9qd3x\nlabel: 祝日法の重複した登録（架空）\nstatus: merged\n"
+            "identity:\n  evidence: [{source: src-fiction, locator: 登録の記録}]\n  verification: {state: confirmed}\n"
+            "collection: {state: notCollected}\nsources:\n  - {id: src-fiction, kind: other, title: 架空の登録の記録（適合ケース）}\n"
+            "numbers: []\nexternalIds: []\nreplacedBy:\n"
+            "  - record: {id: 19480720-law-178, " + space + "label: 昭和二十三年法律第百七十八号}\n"
+            "    evidence: [{source: src-fiction, locator: 統合の記録}]\n    verification: {state: confirmed}\n")
+
+
+def registry_ids():
+    for success, title, requirements, space in [
+        (True, "統合したRecordを残した登録台帳", ["REG-02", "RID-04", "RID-05"], "space: loj, "),
+        (False, "大文字を含む登録空間の識別子", ["RID-04"], "space: LoJ, "),
+    ]:
+        dest = next_dir("reg", success) / "registry"
+        mutate(dest, REG_POS, [])
+        (dest / "records/k7m2p9qd3x.yaml").write_bytes(merged_record(space).encode("utf-8"))
+        if success:
+            expected = {"results": [{"check": "registry", "result": "pass"}]}
+        else:
+            expected = {"results": [{"check": "registry", "result": "fail"}], "diagnostics": [diag("RID-04", SV["reg"])]}
+        add("reg", title, requirements, "registry", {"kind": "registry", "path": rel(dest)}, expected, success)
+
+
+# --- 2026-11-12 (#32): changes over a version whose L1 fails (CHG-04) -----------------------------
+def broken(files):
+    # HEAD-01: an article heading without its structure label, so the version has no AST.
+    return {name: body.replace("# 第一条\n", "# 一\n") for name, body in files.items()}
+
+
+def change_without_ast():
+    body = "架空の雲を保管する。\n"
+    bundle_pos = next_dir("common", True) / "repo.bundle"
+    c1, c2, c3 = build_bundle(bundle_pos, [
+        ("見出しの誤った版を加える", "revisionAdd", True, broken(fictional_files(body))),
+        ("ラベルを改める", "metadata", False, broken(fictional_files(body, False, "制定時"))),
+        ("ASTのない版のファイルを分ける", "format", False, broken(fictional_files(body, True, "制定時"))),
+    ])
+    add("common", "ASTを生成できない版を含む変更は判定不能", ["CHG-02", "CHG-04"], "change",
+        {"kind": "change", "bundle": rel(bundle_pos), "base": c1, "head": c2},
+        {"results": [{"check": "change", "result": "incomplete"}]}, True)
+    dest = next_dir("common", False) / "repo.bundle"
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy(bundle_pos, dest)
+    add("common", "ASTを生成できない版のファイルを書式変更で変える", ["CHG-04"], "change",
+        {"kind": "change", "bundle": rel(dest), "base": c2, "head": c3},
+        {"results": [{"check": "change", "result": "fail"}], "diagnostics": [diag("CHG-04", SV["common"])]}, False)
+
+
 def main():
     for suite, folder in FOLDER.items():
         for group in ("invalid", "expected"):
@@ -748,6 +833,9 @@ def main():
     row_keys()
     termination_retraction()
     common_types()
+    history_gaps()
+    registry_ids()
+    change_without_ast()
     marked = {case["id"] for cases in INDEX.values() for case in cases if "rejectedBy" in case}
     assert marked == SCHEMA_REJECTED, SCHEMA_REJECTED - marked
     for suite, folder in FOLDER.items():

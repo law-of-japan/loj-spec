@@ -50,11 +50,11 @@ T076〜T105は承認されたMAN-03 B案の独立ケース。附属資料の通�
 | ディレクトリ | ケース | 内容 |
 |---|---|---|
 | [conformance/v1alpha2](../conformance/v1alpha2/manifest.json) | pkg-001〜143 | v1alpha1の106件を写したもの（pkg-001〜106）と、「條」「ノ」「附　則」、無番号の項、表、前文・制定文、目次、いろは・括弧付きの十進の細分、括弧書きを含む条の見出しとその違反（pkg-107〜143） |
-| [conformance/loj-history/v1alpha1](../conformance/loj-history/v1alpha1/manifest.json) | hist-001〜046 | 祝日法の制定時と最初の改正後の版、履歴だけの法令リポジトリ三つ、その違反、共通の型と時点値の違反 |
+| [conformance/loj-history/v1alpha1](../conformance/loj-history/v1alpha1/manifest.json) | hist-001〜051 | 祝日法の制定時と最初の改正後の版、履歴だけの法令リポジトリ三つ、その違反、共通の型と時点値の違反 |
 | [conformance/loj-glyphs/v1alpha1](../conformance/loj-glyphs/v1alpha1/manifest.json) | glyph-001〜009 | 祝日法の字体注記と、その違反。L1が不合格の版の字体注記（未完了） |
-| [conformance/loj-registry/v1alpha1](../conformance/loj-registry/v1alpha1/manifest.json) | reg-001〜008 | 三つのRecordの登録台帳と、その違反 |
+| [conformance/loj-registry/v1alpha1](../conformance/loj-registry/v1alpha1/manifest.json) | reg-001〜010 | 三つのRecordの登録台帳、統合したRecordを残した登録台帳と、その違反 |
 | [conformance/loj-rebuild/v1alpha1](../conformance/loj-rebuild/v1alpha1/manifest.json) | rebuild-001〜004 | 祝日法の再構築報告と、その違反 |
-| [conformance/common/v1alpha1](../conformance/common/v1alpha1/manifest.json) | common-001〜012 | L4の時点の整合（T-04）、変更検査、固定参照（`git bundle`の架空の履歴） |
+| [conformance/common/v1alpha1](../conformance/common/v1alpha1/manifest.json) | common-001〜026 | L4の時点の整合（T-04）、変更検査、固定参照（`git bundle`の架空の履歴） |
 
 `scripts/verify.py`は、すべての索引・期待結果・正例の入力の形と、要件IDの存在を検査し、v1alpha2の正例のASTを原文と突き合わせる。版パッケージのケースを除く負例は、索引の`rejectedBy: schema`の印のとおりに、入力のYAMLがschemaで落ちるか、schemaを通るかを検査する（[CONF-01](../spec/common/v1alpha1/04-conformance.md)）。v1alpha2のL1の負例と、L3・L4・登録台帳・再構築報告・変更検査・固定参照のケースの合否は判定しない。検査器で判定する。
 
@@ -76,7 +76,11 @@ T076〜T105は承認されたMAN-03 B案の独立ケース。附属資料の通�
 
 [規範仕様の入口](../spec/README.md#版の状態)の版の状態の定め（要件IDなし）にも、ケースを作らない。仕様の資料そのものの管理の規則であり、法令の入力の成否として検査できないためである。状態の表の形は`scripts/verify.py`が検査する。タグを打つことは、公開の手順（[CONTRIBUTING](../CONTRIBUTING.md)）で確かめる。
 
-次の要件は機械で検査できるが、まだケースがない。今後加える: CHG-04、RID-05。RID-04は、履歴マニフェストの正例（hist-037）で登録空間を書いた参照があるが、登録台帳の側のケースはない。
+機械で検査できるのにケースがない要件は、2026-11-12の時点でない（[law-of-japan/loj-spec#32](https://github.com/law-of-japan/loj-spec/issues/32)の結論（4））。下の段落に、ケースが一部の場合だけにとどまる要件を挙げる。
+
+CHG-04（2026-11-12）は、L1が不合格の版を含む`metadata`の変更を判定不能とする正例（common-025）と、その版のファイルを`format`で変える負例（common-026）がある。一部しか本文がない版、人のレビューの記録を付けた別のcommitでの変換のケースは、まだない。
+
+RID-04・RID-05（2026-11-12）は、統合したRecordを残し、`replacedBy`で登録空間を書いて統合先を指す正例（reg-009）と、大文字を含む登録空間の負例（reg-010）がある。統合・分割・撤回したIDを別のRecordに再利用する負例は、まだない。発行の時の衝突の確認（RID-01）と同じ現象であり、どちらの規則で報告するかが決まっていないためである（[law-of-japan/loj-spec#63](https://github.com/law-of-japan/loj-spec/issues/63)）。
 
 共通の型と時点値（2026-11-12、[law-of-japan/loj-spec#32](https://github.com/law-of-japan/loj-spec/issues/32)）は、履歴マニフェストの中で確かめる。登録空間と版の外部識別子の正例（hist-037）と、リポジトリの所在で指すRecord（TYPE-01、hist-038）、Sourceのidの重複（HIST-02、hist-039）、同じファイルにないSource（TYPE-03、hist-040）、Verificationの未知の状態（TYPE-04、hist-041）、原文のないScope（TYPE-06、hist-042）、精度と書式の不一致（TIME-02、hist-043）、版を対象としない外部識別子（HIST-01・HIST-09、hist-046）の負例がある。確認済みの時点値の根拠（TIME-06）は、hist-013が当たる。登録台帳・再構築報告の中の共通の型の違反のケースは、まだない。
 
@@ -86,7 +90,7 @@ HIST-12の撤回した関係・内訳の扱い（2026-11-12、[law-of-japan/loj-
 
 HIST-13（2026-11-12、[law-of-japan/loj-spec#23](https://github.com/law-of-japan/loj-spec/issues/23)）は、削った行の`key`を使わずに行を加える正例（hist-031）と、削った`key`を後の版で再使用する負例（hist-032）と、本文が一部しかない版を挟んで飛ばす正例（hist-033）がある。本文のない版・L1が不合格の版を挟む場合、`basedOn`が分岐する場合と、表の番号が変わる場合のケースは、まだない。glyph-004（行の`key`を変えて注記が古くなる）は、字体注記の`node`の解決（GLYPH-04）の負例であり、`key`の維持そのものの検査ではない。
 
-HIST-04・05・08の2026-11-11の追加（[law-of-japan/loj-spec#20](https://github.com/law-of-japan/loj-spec/issues/20)）は、ケースがあるが一部だけである（hist-023〜026）。`glyphNotes`のパスの不一致、`absent`のRevisionのディレクトリ、同じ関係・同じ施行時点の重複、統合・分割したRevisionを基礎状態とする版、撤回した内訳だけを参照する成立根拠の負例は、まだない。
+HIST-04・05・08の2026-11-11の追加（[law-of-japan/loj-spec#20](https://github.com/law-of-japan/loj-spec/issues/20)）は、hist-023〜026のほか、`glyphNotes`のパスの不一致（hist-047）、`absent`のRevisionのディレクトリ（hist-048）、同じ関係・同じ施行時点の重複（hist-049）、統合したRevisionを基礎状態とする版（hist-050）、撤回した内訳だけを参照する成立根拠（hist-051）の負例がある（2026-11-12）。分割したRevisionを基礎状態とする版の負例は、統合と同じ規則なので加えていない。
 
 v1alpha2の2026-11-11の追加（[law-of-japan/loj-spec#25](https://github.com/law-of-japan/loj-spec/issues/25)）のうち、マーカーの空白はpkg-125・126を代表例とし、`<!--`の後・`-->`の前・名前と最初の属性の間の負例は加えていない。番号のない第1項が数字で始まる場合の申告（DISP-01）は、`unsupportedFeatures`を申告した版のL1の不合格（BASIC-03）の既存のケースと同じ結果になるので、加えていない。`supplements[].title`を検査しないこと（MAN-01）は、既存の正例（附則の`title`が見出しと違う「制定附則」）が当たる。
 
