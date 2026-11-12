@@ -465,14 +465,18 @@ def schema_failures(folder, validators):
     schemaVersion, its path and the first error message.
     """
     count, failures = 0, []
+    # CORE-03: LoJ YAML files use the .yaml extension (load_yaml rejects other YAML forms).
     for path in sorted(folder.rglob("*.yaml")):
         data = load_yaml(check_bytes(path.read_bytes()))
         version = data.get("schemaVersion") if isinstance(data, dict) else None
-        require(version in KIND_SCHEMAS, "Unknown schemaVersion in input: " + str(path))
+        count += 1
+        if version not in KIND_SCHEMAS:
+            # A missing or unknown schemaVersion has no schema to fit, so it counts as a schema failure.
+            failures.append((path, "unknown schemaVersion: " + repr(version)))
+            continue
         errors = list(validators[KIND_SCHEMAS[version]].iter_errors(data))
         if errors:
             failures.append((path, errors[0].message))
-        count += 1
     return count, failures
 
 
@@ -480,6 +484,7 @@ def check_schema_mark(ident, case, inputs, validators):
     """CONF-01: a case marked rejectedBy: schema has an input YAML file that breaks its schema;
     every input YAML file of any other case conforms to its schema. Returns the files checked."""
     count, failures = 0, []
+    # Directory inputs hold the YAML files; file inputs are git bundles, whose YAML is not unpacked here.
     for path in inputs:
         if path.is_dir():
             checked, failed = schema_failures(path, validators)
