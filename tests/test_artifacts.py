@@ -6,6 +6,7 @@ import sys
 import tempfile
 import unicodedata
 import unittest
+from unittest import mock
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
@@ -631,6 +632,136 @@ class DerivationTests(unittest.TestCase):
             index = v.read_json(v.ROOT / "conformance" / folder / "manifest.json")
             count += sum(v.check_derivations(case["id"], case) for case in index["cases"])
         self.assertGreater(count, 0)
+
+
+class NextSuiteAuditTests(unittest.TestCase):
+    """audit_suite detects a broken index or expected result of each next-spec suite (law-of-japan/loj-spec#8).
+
+    Each mutation changes one place of the checked-in data in memory: the index or one expected result is
+    replaced while audit_suite reads it, so the files on disk stay as they are."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.validators = v.all_schemas()
+        cls.rules = v.next_rules()
+        cls.indexes = {name: v.read_json(v.ROOT / "conformance" / folder / "manifest.json")
+                       for name, (folder, _) in v.SUITES.items()}
+
+    def audit(self, name, index=None, expected=None):
+        """Run audit_suite with the index, and the expected results by their path, replaced."""
+        folder = v.SUITES[name][0]
+        overrides = {(v.ROOT / "conformance" / folder / "manifest.json").resolve(): index}
+        overrides.update({(v.ROOT / path).resolve(): value for path, value in (expected or {}).items()})
+        original = v.read_json
+
+        def read(path):
+            value = overrides.get(Path(path).resolve())
+            return copy.deepcopy(value) if value is not None else original(path)
+        with mock.patch.object(v, "read_json", read):
+            return v.audit_suite(name, self.validators, self.rules)
+
+    def case(self, name, success):
+        case = next((c for c in self.indexes[name]["cases"] if c["success"] == success), None)
+        self.assertIsNotNone(case, "%s has no %s case" % (name, "positive" if success else "negative"))
+        return case
+
+    def assert_rejected(self, pattern, name, index=None, expected=None):
+        with self.assertRaisesRegex(ValueError, pattern):
+            self.audit(name, index, expected)
+
+    def test_every_suite_passes_with_its_files(self):
+        self.assertEqual(set(self.indexes), {"loj/v1alpha2", "common/v1alpha1", "loj-history/v1alpha1",
+                                             "loj-glyphs/v1alpha1", "loj-registry/v1alpha1", "loj-rebuild/v1alpha1"})
+        for name, index in self.indexes.items():
+            with self.subTest(suite=name):
+                count, covered, stats = self.audit(name)
+                folder = v.ROOT / "conformance" / v.SUITES[name][0]
+                self.assertEqual(count, len(index["cases"]))
+                self.assertEqual(count, stats["positive"] + stats["negative"])
+                self.assertEqual(count, len(list((folder / "expected").glob("*.json"))))
+                self.assertGreater(stats["positive"], 0)
+                self.assertGreater(stats["negative"], 0)
+                self.assertTrue(covered <= self.rules)
+                for case in index["cases"]:
+                    self.assertTrue((v.ROOT / case["expected"]).is_file(), case["id"])
+                    for path in v.input_files(case):
+                        self.assertTrue(path.exists(), case["id"])
+
+    def test_orphan_expected_file(self):
+        for name, index in self.indexes.items():
+            broken = copy.deepcopy(index)
+            del broken["cases"][-1]
+            with self.subTest(suite=name):
+                self.assert_rejected("orphan expected file", name, broken)
+
+    def test_missing_input(self):
+        for name, index in self.indexes.items():
+            broken = copy.deepcopy(index)
+            case = broken["cases"][0]
+            key = next((k for k in ("path", "registry", "bundle") if k in case["input"]), None)
+            self.assertIsNotNone(key, "%s: no input path key in %s" % (case["id"], case["input"]))
+            case["input"][key] += "-missing"
+            with self.subTest(suite=name):
+                self.assert_rejected("missing input", name, broken)
+
+    def test_unknown_requirement(self):
+        for name, index in self.indexes.items():
+            broken = copy.deepcopy(index)
+            broken["cases"][0]["requirements"].append("ZZZ-99")
+            with self.subTest(suite=name):
+                self.assert_rejected("unknown requirement", name, broken)
+
+    def test_unknown_diagnostic_rule(self):
+        for name in self.indexes:
+            case = self.case(name, False)
+            expected = v.read_json(v.ROOT / case["expected"])
+            expected["diagnostics"][0]["rule"] = "ZZZ-99"
+            with self.subTest(suite=name):
+                self.assert_rejected("unknown diagnostic rule", name, expected={case["expected"]: expected})
+
+    def test_positive_expecting_failure(self):
+        for name in self.indexes:
+            case = self.case(name, True)
+            expected = v.read_json(v.ROOT / case["expected"])
+            error = {"rule": case["requirements"][0], "schemaVersion": name, "class": "error"}
+            with_error = dict(expected, diagnostics=expected.get("diagnostics", []) + [error])
+            with self.subTest(suite=name, change="error diagnostic"):
+                self.assert_rejected("positive case expects failure", name, expected={case["expected"]: with_error})
+            if expected.get("results"):
+                failed = copy.deepcopy(expected)
+                failed["results"][0]["result"] = "fail"
+                with self.subTest(suite=name, change="failed result"):
+                    self.assert_rejected("positive case expects failure", name, expected={case["expected"]: failed})
+
+    def test_negative_without_error(self):
+        for name in self.indexes:
+            case = self.case(name, False)
+            expected = v.read_json(v.ROOT / case["expected"])
+            for diagnostic in expected["diagnostics"]:
+                diagnostic["class"] = "warning"
+            with self.subTest(suite=name):
+                self.assert_rejected("needs an error diagnostic", name, expected={case["expected"]: expected})
+
+    def test_duplicate_case_id(self):
+        for name, index in self.indexes.items():
+            broken = copy.deepcopy(index)
+            broken["cases"][1]["id"] = broken["cases"][0]["id"]
+            with self.subTest(suite=name):
+                self.assert_rejected("duplicate case ID", name, broken)
+
+    def test_case_in_wrong_group(self):
+        for name, index in self.indexes.items():
+            broken = copy.deepcopy(index)
+            # A negative read as a positive: its input sits in invalid/. The schema mark and the copy record would
+            # fail first, so the case is taken without the mark and its copy record is dropped. A case that also
+            # reads a shared positive input (common-002) has an input in valid/, so one with only its own input is taken.
+            case = next((c for c in broken["cases"] if not c["success"] and "rejectedBy" not in c
+                         and all("/invalid/" in path.as_posix() for path in v.input_files(c))), None)
+            self.assertIsNotNone(case, name + ": no negative reads only its own input outside rejectedBy")
+            case["success"] = True
+            case.pop("derivedFrom", None)
+            with self.subTest(suite=name):
+                self.assert_rejected("case directory mismatch", name, broken)
 
 
 if __name__ == "__main__":
