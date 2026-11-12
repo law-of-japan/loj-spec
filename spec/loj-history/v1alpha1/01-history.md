@@ -54,6 +54,7 @@
 - 内訳の`id`は、その関係の中で一意とし、再利用しない。
 - 関係の撤回は、削除せず`status: retracted`とし、理由を`verification.reason`に残す。内訳の一部だけの撤回は、その項目の`verification.state`を`retracted`とし、関係全体の撤回と区別する。
 - `repeals`・`totallyRevises`の`items`は、通常、終点のRecord全体を対象範囲（`scope.text`例: 「全部」）とする一項目で、`effective`に廃止・全部改正の効力の発生の時点を書く。一部だけを廃止する規定は`amends`（削る改正）とする。
+- `status: active`の`repeals`・`totallyRevises`の関係は、`verification.state`が`retracted`でない内訳を二つ以上持ってはならない（MUST NOT）。廃止・全部改正の効力の発生の時点は一つであり、効力の終了の後の適用は適用関係（HIST-07）で表す。内訳を差し替えるときは、古い内訳を撤回し、新しい内訳を加える。すべての内訳を撤回した関係の扱いは、HIST-12による。
 - 改正法の附則のうち、被改正法令の状態に関わる規定（施行期日、経過措置）は、関係・内訳の根拠として`evidence`で参照する（`locator`に「附則第一項」等）。改正法の附則は、版パッケージに写さない（[BASIC-03](../../v1alpha2/01-overview.md)）。
 
 ## HIST-04 起点と基礎状態
@@ -170,10 +171,12 @@
 
 - `repealed`・`totallyRevised`の`relation`は、同じ履歴マニフェストに存在し、種類が合う関係でなければならない（MUST）。
 - `repealed`・`totallyRevised`の`relation`は、`status: active`の関係でなければならない（MUST）。撤回した関係（`status: retracted`）を根拠とする項目は違反とする。
-- 終了の時点は、関係の`items`のうち、`verification.state`が`retracted`でない内訳の`effective`から得る。撤回した内訳の`effective`は使わない。すべての内訳を撤回した関係を根拠としてはならない（MUST NOT）。撤回していない内訳が二つ以上あり`effective`が異なる場合に、どれを終了の時点とするかは、本版では定めない。
+- 終了の時点は、関係の`items`のうち、`verification.state`が`retracted`でない内訳の`effective`から得る。撤回した内訳の`effective`は使わない。すべての内訳を撤回した関係を根拠としてはならない（MUST NOT）。撤回していない内訳は一つに限られる（[HIST-03](#hist-03-関係と内訳)）ので、終了の時点はその内訳の`effective`である。撤回していない内訳が二つ以上ある関係（HIST-03の違反）では、終了の時点を決めず、次の警告を判定しない。
 - 関係を撤回するときは、それを根拠とする`termination`の項目を、同じ変更（`revisionFix`、[CHG-01](../../common/v1alpha1/07-changes.md)）で削る。効力の終了を別の関係で表せる場合は、その関係を根拠とする項目に置き換える。撤回の事実と理由は、関係の側に残る（HIST-03）。
 - 登録台帳の`status`は登録の状態であり、効力の終了で変えない。効力の終了を登録台帳に写してはならない（MUST NOT）。
 - 終了の時点（`repealed`・`totallyRevised`では、撤回した内訳を除いて得た時点）より後に施行されるRevisionがあれば、警告とする。施行前に廃止された等の場合があるため、不合格にしない。
+  - 比べるのは、`status: active`のRevisionの施行時点`effective`と、終了の時点である。両方が確定日（[TIME-03](../../common/v1alpha1/06-time.md)）のときに日付（`value`）で比べ、Revisionの施行時点が終了の時点より後（同じ日を含めない）であれば警告とする。
+  - 一方が確定日でない場合（`expired`の`pending`、Revisionの`unknown`等）は、判定不能とする。この検査は警告しか出さないので、その判定不能は区分の結果に影響しない（[VAL-04](../../common/v1alpha1/03-validation.md)）。
 
 ## HIST-13 表の行のkeyの再使用
 

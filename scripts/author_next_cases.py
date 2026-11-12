@@ -816,6 +816,34 @@ def change_without_ast():
         {"results": [{"check": "change", "result": "fail"}], "diagnostics": [diag("CHG-04", SV["common"])]}, False)
 
 
+# --- 2026-11-13 (#53): the time of termination comes from the one item that is not retracted ----------
+def termination_time():
+    """HIST-03: at most one item that is not retracted; HIST-12: the warning compares fixed dates (CONF-01 compares it)."""
+    source = "conformance/loj-history/v1alpha1/valid/hist-036/repo"
+    late = 'value: "1960-04-01"\n          raw: 昭和三十五年四月一日'
+    early = 'value: "1959-04-13"\n          raw: 昭和三十四年四月十三日'
+    # The active item ends the law on 1959-04-13; the retracted item has the later 1960-04-01; the version is
+    # in force from 1959-10-01. Only a checker that takes the active item finds the version after the end.
+    dest = next_dir("hist", True) / "repo"
+    mutate(dest, source, [("history.yaml", late, "@LATE@"), ("history.yaml", early, late),
+                          ("history.yaml", "@LATE@", early),
+                          ("history.yaml", "    effective: {state: unknown, reason: 未調査}\n",
+                           "    effective:\n      state: date\n      value: \"1959-10-01\"\n      raw: 昭和三十四年十月一日\n"
+                           "      precision: day\n      evidence: [{source: src-egov-s34-122, locator: 附則}]\n"
+                           "      verification: {state: unverified, reason: 官報と未照合}\n")])
+    add("hist", "効力の終了の時点より後に施行される版（撤回した内訳の時点より前。警告）（架空）",
+        ["HIST-12", "HIST-03", "CONF-01"], "L3", {"kind": "repository", "path": rel(dest)},
+        {"results": [l3("historyStructure")], "diagnostics": [diag("HIST-12", SV["hist"], "warning")]}, True,
+        "historyStructure")
+    dest = next_dir("hist", False) / "repo"
+    mutate(dest, source, [("history.yaml", "verification: {state: retracted, reason: 適合ケースのための架空の撤回}",
+                           "verification: {state: unverified, reason: 官報と未照合}")])
+    add("hist", "撤回していない内訳が二つある廃止の関係（架空）", ["HIST-03", "HIST-12"], "L3",
+        {"kind": "repository", "path": rel(dest)},
+        {"results": [l3("historyStructure", "fail")], "diagnostics": [diag("HIST-03", SV["hist"])]}, False,
+        "historyStructure")
+
+
 def main():
     for suite, folder in FOLDER.items():
         for group in ("invalid", "expected"):
@@ -836,6 +864,7 @@ def main():
     history_gaps()
     registry_ids()
     change_without_ast()
+    termination_time()
     marked = {case["id"] for cases in INDEX.values() for case in cases if "rejectedBy" in case}
     assert marked == SCHEMA_REJECTED, SCHEMA_REJECTED - marked
     for suite, folder in FOLDER.items():
