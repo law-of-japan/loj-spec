@@ -570,6 +570,66 @@ def change_dependents():
         {"results": [{"check": "change", "result": "pass"}]}, True)
 
 
+ROW_LAW = ("20990201-act-2", "架空雲分類法（実在しないサンプル）")
+ROW_REVS = ["c4f7h2k9", "d5g8j3m6", "e6h9k4n7"]
+CLOUDS = {"a1b2": "積雲", "c3d4": "層雲", "e5f6": "巻雲"}
+
+
+def row_key_files(base, key_sets):
+    """Three fictional versions of one table (TABLE-02, HIST-13). key_sets: row keys of each version."""
+    fict = "      evidence: [{source: src-fiction, locator: %s}]\n      verification: {state: unverified, reason: 架空の資料}\n"
+    rels, revs = "", ""
+    for i, (rev, keys) in enumerate(zip(ROW_REVS, key_sets)):
+        day = "2099-0%d-01" % (i + 2)
+        raw = "二千九十九年" + "二三四"[i] + "月一日"
+        effective = ("    effective:\n      state: date\n      value: \"" + day + "\"\n      raw: " + raw + "\n"
+                     "      precision: day\n" + fict % "施行期日")
+        if i:
+            rels += ("  - id: rel-%d\n    type: amends\n    from: {id: 2099%02d01-act-%d, label: 架空の改正法}\n" % (i, i + 2, i + 10)
+                     + "    evidence: [{source: src-fiction, locator: 本則}]\n"
+                     "    verification: {state: unverified, reason: 架空の資料}\n    status: active\n    items:\n"
+                     "      - id: i1\n        scope: {text: 第一条の表}\n        effective:\n          state: date\n"
+                     "          value: \"" + day + "\"\n          raw: " + raw + "\n          precision: day\n"
+                     "          evidence: [{source: src-fiction, locator: 附則}]\n"
+                     "          verification: {state: unverified, reason: 架空の資料}\n"
+                     "        evidence: [{source: src-fiction, locator: 附則}]\n"
+                     "        verification: {state: unverified, reason: 架空の資料}\n")
+        revs += "  - id: " + rev + "\n"
+        revs += ("    origin: enactment\n" if not i else
+                 "    basedOn: " + ROW_REVS[i - 1] + "\n    basis: [{relation: rel-%d, items: [i1]}]\n" % i)
+        revs += (effective + "    applicability: {state: unsurveyed}\n    text:\n      status: complete\n"
+                 "      sources: [{source: src-fiction, locator: 本則}]\n      glyphs: unverified\n    status: active\n")
+        rows = "".join("<!-- loj:row key=" + k + " -->\n<!-- loj:cell -->\n" + CLOUDS[k] + "\n<!-- loj:end-cell -->\n"
+                       "<!-- loj:end-row -->\n" for k in keys)
+        md = ("# 第一条\n<!-- loj:paragraph number=1 -->\n架空の雲の種類を次のように定める。\n"
+              "<!-- loj:table number=1 -->\n" + rows + "<!-- loj:end-table -->\n<!-- loj:end-paragraph -->\n")
+        law = {"schemaVersion": "loj/v1alpha2",
+               "law": {"id": ROW_LAW[0], "title": ROW_LAW[1], "type": "act", "number": "架空法律第二号",
+                       "promulgatedAt": "2099-02-01", "language": "ja"},
+               "documents": [{"path": "main.md", "parent": "main"}]}
+        folder = base / "versions" / rev
+        folder.mkdir(parents=True, exist_ok=True)
+        (folder / "law.yaml").write_bytes((json.dumps(law, ensure_ascii=False, indent=2) + "\n").encode("utf-8"))
+        (folder / "main.md").write_bytes(md.encode("utf-8"))
+    history = ("schemaVersion: loj-history/v1alpha1\nrecord: {id: " + ROW_LAW[0] + ", label: 架空雲分類法}\n"
+               "sources:\n  - {id: src-fiction, kind: other, title: 適合ケースのための架空の資料}\n"
+               "relations:\n" + rels + "revisions:\n" + revs + "coverage: {state: unconfirmed}\n")
+    (base / "history.yaml").write_bytes(history.encode("utf-8"))
+
+
+def row_keys():
+    dest = next_dir("hist", True) / "repo"
+    row_key_files(dest, [["a1b2", "c3d4"], ["a1b2"], ["a1b2", "e5f6"]])
+    add("hist", "削った行のkeyを使わずに行を加える（架空）", ["HIST-13", "TABLE-02"], "L3",
+        {"kind": "repository", "path": rel(dest)}, {"results": [l3("historyStructure")]}, True, "historyStructure")
+    dest = next_dir("hist", False) / "repo"
+    row_key_files(dest, [["a1b2", "c3d4"], ["a1b2"], ["a1b2", "c3d4"]])
+    add("hist", "削った行のkeyを後の版で再使用する（架空）", ["HIST-13", "TABLE-02"], "L3",
+        {"kind": "repository", "path": rel(dest)},
+        {"results": [l3("historyStructure", "fail")], "diagnostics": [diag("HIST-13", SV["hist"])]}, False,
+        "historyStructure")
+
+
 def main():
     for suite, folder in FOLDER.items():
         for group in ("invalid", "expected"):
@@ -584,6 +644,7 @@ def main():
     display_and_promulgation()
     total_revision()
     change_dependents()
+    row_keys()
     for suite, folder in FOLDER.items():
         write_json(C / folder / "manifest.json", {"suite": SV[suite], "cases": INDEX[suite]})
     print("Authored " + ", ".join(f"{k}: {len(v)}" for k, v in INDEX.items()) + "; no validator invoked.")

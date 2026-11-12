@@ -508,6 +508,40 @@
       },
       "expected": "conformance/loj-history/v1alpha1/expected/hist-030.json",
       "success": false
+    },
+    {
+      "id": "hist-031",
+      "title": "削った行のkeyを使わずに行を加える（架空）",
+      "requirements": [
+        "HIST-13",
+        "TABLE-02"
+      ],
+      "check": "L3",
+      "category": "historyStructure",
+      "normative": true,
+      "input": {
+        "kind": "repository",
+        "path": "conformance/loj-history/v1alpha1/valid/hist-031/repo"
+      },
+      "expected": "conformance/loj-history/v1alpha1/expected/hist-031.json",
+      "success": true
+    },
+    {
+      "id": "hist-032",
+      "title": "削った行のkeyを後の版で再使用する（架空）",
+      "requirements": [
+        "HIST-13",
+        "TABLE-02"
+      ],
+      "check": "L3",
+      "category": "historyStructure",
+      "normative": true,
+      "input": {
+        "kind": "repository",
+        "path": "conformance/loj-history/v1alpha1/invalid/hist-032/repo"
+      },
+      "expected": "conformance/loj-history/v1alpha1/expected/hist-032.json",
+      "success": false
     }
   ]
 }

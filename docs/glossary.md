@@ -77,7 +77,7 @@
 | 号 | Item、`item` | 項の下の単位 | [DIR-01](../spec/v1alpha2/05-directives.md#dir-01-マーカーの字句)、[DIR-02](../spec/v1alpha2/05-directives.md#dir-02-対応入れ子空の禁止) |
 | 細分 | Subitem、`subitem`、`level` | 号の下の単位。`level`は1〜10で、飛び越せない | [DIR-02](../spec/v1alpha2/05-directives.md#dir-02-対応入れ子空の禁止) |
 | 表、行、セル | Table、Row、Cell | 項・号・細分の本文の中の法令の表。マーカーで書き、GFMの表は使わない | [TABLE-01](../spec/v1alpha2/09-structures.md#table-01-表の構造)、[TABLE-03](../spec/v1alpha2/09-structures.md#table-03-セル) |
-| 行のkey | `row key=…` | 表の行の不透明な識別子（Crockford Base32の小文字4文字）。改正・訂正で変えず、削った行のkeyも再使用しない | [TABLE-02](../spec/v1alpha2/09-structures.md#table-02-行のkey) |
+| 行のkey | `row key=…` | 表の行の不透明な識別子（Crockford Base32の小文字4文字）。同じ表の中で、版をまたいで同じ行であることを入力者が主張する。改正・訂正で変えず、削った行のkeyも再使用しない。付け方の誤りは記録訂正で直せる | [TABLE-02](../spec/v1alpha2/09-structures.md#table-02-行のkey)、[HIST-13](../spec/loj-history/v1alpha1/01-history.md#hist-13-表の行のkeyの再使用) |
 | 前文 | Preamble、`preamble` | 本則の前に置く前文。項として型付けしない | [PRE-01](../spec/v1alpha2/09-structures.md#pre-01-前文) |
 | 制定文 | EnactStatement、`enact-statement` | 「……この政令を制定する。」等の文。Lawの最初の子 | [PRE-02](../spec/v1alpha2/09-structures.md#pre-02-制定文) |
 | マーカー | `<!-- loj:… -->` | 項・号・表等の始まりと終わりを示す、文書の直下の単独のHTMLコメント。`loj:`で始まるコメントは予約の候補として検査する | [MD-01](../spec/v1alpha2/03-markdown.md#md-01-構造マーカーの候補)、[DIR-01](../spec/v1alpha2/05-directives.md#dir-01-マーカーの字句) |
