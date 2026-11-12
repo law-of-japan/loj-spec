@@ -488,8 +488,8 @@ def check_schema_mark(ident, case, inputs, validators):
     if case.get("rejectedBy") == "schema":
         require(bool(failures), ident + " is marked rejectedBy: schema, but every input YAML file fits its schema")
     else:
-        require(not failures, ident + " input fails its schema without rejectedBy: schema: "
-                + "; ".join(str(path) + ": " + message for path, message in failures[:1]))
+        require(not failures, ident + " input fails its schema without rejectedBy: schema (" + str(len(failures))
+                + " files): " + "; ".join(str(path) + ": " + message for path, message in failures))
     return count
 
 
@@ -557,6 +557,8 @@ def audit_suite(name, validators, rules):
             elif case["check"] == "L1":
                 require(not issues, ident + " unexpected L0 failure: " + str(issues))
         else:
+            # Version package cases (L0-L2) never carry the mark: their schema violations are L0 failures,
+            # checked through inspect_manifest above, and the index schema rejects the mark there.
             stats["files"] += check_schema_mark(ident, case, inputs, validators)
         stats["positive" if case["success"] else "negative"] += 1
     on_disk = {p.relative_to(ROOT).as_posix() for p in (base / "expected").glob("*.json")}
