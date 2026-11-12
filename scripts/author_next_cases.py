@@ -518,16 +518,18 @@ def total_revision():
          "references": [{"target": "loj:loj/" + NEW_LAW[0], "result": "nonexistentConfirmed"}]}, False,
         "relationResolution")
     # The old Record's relation is changed instead of the reference (XREF-02: status and type).
-    for title, old_text, new_text in [
+    for title, *edits in [
         ("totallyRevisesが撤回した関係を指す（架空）",
-         "    verification: {state: unverified, reason: 架空の資料}\n    status: active\n",
-         "    verification: {state: unverified, reason: 架空の資料による撤回}\n    status: retracted\n"),
-        ("totallyRevisesが全部改正でない関係を指す（架空）", "    type: totallyRevises\n", "    type: repeals\n"),
-        ("全部改正の関係の起点が別のRecord（架空）", "    from: {id: %s, label: %s}\n" % NEW_LAW,
-         "    from: {id: %s, label: %s}\n" % OLD_LAW),
+         ("    verification: {state: unverified, reason: 架空の資料}\n    status: active\n",
+          "    verification: {state: unverified, reason: 架空の資料による撤回}\n    status: retracted\n")),
+        # HIST-12: the termination follows the relation type, so that only XREF-02 is broken.
+        ("totallyRevisesが全部改正でない関係を指す（架空）", ("    type: totallyRevises\n", "    type: repeals\n"),
+         ("type: totallyRevised, relation", "type: repealed, relation")),
+        ("全部改正の関係の起点が別のRecord（架空）", ("    from: {id: %s, label: %s}\n" % NEW_LAW,
+                                                      "    from: {id: %s, label: %s}\n" % OLD_LAW)),
     ]:
         dest = next_dir("common", False) / OLD_LAW[0]
-        mutate(dest, old, [("history.yaml", old_text, new_text)])
+        mutate(dest, old, [("history.yaml", a, b) for a, b in edits])
         add("common", title, ["XREF-02"], "L4",
             {"kind": "records", "registry": registry, "repositories": [rel(dest), new]},
             {"results": [dict(consistency, result="fail")], "diagnostics": [diag("XREF-02", SV["common"])]}, False,

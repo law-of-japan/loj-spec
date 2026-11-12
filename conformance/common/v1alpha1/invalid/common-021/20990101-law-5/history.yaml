@@ -29,5 +29,5 @@ revisions:
     text: {status: absent}
     status: active
 termination:
-  - {type: totallyRevised, relation: rel-total}
+  - {type: repealed, relation: rel-total}
 coverage: {state: unconfirmed}
