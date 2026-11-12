@@ -789,6 +789,86 @@
       "expected": "conformance/loj-history/v1alpha1/expected/hist-046.json",
       "success": false,
       "rejectedBy": "schema"
+    },
+    {
+      "id": "hist-047",
+      "title": "自身のrevision_idのパスでない字体注記",
+      "requirements": [
+        "HIST-08"
+      ],
+      "check": "L3",
+      "category": "historyStructure",
+      "normative": true,
+      "input": {
+        "kind": "repository",
+        "path": "conformance/loj-history/v1alpha1/invalid/hist-047/repo"
+      },
+      "expected": "conformance/loj-history/v1alpha1/expected/hist-047.json",
+      "success": false
+    },
+    {
+      "id": "hist-048",
+      "title": "本文のない版のディレクトリ",
+      "requirements": [
+        "HIST-08"
+      ],
+      "check": "L3",
+      "category": "historyStructure",
+      "normative": true,
+      "input": {
+        "kind": "repository",
+        "path": "conformance/loj-history/v1alpha1/invalid/hist-048/repo"
+      },
+      "expected": "conformance/loj-history/v1alpha1/expected/hist-048.json",
+      "success": false
+    },
+    {
+      "id": "hist-049",
+      "title": "同じ関係・同じ施行時点の二つの有効な版",
+      "requirements": [
+        "HIST-05"
+      ],
+      "check": "L3",
+      "category": "historyStructure",
+      "normative": true,
+      "input": {
+        "kind": "repository",
+        "path": "conformance/loj-history/v1alpha1/invalid/hist-049/repo"
+      },
+      "expected": "conformance/loj-history/v1alpha1/expected/hist-049.json",
+      "success": false
+    },
+    {
+      "id": "hist-050",
+      "title": "統合したRevisionを基礎状態とする有効なRevision",
+      "requirements": [
+        "HIST-04"
+      ],
+      "check": "L3",
+      "category": "historyStructure",
+      "normative": true,
+      "input": {
+        "kind": "repository",
+        "path": "conformance/loj-history/v1alpha1/invalid/hist-050/repo"
+      },
+      "expected": "conformance/loj-history/v1alpha1/expected/hist-050.json",
+      "success": false
+    },
+    {
+      "id": "hist-051",
+      "title": "撤回した内訳だけを参照する成立根拠",
+      "requirements": [
+        "HIST-05"
+      ],
+      "check": "L3",
+      "category": "historyStructure",
+      "normative": true,
+      "input": {
+        "kind": "repository",
+        "path": "conformance/loj-history/v1alpha1/invalid/hist-051/repo"
+      },
+      "expected": "conformance/loj-history/v1alpha1/expected/hist-051.json",
+      "success": false
     }
   ]
 }

@@ -128,6 +128,39 @@
       },
       "expected": "conformance/loj-registry/v1alpha1/expected/reg-008.json",
       "success": false
+    },
+    {
+      "id": "reg-009",
+      "title": "統合したRecordを残した登録台帳",
+      "requirements": [
+        "REG-02",
+        "RID-04",
+        "RID-05"
+      ],
+      "check": "registry",
+      "normative": true,
+      "input": {
+        "kind": "registry",
+        "path": "conformance/loj-registry/v1alpha1/valid/reg-009/registry"
+      },
+      "expected": "conformance/loj-registry/v1alpha1/expected/reg-009.json",
+      "success": true
+    },
+    {
+      "id": "reg-010",
+      "title": "大文字を含む登録空間の識別子",
+      "requirements": [
+        "RID-04"
+      ],
+      "check": "registry",
+      "normative": true,
+      "input": {
+        "kind": "registry",
+        "path": "conformance/loj-registry/v1alpha1/invalid/reg-010/registry"
+      },
+      "expected": "conformance/loj-registry/v1alpha1/expected/reg-010.json",
+      "success": false,
+      "rejectedBy": "schema"
     }
   ]
 }

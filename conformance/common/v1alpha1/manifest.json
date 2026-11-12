@@ -469,6 +469,41 @@
       },
       "expected": "conformance/common/v1alpha1/expected/common-024.json",
       "success": true
+    },
+    {
+      "id": "common-025",
+      "title": "ASTを生成できない版を含む変更は判定不能",
+      "requirements": [
+        "CHG-02",
+        "CHG-04"
+      ],
+      "check": "change",
+      "normative": true,
+      "input": {
+        "kind": "change",
+        "bundle": "conformance/common/v1alpha1/valid/common-025/repo.bundle",
+        "base": "b4fb14ad30b1886f64ca1a04185e54c52d8a9588",
+        "head": "e9c821aea8a0fdcaaaa852ea27c08d9476dbb2a7"
+      },
+      "expected": "conformance/common/v1alpha1/expected/common-025.json",
+      "success": true
+    },
+    {
+      "id": "common-026",
+      "title": "ASTを生成できない版のファイルを書式変更で変える",
+      "requirements": [
+        "CHG-04"
+      ],
+      "check": "change",
+      "normative": true,
+      "input": {
+        "kind": "change",
+        "bundle": "conformance/common/v1alpha1/invalid/common-026/repo.bundle",
+        "base": "e9c821aea8a0fdcaaaa852ea27c08d9476dbb2a7",
+        "head": "a933fe6b04f6a664ca8fb5f93bd7f153362913e3"
+      },
+      "expected": "conformance/common/v1alpha1/expected/common-026.json",
+      "success": false
     }
   ]
 }
