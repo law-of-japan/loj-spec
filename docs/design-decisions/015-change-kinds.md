@@ -58,7 +58,7 @@
 - 選択肢（mergeのcommit）: 正本ブランチに置かない（squash・rebaseに限る。採用）／第一親と比べる。第一親と比べる案は、mergeのcommit自体の種類と、PRの中の各commitの検査の両方を定める必要があり、規則が増える。
 - 理由: 登録台帳の変更は版パッケージのASTを変えないので、`metadata`の検査がそのまま当てはまる。CHG-03には、登録台帳だけの`metadata`という読み方がすでにあった。一つのcommitに一つの種類という宣言と、比べる変更前の記録版を一意にするには、履歴を一本にするのが単純である。種類の違うcommitを含むPRはrebaseで統合し、各commitが単独で検査を受ける。
 - 複数のリポジトリにまたがる変更: 仕様は変えない。登録台帳、被改正法令、改正法の順に統合すれば、途中の状態は未取得として現れ、不合格にならない（VAL-06）。順序は運用（リポジトリ管理ガイドライン）で定める（[law-of-japan/loj-spec#33](https://github.com/law-of-japan/loj-spec/issues/33)）。
-- 制約: PRの作業ブランチのcommitは統合後に正本ブランチから到達できず、固定参照に使えない（FIXREF-04）。squashでは作業の日時が残らない（`docs/limitations.md`）。
+- 制約: PRの作業ブランチのcommitは統合後に正本ブランチから到達できず、固定参照に使えない（FIXREF-04）。squashでは作業の日時が残らないことがある（`docs/limitations.md`）。`migration`の禁止は草案の`loj/v1alpha2`と共通の要件の側の定めであり、凍結した`loj/v1alpha1`の内容とは関わらない。
 - 再検討: 正本ブランチにmergeのcommitを置く必要が出たとき。
 
 ## 経緯
