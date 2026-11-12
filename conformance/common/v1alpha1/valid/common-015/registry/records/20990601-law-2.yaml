@@ -5,7 +5,7 @@ status: active
 identity:
   evidence: [{source: src-fictional, locator: 題名}]
   verification: {state: confirmed}
-text: {state: notCollected}
+collection: {state: notCollected}
 sources:
   - {id: src-fictional, kind: other, title: 適合ケースのための架空の資料}
 numbers: []

@@ -117,11 +117,11 @@
 
 | フィールド | 必須 | 内容 |
 |---|---|---|
-| `status` | 必須 | `complete`（本文がそろっている）／`partial`（一部が欠けている）／`absent`（本文がない） |
+| `status` | 必須 | `complete`（本文がそろっている）／`partial`（一部が欠けている）／`absent`（本文がない）。本文の状態であり、Revisionの`status`（記録の生存の状態）とは別である（名前の例外は[DDR-022](../../../docs/design-decisions/022-spec-structure.md)） |
 | `package` | 任意 | 版パッケージの`law.yaml`のパス。書く場合は`versions/<revision_id>/law.yaml`（自身のrevision_id）でなければならない（MUST）。省略時も同じパスとする |
 | `gaps` | `partial`で必須 | 欠落の範囲（Scopeの一覧） |
 | `sources` | `complete`・`partial`で必須 | 本文を起こした原典資料（Evidenceの一覧） |
-| `glyphs` | `complete`・`partial`で必須 | 字体の照合状態。`verified`（原典の字体と照合した）／`unverified`（新字体化された資料等に由来し、照合していない） |
+| `glyphCheck` | `complete`・`partial`で必須 | 字体の照合状態。`verified`（原典の字体と照合した）／`unverified`（新字体化された資料等に由来し、照合していない） |
 | `glyphNotes` | 注記がある場合は必須 | 字体注記のファイルのパス。`versions/<revision_id>/glyphs.yaml`（自身のrevision_id）でなければならない（MUST） |
 | `variances` | 任意 | 原典資料の間の文言の食い違い（loj-glyphsのGLYPH-07）。各項目は`scope`（Scope）、`readings`（資料ごとの文言。2件以上。各項目は`source`、`locator`、`raw`）、`verification`と、任意の`resolvedBy`（食い違いを解いた官報正誤のEvidence） |
 | `correctionsSurveyed` | 任意 | 官報正誤を確かめたか。`state`（`surveyed`／`unsurveyed`）と、`surveyed`では`evidence`（確かめた資料）、`unsurveyed`では`reason`。`surveyed`は`reason`を、`unsurveyed`は`evidence`を持たない |
@@ -129,7 +129,7 @@
 - `complete`・`partial`のRevisionの版パッケージは、存在しなければならない（MUST）。存在しなければ違反とする。版パッケージが存在するが読めない場合は、L3では判定せず、版パッケージのL0で扱う。
 - `absent`のRevisionに、版パッケージを置いてはならない（MUST NOT）。
 - 版パッケージのディレクトリ`versions/<revision_id>/`は、履歴マニフェストの`complete`・`partial`のRevisionと一対一に対応しなければならない（MUST）。`absent`のRevisionは、ディレクトリを持たない。
-- `glyphs: verified`の意味は、字体注記の要件（loj-glyphs）による。
+- `glyphCheck: verified`の意味は、字体注記の要件（loj-glyphs）による。
 - `variances`の項目は、官報正誤が見つからない間は`verification.state`を`disputed`とする。官報正誤で解いた場合は`resolvedBy`を持ち、本文を正誤後の文言にする（GLYPH-07）。`readings`の`source`は、同じ履歴マニフェストのSourceを指す（TYPE-03）。
 - `variances`と`correctionsSurveyed`は、本文のあるRevision（`complete`・`partial`）に書く。`absent`のRevisionは、これらを持ってはならない（MUST NOT）。
 - 本文の状態の確認の状況（官報正誤を確かめていない等）を、`sources`の`locator`に書いてはならない（MUST NOT）。`locator`は箇所の原文表記である（TYPE-03）。官報正誤の確認の状況は`correctionsSurveyed`に書く。

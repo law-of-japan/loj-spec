@@ -78,8 +78,8 @@
       "input": {
         "kind": "change",
         "bundle": "conformance/common/v1alpha1/valid/common-004/repo.bundle",
-        "base": "02086ca793ace385b61e6fa5692709895e7e9b0e",
-        "head": "8b678d2467c3b9eab705300a35c17b5b57acc37b"
+        "base": "f1162fe2cfefa04e9a0d656706e37977fb3d0731",
+        "head": "b20b2ff86a55e995bb9b7409defea3a3efbbc9d1"
       },
       "expected": "conformance/common/v1alpha1/expected/common-004.json",
       "success": true
@@ -96,8 +96,8 @@
       "input": {
         "kind": "change",
         "bundle": "conformance/common/v1alpha1/valid/common-004/repo.bundle",
-        "base": "8b678d2467c3b9eab705300a35c17b5b57acc37b",
-        "head": "d7b514444a5f766269025e52d6dda8b9671df556"
+        "base": "b20b2ff86a55e995bb9b7409defea3a3efbbc9d1",
+        "head": "7d6641cedd2f103e31dff9cd0d063ebf021413cb"
       },
       "expected": "conformance/common/v1alpha1/expected/common-005.json",
       "success": true
@@ -113,8 +113,8 @@
       "input": {
         "kind": "change",
         "bundle": "conformance/common/v1alpha1/invalid/common-006/repo.bundle",
-        "base": "d7b514444a5f766269025e52d6dda8b9671df556",
-        "head": "35b3c1b815e242be90211750b851b17b1c835b0a"
+        "base": "7d6641cedd2f103e31dff9cd0d063ebf021413cb",
+        "head": "bb9a472cb68b07334308c394d024e29570a3f103"
       },
       "expected": "conformance/common/v1alpha1/expected/common-006.json",
       "success": false
@@ -130,8 +130,8 @@
       "input": {
         "kind": "change",
         "bundle": "conformance/common/v1alpha1/invalid/common-007/repo.bundle",
-        "base": "35b3c1b815e242be90211750b851b17b1c835b0a",
-        "head": "f59ef0fb1025fcc7bb6b168631c4efb673bbdece"
+        "base": "bb9a472cb68b07334308c394d024e29570a3f103",
+        "head": "64394c4a5759dbfb2f76ac624934c47c5f74b994"
       },
       "expected": "conformance/common/v1alpha1/expected/common-007.json",
       "success": false
@@ -150,7 +150,7 @@
         "kind": "reference",
         "bundle": "conformance/common/v1alpha1/valid/common-004/repo.bundle",
         "registry": "conformance/common/v1alpha1/valid/common-008/registry",
-        "reference": "loj:loj/20990101-act-1/b7k2m9qd@02086ca793ace385b61e6fa5692709895e7e9b0e#20990101-act-1/main/article/1/paragraph/1"
+        "reference": "loj:loj/20990101-act-1/b7k2m9qd@f1162fe2cfefa04e9a0d656706e37977fb3d0731#20990101-act-1/main/article/1/paragraph/1"
       },
       "expected": "conformance/common/v1alpha1/expected/common-008.json",
       "success": true
@@ -203,7 +203,7 @@
         "kind": "reference",
         "bundle": "conformance/common/v1alpha1/invalid/common-011/repo.bundle",
         "registry": "conformance/common/v1alpha1/invalid/common-011/registry",
-        "reference": "loj:loj/20990101-act-1/b7k2m9qd@02086ca"
+        "reference": "loj:loj/20990101-act-1/b7k2m9qd@f1162fe"
       },
       "expected": "conformance/common/v1alpha1/expected/common-011.json",
       "success": false
@@ -220,7 +220,7 @@
         "kind": "reference",
         "bundle": "conformance/common/v1alpha1/invalid/common-012/repo.bundle",
         "registry": "conformance/common/v1alpha1/invalid/common-012/registry",
-        "reference": "loj:loj/20990101-act-1/zzzzzzzz@02086ca793ace385b61e6fa5692709895e7e9b0e"
+        "reference": "loj:loj/20990101-act-1/zzzzzzzz@f1162fe2cfefa04e9a0d656706e37977fb3d0731"
       },
       "expected": "conformance/common/v1alpha1/expected/common-012.json",
       "success": false
@@ -464,8 +464,8 @@
       "input": {
         "kind": "change",
         "bundle": "conformance/common/v1alpha1/valid/common-024/repo.bundle",
-        "base": "02086ca793ace385b61e6fa5692709895e7e9b0e",
-        "head": "4eefc91ff85b2603011a895eb91f2de8b9b4476f"
+        "base": "f1162fe2cfefa04e9a0d656706e37977fb3d0731",
+        "head": "34936fb55aaac6c995adcbbb59792efcf05c0841"
       },
       "expected": "conformance/common/v1alpha1/expected/common-024.json",
       "success": true

@@ -95,3 +95,5 @@ XREF-02（2026-11-12、[law-of-japan/loj-spec#16](https://github.com/law-of-japa
 XREF-05・XREF-06（2026-11-12、[law-of-japan/loj-spec#13](https://github.com/law-of-japan/loj-spec/issues/13)・[law-of-japan/loj-spec#19](https://github.com/law-of-japan/loj-spec/issues/19)）は、ケースがあるが一部だけである（common-013〜016）。common-013は`structured.period.raw`と`raw`を続けた文字列との一致に当たる。採用中の主張が`nonexistent`・`unknown`の場合の警告、`conflicting`等の判定しない場合、XREF-06の判定不能の場合のケースは、まだない。
 
 TIME-03は、ケースがあるが一部だけである（hist-004、hist-015〜018）。`pending`等を基準とする`derived`に`value`を書いた負例と、`value`の書式（`YYYY-MM-DD`）に反する負例は、まだない。
+
+フィールドの改名（2026-11-12、[law-of-japan/loj-spec#29](https://github.com/law-of-japan/loj-spec/issues/29)）は、改めたschemaで正例のYAMLを検査して確かめる。`law.yaml`の`sourceUris`（旧`sources`）は任意のフィールドで、v1alpha2の正例に使用例がなく、まだケースがない。旧名は閉じたschemaにより未知のフィールドとして拒否されるが、旧名を使う負例は加えていない（未知のフィールドの負例は、Manifestのpkgのケースと、Revisionのhist-005にある）。

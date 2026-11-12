@@ -145,13 +145,13 @@ def history():
     add("hist", "Sourceのfixedに書く固定参照と外部の資料の固定（架空）", ["FIXREF-01", "TYPE-02"], "L3",
         {"kind": "repository", "path": fixed_pos}, {"results": [l3("evidence")]}, True, "evidence")
     for title, rule, edits in [
-        ("固定参照の短縮したcommit", "FIXREF-04", [("history.yaml", "commit: 02086ca793ace385b61e6fa5692709895e7e9b0e", "commit: 02086ca")]),
+        ("固定参照の短縮したcommit", "FIXREF-04", [("history.yaml", "commit: f1162fe2cfefa04e9a0d656706e37977fb3d0731", "commit: f1162fe")]),
         ("revisionのない固定参照", "FIXREF-03", [("history.yaml", "      revision: b7k2m9qd\n", "")]),
         ("LoJの中の資料を文字列で固定する", "TYPE-02", [("history.yaml",
                                      "    fixed:\n      record: {id: 20990101-act-1, label: 架空法律第一号}\n      revision: b7k2m9qd\n"
-                                     "      commit: 02086ca793ace385b61e6fa5692709895e7e9b0e\n"
+                                     "      commit: f1162fe2cfefa04e9a0d656706e37977fb3d0731\n"
                                      "      node: 20990101-act-1/main/article/1/paragraph/1\n",
-                                     "    fixed: loj:loj/20990101-act-1/b7k2m9qd@02086ca793ace385b61e6fa5692709895e7e9b0e\n")]),
+                                     "    fixed: loj:loj/20990101-act-1/b7k2m9qd@f1162fe2cfefa04e9a0d656706e37977fb3d0731\n")]),
     ]:
         dest = next_dir("hist", False) / "repo"
         mutate(dest, fixed_pos, edits)
@@ -242,8 +242,8 @@ def glyphs():
     # GLYPH-10: verified glyphs need a Source with glyphPreservation: preserved (#21).
     dest = next_dir("glyph", False) / "repo"
     mutate(dest, HIST_POS, [("history.yaml", "    glyphPreservation: preserved\nrelations:\n", "relations:\n"),
-                            ("history.yaml", "      glyphs: unverified\n      glyphNotes: versions/zwgmz1rt/",
-                             "      glyphs: verified\n      glyphNotes: versions/zwgmz1rt/")])
+                            ("history.yaml", "      glyphCheck: unverified\n      glyphNotes: versions/zwgmz1rt/",
+                             "      glyphCheck: verified\n      glyphNotes: versions/zwgmz1rt/")])
     add("glyph", "字体を保持する資料を指さずに字体を照合済みにする", ["GLYPH-10", "TYPE-02"], "L3",
         {"kind": "repository", "path": rel(dest)},
         {"results": [l3("evidence", "fail")], "diagnostics": [diag("GLYPH-10", SV["glyph"])]}, False, "evidence")
@@ -336,7 +336,7 @@ def fictional_files(body1, files_split=False, label="制定", locator="本則"):
                "      value: \"2099-01-01\"\n      raw: 二千九十九年一月一日\n      precision: day\n"
                "      evidence: [{source: src-fiction, locator: 附則}]\n      verification: {state: confirmed}\n"
                "    applicability: {state: unsurveyed}\n    text:\n      status: complete\n"
-               "      sources: [{source: src-fiction, locator: " + locator + "}]\n      glyphs: unverified\n    status: active\n"
+               "      sources: [{source: src-fiction, locator: " + locator + "}]\n      glyphCheck: unverified\n    status: active\n"
                "coverage: {state: unconfirmed}\n")
     out = {"history.yaml": history, "versions/" + REV + "/law.yaml": json.dumps(law, ensure_ascii=False, indent=2) + "\n"}
     out.update({"versions/" + REV + "/" + k: v for k, v in md.items()})
@@ -399,7 +399,7 @@ def changes_and_references():
     registry.parent.mkdir(parents=True, exist_ok=True)
     registry.write_bytes(("schemaVersion: loj-registry/v1alpha1\nid: 20990101-act-1\nlabel: 架空雲保管法\nstatus: active\n"
                           "identity:\n  evidence: [{source: src-fiction, locator: 題名}]\n  verification: {state: confirmed}\n"
-                          "text: {state: collected}\nrepository: {location: example.invalid/20990101-act-1, canonicalBranch: main}\n"
+                          "collection: {state: collected}\nrepository: {location: example.invalid/20990101-act-1, canonicalBranch: main}\n"
                           "sources:\n  - {id: src-fiction, kind: other, title: 架空の原典}\nnumbers: []\nexternalIds: []\n").encode("utf-8"))
     reg = rel(registry.parent.parent)
     ref = "loj:loj/20990101-act-1/" + REV
@@ -426,7 +426,7 @@ def changes_and_references():
 def fictional_record(folder, ident, label, repository):
     body = ("schemaVersion: loj-registry/v1alpha1\nid: " + ident + "\nlabel: " + label + "\nstatus: active\n"
             "identity:\n  evidence: [{source: src-fictional, locator: 題名}]\n  verification: {state: confirmed}\n"
-            "text: {state: notCollected}\n")
+            "collection: {state: notCollected}\n")
     if repository:
         body += "repository: {location: example.invalid/" + ident + ", canonicalBranch: main}\n"
     body += "sources:\n  - {id: src-fictional, kind: other, title: 適合ケースのための架空の資料}\nnumbers: []\nexternalIds: []\n"
@@ -601,7 +601,7 @@ def row_key_files(base, key_sets, partial=None):
                  "    basedOn: " + ROW_REVS[i - 1] + "\n    basis: [{relation: rel-%d, items: [i1]}]\n" % i)
         status = "partial\n      gaps: [{text: 第一条の表の一部}]" if i == partial else "complete"
         revs += (effective + "    applicability: {state: unsurveyed}\n    text:\n      status: " + status + "\n"
-                 "      sources: [{source: src-fiction, locator: 本則}]\n      glyphs: unverified\n    status: active\n")
+                 "      sources: [{source: src-fiction, locator: 本則}]\n      glyphCheck: unverified\n    status: active\n")
         rows = "".join("<!-- loj:row key=" + k + " -->\n<!-- loj:cell -->\n" + CLOUDS[k] + "\n<!-- loj:end-cell -->\n"
                        "<!-- loj:end-row -->\n" for k in keys)
         md = ("# 第一条\n<!-- loj:paragraph number=1 -->\n架空の雲の種類を次のように定める。\n"

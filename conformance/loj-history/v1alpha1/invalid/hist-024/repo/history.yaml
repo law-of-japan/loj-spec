@@ -120,7 +120,7 @@ revisions:
         - {source: src-kanpo-19480720, locator: 1コマ}
         - {source: src-kanpo-19480928, locator: "2コマ 正誤（第二條八行「國民の」は「國の」）"}
         - {source: src-goshomei, locator: "2・3画像（字体の確認、GLYPH-06の3a）"}
-      glyphs: unverified
+      glyphCheck: unverified
       glyphNotes: versions/98mj5vgx/glyphs.yaml
     status: retracted
   - id: zwgmz1rt
@@ -142,7 +142,7 @@ revisions:
       status: complete
       sources:
         - {source: src-goshomei-s41-86, locator: 2画像 本則（改正の内容）}
-      glyphs: unverified
+      glyphCheck: unverified
       glyphNotes: versions/zwgmz1rt/glyphs.yaml
       correctionsSurveyed: {state: unsurveyed, reason: 官報（昭和41年6月25日）を入手していない（REB-05）}
     status: active

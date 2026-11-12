@@ -53,7 +53,7 @@ revisions:
     text:
       status: complete
       sources: [{source: src-fiction, locator: 本則}]
-      glyphs: unverified
+      glyphCheck: unverified
     status: active
   - id: d5g8j3m6
     basedOn: c4f7h2k9
@@ -69,7 +69,7 @@ revisions:
     text:
       status: complete
       sources: [{source: src-fiction, locator: 本則}]
-      glyphs: unverified
+      glyphCheck: unverified
     status: active
   - id: e6h9k4n7
     basedOn: d5g8j3m6
@@ -85,6 +85,6 @@ revisions:
     text:
       status: complete
       sources: [{source: src-fiction, locator: 本則}]
-      glyphs: unverified
+      glyphCheck: unverified
     status: active
 coverage: {state: unconfirmed}

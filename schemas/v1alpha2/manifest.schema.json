@@ -136,7 +136,7 @@
       },
       "minItems": 0
     },
-    "sources": {
+    "sourceUris": {
       "type": "array",
       "items": {
         "type": "string",
