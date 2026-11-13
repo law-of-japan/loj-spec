@@ -19,6 +19,7 @@ e-Govの本文は新字体に置き換えている。版の本文の根拠は公
 | Part / Chapter / Section / Subsection / Division | `Part` / `Chapter` / `Section` / `Subsection` / `Division` | 編・章・節・款・目 |
 | Article / ArticleTitle / ArticleCaption | `Article`と表示 | 番号と見出し。見出しの括弧書きを含む（HEAD-01）。削除条を含む |
 | Paragraph / ParagraphNum | `Paragraph` | 番号のある項は`numbering: explicit`。ParagraphNumが空の項は`implicit`（PARA-01） |
+| ParagraphCaption | `caption=present`と見出しの行、Paragraphの`caption` | 項の本文の最初の行に、括弧を含めて書く（PARA-02）。一つの見出しが続く項にかかる場合も、最初の項にだけ書く |
 | Item / ItemTitle | `Item` | 表示番号の範囲はDISP-01 |
 | Subitem1〜Subitem10 | `Subitem`（level 1〜10） | 表示はASCIIの十進、いろは、括弧付きの十進（DISP-01）。ローマ数字等は未対応 |
 | Sentence等の本文 | `text` | 原文のMarkdown。文・列の型は再現しない |

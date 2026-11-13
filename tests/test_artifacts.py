@@ -152,6 +152,35 @@ class ArtifactAuditTests(unittest.TestCase):
             with self.subTest(value=value):
                 self.assertFalse(v.caption_balanced(value))
 
+    def test_v1alpha2_paragraph_caption(self):
+        path = v.ROOT / "conformance/v1alpha2/valid/pkg-155/law.yaml"
+        man = v.load_yaml(path.read_bytes())
+        ast = v.read_json(v.ROOT / "conformance/v1alpha2/expected/pkg-155.json")["ast"]
+        v.check_tree(ast, man, v2=True)
+        first = ast["root"]["content"][1]["content"][0]
+        for caption in ("（経過措置）", "（施行期日", "施行期日"):
+            with self.subTest(caption=caption):
+                changed = copy.deepcopy(ast)
+                changed["root"]["content"][1]["content"][0]["caption"] = caption
+                with self.assertRaises(ValueError):
+                    v.check_tree(changed, man, v2=True)
+        changed = copy.deepcopy(ast)
+        # A caption line with no body line after it (PARA-02).
+        changed["root"]["content"][1]["content"][0]["content"][0]["text"] = first["caption"] + "\n"
+        with self.assertRaises(ValueError):
+            v.check_tree(changed, man, v2=True)
+
+    def test_v1alpha2_paragraph_caption_schema(self):
+        validator = v.all_schemas()["v1alpha2/ast.schema.json"]
+        ast = v.read_json(v.ROOT / "conformance/v1alpha2/expected/pkg-156.json")["ast"]
+        validator.validate(ast)
+        for on_item, value in ((False, "（保管の義務）\n"), (False, "（保管の\r\n義務）"), (True, "（白雲）")):
+            with self.subTest(on_item=on_item, value=value):
+                changed = copy.deepcopy(ast)
+                paragraph = changed["root"]["content"][0]["content"][0]["content"][0]
+                (paragraph["content"][1] if on_item else paragraph)["caption"] = value
+                self.assertFalse(validator.is_valid(changed))
+
     def test_manifest_metadata_mutation(self):
         ast = copy.deepcopy(self.expected["ast"])
         ast["law"]["title"] = "別法令"

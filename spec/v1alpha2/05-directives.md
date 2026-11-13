@@ -7,7 +7,7 @@
 
   | マーカー | 必須の属性 | 任意の属性 | 要件 |
   |---|---|---|---|
-  | `paragraph` | `number` | `numbering`（`explicit`／`implicit`） | [PARA-01](09-structures.md) |
+  | `paragraph` | `number` | `numbering`（`explicit`／`implicit`）、`caption`（`present`） | [PARA-01](09-structures.md)、[PARA-02](09-structures.md) |
   | `item` | `number` | — | |
   | `subitem` | `level`、`number` | — | |
   | `table` | `number` | — | [TABLE-01](09-structures.md) |
@@ -53,7 +53,7 @@
 
 ## DISP-01 表示番号
 
-- 表示番号は、本文の最初の空でない行の先頭のtoken（ASCII空白または全角空白で終わる）で検査する。
+- 表示番号は、本文の最初の空でない行の先頭のtoken（ASCII空白または全角空白で終わる）で検査する。`caption=present`の項では、見出しの行を除き、その次の空でない行で検査する（[PARA-02](09-structures.md)）。
 - 表示番号の字種は、種類ごとに次のとおりとする。本文の枝番号は`の`または`ノ`で区切る。
 
   | 種類 | 許す字種 |

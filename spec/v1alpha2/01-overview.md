@@ -24,6 +24,7 @@
 - 本版が型付けする構造は次のとおりである。
   - 編・章・節・款・目・条・項・号・細分（1〜10）、本則、keyを持つ附則、不透明な附属資料
   - 無番号の項（[PARA-01](09-structures.md)）
+  - 項の見出し（[PARA-02](09-structures.md)）
   - 項・号・細分の本文の中の表（[TABLE-01〜03](09-structures.md)）
   - 前文と制定文（[PRE-01〜02](09-structures.md)）
   - 不透明な目次（[TOC-01](09-structures.md)）

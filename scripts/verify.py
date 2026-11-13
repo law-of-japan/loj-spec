@@ -295,6 +295,13 @@ def check_tree(ast, man, v2=False):
             require(ident == parent["id"] + "/table/" + node["number"], "Table ID: " + ident)
         if kind in ("Paragraph", "Item", "Subitem"):
             first = texts[0].lstrip("\r\n")
+            if "caption" in node:
+                # PARA-02: the caption line is the first nonblank line of the text; the display is checked on the next one.
+                line, _, rest = first.partition("\n")
+                require(line.rstrip("\r") == node["caption"] and caption_balanced(node["caption"]),
+                        "Paragraph caption must be the balanced first line of the text (PARA-02): " + ident)
+                first = rest.lstrip("\r\n")
+                require(first.strip() != "", "Paragraph caption needs a body line before any child (PARA-02): " + ident)
             if node.get("numbering") == "implicit":
                 require(node["display"] == "", "Implicit paragraph display")
             elif node["display"]:
@@ -317,6 +324,8 @@ def marker_attrs(kind, node):
         attrs["level"] = str(node["level"])
     if kind == "Paragraph" and node["numbering"] == "implicit":
         attrs["numbering"] = "implicit"
+    if kind == "Paragraph" and "caption" in node:
+        attrs["caption"] = "present"
     if kind == "Row":
         attrs["key"] = node["key"]
     for span in ("rowspan", "colspan"):
