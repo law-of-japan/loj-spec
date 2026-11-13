@@ -49,14 +49,14 @@ T076〜T105は承認されたMAN-03 B案の独立ケース。附属資料の通�
 
 | ディレクトリ | ケース | 内容 |
 |---|---|---|
-| [conformance/v1alpha2](../conformance/v1alpha2/manifest.json) | pkg-001〜154 | v1alpha1の106件を写したもの（pkg-001〜106。pkg-074の入力は2026-11-13に直した）と、「條」「ノ」「附　則」、無番号の項、表、前文・制定文、目次、いろは・括弧付きの十進の細分、括弧書きを含む条の見出しとその違反（pkg-107〜143）、L0の正例と、診断の位置を固定した負例（pkg-144〜150）、表の結合（pkg-151・152）、未対応の構造の申告の有無（pkg-153・154） |
+| [conformance/v1alpha2](../conformance/v1alpha2/manifest.json) | pkg-001〜173 | v1alpha1の106件を写したもの（pkg-001〜106。pkg-074の入力は2026-11-13に直した）と、「條」「ノ」「附　則」、無番号の項、表、前文・制定文、目次、いろは・括弧付きの十進の細分、括弧書きを含む条の見出しとその違反（pkg-107〜143）、L0の正例と、診断の位置を固定した負例（pkg-144〜150）、表の結合（pkg-151・152）、未対応の構造の申告の有無（pkg-153・154）、項の見出し（pkg-155〜165）、重複・見出しの違反の診断の位置（pkg-166〜173） |
 | [conformance/loj-history/v1alpha1](../conformance/loj-history/v1alpha1/manifest.json) | hist-001〜053 | 祝日法の制定時と最初の改正後の版、履歴だけの法令リポジトリ三つ、その違反、共通の型と時点値の違反 |
 | [conformance/loj-glyphs/v1alpha1](../conformance/loj-glyphs/v1alpha1/manifest.json) | glyph-001〜009 | 祝日法の字体注記と、その違反。L1が不合格の版の字体注記（未完了） |
 | [conformance/loj-registry/v1alpha1](../conformance/loj-registry/v1alpha1/manifest.json) | reg-001〜010 | 三つのRecordの登録台帳、統合したRecordを残した登録台帳と、その違反 |
 | [conformance/loj-rebuild/v1alpha1](../conformance/loj-rebuild/v1alpha1/manifest.json) | rebuild-001〜004 | 祝日法の再構築報告と、その違反 |
 | [conformance/common/v1alpha1](../conformance/common/v1alpha1/manifest.json) | common-001〜026 | L4の時点の整合（T-04）、変更検査、固定参照（`git bundle`の架空の履歴） |
 
-`scripts/verify.py`は、すべての索引・期待結果・正例の入力の形と、要件IDの存在を検査し、v1alpha2の正例のASTを原文と突き合わせる。v1alpha2のL0の正例は、ASTを持たずにL0の`pass`を挙げることと、ManifestがL0の検査を通ることを検査する。期待結果の診断の位置は、ファイルの中の一つの行（行末の改行を含む）か`law.yaml`の全体であることだけを検査し、規則が指すべき行かは判定しない。版パッケージのケースを除く負例は、索引の`rejectedBy: schema`の印のとおりに、入力のYAMLがschemaで落ちるか、schemaを通るかを検査する（[CONF-01](../spec/common/v1alpha1/04-conformance.md)）。別の入力の写しに変更を加えて作った入力（索引の`derivedFrom`）は、元に変更を適用し直した結果と一致することを検査する。元の正例だけを直して`author_next_cases.py`を実行し忘れると、ここで失敗する。変更が期待する規則の違反だけを生むかは判定せず、レビューで確かめる。v1alpha2のL1の負例と、L3・L4・登録台帳・再構築報告・変更検査・固定参照のケースの合否は判定しない。検査器で判定する。
+`scripts/verify.py`は、すべての索引・期待結果・正例の入力の形と、要件IDの存在を検査し、v1alpha2の正例のASTを原文と突き合わせる。v1alpha2のL0の正例は、ASTを持たずにL0の`pass`を挙げることと、ManifestがL0の検査を通ることを検査する。期待結果の診断の位置は、`documents`のファイルの中の一つの行（行末の改行を含む）であることだけを検査し（`law.yaml`を指す位置は拒否する。SRC-01はManifestの意味の違反の位置を定めない）、規則が指すべき行かは判定しない。版パッケージのケースを除く負例は、索引の`rejectedBy: schema`の印のとおりに、入力のYAMLがschemaで落ちるか、schemaを通るかを検査する（[CONF-01](../spec/common/v1alpha1/04-conformance.md)）。別の入力の写しに変更を加えて作った入力（索引の`derivedFrom`）は、元に変更を適用し直した結果と一致することを検査する。元の正例だけを直して`author_next_cases.py`を実行し忘れると、ここで失敗する。変更が期待する規則の違反だけを生むかは判定せず、レビューで確かめる。v1alpha2のL1の負例と、L3・L4・登録台帳・再構築報告・変更検査・固定参照のケースの合否は判定しない。検査器で判定する。
 
 ### ケースのない要件
 
@@ -98,7 +98,9 @@ v1alpha2の2026-11-11の追加（[law-of-japan/loj-spec#25](https://github.com/l
 
 v1alpha2の2026-11-12の追加（[law-of-japan/loj-spec#27](https://github.com/law-of-japan/loj-spec/issues/27)）は、目次（pkg-129）、いろは・括弧付きの十進の細分（pkg-130）、括弧書きを含む条の見出し（pkg-131）、ヰを使わないいろはの欠番（ウ・ノ）とヱ・ス、括弧付きのASCIIの十進（pkg-142）の正例と、目次の位置・中身・数（pkg-132〜135、143）、細分の表示（pkg-136〜139）、条の見出しの括弧（pkg-140・141）の負例がある。目次の中のATX見出しの負例は、まだない。未対応の構造を申告した版の参考の集計（BASIC-03）は、L1の結果を変えない任意の報告であり、ケースを作らない。
 
-v1alpha2の2026-11-12の追加（[law-of-japan/loj-spec#1](https://github.com/law-of-japan/loj-spec/issues/1)）は、L0の正例（未対応の構造を申告した入力のpkg-144、L1の違反を含む入力のpkg-145。L0では成功するケースなので`valid/`に置く）と、診断の位置（SRC-01）を固定した負例（CRLFと4バイトの文字を含む表示の不一致のpkg-146、未閉鎖のpkg-147、対応しない終了のpkg-148、属性の不正のpkg-149、改行のない最後の行の対応しない終了のpkg-150）である。診断の位置のケースは一部だけで、重複・見出しの違反・Manifestの意味の違反の位置のケースは、まだない（[law-of-japan/loj-spec#67](https://github.com/law-of-japan/loj-spec/issues/67)）。既存の負例の期待結果には、位置を加えていない。
+v1alpha2の2026-11-12の追加（[law-of-japan/loj-spec#1](https://github.com/law-of-japan/loj-spec/issues/1)）は、L0の正例（未対応の構造を申告した入力のpkg-144、L1の違反を含む入力のpkg-145。L0では成功するケースなので`valid/`に置く）と、診断の位置（SRC-01）を固定した負例（CRLFと4バイトの文字を含む表示の不一致のpkg-146、未閉鎖のpkg-147、対応しない終了のpkg-148、属性の不正のpkg-149、改行のない最後の行の対応しない終了のpkg-150）である。既存の負例の期待結果には、位置を加えていない。重複・見出しの違反の位置のケースは、後の2026-11-13の追加にある。
+
+v1alpha2の診断の位置（2026-11-13、[law-of-japan/loj-spec#67](https://github.com/law-of-japan/loj-spec/issues/67)、SRC-01）は、`documents`の順（`b.md`、`a.md`）で後のファイル（CRLFの`a.md`）にある章をまたぐ条の重複（pkg-166）、4バイトの文字の後の別のファイルの分類の番号の重複（pkg-167）、項の番号の重複（後の開始のマーカーの行。コンテナの範囲ではない、pkg-168）、`main.md`でないファイルの行の`key`の重複（pkg-169）、属性の重複（pkg-170）、CRLFと4バイトの文字の後の表にない字体の条ラベル（pkg-171）、4バイトの文字の後の条の見出しの対応しない括弧（pkg-172）、CRLFの附則の見出しの半角空白（pkg-173）の負例である。行の`key`の重複は、表が一つのファイルの中で閉じる（DIR-02、MAN-03）ので、後の定義を別のファイルに置くケースは作れない。Manifestの意味の違反と、SRC-01の一覧にない診断（削除条の形の違反等）は、SRC-01が位置を定めないので、位置のケースの対象外である。附属資料の`title`と最初の見出しの不一致（見出しの違反）と、Markdownの中のMAN-03の違反（附属資料の閉鎖の不足、空白だけの後続のファイル）の位置のケースは、まだない（[law-of-japan/loj-spec#81](https://github.com/law-of-japan/loj-spec/issues/81)）。
 
 v1alpha2の表の空の欄（2026-11-12、[law-of-japan/loj-spec#57](https://github.com/law-of-japan/loj-spec/issues/57)）は、上の欄が続く読替えの表を`rowspan`で書く正例（pkg-151）と、空のセルの負例（pkg-152、DIR-02）がある。pkg-151がL1で確かめるのは、結合したセルの書式（属性、セルの`c`の数え方、ID、AST）だけで、欄が続くことを結合で書いたかどうかではない。pkg-152の`requirements`のTABLE-03は、入力の背景（続く欄を空のセルで書いた形）を示すもので、L1の診断はDIR-02だけである。左の欄が右へ続く場合（`colspan`）は同じ規則で、書式は既存の正例pkg-110の`colspan=2`が当たるので、加えていない。続く欄を結合で書くことと、空の欄をコメントや原典にない字で埋めないこと（TABLE-03）は、原典と比べないと判定できないので、ケースを作らない。罫線に囲まれた空の欄を申告した版のL1の不合格（BASIC-03）は、既存のケースと同じ結果になるので、加えていない。
 

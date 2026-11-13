@@ -90,6 +90,7 @@
 | 未対応の構造 | `unsupportedFeatures` | 本版が型付けしない構造（図、入れ子の表等）。含む入力は申告し、L1は不合格となる。ほかのL1の診断は参考の集計として報告できる | [BASIC-03](../spec/v1alpha2/01-overview.md#basic-03-対象とする構造と収録しないもの) |
 | 意味AST | `root` | 版パッケージから導く規範のJSON表現。ノードは`kind`、`id`、`number`、`display`、`content`を持つ | [AST-01](../spec/v1alpha2/06-semantic-model.md#ast-01-意味astの形)、[AST-02](../spec/v1alpha2/06-semantic-model.md#ast-02-意味の検査) |
 | ソースの位置 | `{path, start, end}` | 元のファイルのUTF-8のバイト数による半開区間。行・列はその代わりにならない | [SRC-01](../spec/v1alpha2/06-semantic-model.md#src-01-ソースの保持と位置) |
+| Manifestの意味の違反 | — | Markdownの本文によらず、`law.yaml`と`documents`のファイルで判定するManifestの違反（`law.yaml`の中の重複を含む）。診断の位置を定めない | [SRC-01](../spec/v1alpha2/06-semantic-model.md#src-01-ソースの保持と位置) |
 | ノードID（論理ID） | `id`（例: `…/main/article/2/paragraph/1`） | 版の中の位置を示すID。scope・番号・keyから導き、ファイル名や出現順を含めない。条の歴史的同一性を主張しない | [ID-01](../spec/v1alpha2/07-identifiers.md#id-01-idの導出)、[ID-02](../spec/v1alpha2/07-identifiers.md#id-02-idの安定性) |
 | 不透明な本文 | — | 意味を型付けせず、原文のまま保持する本文（附属資料の中身等） | [HEAD-03](../spec/v1alpha2/04-headings.md#head-03-附則と附属資料のscope)、[MD-02](../spec/v1alpha2/03-markdown.md#md-02-本文に保持するもの) |
 | 字間、組版 | — | 表記の慣行として定まった空白は本文に書き、行の幅に合わせて生じた空白・改行（均等割付等）は組版として書かない | [MD-04](../spec/v1alpha2/03-markdown.md#md-04-字間と改行) |

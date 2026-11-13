@@ -2673,6 +2673,136 @@
       },
       "expected": "conformance/v1alpha2/expected/pkg-165.json",
       "success": true
+    },
+    {
+      "id": "pkg-166",
+      "title": "章をまたぐ条の重複の位置（後のファイル、読み込みの順）",
+      "requirements": [
+        "HEAD-02",
+        "MAN-03",
+        "SRC-01"
+      ],
+      "check": "L1",
+      "normative": true,
+      "input": {
+        "kind": "package",
+        "path": "conformance/v1alpha2/invalid/pkg-166/law.yaml"
+      },
+      "expected": "conformance/v1alpha2/expected/pkg-166.json",
+      "success": false
+    },
+    {
+      "id": "pkg-167",
+      "title": "分類の番号の重複の位置（別のファイル、4バイトの文字の後）",
+      "requirements": [
+        "HEAD-02",
+        "MAN-03",
+        "SRC-01"
+      ],
+      "check": "L1",
+      "normative": true,
+      "input": {
+        "kind": "package",
+        "path": "conformance/v1alpha2/invalid/pkg-167/law.yaml"
+      },
+      "expected": "conformance/v1alpha2/expected/pkg-167.json",
+      "success": false
+    },
+    {
+      "id": "pkg-168",
+      "title": "項の番号の重複の位置（後の開始のマーカーの行）",
+      "requirements": [
+        "DIR-02",
+        "SRC-01"
+      ],
+      "check": "L1",
+      "normative": true,
+      "input": {
+        "kind": "package",
+        "path": "conformance/v1alpha2/invalid/pkg-168/law.yaml"
+      },
+      "expected": "conformance/v1alpha2/expected/pkg-168.json",
+      "success": false
+    },
+    {
+      "id": "pkg-169",
+      "title": "行のkeyの重複の位置（main.mdでないファイル）",
+      "requirements": [
+        "TABLE-02",
+        "SRC-01"
+      ],
+      "check": "L1",
+      "normative": true,
+      "input": {
+        "kind": "package",
+        "path": "conformance/v1alpha2/invalid/pkg-169/law.yaml"
+      },
+      "expected": "conformance/v1alpha2/expected/pkg-169.json",
+      "success": false
+    },
+    {
+      "id": "pkg-170",
+      "title": "属性の重複の位置",
+      "requirements": [
+        "DIR-01",
+        "SRC-01"
+      ],
+      "check": "L1",
+      "normative": true,
+      "input": {
+        "kind": "package",
+        "path": "conformance/v1alpha2/invalid/pkg-170/law.yaml"
+      },
+      "expected": "conformance/v1alpha2/expected/pkg-170.json",
+      "success": false
+    },
+    {
+      "id": "pkg-171",
+      "title": "表にない字体の条ラベルの位置（CRLFと4バイトの文字）",
+      "requirements": [
+        "HEAD-01",
+        "SRC-01"
+      ],
+      "check": "L1",
+      "normative": true,
+      "input": {
+        "kind": "package",
+        "path": "conformance/v1alpha2/invalid/pkg-171/law.yaml"
+      },
+      "expected": "conformance/v1alpha2/expected/pkg-171.json",
+      "success": false
+    },
+    {
+      "id": "pkg-172",
+      "title": "条の見出しの対応しない括弧の位置（4バイトの文字の後）",
+      "requirements": [
+        "HEAD-01",
+        "SRC-01"
+      ],
+      "check": "L1",
+      "normative": true,
+      "input": {
+        "kind": "package",
+        "path": "conformance/v1alpha2/invalid/pkg-172/law.yaml"
+      },
+      "expected": "conformance/v1alpha2/expected/pkg-172.json",
+      "success": false
+    },
+    {
+      "id": "pkg-173",
+      "title": "附則の見出しの半角空白の位置（CRLF）",
+      "requirements": [
+        "HEAD-03",
+        "SRC-01"
+      ],
+      "check": "L1",
+      "normative": true,
+      "input": {
+        "kind": "package",
+        "path": "conformance/v1alpha2/invalid/pkg-173/law.yaml"
+      },
+      "expected": "conformance/v1alpha2/expected/pkg-173.json",
+      "success": false
     }
   ]
 }
