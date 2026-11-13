@@ -414,6 +414,14 @@ case("対応しない括弧の見出しの行の位置", ["PARA-02", "SRC-01"],
      [("main.md", "main", ART + P1 + "<!-- loj:paragraph number=2 caption=present -->\n（雲の返還\n２　雲を返す。\n"
        "<!-- loj:end-paragraph -->\n")], fail_at("PARA-02", "main.md", 150, 166), False)
 
+# CRLF: the caption excludes the CR as well as the LF; the text keeps both.
+CRLF_CAP = "（施行期日）\r\n１　この法律は、公布の日から施行する。\r\n"
+case("CRLFの附則の項の見出し", ["PARA-02", "AST-01", "BASIC-02"],
+     MAIN_A1 + [("supp.md", "supplement/original", "# 附則\r\n<!-- loj:paragraph number=1 caption=present -->\r\n" + CRLF_CAP +
+                 "<!-- loj:end-paragraph -->\r\n")],
+     {"ast": ast(MAIN_A1_AST, supplements=[node("SupplementaryProvision", SUPP, None, "附則", [
+         para(SUPP, "1", CRLF_CAP, display="１", caption="（施行期日）")])])}, True, man_extra=ORIGINAL)
+
 
 def main():
     index_path = DST / "manifest.json"

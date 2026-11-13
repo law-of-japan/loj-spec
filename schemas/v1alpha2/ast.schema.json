@@ -178,8 +178,11 @@
         },
         "caption": {
           "type": "string",
-          "pattern": "^（.+）$",
-          "description": "PARA-02: the caption line of a paragraph marked caption=present, as written (with the fullwidth parentheses, without the line ending). Present only on such paragraphs. The pattern does not check that the parentheses balance; that is the semantic check of PARA-02."
+          "pattern": "^（[^\\r\\n]+）$",
+          "not": {
+            "pattern": "[\\r\\n]"
+          },
+          "description": "PARA-02: the caption line of a paragraph marked caption=present, as written (with the fullwidth parentheses, without the line ending). Present only on such paragraphs. The separate 'not' rejects a line ending even where '$' matches before a final newline (as in Python). The pattern does not check that the parentheses balance; that is the semantic check of PARA-02."
         }
       },
       "required": [
