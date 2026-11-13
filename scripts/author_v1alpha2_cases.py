@@ -428,6 +428,47 @@ case("CRLFの附則の項の見出し", ["PARA-02", "AST-01", "BASIC-02"],
      {"ast": ast(MAIN_A1_AST, supplements=[node("SupplementaryProvision", SUPP, None, "附則", [
          para(SUPP, "1", CRLF_CAP, display="１", caption="（施行期日）")])])}, True, man_extra=ORIGINAL)
 
+# 2026-11-13 (#67): locations of duplicates and heading violations (SRC-01). Offsets are counted by hand.
+# 雲 U+1F600 を保管する。 is 3 + 4 + 18 = 25 bytes; with LF 26, with CRLF 27.
+EMOJI_BODY = "雲" + chr(0x1F600) + "を保管する。"
+EMOJI_P1 = "<!-- loj:paragraph number=1 -->\n" + EMOJI_BODY + "\n<!-- loj:end-paragraph -->\n"  # 32 + 26 + 27 = 85
+EMOJI_P1_CRLF = "<!-- loj:paragraph number=1 -->\r\n" + EMOJI_BODY + "\r\n<!-- loj:end-paragraph -->\r\n"  # 33 + 27 + 28 = 88
+# documents lists b.md before a.md, so the later article is in a.md (reading order, not file names).
+# a.md (CRLF): 第二章　雑則 (2 + 9 + 3 + 6 + CRLF 2 = 22 bytes), then the duplicate 第一条 (2 + 9 + 2 = 13 bytes).
+case("章をまたぐ条の重複の位置（後のファイル、読み込みの順）", ["HEAD-02", "MAN-03", "SRC-01"],
+     [("b.md", "main", "# 第一章　総則\n" + ART + P1),
+      ("a.md", "main", "# 第二章　雑則\r\n# 第一条\r\n" + CRLF_P1)], fail_at("HEAD-02", "a.md", 22, 35), False)
+# two.md (CRLF): 第二条 (13) + EMOJI_P1_CRLF (88) = 101 bytes, then 第一章　総則 again (2 + 18 + 2 = 22 bytes).
+case("分類の番号の重複の位置（別のファイル、4バイトの文字の後）", ["HEAD-02", "MAN-03", "SRC-01"],
+     [("one.md", "main", "# 第一章　総則\n" + ART + P1),
+      ("two.md", "main", "# 第二条\r\n" + EMOJI_P1_CRLF + "# 第一章　総則\r\n# 第三条\r\n" + CRLF_P1)],
+     fail_at("HEAD-02", "two.md", 101, 123), False)
+# LF: 第一条 (12) + EMOJI_P1 (85) = 97 bytes, then the later start marker (32 bytes). The container would end at 187.
+case("項の番号の重複の位置（後の開始のマーカーの行）", ["DIR-02", "SRC-01"],
+     [("main.md", "main", ART + EMOJI_P1 + P1)], fail_at("DIR-02", "main.md", 97, 129), False)
+# tables.md (LF): 第二条 12, paragraph 32, lead 61, table 28, row 26, cell 18, 白雲 7, end-cell 22, cell 18, 一号倉庫 13,
+# end-cell 22, end-row 21 = 280 bytes, then the second row start marker (26 bytes).
+case("行のkeyの重複の位置（main.mdでないファイル）", ["TABLE-02", "SRC-01"],
+     [("main.md", "main", ART + P1),
+      ("tables.md", "main", TABLE_MD.replace("# 第一条", "# 第二条").replace("row key=b6gr", "row key=k3v9"))],
+     fail_at("TABLE-02", "tables.md", 280, 306), False)
+# LF: 第一条 (12) + 第一条's paragraph (90) = 102 bytes, then the marker with number twice (41 bytes).
+case("属性の重複の位置", ["DIR-01", "SRC-01"],
+     [("main.md", "main", ART + P1 + "<!-- loj:paragraph number=2 number=2 -->\n２　雲を返す。\n<!-- loj:end-paragraph -->\n")],
+     fail_at("DIR-01", "main.md", 102, 143), False)
+# CRLF: 第一条 (13) + EMOJI_P1_CRLF (88) = 101 bytes, then 第二絛 (2 + 9 + 2 = 13 bytes).
+case("表にない字体の条ラベルの位置（CRLFと4バイトの文字）", ["HEAD-01", "SRC-01"],
+     [("main.md", "main", "# 第一条\r\n" + EMOJI_P1_CRLF + "# 第二絛\r\n" + CRLF_P1)],
+     fail_at("HEAD-01", "main.md", 101, 114), False)
+# LF: 97 bytes, then 第二条（雲（白雲の保管） (2 + 9 + 27 + 1 = 39 bytes).
+case("条の見出しの対応しない括弧の位置（4バイトの文字の後）", ["HEAD-01", "SRC-01"],
+     [("main.md", "main", ART + EMOJI_P1 + "# 第二条（雲（白雲の保管）\n" + P1)],
+     fail_at("HEAD-01", "main.md", 97, 136), False)
+# supp.md (CRLF): 附 則 with an ASCII space (2 + 3 + 1 + 3 + 2 = 11 bytes) is the first line.
+supp_case("附則の見出しの半角空白の位置（CRLF）", ["HEAD-03", "SRC-01"],
+          "# 附 則\r\n<!-- loj:paragraph number=1 -->\r\nこの法律は、公布の日から施行する。\r\n<!-- loj:end-paragraph -->\r\n",
+          fail_at("HEAD-03", "supp.md", 0, 11), False)
+
 
 def main():
     index_path = DST / "manifest.json"

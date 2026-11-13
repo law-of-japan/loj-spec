@@ -523,8 +523,10 @@ class DiagnosticLocationTests(unittest.TestCase):
         self.assertIsNone(self.at(139, 160))
         self.assertIsNone(self.at(0, 13))
 
-    def test_whole_manifest_passes(self):
-        self.assertIsNone(self.at(0, self.path.stat().st_size, "law.yaml"))
+    def test_manifest_location_rejected(self):
+        # SRC-01 does not fix the location of Manifest violations, so CONF-01 lists none in law.yaml.
+        self.assertIn("no fixed location", self.at(0, self.path.stat().st_size, "law.yaml"))
+        self.assertIn("no fixed location", self.at(0, 2, "law.yaml"))
 
     def test_partial_or_multiple_lines_rejected(self):
         for start, end, reason in [(139, 159, "boundaries"), (139, 158, "boundaries"), (140, 160, "boundaries"),
