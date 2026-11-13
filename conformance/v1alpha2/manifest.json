@@ -2549,7 +2549,8 @@
       "id": "pkg-158",
       "title": "見出しの行のない項にcaption=present",
       "requirements": [
-        "PARA-02"
+        "PARA-02",
+        "SRC-01"
       ],
       "check": "L1",
       "normative": true,
@@ -2564,7 +2565,8 @@
       "id": "pkg-159",
       "title": "見出しの行の後に続く本文",
       "requirements": [
-        "PARA-02"
+        "PARA-02",
+        "SRC-01"
       ],
       "check": "L1",
       "normative": true,
@@ -2579,7 +2581,8 @@
       "id": "pkg-160",
       "title": "見出しの行の末尾の空白",
       "requirements": [
-        "PARA-02"
+        "PARA-02",
+        "SRC-01"
       ],
       "check": "L1",
       "normative": true,
@@ -2626,7 +2629,8 @@
       "id": "pkg-163",
       "title": "見出しの行の後に本文の行がなく号が続く",
       "requirements": [
-        "PARA-02"
+        "PARA-02",
+        "SRC-01"
       ],
       "check": "L1",
       "normative": true,

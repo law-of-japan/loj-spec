@@ -12,7 +12,7 @@
 - AST-01・SRC-01: Paragraphが`caption`を持てるとし、見出しの行の形の違反の診断の位置を見出しの行とした。
 - BASIC-03・v1alpha2の検証: 型付けする構造とL1の規則に、項の見出しを加えた。
 - AST Schemaに`caption`を、マーカーの文法に`caption_attr`を、見出しの文法に`paragraph_caption`を加えた。
-- 適合ケースに、正例pkg-155〜157・165（CRLF）と負例pkg-158〜164を加えた。testsに、正例の`caption`の改変を`verify.py`が検出すること、改行を含む`caption`とParagraph以外の`caption`をAST Schemaが拒否することのテストを加えた。`verify.py`は、正例の`caption`が本文の最初の行と一致し、括弧が対応し、その後に本文の行があることを確かめる。
+- 適合ケースに、正例pkg-155〜157・165（CRLF）と負例pkg-158〜164を加えた。PARA-02の負例は、pkg-161・162を除き、診断の位置も挙げる。testsに、正例の`caption`の改変を`verify.py`が検出すること、改行を含む`caption`とParagraph以外の`caption`をAST Schemaが拒否することのテストを加えた。`verify.py`は、正例の`caption`が本文の最初の行と一致し、括弧が対応し、その後に本文の行があることを確かめる。
 - DDR-012、要件との対応表、制限、用語集、e-Gov XMLとの対応、実装ガイド、試行の記録を更新した。
 
 ## 次期仕様の索引の検査の回帰テスト（2026-11-13）

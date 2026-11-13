@@ -395,20 +395,26 @@ supp_case("無番号の項の見出し（続く項にかかる見出し）", ["P
               para(SUPP, "1", IMP1, numbering="implicit", caption="（経過措置）"),
               para(SUPP, "2", IMP2, numbering="implicit")])])}, True)
 
-supp_case("見出しの行のない項にcaption=present", ["PARA-02"],
-          CAPTION_SUPP.replace("（施行期日）\n", ""), fail("PARA-02"), False)
-supp_case("見出しの行の後に続く本文", ["PARA-02"],
-          CAPTION_SUPP.replace("（施行期日）\n１　", "（施行期日）"), fail("PARA-02"), False)
-supp_case("見出しの行の末尾の空白", ["PARA-02"],
-          CAPTION_SUPP.replace("（施行期日）\n", "（施行期日） \n"), fail("PARA-02"), False)
+# LF; supp.md starts with 附　則 (12 bytes) and the start marker (48 bytes), so the line checked as the caption line
+# starts at 60: １　この法律は、公布の日から施行する。 is 19 x 3 + LF = 58 bytes.
+supp_case("見出しの行のない項にcaption=present", ["PARA-02", "SRC-01"],
+          CAPTION_SUPP.replace("（施行期日）\n", ""), fail_at("PARA-02", "supp.md", 60, 118), False)
+# （施行期日）この法律は、公布の日から施行する。 is 23 x 3 + LF = 70 bytes.
+supp_case("見出しの行の後に続く本文", ["PARA-02", "SRC-01"],
+          CAPTION_SUPP.replace("（施行期日）\n１　", "（施行期日）"), fail_at("PARA-02", "supp.md", 60, 130), False)
+# （施行期日） plus an ASCII space is 6 x 3 + 1 + LF = 20 bytes.
+supp_case("見出しの行の末尾の空白", ["PARA-02", "SRC-01"],
+          CAPTION_SUPP.replace("（施行期日）\n", "（施行期日） \n"), fail_at("PARA-02", "supp.md", 60, 80), False)
 supp_case("属性のない第2項の見出しの行", ["PARA-02", "DISP-01"],
           CAPTION_SUPP.replace("<!-- loj:paragraph number=2 caption=present -->", "<!-- loj:paragraph number=2 -->"),
           fail("DISP-01"), False)
 supp_case("captionの属性の値absent", ["DIR-01", "PARA-02"],
           CAPTION_SUPP.replace("number=2 caption=present", "number=2 caption=absent"), fail("DIR-01"), False)
-case("見出しの行の後に本文の行がなく号が続く", ["PARA-02"],
+# LF; the caption line （保管の義務） (7 x 3 + LF = 22 bytes) follows 12 + 48 = 60 bytes.
+case("見出しの行の後に本文の行がなく号が続く", ["PARA-02", "SRC-01"],
      [("main.md", "main", ART + "<!-- loj:paragraph number=1 caption=present -->\n（保管の義務）\n"
-       "<!-- loj:item number=1 -->\n一　白雲\n<!-- loj:end-item -->\n<!-- loj:end-paragraph -->\n")], fail("PARA-02"), False)
+       "<!-- loj:item number=1 -->\n一　白雲\n<!-- loj:end-item -->\n<!-- loj:end-paragraph -->\n")],
+     fail_at("PARA-02", "main.md", 60, 82), False)
 # LF; the caption line （雲の返還 (5 x 3 bytes + LF = 16) follows 12+32+31+27+48 = 150 bytes.
 case("対応しない括弧の見出しの行の位置", ["PARA-02", "SRC-01"],
      [("main.md", "main", ART + P1 + "<!-- loj:paragraph number=2 caption=present -->\n（雲の返還\n２　雲を返す。\n"
