@@ -61,6 +61,7 @@
 
 - 版パッケージのMarkdownの扱い（CommonMarkの領域、予約コメント、見出し、マーカー、ID、ソースの位置）は、v1alpha1から大きく変わっていない。v1alpha1の実装を土台にできる。
 - 変わる点: `schemaVersion`が`loj/v1alpha2`、`Paragraph`の`numbering`（`explicit`、無番号の項は`implicit`。PARA-01）、項の見出し（`caption=present`とParagraphの`caption`。PARA-02）、前文・制定文（PRE）、目次（TOC）、表の構造（TABLE）、細分の表示のいろは・括弧付きの十進（DISP-01）、条の見出しの括弧書き（HEAD-01）、診断に`schemaVersion`と`class`が加わる。規則と各レベルの対応は[v1alpha2の検証](../spec/v1alpha2/10-validation.md)にある。
+- 項の見出し（PARA-02）の見出しの行は、Paragraphの`caption`にも`text`の最初の行にもある。`text`は原文の区間で、`caption`はその写しである。表示器が`caption`を見出しとして別に出すときは、`text`の最初の行を重ねて出さない。
 - 目次（TOC-01）は中身を解析しない。目次と本文の見出しの一致はL1で検査しないので、L1の合格を、目次が本文と一致することの確認として報告しない。
 - 履歴マニフェスト・字体注記・登録台帳・再構築報告と、L3・L4・変更・参照の検査は、新しく作る。
 
