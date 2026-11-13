@@ -2490,6 +2490,168 @@
       },
       "expected": "conformance/v1alpha2/expected/pkg-154.json",
       "success": false
+    },
+    {
+      "id": "pkg-155",
+      "title": "附則の項の見出し",
+      "requirements": [
+        "PARA-02",
+        "DISP-01",
+        "DIR-01",
+        "AST-01"
+      ],
+      "check": "L1",
+      "normative": true,
+      "input": {
+        "kind": "package",
+        "path": "conformance/v1alpha2/valid/pkg-155/law.yaml"
+      },
+      "expected": "conformance/v1alpha2/expected/pkg-155.json",
+      "success": true
+    },
+    {
+      "id": "pkg-156",
+      "title": "条の項の見出し（表示番号を省略した第1項と号、見出しのない第2項）",
+      "requirements": [
+        "PARA-02",
+        "DISP-01",
+        "HEAD-01",
+        "AST-01"
+      ],
+      "check": "L1",
+      "normative": true,
+      "input": {
+        "kind": "package",
+        "path": "conformance/v1alpha2/valid/pkg-156/law.yaml"
+      },
+      "expected": "conformance/v1alpha2/expected/pkg-156.json",
+      "success": true
+    },
+    {
+      "id": "pkg-157",
+      "title": "無番号の項の見出し（続く項にかかる見出し）",
+      "requirements": [
+        "PARA-02",
+        "PARA-01",
+        "DIR-01",
+        "AST-01"
+      ],
+      "check": "L1",
+      "normative": true,
+      "input": {
+        "kind": "package",
+        "path": "conformance/v1alpha2/valid/pkg-157/law.yaml"
+      },
+      "expected": "conformance/v1alpha2/expected/pkg-157.json",
+      "success": true
+    },
+    {
+      "id": "pkg-158",
+      "title": "見出しの行のない項にcaption=present",
+      "requirements": [
+        "PARA-02"
+      ],
+      "check": "L1",
+      "normative": true,
+      "input": {
+        "kind": "package",
+        "path": "conformance/v1alpha2/invalid/pkg-158/law.yaml"
+      },
+      "expected": "conformance/v1alpha2/expected/pkg-158.json",
+      "success": false
+    },
+    {
+      "id": "pkg-159",
+      "title": "見出しの行の後に続く本文",
+      "requirements": [
+        "PARA-02"
+      ],
+      "check": "L1",
+      "normative": true,
+      "input": {
+        "kind": "package",
+        "path": "conformance/v1alpha2/invalid/pkg-159/law.yaml"
+      },
+      "expected": "conformance/v1alpha2/expected/pkg-159.json",
+      "success": false
+    },
+    {
+      "id": "pkg-160",
+      "title": "見出しの行の末尾の空白",
+      "requirements": [
+        "PARA-02"
+      ],
+      "check": "L1",
+      "normative": true,
+      "input": {
+        "kind": "package",
+        "path": "conformance/v1alpha2/invalid/pkg-160/law.yaml"
+      },
+      "expected": "conformance/v1alpha2/expected/pkg-160.json",
+      "success": false
+    },
+    {
+      "id": "pkg-161",
+      "title": "属性のない第2項の見出しの行",
+      "requirements": [
+        "PARA-02",
+        "DISP-01"
+      ],
+      "check": "L1",
+      "normative": true,
+      "input": {
+        "kind": "package",
+        "path": "conformance/v1alpha2/invalid/pkg-161/law.yaml"
+      },
+      "expected": "conformance/v1alpha2/expected/pkg-161.json",
+      "success": false
+    },
+    {
+      "id": "pkg-162",
+      "title": "captionの属性の値absent",
+      "requirements": [
+        "DIR-01",
+        "PARA-02"
+      ],
+      "check": "L1",
+      "normative": true,
+      "input": {
+        "kind": "package",
+        "path": "conformance/v1alpha2/invalid/pkg-162/law.yaml"
+      },
+      "expected": "conformance/v1alpha2/expected/pkg-162.json",
+      "success": false
+    },
+    {
+      "id": "pkg-163",
+      "title": "見出しの行の後に本文の行がなく号が続く",
+      "requirements": [
+        "PARA-02"
+      ],
+      "check": "L1",
+      "normative": true,
+      "input": {
+        "kind": "package",
+        "path": "conformance/v1alpha2/invalid/pkg-163/law.yaml"
+      },
+      "expected": "conformance/v1alpha2/expected/pkg-163.json",
+      "success": false
+    },
+    {
+      "id": "pkg-164",
+      "title": "対応しない括弧の見出しの行の位置",
+      "requirements": [
+        "PARA-02",
+        "SRC-01"
+      ],
+      "check": "L1",
+      "normative": true,
+      "input": {
+        "kind": "package",
+        "path": "conformance/v1alpha2/invalid/pkg-164/law.yaml"
+      },
+      "expected": "conformance/v1alpha2/expected/pkg-164.json",
+      "success": false
     }
   ]
 }

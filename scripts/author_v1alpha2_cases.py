@@ -39,10 +39,11 @@ def text(value):
     return {"text": value}
 
 
-def para(parent, number, body, display="", numbering="explicit", children=None):
+def para(parent, number, body, display="", numbering="explicit", children=None, caption=None):
     ident = parent + "/paragraph/" + number
     content = [text(body)] + (children(ident) if children else [])
-    return node("Paragraph", ident, number, display, content, numbering=numbering)
+    extra = {"caption": caption} if caption is not None else {}
+    return node("Paragraph", ident, number, display, content, numbering=numbering, **extra)
 
 
 def article(scope, number, display, paragraphs):
@@ -354,6 +355,64 @@ case("申告したローマ数字の細分の表示（L1の診断はBASIC-03だ�
      man_extra={"unsupportedFeatures": ["ローマ数字の細分の表示"]})
 case("L0: 空のunsupportedFeatures", ["MAN-01", "BASIC-03"],
      [("main.md", "main", ART + P1)], fail("MAN-01"), False, check="L0", man_extra={"unsupportedFeatures": []})
+
+
+# 2026-11-13 (#56): paragraph captions (PARA-02). The caption line stays in the text; caption copies it.
+ORIGINAL = {"supplements": [{"key": "original", "title": "制定附則"}]}
+SUPP_HEAD = "# 附　則\n"
+CAP1 = "（施行期日）\n１　この法律は、公布の日から施行する。\n"
+CAP2 = "（経過措置）\n２　この法律の施行前に保管した雲については、なお従前の例による。\n"
+CAPTION_SUPP = (SUPP_HEAD + "<!-- loj:paragraph number=1 caption=present -->\n" + CAP1 + "<!-- loj:end-paragraph -->\n"
+                "<!-- loj:paragraph number=2 caption=present -->\n" + CAP2 + "<!-- loj:end-paragraph -->\n")
+MAIN_A1 = [("main.md", "main", ART + P1)]
+MAIN_A1_AST = [article(MAIN, "1", "第一条", [lambda a: para(a, "1", BODY)])]
+
+
+def supp_case(title, requirements, body, expected, success):
+    case(title, requirements, MAIN_A1 + [("supp.md", "supplement/original", body)], expected, success, man_extra=ORIGINAL)
+
+
+supp_case("附則の項の見出し", ["PARA-02", "DISP-01", "DIR-01", "AST-01"], CAPTION_SUPP,
+          {"ast": ast(MAIN_A1_AST, supplements=[node("SupplementaryProvision", SUPP, None, "附　則", [
+              para(SUPP, "1", CAP1, display="１", caption="（施行期日）"),
+              para(SUPP, "2", CAP2, display="２", caption="（経過措置）")])])}, True)
+CAP_ART_P1 = "（保管の義務）\n架空の雲を保管する。\n"
+case("条の項の見出し（表示番号を省略した第1項と号、見出しのない第2項）", ["PARA-02", "DISP-01", "HEAD-01", "AST-01"],
+     [("main.md", "main", "# 第一条（雲の保管）\n<!-- loj:paragraph number=1 caption=present -->\n" + CAP_ART_P1 +
+       "<!-- loj:item number=1 -->\n一　白雲\n<!-- loj:end-item -->\n<!-- loj:end-paragraph -->\n"
+       "<!-- loj:paragraph number=2 -->\n２　2099年までに返す。\n<!-- loj:end-paragraph -->\n")],
+     {"ast": ast([article(MAIN, "1", "第一条（雲の保管）", [
+         lambda a: para(a, "1", CAP_ART_P1, caption="（保管の義務）",
+                        children=lambda p: [node("Item", p + "/item/1", "1", "一", [text("一　白雲\n")])]),
+         lambda a: para(a, "2", "２　2099年までに返す。\n", display="２")])])}, True)
+IMP1 = "（経過措置）\n架空雲保管令は、廃止する。\n"
+IMP2 = "架空雲保管令の規定による保管は、この法律の規定による保管とみなす。\n"
+# One caption over two paragraphs is written on the first only (PARA-02); attributes in another order (DIR-01).
+supp_case("無番号の項の見出し（続く項にかかる見出し）", ["PARA-02", "PARA-01", "DIR-01", "AST-01"],
+          SUPP_HEAD + "<!-- loj:paragraph caption=present numbering=implicit number=1 -->\n" + IMP1 +
+          "<!-- loj:end-paragraph -->\n<!-- loj:paragraph number=2 numbering=implicit -->\n" + IMP2 + "<!-- loj:end-paragraph -->\n",
+          {"ast": ast(MAIN_A1_AST, supplements=[node("SupplementaryProvision", SUPP, None, "附　則", [
+              para(SUPP, "1", IMP1, numbering="implicit", caption="（経過措置）"),
+              para(SUPP, "2", IMP2, numbering="implicit")])])}, True)
+
+supp_case("見出しの行のない項にcaption=present", ["PARA-02"],
+          CAPTION_SUPP.replace("（施行期日）\n", ""), fail("PARA-02"), False)
+supp_case("見出しの行の後に続く本文", ["PARA-02"],
+          CAPTION_SUPP.replace("（施行期日）\n１　", "（施行期日）"), fail("PARA-02"), False)
+supp_case("見出しの行の末尾の空白", ["PARA-02"],
+          CAPTION_SUPP.replace("（施行期日）\n", "（施行期日） \n"), fail("PARA-02"), False)
+supp_case("属性のない第2項の見出しの行", ["PARA-02", "DISP-01"],
+          CAPTION_SUPP.replace("<!-- loj:paragraph number=2 caption=present -->", "<!-- loj:paragraph number=2 -->"),
+          fail("DISP-01"), False)
+supp_case("captionの属性の値absent", ["DIR-01", "PARA-02"],
+          CAPTION_SUPP.replace("number=2 caption=present", "number=2 caption=absent"), fail("DIR-01"), False)
+case("見出しの行の後に本文の行がなく号が続く", ["PARA-02"],
+     [("main.md", "main", ART + "<!-- loj:paragraph number=1 caption=present -->\n（保管の義務）\n"
+       "<!-- loj:item number=1 -->\n一　白雲\n<!-- loj:end-item -->\n<!-- loj:end-paragraph -->\n")], fail("PARA-02"), False)
+# LF; the caption line （雲の返還 (5 x 3 bytes + LF = 16) follows 12+32+31+27+48 = 150 bytes.
+case("対応しない括弧の見出しの行の位置", ["PARA-02", "SRC-01"],
+     [("main.md", "main", ART + P1 + "<!-- loj:paragraph number=2 caption=present -->\n（雲の返還\n２　雲を返す。\n"
+       "<!-- loj:end-paragraph -->\n")], fail_at("PARA-02", "main.md", 150, 166), False)
 
 
 def main():

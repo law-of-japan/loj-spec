@@ -74,6 +74,7 @@
 | 削除条 | `status: deleted` | ラベルの直後の行に`削除`だけを置いた条。項を持たず、元の条のIDを保つ | [HEAD-04](../spec/v1alpha2/04-headings.md#head-04-削除条) |
 | 項 | Paragraph、`paragraph` | 条（または直接の項の形式の附則）の下の単位 | [DIR-01](../spec/v1alpha2/05-directives.md#dir-01-マーカーの字句)、[DIR-02](../spec/v1alpha2/05-directives.md#dir-02-対応入れ子空の禁止) |
 | 無番号の項 | `numbering=implicit` | 原典に項番号がない項。`number`は原典上の順序で明示する。省略時は`explicit` | [PARA-01](../spec/v1alpha2/09-structures.md#para-01-無番号の項) |
+| 項の見出し | `caption=present`、Paragraphの`caption` | 項の前に置く括弧書きの見出し（附則の`（施行期日）`等）。属性で示し、項の本文の最初の行（見出しの行）に書く。条の見出しとは別に、Paragraphの`caption`に写す | [PARA-02](../spec/v1alpha2/09-structures.md#para-02-項の見出し) |
 | 号 | Item、`item` | 項の下の単位 | [DIR-01](../spec/v1alpha2/05-directives.md#dir-01-マーカーの字句)、[DIR-02](../spec/v1alpha2/05-directives.md#dir-02-対応入れ子空の禁止) |
 | 細分 | Subitem、`subitem`、`level` | 号の下の単位。`level`は1〜10で、飛び越せない | [DIR-02](../spec/v1alpha2/05-directives.md#dir-02-対応入れ子空の禁止) |
 | 表、行、セル | Table、Row、Cell | 項・号・細分の本文の中の法令の表。マーカーで書き、GFMの表は使わない | [TABLE-01](../spec/v1alpha2/09-structures.md#table-01-表の構造)、[TABLE-03](../spec/v1alpha2/09-structures.md#table-03-セル) |

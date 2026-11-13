@@ -3,7 +3,7 @@
 ## AST-01 意味ASTの形
 
 - 規範のJSON表現は[AST Schema](../../schemas/v1alpha2/ast.schema.json)による。`schemaVersion`、Manifestと同じ`law`、`root`を持つ。
-- ノードは`kind`、`id`、`number`、`display`、`content`を持つ。Articleは`status`を、Subitemは`level`を、Paragraphは`numbering`を、Rowは`key`を持つ。Cellは`rowspan`・`colspan`を持てる（[TABLE-03](09-structures.md)）。ほかのフィールドを持ってはならない（MUST NOT）。
+- ノードは`kind`、`id`、`number`、`display`、`content`を持つ。Articleは`status`を、Subitemは`level`を、Paragraphは`numbering`を、Rowは`key`を持つ。Cellは`rowspan`・`colspan`を（[TABLE-03](09-structures.md)）、Paragraphは`caption`を（[PARA-02](09-structures.md)）持てる。ほかのフィールドを持ってはならない（MUST NOT）。
 - `number`は正規の番号の文字列とする。番号を持たないLaw、MainProvision、SupplementaryProvision、AppendedMaterial、EnactStatement、Toc、Preamble、Rowは`null`とする。Cellの`number`は行の中での位置（1始まり）とする。
 - `display`は次のとおりとする。Lawは`law.title`、MainProvisionは空文字列、SupplementaryProvisionは附則の見出しの原文のラベル（HEAD-03）、AppendedMaterialは宣言した`title`。Table、Row、Cell、EnactStatement、Toc、Preambleは空文字列。
 - `content`は、textのオブジェクトまたは子ノードの、順序のある配列でなければならない（MUST）。textは原文のMarkdownであり、HTMLにした結果ではない。
@@ -44,6 +44,6 @@
 - 位置は`{path, start, end}`で、元のファイルのUTF-8のバイト数による半開区間[start, end)とする。CRLFは2バイト、日本語は実際のUTF-8の長さとする。境界でUnicodeの文字を分断しない。`path`は、`law.yaml`のあるディレクトリからの相対パスで、`documents[].path`と同じ表記とする（`law.yaml`自身は`law.yaml`）。
 - 合成したLaw・MainProvisionは、空の位置の列を持つ。分類・条は見出しの行（行末を含む）を、明示のコンテナ（項・号・細分・表・行・セル・前文・制定文・目次）は開始行の行頭から終了行の行末までを、附則・附属資料のscopeは最初の見出しの行を位置とする。本文の片は、文字列と一致する位置を持ち、複数のファイルにわたる場合は位置の列を持つ。
 - 行・列の表示は任意であり、バイト位置の代わりにならない。
-- 診断の位置は次のとおりとしなければならない（MUST）。未閉鎖は開始のマーカーの行、対応しない終了はその終了の行、属性の不正はその行、重複は後の定義の行、見出しの違反はその行、表示の不一致は表示番号を検査した本文の行（[DISP-01](05-directives.md)）。Manifestの意味の違反は、`path: law.yaml`の文書全体を指してよい（MAY）。
+- 診断の位置は次のとおりとしなければならない（MUST）。未閉鎖は開始のマーカーの行、対応しない終了はその終了の行、属性の不正はその行、重複は後の定義の行、見出しの違反はその行、表示の不一致は表示番号を検査した本文の行（[DISP-01](05-directives.md)）、項の見出しの違反（見出しの行の形、その後の本文の行の欠落）は見出しの行として検査した本文の行（[PARA-02](09-structures.md)）。Manifestの意味の違反は、`path: law.yaml`の文書全体を指してよい（MAY）。
 - これらの位置は、違反の元になった行で決まり、違反を見つけた時点や回復の方法にはよらない。例えば、未閉鎖は、終了がないと分かるのがEOFや後の見出しであっても、開始のマーカーの行を指す。回復の後に続く診断の位置は、定めない。
 - 診断の位置の行は、行頭から行末の改行（LFは1バイト、CRLFは2バイト）までとする。最後の行に改行がなければ、ファイルの末尾までとする。分類・条の見出しの行の位置と同じ数え方である。

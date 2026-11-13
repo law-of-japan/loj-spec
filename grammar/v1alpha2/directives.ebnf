@@ -3,7 +3,7 @@
 marker = open | close ;
 open = "<!-- loj:", (paragraph | item | subitem | table | row | cell
                     | "preamble" | "enact-statement" | "toc"), " -->" ;
-paragraph = "paragraph", space, attrs(number_attr, [numbering_attr]) ;
+paragraph = "paragraph", space, attrs(number_attr, [numbering_attr], [caption_attr]) ;
 item = "item", space, number_attr ;
 subitem = "subitem", space, attrs(level_attr, number_attr) ;
 table = "table", space, number_attr ;
@@ -15,6 +15,7 @@ close = "<!-- loj:end-", ("paragraph" | "item" | "subitem" | "table" | "row" | "
    optional ones may be absent. A cell without attributes is "<!-- loj:cell -->" (DIR-01). *)
 number_attr = "number=", number ;
 numbering_attr = "numbering=", ("explicit" | "implicit") ;
+caption_attr = "caption=present" ;   (* PARA-02: the only value; omit the attribute when there is no caption *)
 level_attr = "level=", (nonzero | "10") ;
 key_attr = "key=", crockford, crockford, crockford, crockford ;
 rowspan_attr = "rowspan=", span ;
