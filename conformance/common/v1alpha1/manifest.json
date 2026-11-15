@@ -735,6 +735,40 @@
       },
       "expected": "conformance/common/v1alpha1/expected/common-027.json",
       "success": true
+    },
+    {
+      "id": "common-028",
+      "title": "他の登録空間のRecordを起点とする関係",
+      "requirements": [
+        "VAL-03",
+        "XREF-01",
+        "VAL-06"
+      ],
+      "check": "L4",
+      "category": "relationResolution",
+      "normative": true,
+      "input": {
+        "kind": "records",
+        "registry": "conformance/loj-registry/v1alpha1/valid/reg-001/registry",
+        "repositories": [
+          "conformance/common/v1alpha1/valid/common-028/hist-004"
+        ]
+      },
+      "expected": "conformance/common/v1alpha1/expected/common-028.json",
+      "success": true,
+      "derivedFrom": [
+        {
+          "path": "conformance/common/v1alpha1/valid/common-028/hist-004",
+          "from": "conformance/loj-history/v1alpha1/valid/hist-004/repo",
+          "edits": [
+            {
+              "file": "history.yaml",
+              "old": "    from: {id: 20170616-law-63, label:",
+              "new": "    from: {id: 20170616-law-63, space: other-space, label:"
+            }
+          ]
+        }
+      ]
     }
   ]
 }

@@ -892,6 +892,23 @@ def retired_ids_and_reviewed_format():
         {"results": [{"check": "change", "result": "incomplete"}]}, True)
 
 
+# --- 2026-11-15 (#68): the registration space is an input of the checker (VAL-03) -------------------------
+def registration_space():
+    """A RecordRef whose space differs from the input space points to another registry: not fetched, not a failure."""
+    source = "conformance/loj-history/v1alpha1/valid/hist-004/repo"
+    dest = next_dir("common", True) / "hist-004"
+    mutate(dest, source, [("history.yaml", "    from: {id: 20170616-law-63, label:", "    from: {id: 20170616-law-63, space: other-space, label:")])
+    add("common", "他の登録空間のRecordを起点とする関係", ["VAL-03", "XREF-01", "VAL-06"], "L4",
+        {"kind": "records", "registry": REG_POS, "repositories": [rel(dest)]},
+        {"results": [{"check": "L4", "category": "relationResolution", "result": "incomplete"}],
+         "references": [{"target": "loj:other-space/20170616-law-63", "result": "notFetched"}]}, True, "relationResolution")
+    # REG-02 asks replacedBy to resolve in the same registry, so another space is a violation there.
+    dest = next_dir("reg", False) / "registry"
+    mutate(dest, REG_POS, [], {"records/k7m2p9qd3x.yaml": merged_record("space: other-space, ")})
+    add("reg", "他の登録空間を指す統合先", ["REG-02", "VAL-03"], "registry", {"kind": "registry", "path": rel(dest)},
+        {"results": [{"check": "registry", "result": "fail"}], "diagnostics": [diag("REG-02", SV["reg"])]}, False)
+
+
 def main():
     for suite, folder in FOLDER.items():
         for group in ("invalid", "expected"):
@@ -914,6 +931,7 @@ def main():
     change_without_ast()
     termination_time()
     retired_ids_and_reviewed_format()
+    registration_space()
     assert not DERIVED, sorted(DERIVED)  # every copy is listed by the case that owns it
     marked = {case["id"] for cases in INDEX.values() for case in cases if "rejectedBy" in case}
     assert marked == SCHEMA_REJECTED, SCHEMA_REJECTED - marked
