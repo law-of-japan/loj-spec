@@ -7,7 +7,7 @@
 | フィールド | 必須 | 内容 |
 |---|---|---|
 | `id` | 必須 | Record ID（loj-registryのRID） |
-| `space` | 任意 | 登録空間の識別子。省略時は、参照する側と同じ登録空間 |
+| `space` | 任意 | 登録空間の識別子。形は[RID-04](../../loj-registry/v1alpha1/02-record-ids.md)による。省略時は、参照する側と同じ登録空間 |
 | `label` | 任意 | 表示用の名前（例: 平成十七年法律第四十三号） |
 
 - Recordは、登録空間とRecord IDの組で指さなければならない（MUST）。リポジトリのURLで指してはならない（MUST NOT）。
@@ -50,6 +50,7 @@
 ## TYPE-05 確認済みの主張の根拠
 
 - 確認状態を持つ主張（`evidence`と`verification`を持つもの）は、`verification.state: confirmed`なら一つ以上のEvidenceを持たなければならない（MUST）。
+- Evidenceの数は、記載したEvidenceの数で数え、`source`が解決できるかを問わない。`source`が解決できないことは、[TYPE-03](#type-03-evidence)の違反として報告する。
 - 未確認・不明とした主張は、理由を持つ。不明の時点値の理由は[TIME-05](06-time.md)による。
 - この要件の検査は、出典の記載と形式を確かめる。出典の内容が主張を裏付けるかは判定しない。
 

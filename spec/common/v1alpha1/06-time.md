@@ -17,7 +17,7 @@
 
 ## TIME-02 date
 
-- `value`はグレゴリオ暦の日付で、`precision`（`day`／`month`／`year`）に合わせた書式（`YYYY-MM-DD`／`YYYY-MM`／`YYYY`）で書く。
+- `value`はグレゴリオ暦の日付で、`precision`（`day`／`month`／`year`）に合わせた書式（`YYYY-MM-DD`／`YYYY-MM`／`YYYY`）で書かなければならない（MUST）。
 - `raw`に原表記（和暦・漢数字等）を保存し、グレゴリオ暦の値で置き換えてはならない（MUST NOT）。
 - 精度が日に満たない値は確定日ではなく（[TIME-03](#time-03-derivedとcalc)）、確定日として順序の比較に使ってはならない（MUST NOT）。暦や精度が不明な値を、推定で`date`にしてはならない（MUST NOT）。
 - グレゴリオ暦への換算は、明治6年1月1日以後の日付に限って必須とする。それより前の日付の換算規則は本版では定めない。換算の根拠を示せない日付を推定で`date`にせず、`unknown`とし、原表記を`reason`に書く。

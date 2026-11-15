@@ -18,7 +18,7 @@
   ```
 
 - 履歴マニフェストは、リポジトリの最上位の`history.yaml`とし、一つのRecordの履歴（Revisionの集合、そのRecordを終点とする関係、収録範囲、効力の終了）を記述する。
-- `schemaVersion`は厳密に`loj-history/v1alpha1`でなければならない（MUST）。ほかの値（知らない版を含む）のファイルは、処理不能として未完了とし、不合格にしない（[VAL-04](../../common/v1alpha1/03-validation.md)）。YAMLのデータモデルは[CORE-03](../../common/v1alpha1/01-overview.md)に従う。schemaは閉じており、未知のフィールドを拒否する。
+- `schemaVersion`は厳密に`loj-history/v1alpha1`でなければならない（MUST）。ほかの値（知らない版を含む）のファイルは、処理不能として未完了とし、不合格にしない（[VAL-04](../../common/v1alpha1/03-validation.md)）。YAMLのデータモデルは[CORE-03](../../common/v1alpha1/01-overview.md)に従う。ファイルは、その`schemaVersion`のschemaに合わなければならない（MUST）。schemaは閉じており、未知のフィールドを拒否する。schemaに合わない箇所の診断の規則は、[VAL-07](../../common/v1alpha1/03-validation.md)による。
 - Record自体の属性（番号主張、外部識別子、同一性）は登録台帳に置き、履歴マニフェストに写してはならない（MUST NOT）。
 - 本文を収録していないRecordも、関係の終点になる場合や、Revisionを記録する場合は、法令リポジトリを持てる（MAY）。そのリポジトリには`history.yaml`だけを置き、`versions/`を置かなくてよい。その履歴マニフェストのRevisionは、本文のない起点（`origin: coverageStart`、`text.status: absent`）一つでよく、`coverage.state`は`unconfirmed`とする。
 - 履歴マニフェストの`label`等の表示用の値は、参照の解決・同一性の判断・順序の決定に使ってはならない（MUST NOT）。
@@ -71,7 +71,7 @@
 - 起点以外のRevisionは`origin`を持ってはならない（MUST NOT）。履歴マニフェストは一つ以上の起点を持つ。
 - 一つのRevisionを、複数のRevisionが`basedOn`として参照してよい（MAY）。経過措置による新旧の状態の併存は、この分岐と適用関係（HIST-07）で表す。
 - 適用の順が不明な場合は、`basedOn`を`{state: unknown, reason}`とし、推測で順序を補ってはならない（MUST NOT）。改正法令の法令番号の順などで、機械的に順序を決めてはならない（MUST NOT）。
-- `basedOn`の循環と、存在しないrevision_idへの参照は違反とする。
+- `basedOn`は、同じ履歴マニフェストに存在するrevision_idを指さなければならない（MUST）。`basedOn`の連なりは、循環してはならない（MUST NOT）。
 - `status: active`のRevisionの`basedOn`は、`status: active`のRevisionを参照しなければならない（MUST）。撤回・統合・分割したRevision（HIST-10）を基礎状態とする参照は違反とする。基礎状態としていた版は、同じ`revisionFix`で付け替える。統合・分割したRevisionからは`replacedBy`の版へ、撤回したRevisionからは有効な版へ付け替える。
 
 ## HIST-05 成立根拠
@@ -132,7 +132,8 @@
 - 版パッケージのディレクトリ`versions/<revision_id>/`は、履歴マニフェストの`complete`・`partial`のRevisionと一対一に対応しなければならない（MUST）。`absent`のRevisionは、ディレクトリを持たない。
 - `glyphCheck: verified`の意味は、字体注記の要件（loj-glyphs）による。
 - `variances`の項目は、官報正誤が見つからない間は`verification.state`を`disputed`とする。官報正誤で解いた場合は`resolvedBy`を持ち、本文を正誤後の文言にする（GLYPH-07）。`readings`の`source`は、同じ履歴マニフェストのSourceを指す（TYPE-03）。
-- `variances`と`correctionsSurveyed`は、本文のあるRevision（`complete`・`partial`）に書く。`absent`のRevisionは、これらを持ってはならない（MUST NOT）。
+- `variances`と`correctionsSurveyed`は、本文のあるRevision（`complete`・`partial`）に書く。`absent`のRevisionは、`package`・`sources`・`glyphCheck`・`glyphNotes`・`variances`・`correctionsSurveyed`を持ってはならない（MUST NOT）。
+- `partial`でないRevisionは、`gaps`を持ってはならない（MUST NOT）。`complete`・`partial`のRevisionの`sources`は、一つ以上のEvidenceを持たなければならない（MUST）。
 - 本文の状態の確認の状況（官報正誤を確かめていない等）を、`sources`の`locator`に書いてはならない（MUST NOT）。`locator`は箇所の原文表記である（TYPE-03）。官報正誤の確認の状況は`correctionsSurveyed`に書く。
 
 ## HIST-09 外部識別子
@@ -146,7 +147,7 @@
 
 - 各Revisionは`status`（`active`／`retracted`／`merged`／`split`）を持たなければならない（MUST）。
 - 撤回・統合・分割したRevisionを、履歴マニフェストから削除してはならない（MUST NOT）。
-- `merged`・`split`のRevisionは、`replacedBy`（`revisions`＝統合先・分割先のrevision_idの一覧、`evidence`、`verification`）を持たなければならない（MUST）。`replacedBy`のrevision_idは、同じ履歴マニフェストに存在しなければならない。
+- `merged`・`split`のRevisionは、`replacedBy`（`revisions`＝統合先・分割先のrevision_idの一覧、`evidence`、`verification`）を持たなければならない（MUST）。`replacedBy`のrevision_idは、同じ履歴マニフェストに存在しなければならない（MUST）。
 - 撤回・統合・分割の変更は、変更の種類`revisionFix`（[CHG-01](../../common/v1alpha1/07-changes.md)）で記録する。
 
 ## HIST-11 収録範囲
