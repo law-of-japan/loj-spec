@@ -936,6 +936,28 @@ def invalid_review_records():
             {"results": [{"check": "change", "result": "fail"}], "diagnostics": [diag("CHG-04", SV["common"])]}, False)
 
 
+# --- 2026-11-16 (#87): which glyphs.yaml the glyph-note check reads (HIST-08), seen in the evidence category ----
+def glyph_file_selection():
+    """HIST-08 reads versions/<own revision_id>/glyphs.yaml of complete and partial Revisions only.
+
+    Each input breaks HIST-08 (history structure, fixed by hist-047 and hist-048); the evidence category passes
+    because the glyphs.yaml that would fail GLYPH-01 is not read as a Revision's glyph notes.
+    """
+    absent = ("    text:\n      status: complete\n      sources:\n        - {source: src-goshomei-s41-86, locator: 2画像 本則（改正の内容）}\n"
+              "      glyphCheck: unverified\n      glyphNotes: versions/zwgmz1rt/glyphs.yaml\n"
+              "      correctionsSurveyed: {state: unsurveyed, reason: 官報（昭和41年6月25日）を入手していない（REB-05）}\n")
+    for title, edits in [
+        ("本文のない版のディレクトリに残った字体注記を検査にかけない",
+         [("history.yaml", absent, "    text:\n      status: absent\n"), (ZWG + "glyphs.yaml", "revision: zwgmz1rt", "revision: 98mj5vgx")]),
+        ("別の版の字体注記を指すglyphNotesで、指す先を自身の字体注記として読まない",
+         [("history.yaml", "      glyphNotes: versions/zwgmz1rt/glyphs.yaml\n", "      glyphNotes: versions/98mj5vgx/glyphs.yaml\n")]),
+    ]:
+        dest = next_dir("hist", True) / "repo"
+        mutate(dest, HIST_POS, edits)
+        add("hist", title, ["HIST-08", "GLYPH-01"], "L3", {"kind": "repository", "path": rel(dest)},
+            {"results": [l3("evidence")]}, True, "evidence")
+
+
 def main():
     for suite, folder in FOLDER.items():
         for group in ("invalid", "expected"):
@@ -960,6 +982,7 @@ def main():
     retired_ids_and_reviewed_format()
     registration_space()
     invalid_review_records()
+    glyph_file_selection()
     assert not DERIVED, sorted(DERIVED)  # every copy is listed by the case that owns it
     marked = {case["id"] for cases in INDEX.values() for case in cases if "rejectedBy" in case}
     assert marked == SCHEMA_REJECTED, SCHEMA_REJECTED - marked

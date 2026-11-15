@@ -2,6 +2,14 @@
 
 見出しの「草案」は、[草案の版](spec/README.md#版の状態)への変更であることを示す。版の状態の正は、[規範仕様の入口](spec/README.md#規範とするもの)の表にある。版を公開したときは、公開の日付の項目を加える。
 
+## 字体注記の検査にかけるファイルの選び方のケース（2026-11-16）
+
+[law-of-japan/loj-spec#87](https://github.com/law-of-japan/loj-spec/issues/87)による変更である。適合ケースを加えた。規範の本文とschemaは変わらない。
+
+- hist-054: `absent`のRevisionのディレクトリに残った`glyphs.yaml`（`revision`が合わない）を、字体注記の検査にかけない（HIST-08）。根拠の区分は合格。
+- hist-055: `glyphNotes`が別の版の`glyphs.yaml`を指すとき、指す先を自身の字体注記として読まない（HIST-08）。根拠の区分は合格。
+- 要件との対応表を更新した。
+
 ## 記録がないものとして扱うLoJ-Reviewedの負例（2026-11-16、草案）
 
 [law-of-japan/loj-spec#86](https://github.com/law-of-japan/loj-spec/issues/86)による変更である。草案の版（`common/v1alpha1`）への変更であり、版番号は上げない。
