@@ -2,6 +2,12 @@
 
 見出しの「草案」は、[草案の版](spec/README.md#版の状態)への変更であることを示す。版の状態の正は、[規範仕様の入口](spec/README.md#規範とするもの)の表にある。版を公開したときは、公開の日付の項目を加える。
 
+## 正本ブランチの線形履歴の制約の維持（2026-11-16）
+
+[law-of-japan/loj-spec#97](https://github.com/law-of-japan/loj-spec/issues/97)による判断の記録である。規範の本文、schema、適合ケースは変わらない。
+
+- DDR-015に、正本ブランチにmergeのcommitを置かない制約（CHG-03）を維持すること、再検討の条件を満たす事情がないこと、mergeを許す場合に要る規則（mergeのcommitの種類と検査、取り込んだcommitの検査、固定参照（FIXREF-04）に使えるcommitの範囲）を追記した。
+
 ## 派生ビューの生成元の記録と除いた版の示す内容の要求（2026-11-16、草案）
 
 [law-of-japan/loj-spec#100](https://github.com/law-of-japan/loj-spec/issues/100)による変更である。草案の版（`common/v1alpha1`）への変更であり、版番号は上げない。VIEWの適合ケースはなく、適合の結果、診断の規則、ASTは変わらない。
