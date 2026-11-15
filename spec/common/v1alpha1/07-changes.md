@@ -53,7 +53,15 @@ ASTは、`schemaVersion`・`law`・`root`への投影を、位置情報を除い
 
 - `LoJ-Change`は、一つのcommitに一つだけ置く。値は[CHG-01](#chg-01-変更の種類)の種類とする。
 - `LoJ-Revisions`は、対象のrevision_idをカンマと空白（`, `）で区切って並べる。版を対象にしない変更（`format`、登録台帳だけの`metadata`等）では、省略してよい（MAY）。
-- commitメッセージとtrailerは、UTF-8で書く。
+- `LoJ-Reviewed`は、人がレビューしたことの記録である。値は、レビューの所在（PRのURL、レビューした人等）を示す空でない文字列とする。一つのcommitに一つまで置ける（MAY）。値が空の`LoJ-Reviewed`と、二つ以上の`LoJ-Reviewed`は、記録がないものとして扱う。この記録を読むのは、ASTを生成できない版の書式の変換（[CHG-04](#chg-04-astを生成できない版)）だけである。それ以外のcommitの`LoJ-Reviewed`は、検査の結果を変えない。
+
+  ```text
+  LoJ-Change: format
+  LoJ-Revisions: 98mj5vgx
+  LoJ-Reviewed: https://example.invalid/law-repository/pull/12
+  ```
+
+- commitメッセージとtrailerは、UTF-8で書く。本要件のtrailerの名前（`LoJ-Change`、`LoJ-Revisions`、`LoJ-Reviewed`）は、大文字・小文字を区別して比べる。
 - 種類の宣言を、ホスティングサービスのラベル等だけに置いてはならない（MUST NOT）。cloneした先でも記録版の履歴として読めるようにするためである。
 - 一つのcommitの種類は一つとする。PRを統合するときにcommitをまとめる（squash）場合は、種類が同じcommitに限る。種類の違うcommitを含むPRは、rebaseで統合する。その場合、正本ブランチに並ぶ各commitが、それぞれ単独で変更検査を受ける。
 - 正本ブランチへの統合は、正本ブランチの履歴が一本になる方法（squash、rebase）で行う。正本ブランチにmergeのcommit（親が二つ以上のcommit）を置いてはならない（MUST NOT）。種類の宣言を一つのcommitに一つとし、比べる変更前の記録版を親のcommitに一意に定めるためである。
@@ -68,8 +76,9 @@ ASTは、`schemaVersion`・`law`・`root`への投影を、位置情報を除い
 
 ## CHG-04 ASTを生成できない版
 
-- 一部しか本文がない版や、L1が不合格の版は、ASTを比べられない。このような版を含む変更では、その版についてのAST検査を判定不能と報告し、合格としてはならない（MUST NOT）。
+- 一部しか本文がない版や、L1が不合格の版は、ASTを比べられない。変更の種類ごとに、どの版のASTを比べるかは[CHG-02](#chg-02-種類ごとの検査)の表による。その版のASTを比べる種類の変更では、その版についてのAST検査を判定不能と報告し、合格としてはならない（MUST NOT）。版パッケージのファイルを変えたかを問わない。例えば、版パッケージに触れない`metadata`の変更も、すべての版のASTを比べるので、この版のAST検査は判定不能になる。
 - `format`の自動変換で、ASTを生成できない版のファイルを変更してはならない（MUST NOT）。その版の書式は、ASTを生成できるようになってから変換するか、人のレビューの記録を付けた別のcommitで変換する。後者の場合も、AST検査は判定不能と報告し、レビューの記録で合格に読み替えない。
+- 人のレビューの記録は、commitメッセージのtrailerの`LoJ-Reviewed`とする。ASTを生成できない版のファイルを変える`format`のcommitが`LoJ-Reviewed`を持たなければ（記録がないものとして扱う場合を含む。[CHG-03](#chg-03-種類の宣言)）、自動変換とみなす。このcommitは、上の自動変換の禁止（MUST NOT）の違反であり、本要件の規則で報告する。`LoJ-Reviewed`の値が示すレビューの内容は、機械では確かめない。
 
 ## CHG-05 適合との関係
 

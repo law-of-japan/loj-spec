@@ -396,7 +396,8 @@ def build_bundle(path, steps=None):
         git = lambda *args, **kw: subprocess.run(["git", "-C", str(repo), *args], check=True, capture_output=True, env=env, **kw)
         git("init", "-q", "-b", "main")
         git("config", "core.autocrlf", "false")
-        for i, (subject, kind, with_revs, files) in enumerate(steps):
+        for i, (subject, kind, with_revs, files, *extra) in enumerate(steps):
+            assert kind or not extra, subject  # trailers follow a declaration
             for old in repo.glob("versions/*/*.md"):
                 old.unlink()
             for name, body in files.items():
@@ -407,6 +408,8 @@ def build_bundle(path, steps=None):
             message = subject + "\n"
             if kind:
                 message += "\nLoJ-Change: " + kind + "\n" + ("LoJ-Revisions: " + REV + "\n" if with_revs else "")
+                # Further trailers (CHG-04: LoJ-Reviewed) follow the declaration; a step without a kind has none.
+                message += "".join(extra)
             date = "2099-01-%02dT00:00:00+0900" % (i + 1)
             env["GIT_AUTHOR_DATE"] = env["GIT_COMMITTER_DATE"] = date
             git("commit", "-q", "-F", "-", input=message.encode("utf-8"))
@@ -866,6 +869,29 @@ def termination_time():
         "historyStructure")
 
 
+# --- 2026-11-15 (#63): reuse of a retired Record ID (RID-05) and a reviewed format change (CHG-04) ---------
+def retired_ids_and_reviewed_format():
+    """RID-01 sends a collision with a merged Record to RID-05; CHG-04 reads LoJ-Reviewed as the record of a review."""
+    source = "conformance/loj-registry/v1alpha1/valid/reg-009/registry"
+    dest = next_dir("reg", False) / "registry"
+    mutate(dest, source, [("records/20170616-law-63.yaml", "status: active\n", "status: active\naliases:\n  - id: k7m2p9qd3x\n"
+                           "    evidence: [{source: src-egov-h29-63, locator: 法令名}]\n    verification: {state: unverified}\n")])
+    add("reg", "統合したRecordのIDを別のRecordの別名に再利用する（RID-01で重ねて報告しない）", ["RID-05", "RID-01"], "registry",
+        {"kind": "registry", "path": rel(dest)},
+        {"results": [{"check": "registry", "result": "fail"}], "diagnostics": [diag("RID-05", SV["reg"])]}, False)
+    body = "架空の雲を保管する。\n"
+    bundle_pos = next_dir("common", True) / "repo.bundle"
+    _, c2, c3 = build_bundle(bundle_pos, [
+        ("見出しの誤った版を加える", "revisionAdd", True, broken(fictional_files(body))),
+        ("ラベルを改める", "metadata", False, broken(fictional_files(body, False, "制定時"))),
+        ("ASTのない版のファイルを人のレビューを経て分ける", "format", False, broken(fictional_files(body, True, "制定時")),
+         "LoJ-Reviewed: https://example.invalid/law-repository/pull/12\n"),
+    ])
+    add("common", "ASTを生成できない版のファイルを人のレビューの記録を付けて書式変更で変える", ["CHG-04", "CHG-03"], "change",
+        {"kind": "change", "bundle": rel(bundle_pos), "base": c2, "head": c3},
+        {"results": [{"check": "change", "result": "incomplete"}]}, True)
+
+
 def main():
     for suite, folder in FOLDER.items():
         for group in ("invalid", "expected"):
@@ -887,6 +913,7 @@ def main():
     registry_ids()
     change_without_ast()
     termination_time()
+    retired_ids_and_reviewed_format()
     assert not DERIVED, sorted(DERIVED)  # every copy is listed by the case that owns it
     marked = {case["id"] for cases in INDEX.values() for case in cases if "rejectedBy" in case}
     assert marked == SCHEMA_REJECTED, SCHEMA_REJECTED - marked

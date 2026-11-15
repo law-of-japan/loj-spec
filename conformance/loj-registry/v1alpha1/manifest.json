@@ -276,6 +276,35 @@
           ]
         }
       ]
+    },
+    {
+      "id": "reg-011",
+      "title": "統合したRecordのIDを別のRecordの別名に再利用する（RID-01で重ねて報告しない）",
+      "requirements": [
+        "RID-05",
+        "RID-01"
+      ],
+      "check": "registry",
+      "normative": true,
+      "input": {
+        "kind": "registry",
+        "path": "conformance/loj-registry/v1alpha1/invalid/reg-011/registry"
+      },
+      "expected": "conformance/loj-registry/v1alpha1/expected/reg-011.json",
+      "success": false,
+      "derivedFrom": [
+        {
+          "path": "conformance/loj-registry/v1alpha1/invalid/reg-011/registry",
+          "from": "conformance/loj-registry/v1alpha1/valid/reg-009/registry",
+          "edits": [
+            {
+              "file": "records/20170616-law-63.yaml",
+              "old": "status: active\n",
+              "new": "status: active\naliases:\n  - id: k7m2p9qd3x\n    evidence: [{source: src-egov-h29-63, locator: 法令名}]\n    verification: {state: unverified}\n"
+            }
+          ]
+        }
+      ]
     }
   ]
 }

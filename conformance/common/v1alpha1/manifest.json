@@ -717,6 +717,24 @@
           "edits": []
         }
       ]
+    },
+    {
+      "id": "common-027",
+      "title": "ASTを生成できない版のファイルを人のレビューの記録を付けて書式変更で変える",
+      "requirements": [
+        "CHG-04",
+        "CHG-03"
+      ],
+      "check": "change",
+      "normative": true,
+      "input": {
+        "kind": "change",
+        "bundle": "conformance/common/v1alpha1/valid/common-027/repo.bundle",
+        "base": "e9c821aea8a0fdcaaaa852ea27c08d9476dbb2a7",
+        "head": "9b4faef4dc60577e8309b2ef067a01bcd547cac5"
+      },
+      "expected": "conformance/common/v1alpha1/expected/common-027.json",
+      "success": true
     }
   ]
 }

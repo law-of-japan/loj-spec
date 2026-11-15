@@ -131,6 +131,11 @@
 - `absent`のRevisionに、版パッケージを置いてはならない（MUST NOT）。
 - 版パッケージのディレクトリ`versions/<revision_id>/`は、履歴マニフェストの`complete`・`partial`のRevisionと一対一に対応しなければならない（MUST）。`absent`のRevisionは、ディレクトリを持たない。
 - `glyphCheck: verified`の意味は、字体注記の要件（loj-glyphs）による。
+- 字体注記の検査（loj-glyphs。L3（根拠））にかけるファイルは、`complete`・`partial`のRevisionごとに、`versions/<自身のrevision_id>/glyphs.yaml`とする。`glyphNotes`の値では決めない。
+  - 自身のパスに`glyphs.yaml`があるRevisionは、`glyphNotes`を持たなければならない（MUST）。値は、表のとおり自身のパスとする。
+  - `glyphNotes`が自身のパスでない場合は、本要件の違反とし、指す先のファイルを、このRevisionの字体注記として読まない。誤った指定を優先しないためである（[FIXREF-03](../../common/v1alpha1/08-references.md)の`path`と同じ考え方）。
+  - `absent`のRevisionのディレクトリ（持たないとした`versions/<revision_id>/`）に`glyphs.yaml`があっても、字体注記の検査にかけない。ディレクトリがあることを、本要件の違反として報告する。
+  - `complete`・`partial`のRevisionのどれにも当たらない`glyphs.yaml`は、字体注記の検査にかけない。
 - `variances`の項目は、官報正誤が見つからない間は`verification.state`を`disputed`とする。官報正誤で解いた場合は`resolvedBy`を持ち、本文を正誤後の文言にする（GLYPH-07）。`readings`の`source`は、同じ履歴マニフェストのSourceを指す（TYPE-03）。
 - `variances`と`correctionsSurveyed`は、本文のあるRevision（`complete`・`partial`）に書く。`absent`のRevisionは、`package`・`sources`・`glyphCheck`・`glyphNotes`・`variances`・`correctionsSurveyed`を持ってはならない（MUST NOT）。
 - `partial`でないRevisionは、`gaps`を持ってはならない（MUST NOT）。`complete`・`partial`のRevisionの`sources`は、一つ以上のEvidenceを持たなければならない（MUST）。
