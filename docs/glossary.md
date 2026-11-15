@@ -230,9 +230,10 @@
 | 要件ID、系列 | `## <ID> <名前>`、例: `HIST-04` | 要件ごとのID。接頭辞（系列）は一つのディレクトリに属する。版ごとに意味を持つ | [規範仕様の入口](../spec/README.md#要件id) |
 | 規則 | `rule` | 診断で報告する要件ID。実装固有の`code`・`message`・`severity`とは区別する | [VAL-07](../spec/common/v1alpha1/03-validation.md#val-07-規則と診断) |
 | 診断 | — | 検査器が報告する違反等。規則と、規則を定める版のschemaVersion（共通の要件は`common/<版>`）を示す | [VAL-07](../spec/common/v1alpha1/03-validation.md#val-07-規則と診断) |
-| 検査器 | validator | 正本を規範に照らして検査する実装。このリポジトリのCIは検査器ではない | [CONF-03](../spec/common/v1alpha1/04-conformance.md#conf-03-このリポジトリの検査)、[実装ガイド](implementation-guide.md) |
+| 検査器 | validator | 正本を規範に照らして検査する実装。このリポジトリのCIは検査器ではない | [CONTRIBUTING](../CONTRIBUTING.md#検査)、[実装ガイド](implementation-guide.md) |
 | 適合レベル | L0〜L4 | L0 ファイル形式・Manifest・Markdown構文、L1 法令の構造、L2 法令内の参照（予約）、L3 原典・履歴、L4 他法令との整合。各レベルを独立に判定し、上位の合格から下位の合格を推論しない | [VAL-01](../spec/common/v1alpha1/03-validation.md#val-01-適合レベルの定義)、[VAL-02](../spec/common/v1alpha1/03-validation.md#val-02-独立した判定) |
 | 区分 | `category` | L3・L4を分けた検査の単位。L3は`historyStructure`（履歴構造）、`evidence`（根拠）、`sourceMatch`（原典照合）。L4は`relationResolution`（関係の解決）、`relationConsistency`（関係の整合）、`timeConsistency`（時点の整合）、`displayConsistency`（表示の整合）、`clauseReference`（条項参照の解決） | [VAL-05](../spec/common/v1alpha1/03-validation.md#val-05-l3の区分と主張)、[VAL-06](../spec/common/v1alpha1/03-validation.md#val-06-l4の区分) |
+| 要件の適用対象 | — | 要件を適用する対象（データ、入力者、実装）。特定の機能を対象とする要件は、その機能を提供する実装にだけ適用する。法令リポジトリの運用の手順と仕様の資料の管理は、規範ではない | [規範仕様の入口](../spec/README.md#要件の適用対象) |
 | 名宛人、確かめ方 | — | 要求を満たす者（データ、入力者、実装、仕様の資料）と、確かめる方法（機械検査、原典照合、レビュー、適合ケース、実装の試験）。合格は機械検査の要求だけを示す | [CONF-02](../spec/common/v1alpha1/04-conformance.md#conf-02-レベルごとの適合の主張)、[VAL-07](../spec/common/v1alpha1/03-validation.md#val-07-規則と診断)、[要件との対応表](coverage.md#要件の名宛人と確かめ方) |
 | 正式、予約 | — | 正式は本版で合格を宣言できるもの。予約は将来の版で定めるもので、合格を主張できない（L2、原典照合、条項参照の解決） | [VAL-01](../spec/common/v1alpha1/03-validation.md#val-01-適合レベルの定義)、[VAL-05](../spec/common/v1alpha1/03-validation.md#val-05-l3の区分と主張)、[VAL-06](../spec/common/v1alpha1/03-validation.md#val-06-l4の区分) |
 | 原典照合 | `sourceMatch` | 版の本文と固定した原典資料の一致を確かめるL3の区分。予約 | [SRCM-01](../spec/common/v1alpha1/03-validation.md#srcm-01-l3の原典照合) |
