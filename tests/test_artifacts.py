@@ -466,7 +466,7 @@ class RestatementTests(unittest.TestCase):
 
 
 class SchemaMarkTests(unittest.TestCase):
-    """CONF-01: rejectedBy: schema matches whether an input YAML file breaks its schema."""
+    """CONF-01 (management info; see CONTRIBUTING): rejectedBy: schema matches whether an input YAML file breaks its schema."""
 
     @classmethod
     def setUpClass(cls):
@@ -562,7 +562,7 @@ class DiagnosticLocationTests(unittest.TestCase):
 
 
 class DerivationTests(unittest.TestCase):
-    """CONF-01: a copied input listed in derivedFrom is its source with the listed edits, byte for byte."""
+    """CONF-01 (management info; see CONTRIBUTING): a copied input listed in derivedFrom is its source with the listed edits, byte for byte."""
 
     def setUp(self):
         self.folder = tempfile.TemporaryDirectory()

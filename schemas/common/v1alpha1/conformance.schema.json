@@ -217,11 +217,11 @@
             "type": "boolean"
           },
           "rejectedBy": {
-            "description": "CONF-01: the negative case's input does not conform to the schema of its schemaVersion. Used by the self-consistency checks of the spec artefacts only; it does not change how a case is satisfied.",
+            "description": "Material management information (CONF-01; rules in CONTRIBUTING): the negative case's input does not conform to the schema of its schemaVersion. Used by the self-consistency checks of the spec artefacts only; it does not change how a case is satisfied.",
             "const": "schema"
           },
           "derivedFrom": {
-            "description": "CONF-01: inputs made as a copy of another checked-in input. Applying the edits in order to the copy of from gives path. Used by the self-consistency checks of the spec artefacts only; it does not change how a case is satisfied.",
+            "description": "Material management information (CONF-01; rules in CONTRIBUTING): inputs made as a copy of another checked-in input. Applying the edits in order to the copy of from gives path. Used by the self-consistency checks of the spec artefacts only; it does not change how a case is satisfied.",
             "type": "array",
             "minItems": 1,
             "items": {
