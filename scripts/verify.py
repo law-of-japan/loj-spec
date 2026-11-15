@@ -965,9 +965,12 @@ def forbidden_fields(branch, where):
         return fields
     if "not" in branch:
         negated = branch["not"]
-        options = negated.get("anyOf", [negated]) if isinstance(negated, dict) else None
-        require(options is not None and (set(negated) <= {"anyOf"} or set(negated) == {"required"}),
-                "Unsupported not in a then/else branch: " + where)
+        require(isinstance(negated, dict), "Unsupported not in a then/else branch: " + where)
+        if set(negated) == {"anyOf"}:
+            options = negated["anyOf"]  # not: {anyOf: [{required: [x]}, ...]}
+        else:
+            require(set(negated) == {"required"}, "Unsupported not in a then/else branch: " + where)
+            options = [negated]  # not: {required: [x]}
         for option in options:
             require(isinstance(option, dict) and set(option) == {"required"} and len(option["required"]) == 1,
                     "Unsupported not in a then/else branch: " + where)
@@ -1011,6 +1014,7 @@ def draft_schema_prohibitions():
     found = {}
     for path in sorted((ROOT / "schemas").rglob("*.json")):
         name = path.relative_to(ROOT / "schemas").as_posix()
+        # Only the top-level schemas/v1alpha1 is frozen; schemas/common/v1alpha1 and loj-*/v1alpha1 are drafts.
         if name.startswith("v1alpha1/"):
             continue
         for pointer, fields in conditional_prohibitions(read_json(path)).items():
@@ -1032,6 +1036,7 @@ def prohibition_rows(text):
         ids = set(REQUIREMENT_REF.findall(row["本文の要件"]))
         missing = set(CODE_SPAN.findall(row["本文になし"]))
         require(missing <= fields, "docs/coverage.md prohibition row lists an unknown field as missing: " + " ".join(key))
+        # A row with requirements may still mark some of its fields as having no text (partly written).
         require(ids or missing == fields,
                 "docs/coverage.md prohibition row without a requirement must list every field as missing: " + " ".join(key))
         rows[key] = (fields, ids, missing)
@@ -1077,6 +1082,7 @@ def compare_prohibitions(rows, schemas, sections):
 def check_prohibitions():
     """Conditional prohibitions in the draft schemas, matched with the docs/coverage.md table."""
     spec = ROOT / "spec"
+    # Only the top-level spec/v1alpha1 is frozen (as in check_restatements); spec/common/v1alpha1 is a draft.
     texts = [path.read_text(encoding="utf-8") for path in spec.rglob("*.md") if (spec / "v1alpha1") not in path.parents]
     schemas = draft_schema_prohibitions()
     rows = prohibition_rows((ROOT / "docs/coverage.md").read_text(encoding="utf-8"))
