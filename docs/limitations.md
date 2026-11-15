@@ -19,6 +19,7 @@
 | 別表の内部構造（表の行・セル、見出しの行、結合） | 本版では見送り、次の版（v1alpha3）で扱う（[law-of-japan/loj-spec#27](https://github.com/law-of-japan/loj-spec/issues/27)、DDR-012）。別表は不透明な附属資料として書け、L1は不合格にならない |
 | ローマ数字等、DISP-01の表にない細分の表示と、いろは・括弧付きの十進の細分の枝番号 | 未対応（DISP-01）。`unsupportedFeatures`に記録し、L1は不合格。記録がなければ、DISP-01の違反としてL1は不合格 |
 | 目次と本文の見出しの一致 | 検査しない（TOC-01）。目次は不透明な本文で、一致は原典照合で確かめる |
+| 矩形でない表 | 未対応（TABLE-04、[law-of-japan/loj-spec#73](https://github.com/law-of-japan/loj-spec/issues/73)）。`unsupportedFeatures`に記録し、L1は不合格。実在の法令に矩形でない表があるかは、網羅的には確かめていない |
 | 原典で罫線に囲まれた空の表の欄 | 未対応（TABLE-03、[law-of-japan/loj-spec#57](https://github.com/law-of-japan/loj-spec/issues/57)）。`unsupportedFeatures`に記録し、L1は不合格。上の欄・左の欄が続く箇所は、結合したセルとして書ける |
 | 項の見出しがかかる範囲（一つの見出しが続く項にかかる場合） | 記録しない。見出しは最初の項にだけ書く（PARA-02、[law-of-japan/loj-spec#56](https://github.com/law-of-japan/loj-spec/issues/56)）。属性のない第1項と`numbering=implicit`の項では、最初の行に見出しを書いて属性を書き落としても、L1では検出せず、原典照合で確かめる。附則の第1項の`（施行期日）`は最も出やすい形なので、収録の際に注意する |
 | 番号のない第1項で、本文が数字のtokenで始まるもの | 未対応（DISP-01）。`unsupportedFeatures`に記録し、L1は不合格。記録がなければ、DISP-01（またはPARA-01）の違反としてL1は不合格 |
