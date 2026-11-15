@@ -14,7 +14,7 @@
 | 用語 | 表記 | 意味 | 定義 |
 |---|---|---|---|
 | LoJ | Law of Japan | 日本法令をMarkdownとYAMLで記録するためのデータと、その規範仕様 | [規範仕様の入口](../spec/README.md) |
-| 正本 | — | 人がPRで編集する規範的なデータ（登録台帳、履歴マニフェスト、版パッケージ、字体注記、再構築報告）と、そのGit履歴。適合の判定と固定参照の対象は正本だけである | [CORE-01](../spec/common/v1alpha1/01-overview.md#core-01-データの構成)、[VIEW-01](../spec/common/v1alpha1/09-views.md#view-01-定義と一方向性) |
+| 正本 | — | 正本ブランチのcommitで変更する規範的なデータ（登録台帳、履歴マニフェスト、版パッケージ、字体注記、再構築報告）と、そのGit履歴。適合の判定と固定参照の対象は正本だけである | [CORE-01](../spec/common/v1alpha1/01-overview.md#core-01-データの構成)、[VIEW-01](../spec/common/v1alpha1/09-views.md#view-01-定義と一方向性) |
 | 派生ビュー | — | 正本から生成器が機械的に作る閲覧用の成果物（historyブランチ、版間差分等）。規範外で、判定の対象にも判断の根拠にもならない | [VIEW-01](../spec/common/v1alpha1/09-views.md#view-01-定義と一方向性) |
 | 登録台帳 | registry | 法令を同定するRecordの集合。法令リポジトリとは別の一つのリポジトリに置く | [CORE-01](../spec/common/v1alpha1/01-overview.md#core-01-データの構成)、[REG-01](../spec/loj-registry/v1alpha1/01-registry.md#reg-01-置き場所と形式) |
 | 登録空間 | `space` | Record IDを発行する名前空間。小文字の短い識別子（例: `loj`）で示す。本版では、検査器への入力で確定する。適合ケースの登録空間は`loj` | [RID-04](../spec/loj-registry/v1alpha1/02-record-ids.md#rid-04-登録空間の識別子)、[VAL-03](../spec/common/v1alpha1/03-validation.md#val-03-判定の入力と対象の記録版) |

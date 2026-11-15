@@ -60,6 +60,7 @@
 - 複数のリポジトリにまたがる変更: 仕様は変えない。登録台帳、被改正法令、改正法の順に統合すれば、途中の状態は未取得として現れ、不合格にならない（VAL-06）。順序は運用（リポジトリ管理ガイドライン）で定める（[law-of-japan/loj-spec#33](https://github.com/law-of-japan/loj-spec/issues/33)）。
 - 制約: PRの作業ブランチのcommitは統合後に正本ブランチから到達できず、固定参照に使えない（FIXREF-04）。squashでは作業の日時が残らないことがある（`docs/limitations.md`）。`migration`の禁止は草案の`loj/v1alpha2`と共通の要件の側の定めであり、凍結した`loj/v1alpha1`の内容とは関わらない。
 - 再検討: 正本ブランチにmergeのcommitを置く必要が出たとき。
+- 追記（2026-11-15、[DDR-024](024-scope-of-requirements.md)）: CHG-03から、PRの統合の操作（squashは種類が同じcommitに限り、種類の違うcommitを含むPRはrebaseで統合すること）を外し、[リポジトリ管理ガイドライン](https://github.com/law-of-japan/loj-repository-management-guideline)で定めることにした。CHG-03には、一つのcommitに一つの種類、各commitが単独で変更検査を受けること、mergeのcommitの禁止と不合格を残した。検査の結果は変わらない。種類の違うcommitをsquashした結果は、どのみち一つのcommitに一つの種類という規則に反するためである。線形履歴の制約を維持するかは、[law-of-japan/loj-spec#97](https://github.com/law-of-japan/loj-spec/issues/97)で判断する。
 
 ## ASTを生成できない版の書式の変換と、人のレビューの記録
 

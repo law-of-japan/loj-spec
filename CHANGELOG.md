@@ -2,6 +2,14 @@
 
 見出しの「草案」は、[草案の版](spec/README.md#版の状態)への変更であることを示す。版の状態の正は、[規範仕様の入口](spec/README.md#規範とするもの)の表にある。版を公開したときは、公開の日付の項目を加える。
 
+## 正本の編集と統合の手順の分離（2026-11-15、草案）
+
+[law-of-japan/loj-spec#89](https://github.com/law-of-japan/loj-spec/issues/89)による変更である。草案の版（`common/v1alpha1`）への変更であり、版番号は上げない。適合の結果、変更検査の結果、診断の規則、ASTは変わらない。
+
+- CORE-01: 「正本は人が編集し」を外し、正本の変更を、変更の種類を宣言した正本ブランチのcommitとして記録することとした。編集の体制と作業の進め方は運用で定めるとした。
+- CHG-03: PRの統合の操作（squashは種類が同じcommitに限り、種類の違うcommitを含むPRはrebaseで統合すること）を外し、[リポジトリ管理ガイドライン](https://github.com/law-of-japan/loj-repository-management-guideline)で定めることにした。一つのcommitに一つの種類、各commitが単独で変更検査を受けること、mergeのcommitの禁止と不合格は残した。線形履歴の制約を維持するかは[law-of-japan/loj-spec#97](https://github.com/law-of-japan/loj-spec/issues/97)で判断する。
+- DDR-015・DDR-024、用語集を更新した。
+
 ## 派生ビューの形式の分離（2026-11-15、草案）
 
 [law-of-japan/loj-spec#89](https://github.com/law-of-japan/loj-spec/issues/89)による変更である。草案の版（`common/v1alpha1`、`loj-history/v1alpha1`、`loj-rebuild/v1alpha1`）への変更であり、版番号は上げない。適合の結果、診断の規則、ASTは変わらない。
