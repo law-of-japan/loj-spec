@@ -279,7 +279,7 @@
     },
     {
       "id": "reg-011",
-      "title": "統合したRecordのIDを別のRecordの別名に再利用する",
+      "title": "統合したRecordのIDを別のRecordの別名に再利用する（RID-01で重ねて報告しない）",
       "requirements": [
         "RID-05",
         "RID-01"

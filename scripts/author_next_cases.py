@@ -876,7 +876,7 @@ def retired_ids_and_reviewed_format():
     dest = next_dir("reg", False) / "registry"
     mutate(dest, source, [("records/20170616-law-63.yaml", "status: active\n", "status: active\naliases:\n  - id: k7m2p9qd3x\n"
                            "    evidence: [{source: src-egov-h29-63, locator: 法令名}]\n    verification: {state: unverified}\n")])
-    add("reg", "統合したRecordのIDを別のRecordの別名に再利用する", ["RID-05", "RID-01"], "registry",
+    add("reg", "統合したRecordのIDを別のRecordの別名に再利用する（RID-01で重ねて報告しない）", ["RID-05", "RID-01"], "registry",
         {"kind": "registry", "path": rel(dest)},
         {"results": [{"check": "registry", "result": "fail"}], "diagnostics": [diag("RID-05", SV["reg"])]}, False)
     body = "架空の雲を保管する。\n"
