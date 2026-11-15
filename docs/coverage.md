@@ -80,7 +80,7 @@ T076〜T105は承認されたMAN-03 B案の独立ケース。附属資料の通�
 
 CHG-04（2026-11-12）は、L1が不合格の版を含む`metadata`の変更を判定不能とする正例（common-025）と、その版のファイルを`format`で`LoJ-Reviewed`なしに変える負例（common-026）がある。人のレビューの記録（`LoJ-Reviewed`）を付けた`format`の変換を判定不能とする正例（common-027）は、2026-11-15に加えた（[law-of-japan/loj-spec#63](https://github.com/law-of-japan/loj-spec/issues/63)）。値が空の`LoJ-Reviewed`、二つ以上の`LoJ-Reviewed`、`format`以外のcommitの`LoJ-Reviewed`のケースは加えていない。どれも記録がないもの、または結果を変えないものとして、common-026・027と同じ判定になるためである。一部しか本文がない版のケースは、まだない。
 
-登録空間の入力（VAL-03、2026-11-15、[law-of-japan/loj-spec#68](https://github.com/law-of-japan/loj-spec/issues/68)）は、他の登録空間のRecordを起点とする関係を未取得とする正例（common-028）と、他の登録空間を指す統合先の負例（reg-012、REG-02）がある。登録空間の入力がない場合の判定不能と、`space.yaml`を置いた登録台帳のケースは、加えていない。前者は、ケースの実行で入力を`loj`とする（CONF-01）ので、索引で表せない。後者は、`space.yaml`の形を定めていないので、適合ケースの登録台帳に置かない（CONF-01）。
+登録空間の入力（VAL-03、2026-11-15、[law-of-japan/loj-spec#68](https://github.com/law-of-japan/loj-spec/issues/68)）は、他の登録空間のRecordを起点とする関係を未取得とする正例（common-028）と、他の登録空間を指す統合先の負例（reg-012、REG-02）がある。`space`を入力と同じ`loj`と書いた参照は、既存のケース（reg-009の`replacedBy`等）が解決済みとして確かめる。登録空間の入力がない場合の判定不能と、`space.yaml`を置いた登録台帳のケースは、加えていない。前者は、ケースの実行で入力を`loj`とする（CONF-01）ので、索引で表せない。後者は、`space.yaml`の形を定めていないので、適合ケースの登録台帳に置かない（CONF-01）。
 
 RID-04・RID-05（2026-11-12）は、統合したRecordを残し、`replacedBy`で登録空間を書いて統合先を指す正例（reg-009）と、大文字を含む登録空間の負例（reg-010）がある。どちらの規則で報告するかは、2026-11-15にRID-01で定めた（一方が統合・分割・撤回したRecordならRID-05、そうでなければRID-01。[law-of-japan/loj-spec#63](https://github.com/law-of-japan/loj-spec/issues/63)）。統合したRecordのIDを別のRecordの別名に再利用する負例（reg-011）がある。分割・撤回したRecordのIDの再利用は、統合と同じ規則なので加えていない。
 
@@ -146,7 +146,8 @@ TIME-03は、hist-004、hist-015〜018のほか、`pending`を基準とする`de
 | VAL-01、VAL-06、VAL-08 | 定義 | 仕様の資料 | レビュー |
 | VAL-02、VAL-04、VAL-07 | 結果と診断の報告 | 実装 | 適合ケース |
 | VAL-03 | 対象の記録版の記録 | 実装 | 実装の試験 |
-| VAL-03 | 登録空間の入力によるRecordRefの解決 | データ | 適合ケース（L4、登録台帳の検査） |
+| VAL-03 | 登録空間の入力によるRecordRefの解決（入力と異なる`space`） | データ | 適合ケース（L4、登録台帳の検査） |
+| VAL-03 | 登録空間の入力がない場合の判定不能 | 実装 | 実装の試験 |
 | VAL-05 | 区分ごとの判定と報告 | 実装 | 適合ケース |
 | VAL-05 | 区分を付けずにL3合格と主張しない | 実装 | レビュー |
 | SRCM-01 | 全体 | 実装 | 原典照合 |
