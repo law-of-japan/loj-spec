@@ -955,9 +955,10 @@ def pointer_token(key):
 
 def forbidden_fields(branch, where):
     """Fields a then/else branch forbids, from `not: {required: [x]}`, `not: {anyOf: [{required: [x]}, ...]}`
-    and `properties: {x: false}`, also inside `allOf`.
+    and `properties: {x: false}` (or `{x: {not: {}}}`), directly in the branch or inside its `allOf`.
 
-    Any other `not` in a branch fails: a form this reader does not know could forbid a field unseen.
+    Any other `not` there fails: a form this reader does not know could forbid a field unseen.
+    Limitation: `not` under `anyOf`/`oneOf` of a branch, or behind a `$ref`, is not read.
     """
     fields = set()
     if not isinstance(branch, dict):
@@ -972,7 +973,7 @@ def forbidden_fields(branch, where):
                     "Unsupported not in a then/else branch: " + where)
             fields.update(option["required"])
     for name, value in branch.get("properties", {}).items():
-        if value is False:
+        if value is False or value == {"not": {}}:
             fields.add(name)
     for part in branch.get("allOf", []):
         fields |= forbidden_fields(part, where)
@@ -1038,10 +1039,15 @@ def prohibition_rows(text):
 
 
 def requirement_sections(texts):
-    """{requirement ID: text of its section} from spec texts."""
+    """{requirement ID: text of its section} from spec texts.
+
+    An ID found twice fails: two draft versions of one series would share IDs, and the table would then
+    need to name the version (not supported yet) rather than match a section of the other version.
+    """
     sections = {}
     for text in texts:
         for match in re.finditer(r"^## ([A-Z]+-\d+) .*?(?=^## |^# |\Z)", text, re.M | re.S):
+            require(match[1] not in sections, "Requirement ID in two draft sections: " + match[1])
             sections[match[1]] = match[0]
     return sections
 
@@ -1078,7 +1084,7 @@ def check_prohibitions():
 
 
 def main():
-    schemas ={path.name: read_json(path) for path in (ROOT / "schemas/v1alpha1").glob("*.json")}
+    schemas = {path.name: read_json(path) for path in (ROOT / "schemas/v1alpha1").glob("*.json")}
     registry = Registry().with_resources((s["$id"], Resource.from_contents(s)) for s in schemas.values())
     validators = {}
     for name, value in schemas.items():
@@ -1163,7 +1169,8 @@ def main():
     print(f"Conditional prohibitions: the table lists all {prohibited} then/else branches of the draft schemas "
           "that forbid fields (whether the cited text forbids them is not checked).")
     print(f"WARNING (not a failure): {len(unwritten)} conditionally forbidden fields have no prohibition in the "
-          "text, or are not named in the cited requirements (spec defects to report).")
+          "text, or are not named in the cited requirements (spec defects to report). No warning does not show "
+          "that the text forbids a field.")
     for schema, pointer, field, why in unwritten:
         print(f"  {schema} {pointer} {field}: {why}")
 

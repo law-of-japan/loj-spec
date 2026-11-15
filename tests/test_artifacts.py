@@ -463,10 +463,10 @@ class RestatementTests(unittest.TestCase):
         schema = {"properties": {"a/b": {"allOf": [
             {"if": {"properties": {"s": {"const": "x"}}},
              "then": {"required": ["p"], "not": {"anyOf": [{"required": ["q"]}, {"required": ["r"]}]}},
-             "else": {"allOf": [{"not": {"required": ["p"]}}, {"properties": {"t": False}}]}},
+             "else": {"allOf": [{"not": {"required": ["p"]}}, {"properties": {"t": False, "u": {"not": {}}}}]}},
             {"if": {"required": ["s"]}, "then": {"required": ["p"]}}]}}}
         self.assertEqual(v.conditional_prohibitions(schema), {
-            "/properties/a~1b/allOf/0/then": {"q", "r"}, "/properties/a~1b/allOf/0/else": {"p", "t"}})
+            "/properties/a~1b/allOf/0/then": {"q", "r"}, "/properties/a~1b/allOf/0/else": {"p", "t", "u"}})
         for negated in ({"required": ["p", "q"]}, {"properties": {"p": {"const": 1}}}, {"anyOf": [{"type": "string"}]}):
             with self.subTest(negated=negated), self.assertRaises(ValueError):
                 v.conditional_prohibitions({"if": {}, "then": {"not": negated}})
@@ -500,6 +500,8 @@ class RestatementTests(unittest.TestCase):
     def test_requirement_sections(self):
         sections = v.requirement_sections(["# 題\n\n## AAA-01 x\n\n本文\n\n## AAA-02 y\n\n二\n# 次\n\n三\n"])
         self.assertEqual(sections, {"AAA-01": "## AAA-01 x\n\n本文\n\n", "AAA-02": "## AAA-02 y\n\n二\n"})
+        with self.assertRaisesRegex(ValueError, "AAA-01"):
+            v.requirement_sections(["## AAA-01 x\n", "## AAA-01 y\n"])
 
     def test_repository_prohibition_table(self):
         count, warnings = v.check_prohibitions()
