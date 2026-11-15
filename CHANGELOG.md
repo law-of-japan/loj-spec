@@ -2,6 +2,16 @@
 
 見出しの「草案」は、[草案の版](spec/README.md#版の状態)への変更であることを示す。版の状態の正は、[規範仕様の入口](spec/README.md#規範とするもの)の表にある。版を公開したときは、公開の日付の項目を加える。
 
+## 人のレビューの記録と、検査にかける字体注記（2026-11-15、草案）
+
+[law-of-japan/loj-spec#63](https://github.com/law-of-japan/loj-spec/issues/63)による変更である。草案の版（`common/v1alpha1`、`loj-history/v1alpha1`、`loj-glyphs/v1alpha1`）への変更であり、版番号は上げない。人のレビューの記録を付けた書式の変換の変更検査の結果と、字体注記の検査にかけるファイルが一つに決まる。既存のケースの期待結果は変わらない。
+
+- CHG-03: 人のレビューの記録のtrailer`LoJ-Reviewed`を定めた。
+- CHG-04: 「ASTを生成できない版を含む変更」を、CHG-02でその版のASTを比べる種類の変更（版パッケージに触れない`metadata`を含む）とした。ASTを生成できない版のファイルを変える`format`のcommitが`LoJ-Reviewed`を持たなければ、自動変換とみなして違反とした。
+- HIST-08・GLYPH-01: 字体注記の検査にかけるファイルを、`glyphNotes`の値ではなく、`complete`・`partial`のRevisionの自身のrevision_idのパスで決めるとした。自身のパスに`glyphs.yaml`があるRevisionに`glyphNotes`を求めた。`glyphNotes`の誤りと`absent`のRevisionのディレクトリの`glyphs.yaml`は、検査にかけないとした。
+- 適合ケースに、統合したRecordのIDを別名に再利用する負例reg-011（RID-05）と、`LoJ-Reviewed`を付けた書式の変換の正例common-027（判定不能）を加えた。
+- DDR-015・DDR-021、要件との対応表、用語集を更新した。
+
 ## 表とschemaの読み方と、要求の語の欠け（2026-11-15、草案）
 
 [law-of-japan/loj-spec#63](https://github.com/law-of-japan/loj-spec/issues/63)による変更である。草案の版（`common/v1alpha1`、`loj-history/v1alpha1`、`loj-glyphs/v1alpha1`、`loj-registry/v1alpha1`、`loj-rebuild/v1alpha1`）への変更であり、版番号は上げない。表の「必須」の列やschemaだけが定め、本文に要求の語がなかった制約を、要求として読めるようにした。既存のケースの期待結果は変わらない。

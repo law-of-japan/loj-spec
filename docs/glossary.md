@@ -183,7 +183,7 @@
 | 状態の追加、状態の訂正 | `revisionAdd`、`revisionFix` | 新しい改正による版の追加と、状態の取り違えの訂正（撤回・統合・分割）。法令の改正に当たるのは`revisionAdd`だけ | [CHG-01](../spec/common/v1alpha1/07-changes.md#chg-01-変更の種類) |
 | 仕様の版の移行 | `migration` | 版パッケージを別のschemaVersionへ変換する | [CHG-01](../spec/common/v1alpha1/07-changes.md#chg-01-変更の種類)、[CHG-02](../spec/common/v1alpha1/07-changes.md#chg-02-種類ごとの検査) |
 | 変更検査 | — | 変更前後の二つの記録版を比べ、宣言した種類のとおりかを確かめる検査。適合レベルとは別に報告する | [CHG-02](../spec/common/v1alpha1/07-changes.md#chg-02-種類ごとの検査)、[CHG-05](../spec/common/v1alpha1/07-changes.md#chg-05-適合との関係) |
-| trailer | `LoJ-Change`、`LoJ-Revisions` | commitメッセージの末尾に置く種類と対象の版の宣言 | [CHG-03](../spec/common/v1alpha1/07-changes.md#chg-03-種類の宣言) |
+| trailer | `LoJ-Change`、`LoJ-Revisions`、`LoJ-Reviewed` | commitメッセージの末尾に置く種類と対象の版の宣言と、人のレビューの記録（ASTを生成できない版の書式の変換で読む。[CHG-04](../spec/common/v1alpha1/07-changes.md#chg-04-astを生成できない版)） | [CHG-03](../spec/common/v1alpha1/07-changes.md#chg-03-種類の宣言) |
 
 ## 参照
 

@@ -63,6 +63,18 @@
 - 制約: Sourceの`glyphPreservation`と再構築報告の`sourceChecks.glyphPreservation`は、同じ資料について二つの記録になる。食い違いの検査は本版では定めない。
 - 再検討: Unicodeの版を上げるとき。互換漢字のブロックに字が加わったとき。
 
+## 検査にかける字体注記のファイル
+
+2026-11-15追記（[law-of-japan/loj-spec#63](https://github.com/law-of-japan/loj-spec/issues/63)）。
+
+- 問題: `glyphNotes`が他の版の注記を指すときや、`absent`の版のディレクトリに`glyphs.yaml`が残るときに、どのファイルをその版の字体注記としてGLYPHの検査にかけるかが決まっていなかった。L3（根拠）の結果がこれで割れた。
+- 選択肢: パス（`versions/<自身のrevision_id>/glyphs.yaml`）で決める（採用）／`glyphNotes`の値で決める（誤った指定を優先して読むことになり、他の版の注記を自分の版の本文と照合してしまう）。
+- 判断基準: 誤った指定を優先しないこと（FIXREF-03の`path`と同じ考え方）。一つの誤りを一つの規則で報告すること。
+- 採用: `complete`・`partial`のRevisionの自身のパスにあるファイルだけを検査にかける。`glyphNotes`の誤り、自身のパスにファイルがあるのに`glyphNotes`がないこと、`absent`のRevisionのディレクトリは、HIST-08（L3（履歴構造））で報告し、そのファイルをGLYPHの検査にかけない。
+- 理由: パスはHIST-08で一つに決まっており、`glyphNotes`は確認のための写しである。写しの誤りを、検査の対象の選び方に波及させない。
+- 制約: 検査にかけない`glyphs.yaml`の中の誤りは報告しない。
+- 再検討: 一つの版に複数の注記のファイルを置く必要が出たとき。
+
 ## 経緯
 
 [統合案](../archive/next-spec-integration.md)の§10.5、§10.6、§10.8、§10.9、§10.13、§10.18、§12。

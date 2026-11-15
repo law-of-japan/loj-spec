@@ -4,7 +4,7 @@
 
 ## GLYPH-01 ファイルと形式
 
-- 字体注記は、版ごとに一つのファイル（`glyphs.yaml`）とし、版パッケージのディレクトリに置く。履歴マニフェストのRevisionの`text.glyphNotes`から参照する。
+- 字体注記は、版ごとに一つのファイル（`glyphs.yaml`）とし、版パッケージのディレクトリに置く。履歴マニフェストのRevisionの`text.glyphNotes`から参照する。本ディレクトリの検査にかけるファイルは、Revisionの`glyphNotes`の値ではなく、自身のrevision_idのパスで決める（[HIST-08](../../loj-history/v1alpha1/01-history.md)）。
 - 字体注記のファイルは、版パッケージの`law.yaml`の`documents`に列挙しない。版パッケージの法令の入力には含まれない（MAN-02）。
 - `schemaVersion`は厳密に`loj-glyphs/v1alpha1`でなければならない（MUST）。ほかの値（知らない版を含む）のファイルは、処理不能として未完了とし、不合格にしない（[VAL-04](../../common/v1alpha1/03-validation.md)）。YAMLのデータモデルは[CORE-03](../../common/v1alpha1/01-overview.md)に従う。ファイルは、その`schemaVersion`のschemaに合わなければならない（MUST）。schemaは閉じており、未知のフィールドを拒否する。schemaに合わない箇所の診断の規則は、[VAL-07](../../common/v1alpha1/03-validation.md)による。
 - `revision`は、その版のrevision_idでなければならない（MUST）。
