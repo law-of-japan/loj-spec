@@ -8,6 +8,7 @@
 
 - CORE-01: 「正本は人が編集し」を外し、正本の変更を、変更の種類を宣言した正本ブランチのcommitとして記録することとした。編集の体制と作業の進め方は運用で定めるとした。
 - CHG-03: PRの統合の操作（squashは種類が同じcommitに限り、種類の違うcommitを含むPRはrebaseで統合すること）を外し、[リポジトリ管理ガイドライン](https://github.com/law-of-japan/loj-repository-management-guideline)で定めることにした。一つのcommitに一つの種類、各commitが単独で変更検査を受けること、mergeのcommitの禁止と不合格は残した。線形履歴の制約を維持するかは[law-of-japan/loj-spec#97](https://github.com/law-of-japan/loj-spec/issues/97)で判断する。
+- FIXREF-04: 作業ブランチのcommitが正本ブランチから到達できない理由を、統合の操作（squash・rebase）ではなく、mergeのcommitを置かないこと（CHG-03）から書いた。
 - DDR-015・DDR-024、用語集を更新した。
 
 ## 派生ビューの形式の分離（2026-11-15、草案）
