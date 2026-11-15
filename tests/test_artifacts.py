@@ -794,6 +794,22 @@ class NextSuiteAuditTests(unittest.TestCase):
             with self.subTest(suite=name):
                 self.assert_rejected("case directory mismatch", name, broken)
 
+    def test_negative_with_shared_positive_in_wrong_group(self):
+        """common-002 reads the shared valid/hist-003 and its own invalid/common-002/hist-004 (law-of-japan/loj-spec#78)."""
+        broken = copy.deepcopy(self.indexes["common/v1alpha1"])
+        case = next(c for c in broken["cases"] if c["id"] == "common-002")
+        self.assertTrue(any("/valid/" in p.as_posix() for p in v.input_files(case)))
+        case["success"] = True
+        case.pop("derivedFrom", None)
+        self.assert_rejected("case directory mismatch", "common/v1alpha1", broken)
+
+    def test_shared_only_case_read_as_negative(self):
+        """A case that reads only shared positive inputs (common-003) cannot be a negative."""
+        broken = copy.deepcopy(self.indexes["common/v1alpha1"])
+        case = next(c for c in broken["cases"] if c["id"] == "common-003")
+        case["success"] = False
+        self.assert_rejected("negative without its own input", "common/v1alpha1", broken)
+
 
 if __name__ == "__main__":
     unittest.main()
