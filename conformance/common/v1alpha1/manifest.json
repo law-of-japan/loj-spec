@@ -769,6 +769,60 @@
           ]
         }
       ]
+    },
+    {
+      "id": "common-029",
+      "title": "ASTを生成できない版のファイルを、人のレビューの記録を二つ付けて書式変更で変える",
+      "requirements": [
+        "CHG-04",
+        "CHG-03"
+      ],
+      "check": "change",
+      "normative": true,
+      "input": {
+        "kind": "change",
+        "bundle": "conformance/common/v1alpha1/invalid/common-029/repo.bundle",
+        "base": "e9c821aea8a0fdcaaaa852ea27c08d9476dbb2a7",
+        "head": "4d09e37ba1b0a8050518fee39b6dad7d5734bc93"
+      },
+      "expected": "conformance/common/v1alpha1/expected/common-029.json",
+      "success": false
+    },
+    {
+      "id": "common-030",
+      "title": "ASTを生成できない版のファイルを、人のレビューの記録を値を空にして付けて書式変更で変える",
+      "requirements": [
+        "CHG-04",
+        "CHG-03"
+      ],
+      "check": "change",
+      "normative": true,
+      "input": {
+        "kind": "change",
+        "bundle": "conformance/common/v1alpha1/invalid/common-030/repo.bundle",
+        "base": "e9c821aea8a0fdcaaaa852ea27c08d9476dbb2a7",
+        "head": "3982b3c27cea10cf6b6e0f820802bbb876952243"
+      },
+      "expected": "conformance/common/v1alpha1/expected/common-030.json",
+      "success": false
+    },
+    {
+      "id": "common-031",
+      "title": "ASTを生成できない版のファイルを、人のレビューの記録を値を空白だけにして付けて書式変更で変える",
+      "requirements": [
+        "CHG-04",
+        "CHG-03"
+      ],
+      "check": "change",
+      "normative": true,
+      "input": {
+        "kind": "change",
+        "bundle": "conformance/common/v1alpha1/invalid/common-031/repo.bundle",
+        "base": "e9c821aea8a0fdcaaaa852ea27c08d9476dbb2a7",
+        "head": "0680e045330422fc5f44dd5967499af28b0488e8"
+      },
+      "expected": "conformance/common/v1alpha1/expected/common-031.json",
+      "success": false
     }
   ]
 }

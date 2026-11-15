@@ -53,7 +53,7 @@ ASTは、`schemaVersion`・`law`・`root`への投影を、位置情報を除い
 
 - `LoJ-Change`は、一つのcommitに一つだけ置く。値は[CHG-01](#chg-01-変更の種類)の種類とする。
 - `LoJ-Revisions`は、対象のrevision_idをカンマと空白（`, `）で区切って並べる。版を対象にしない変更（`format`、登録台帳だけの`metadata`等）では、省略してよい（MAY）。
-- `LoJ-Reviewed`は、人がレビューしたことの記録である。値は、レビューの所在（PRのURL、レビューした人等）を示す空でない文字列とする。一つのcommitに一つまで置ける（MAY）。値が空の`LoJ-Reviewed`と、二つ以上の`LoJ-Reviewed`は、記録がないものとして扱う。この記録を読むのは、ASTを生成できない版の書式の変換（[CHG-04](#chg-04-astを生成できない版)）だけである。それ以外のcommitの`LoJ-Reviewed`は、検査の結果を変えない。
+- `LoJ-Reviewed`は、人がレビューしたことの記録である。値は、レビューの所在（PRのURL、レビューした人等）を示す空でない文字列とする。一つのcommitに一つまで置ける（MAY）。値が空の`LoJ-Reviewed`（値の前後の空白（U+0020、U+0009）を除くと空になるものを含む）と、二つ以上の`LoJ-Reviewed`は、記録がないものとして扱う。この記録を読むのは、ASTを生成できない版の書式の変換（[CHG-04](#chg-04-astを生成できない版)）だけである。それ以外のcommitの`LoJ-Reviewed`は、検査の結果を変えない。
 
   ```text
   LoJ-Change: format
