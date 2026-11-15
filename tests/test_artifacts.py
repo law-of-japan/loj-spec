@@ -459,6 +459,55 @@ class RestatementTests(unittest.TestCase):
     def test_repository_addressee_table(self):
         self.assertGreater(v.check_addressees(), 100)
 
+    def test_conditional_prohibitions_read(self):
+        schema = {"properties": {"a/b": {"allOf": [
+            {"if": {"properties": {"s": {"const": "x"}}},
+             "then": {"required": ["p"], "not": {"anyOf": [{"required": ["q"]}, {"required": ["r"]}]}},
+             "else": {"allOf": [{"not": {"required": ["p"]}}, {"properties": {"t": False, "u": {"not": {}}}}]}},
+            {"if": {"required": ["s"]}, "then": {"required": ["p"]}}]}}}
+        self.assertEqual(v.conditional_prohibitions(schema), {
+            "/properties/a~1b/allOf/0/then": {"q", "r"}, "/properties/a~1b/allOf/0/else": {"p", "t", "u"}})
+        for negated in ({"required": ["p", "q"]}, {"properties": {"p": {"const": 1}}}, {"anyOf": [{"type": "string"}]}):
+            with self.subTest(negated=negated), self.assertRaises(ValueError):
+                v.conditional_prohibitions({"if": {}, "then": {"not": negated}})
+
+    TABLE = ("## 条件の外で禁止するフィールド\n\n| schema | 位置 | 条件 | 禁止するフィールド | 本文の要件 | 本文になし |\n"
+             "|---|---|---|---|---|---|\n"
+             "| `s.json` | `/a/then` | x | `p`、`q` | AAA-01 | `q` |\n"
+             "| `s.json` | `/a/else` | y | `r` | — | `r` |\n"
+             "| `s.json` | `/b/then` | z | `t` | AAA-02 | — |\n")
+
+    def test_prohibition_table_matched(self):
+        rows = v.prohibition_rows(self.TABLE)
+        schemas = {("s.json", "/a/then"): {"p", "q"}, ("s.json", "/a/else"): {"r"}, ("s.json", "/b/then"): {"t"}}
+        sections = {"AAA-01": "## AAA-01 x\n\n- `p`を持ってはならない。\n", "AAA-02": "## AAA-02 y\n"}
+        self.assertEqual(v.compare_prohibitions(rows, schemas, sections), [
+            ("s.json", "/a/else", "r", "no text"), ("s.json", "/a/then", "q", "no text"),
+            ("s.json", "/b/then", "t", "not named in AAA-02")])
+        with self.assertRaisesRegex(ValueError, "/b/then u / listed t"):
+            v.compare_prohibitions(rows, {**schemas, ("s.json", "/b/then"): {"u"}}, sections)
+        with self.assertRaisesRegex(ValueError, "/c/then x / listed $"):
+            v.compare_prohibitions(rows, {**schemas, ("s.json", "/c/then"): {"x"}}, sections)
+        with self.assertRaisesRegex(ValueError, "unknown requirement: AAA-02"):
+            v.compare_prohibitions(rows, schemas, {"AAA-01": sections["AAA-01"]})
+
+    def test_prohibition_table_rows_rejected(self):
+        for old, new in (("| AAA-01 | `q` |", "| — | `q` |"), ("| AAA-01 | `q` |", "| AAA-01 | `z` |"),
+                         ("`/b/then`", "`/a/then`")):
+            with self.subTest(new=new), self.assertRaises(ValueError):
+                v.prohibition_rows(self.TABLE.replace(old, new))
+
+    def test_requirement_sections(self):
+        sections = v.requirement_sections(["# 題\n\n## AAA-01 x\n\n本文\n\n## AAA-02 y\n\n二\n# 次\n\n三\n"])
+        self.assertEqual(sections, {"AAA-01": "## AAA-01 x\n\n本文\n\n", "AAA-02": "## AAA-02 y\n\n二\n"})
+        with self.assertRaisesRegex(ValueError, "AAA-01"):
+            v.requirement_sections(["## AAA-01 x\n", "## AAA-01 y\n"])
+
+    def test_repository_prohibition_table(self):
+        count, warnings = v.check_prohibitions()
+        self.assertGreater(count, 20)
+        self.assertTrue(all(len(warning) == 4 for warning in warnings))
+
     def test_repository_check_runs(self):
         for name, number, own, cited in v.check_restatements():
             self.assertNotIn(own, cited)

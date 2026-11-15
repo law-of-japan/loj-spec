@@ -800,19 +800,19 @@ def check_codepoints():
     return len(files)
 
 
-def table_rows(text, heading):
+def table_rows(text, heading, source="spec/README.md"):
     """Rows of the first Markdown table in the `## heading` section, as dicts keyed by header cell.
 
     Cells are split on every `|`, so a cell must not contain one (not even escaped as `\\|`).
     A row broken that way fails check_states() instead of passing silently.
     """
     section = re.search(r"^## " + re.escape(heading) + r"\n(.*?)(?=^## |\Z)", text, re.M | re.S)
-    require(bool(section), "spec/README.md has no section: " + heading)
+    require(bool(section), source + " has no section: " + heading)
     lines = [line for line in section[1].splitlines() if line.startswith("|")]
-    require(len(lines) > 2, "spec/README.md section has no table: " + heading)
+    require(len(lines) > 2, source + " section has no table: " + heading)
     cells = [[cell.strip() for cell in line.strip().strip("|").split("|")] for line in lines]
     for row in cells[1:]:
-        require(len(row) == len(cells[0]), "spec/README.md table row has " + str(len(row)) + " cells, header has "
+        require(len(row) == len(cells[0]), source + " table row has " + str(len(row)) + " cells, header has "
                 + str(len(cells[0])) + ": " + heading + ": " + row[0])
     return [dict(zip(cells[0], row)) for row in cells[2:]]
 
@@ -945,6 +945,150 @@ def compare_addressees(listed, wanted):
             + ", ".join(sorted(wanted - listed)) + "; unknown " + ", ".join(sorted(listed - wanted)))
 
 
+PROHIBITION_HEADING = "条件の外で禁止するフィールド"
+
+
+def pointer_token(key):
+    """One JSON Pointer reference token (RFC 6901)."""
+    return str(key).replace("~", "~0").replace("/", "~1")
+
+
+def forbidden_fields(branch, where):
+    """Fields a then/else branch forbids, from `not: {required: [x]}`, `not: {anyOf: [{required: [x]}, ...]}`
+    and `properties: {x: false}` (or `{x: {not: {}}}`), directly in the branch or inside its `allOf`.
+
+    Any other `not` there fails: a form this reader does not know could forbid a field unseen.
+    Limitation: `not` under `anyOf`/`oneOf` of a branch, or behind a `$ref`, is not read.
+    """
+    fields = set()
+    if not isinstance(branch, dict):
+        return fields
+    if "not" in branch:
+        negated = branch["not"]
+        require(isinstance(negated, dict), "Unsupported not in a then/else branch: " + where)
+        if set(negated) == {"anyOf"}:
+            options = negated["anyOf"]  # not: {anyOf: [{required: [x]}, ...]}
+        else:
+            require(set(negated) == {"required"}, "Unsupported not in a then/else branch: " + where)
+            options = [negated]  # not: {required: [x]}
+        for option in options:
+            require(isinstance(option, dict) and set(option) == {"required"} and len(option["required"]) == 1,
+                    "Unsupported not in a then/else branch: " + where)
+            fields.update(option["required"])
+    for name, value in branch.get("properties", {}).items():
+        if value is False or value == {"not": {}}:
+            fields.add(name)
+    for part in branch.get("allOf", []):
+        fields |= forbidden_fields(part, where)
+    return fields
+
+
+def conditional_prohibitions(schema):
+    """{JSON Pointer of a then/else branch: fields it forbids} for every if/then/else in a schema.
+
+    A field table reads a conditional field as required when its condition holds; whether it may appear
+    otherwise is written in the requirement's text (spec/README.md). These are the places the schema forbids it.
+    """
+    found = {}
+
+    def visit(node, pointer):
+        if isinstance(node, dict):
+            if "if" in node:
+                for branch in ("then", "else"):
+                    if branch in node:
+                        fields = forbidden_fields(node[branch], pointer + "/" + branch)
+                        if fields:
+                            found[pointer + "/" + branch] = fields
+            for key, value in node.items():
+                visit(value, pointer + "/" + pointer_token(key))
+        elif isinstance(node, list):
+            for index, value in enumerate(node):
+                visit(value, pointer + "/" + str(index))
+
+    visit(schema, "")
+    return found
+
+
+def draft_schema_prohibitions():
+    """{(schema path under schemas/, pointer): fields} for the schemas of the non-frozen versions."""
+    found = {}
+    for path in sorted((ROOT / "schemas").rglob("*.json")):
+        name = path.relative_to(ROOT / "schemas").as_posix()
+        # Only the top-level schemas/v1alpha1 is frozen; schemas/common/v1alpha1 and loj-*/v1alpha1 are drafts.
+        if name.startswith("v1alpha1/"):
+            continue
+        for pointer, fields in conditional_prohibitions(read_json(path)).items():
+            found[(name, pointer)] = fields
+    return found
+
+
+CODE_SPAN = re.compile(r"`([^`]+)`")
+
+
+def prohibition_rows(text):
+    """Rows of the docs/coverage.md table of conditional prohibitions, as
+    {(schema, pointer): (fields, requirement IDs, fields with no text)}."""
+    rows = {}
+    for row in table_rows(text, PROHIBITION_HEADING, "docs/coverage.md"):
+        key = (row["schema"].strip("`"), row["位置"].strip("`"))
+        require(key not in rows, "docs/coverage.md prohibition table repeats a row: " + " ".join(key))
+        fields = set(CODE_SPAN.findall(row["禁止するフィールド"]))
+        ids = set(REQUIREMENT_REF.findall(row["本文の要件"]))
+        missing = set(CODE_SPAN.findall(row["本文になし"]))
+        require(missing <= fields, "docs/coverage.md prohibition row lists an unknown field as missing: " + " ".join(key))
+        # A row with requirements may still mark some of its fields as having no text (partly written).
+        require(ids or missing == fields,
+                "docs/coverage.md prohibition row without a requirement must list every field as missing: " + " ".join(key))
+        rows[key] = (fields, ids, missing)
+    return rows
+
+
+def requirement_sections(texts):
+    """{requirement ID: text of its section} from spec texts.
+
+    An ID found twice fails: two draft versions of one series would share IDs, and the table would then
+    need to name the version (not supported yet) rather than match a section of the other version.
+    """
+    sections = {}
+    for text in texts:
+        for match in re.finditer(r"^## ([A-Z]+-\d+) .*?(?=^## |^# |\Z)", text, re.M | re.S):
+            require(match[1] not in sections, "Requirement ID in two draft sections: " + match[1])
+            sections[match[1]] = match[0]
+    return sections
+
+
+def compare_prohibitions(rows, schemas, sections):
+    """Fail when the table and the schemas differ or a row names an unknown requirement; return warnings
+    as (schema, pointer, field, why) for fields the table marks as having no text, and for fields not
+    named in any requirement the row lists. Whether the named text forbids the field is not checked."""
+    wanted = {key: fields for key, fields in schemas.items()}
+    listed = {key: value[0] for key, value in rows.items()}
+    require(listed == wanted, "docs/coverage.md prohibition table and schemas differ: "
+            + "; ".join(" ".join(key) + " " + ",".join(sorted(wanted.get(key, ())))
+                        + " / listed " + ",".join(sorted(listed.get(key, ())))
+                        for key in sorted(set(wanted) | set(listed)) if wanted.get(key) != listed.get(key)))
+    warnings = []
+    for key, (fields, ids, missing) in sorted(rows.items()):
+        unknown = ids - set(sections)
+        require(not unknown, "docs/coverage.md prohibition table names an unknown requirement: " + ", ".join(sorted(unknown)))
+        for field in sorted(fields):
+            if field in missing:
+                warnings.append(key + (field, "no text"))
+            elif not any("`" + field + "`" in sections[ident] for ident in ids):
+                warnings.append(key + (field, "not named in " + ", ".join(sorted(ids))))
+    return warnings
+
+
+def check_prohibitions():
+    """Conditional prohibitions in the draft schemas, matched with the docs/coverage.md table."""
+    spec = ROOT / "spec"
+    # Only the top-level spec/v1alpha1 is frozen (as in check_restatements); spec/common/v1alpha1 is a draft.
+    texts = [path.read_text(encoding="utf-8") for path in spec.rglob("*.md") if (spec / "v1alpha1") not in path.parents]
+    schemas = draft_schema_prohibitions()
+    rows = prohibition_rows((ROOT / "docs/coverage.md").read_text(encoding="utf-8"))
+    return len(schemas), compare_prohibitions(rows, schemas, requirement_sections(texts))
+
+
 def main():
     schemas = {path.name: read_json(path) for path in (ROOT / "schemas/v1alpha1").glob("*.json")}
     registry = Registry().with_resources((s["$id"], Resource.from_contents(s)) for s in schemas.values())
@@ -1006,6 +1150,7 @@ def main():
     noted = check_codepoints()
     states = check_states()
     addressed = check_addressees()
+    prohibited, unwritten = check_prohibitions()
     print(f"Artifact audit PASS: {len(schemas)} schemas; {len(seen)} case definitions; {links} local links.")
     labels = {"草案": "draft", "公開": "published", "凍結": "frozen"}  # ASCII: stdout may not encode Japanese
     print("Version states: " + "; ".join(name + "=" + labels[state] for name, state in sorted(states.items()))
@@ -1027,6 +1172,13 @@ def main():
           "requirement; keep the requirement word only in the source requirement (DDR-022).")
     for name, number, own, cited in restated:
         print(f"  {name}:{number} {own} cites {', '.join(cited)}")
+    print(f"Conditional prohibitions: the table lists all {prohibited} then/else branches of the draft schemas "
+          "that forbid fields (whether the cited text forbids them is not checked).")
+    print(f"WARNING (not a failure): {len(unwritten)} conditionally forbidden fields have no prohibition in the "
+          "text, or are not named in the cited requirements (spec defects to report). No warning does not show "
+          "that the text forbids a field.")
+    for schema, pointer, field, why in unwritten:
+        print(f"  {schema} {pointer} {field}: {why}")
 
 
 if __name__ == "__main__":
