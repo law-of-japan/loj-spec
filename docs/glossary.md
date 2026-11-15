@@ -109,6 +109,7 @@
 | 段階施行 | `basis: enactment` | 制定時に施行時点が複数ある法令。起点に続くRevisionで表す | [HIST-05](../spec/loj-history/v1alpha1/01-history.md#hist-05-成立根拠) |
 | 施行時点 | `effective` | Revisionの施行の時点値。すべてのRevisionが持つ | [HIST-06](../spec/loj-history/v1alpha1/01-history.md#hist-06-版の時間の情報と順序) |
 | 適用関係 | `applicability` | 適用の条件の調査結果。`noneConfirmed`（ないことを確認）、`unsurveyed`（未調査）、`conditions`（条件あり） | [HIST-07](../spec/loj-history/v1alpha1/01-history.md#hist-07-適用関係) |
+| 時点照会 | — | 指定した日・対象・条件に適用されるRevisionを求めること。本版では規範にしない | [HIST-07](../spec/loj-history/v1alpha1/01-history.md#hist-07-適用関係) |
 | 経過措置による併存 | — | 新旧の状態が同時に適用される状態。`basedOn`の分岐と適用関係で表す | [HIST-04](../spec/loj-history/v1alpha1/01-history.md#hist-04-起点と基礎状態)、[HIST-07](../spec/loj-history/v1alpha1/01-history.md#hist-07-適用関係) |
 | 本文の状態 | `text.status` | `complete`（そろっている）、`partial`（一部欠ける。欠落は`gaps`）、`absent`（本文がない） | [HIST-08](../spec/loj-history/v1alpha1/01-history.md#hist-08-本文の状態) |
 | 字体の照合状態 | `text.glyphCheck` | `verified`（原典の字体と照合した）、`unverified`（照合していない）。`verified`には、字体を保持するSourceを`text.sources`で指す | [HIST-08](../spec/loj-history/v1alpha1/01-history.md#hist-08-本文の状態)、[GLYPH-10](../spec/loj-glyphs/v1alpha1/01-glyphs.md#glyph-10-照合状態との関係) |
