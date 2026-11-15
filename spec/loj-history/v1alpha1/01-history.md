@@ -113,6 +113,9 @@
 
 - `noneConfirmed`と`unsurveyed`を区別しなければならない（MUST）。条件がないことの確認には根拠を要する。
 - 効力が終了した後の適用（経過措置で「なお従前の例による」等）は、`applicability`で表す（HIST-12）。
+- 本版は、時点照会（指定した日・対象・条件に適用されるRevisionを求めること）の入力・手順・結果を定めない。L3（履歴構造）の合格は、ある日に適用されるRevisionが一つに決まることを保証しない。
+- 履歴マニフェストを読んで時点照会を提供する実装は、日付だけから一つのRevisionが決まると仮定してはならない（MUST NOT）。基礎状態の分岐（HIST-04）と適用の条件により、複数の`status: active`のRevisionが同じ日に候補になり得る。
+- 時点照会を提供する実装は、`unsurveyed`のRevisionを、適用の条件がないRevisionとして扱ってはならず、適用されないRevisionとして候補から除いてもならない（MUST NOT）。照会の結果でも、`noneConfirmed`と`unsurveyed`の区別を保つ。
 
 ## HIST-08 本文の状態
 
