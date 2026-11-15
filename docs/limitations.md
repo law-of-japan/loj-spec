@@ -24,6 +24,7 @@
 | 番号のない第1項で、本文が数字のtokenで始まるもの | 未対応（DISP-01）。`unsupportedFeatures`に記録し、L1は不合格。記録がなければ、DISP-01（またはPARA-01）の違反としてL1は不合格 |
 | 明治6年1月1日より前の日付のグレゴリオ暦への換算 | 規則を定めない。`unknown`とし、原表記を記録する（TIME-02） |
 | `space.yaml`（登録空間の識別子のファイル）の形 | 定めない（REG-01）。登録空間の識別子は検査器への入力だけで確定し、`space.yaml`は読まない。入力がなければ、識別子を要する判定は判定不能（VAL-03、[law-of-japan/loj-spec#68](https://github.com/law-of-japan/loj-spec/issues/68)） |
+| 時点照会（指定した日・対象・条件に適用されるRevisionを求めること） | 規範にしない（HIST-07、[law-of-japan/loj-spec#69](https://github.com/law-of-japan/loj-spec/issues/69)）。履歴構造の合格は、ある日に適用されるRevisionが一つに決まることを保証しない。照会を提供する実装への禁止は、HIST-07にある |
 | 複数の登録空間 | 一度に一つの登録台帳だけを入力とする。他の登録空間のRecordへの参照は未取得になる（VAL-03、XREF-01） |
 | 統合案の§15の論点 | 次期仕様の範囲外。将来の版で扱う |
 
