@@ -407,7 +407,8 @@ def build_bundle(path, steps=None):
             message = subject + "\n"
             if kind:
                 message += "\nLoJ-Change: " + kind + "\n" + ("LoJ-Revisions: " + REV + "\n" if with_revs else "")
-                message += "".join(extra)  # further trailers (CHG-04: LoJ-Reviewed)
+                # Further trailers (CHG-04: LoJ-Reviewed) follow the declaration; a step without a kind has none.
+                message += "".join(extra)
             date = "2099-01-%02dT00:00:00+0900" % (i + 1)
             env["GIT_AUTHOR_DATE"] = env["GIT_COMMITTER_DATE"] = date
             git("commit", "-q", "-F", "-", input=message.encode("utf-8"))

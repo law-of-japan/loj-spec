@@ -78,7 +78,7 @@ T076〜T105は承認されたMAN-03 B案の独立ケース。附属資料の通�
 
 機械で検査できるのにケースがない要件は、2026-11-12の時点でない（[law-of-japan/loj-spec#32](https://github.com/law-of-japan/loj-spec/issues/32)の結論（4））。下の段落に、ケースが一部の場合だけにとどまる要件を挙げる。
 
-CHG-04（2026-11-12）は、L1が不合格の版を含む`metadata`の変更を判定不能とする正例（common-025）と、その版のファイルを`format`で`LoJ-Reviewed`なしに変える負例（common-026）がある。人のレビューの記録（`LoJ-Reviewed`）を付けた`format`の変換を判定不能とする正例（common-027）は、2026-11-15に加えた（[law-of-japan/loj-spec#63](https://github.com/law-of-japan/loj-spec/issues/63)）。一部しか本文がない版のケースは、まだない。
+CHG-04（2026-11-12）は、L1が不合格の版を含む`metadata`の変更を判定不能とする正例（common-025）と、その版のファイルを`format`で`LoJ-Reviewed`なしに変える負例（common-026）がある。人のレビューの記録（`LoJ-Reviewed`）を付けた`format`の変換を判定不能とする正例（common-027）は、2026-11-15に加えた（[law-of-japan/loj-spec#63](https://github.com/law-of-japan/loj-spec/issues/63)）。値が空の`LoJ-Reviewed`、二つ以上の`LoJ-Reviewed`、`format`以外のcommitの`LoJ-Reviewed`のケースは加えていない。どれも記録がないもの、または結果を変えないものとして、common-026・027と同じ判定になるためである。一部しか本文がない版のケースは、まだない。
 
 RID-04・RID-05（2026-11-12）は、統合したRecordを残し、`replacedBy`で登録空間を書いて統合先を指す正例（reg-009）と、大文字を含む登録空間の負例（reg-010）がある。どちらの規則で報告するかは、2026-11-15にRID-01で定めた（一方が統合・分割・撤回したRecordならRID-05、そうでなければRID-01。[law-of-japan/loj-spec#63](https://github.com/law-of-japan/loj-spec/issues/63)）。統合したRecordのIDを別のRecordの別名に再利用する負例（reg-011）がある。分割・撤回したRecordのIDの再利用は、統合と同じ規則なので加えていない。
 
