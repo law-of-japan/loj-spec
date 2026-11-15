@@ -216,7 +216,7 @@
 
 | 用語 | 表記 | 意味 | 定義 |
 |---|---|---|---|
-| 再構築 | — | 旧リポジトリのRecordを、原典から履歴マニフェスト・版パッケージ・字体注記へ作り直して移す作業。旧本文は取り込まない | [REB-01](../spec/loj-rebuild/v1alpha1/01-rebuild.md#reb-01-対象と新しい版で書くこと)、[REB-03](../spec/loj-rebuild/v1alpha1/01-rebuild.md#reb-03-本文の出どころ) |
+| 再構築 | — | 旧リポジトリのRecordを、原典から履歴マニフェスト・版パッケージ・字体注記へ作り直して移す作業。旧本文は本文の根拠にせず、下書きにだけ使える | [REB-01](../spec/loj-rebuild/v1alpha1/01-rebuild.md#reb-01-対象と新しい版で書くこと)、[REB-03](../spec/loj-rebuild/v1alpha1/01-rebuild.md#reb-03-本文の出どころ) |
 | 凍結 | `legacy.frozenAt` | 旧リポジトリの規定のブランチをその時点で止め、以後pushしないこと。旧commitは到達できるように保つ | [REB-02](../spec/loj-rebuild/v1alpha1/01-rebuild.md#reb-02-idの維持)、[REB-08](../spec/loj-rebuild/v1alpha1/01-rebuild.md#reb-08-既存の参照の維持と旧形式)、[REBR-02](../spec/loj-rebuild/v1alpha1/02-report.md#rebr-02-項目) |
 | 資料の確認結果 | `sourceChecks`、`glyphPreservation` | 旧リポジトリから移したときに、使った資料が旧字体・異体字を保持しているかを確かめた記録。`preserved`、`normalized`、`unknown` | [REBR-03](../spec/loj-rebuild/v1alpha1/02-report.md#rebr-03-資料の確認結果) |
 | 字体の保持 | `glyphPreservation`（Source） | 資料が旧字体・異体字を保持しているか。`preserved`、`normalized`、`unknown`。GLYPH-10の条件はこれで確かめる | [TYPE-02](../spec/common/v1alpha1/05-types.md#type-02-source)、[GLYPH-10](../spec/loj-glyphs/v1alpha1/01-glyphs.md#glyph-10-照合状態との関係) |
