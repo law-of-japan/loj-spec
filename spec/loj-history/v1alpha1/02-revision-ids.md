@@ -18,7 +18,7 @@
 ## REV-03 保存のパスとタグ
 
 - 正本の版パッケージのディレクトリ名は、revision_idとする。ラベルの訂正で、ディレクトリを改名してはならない（MUST NOT）。
-- 派生ビューのタグの名前も、revision_idとする（[VIEW-04](../../common/v1alpha1/09-views.md)）。
+- 派生ビューが版ごとに付ける名前（タグ等）にも、revision_idを使う（[VIEW-04](../../common/v1alpha1/09-views.md)）。
 
 ## REV-04 版の粒度
 

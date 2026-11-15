@@ -207,8 +207,9 @@
 |---|---|---|---|
 | historyブランチ | `history` | 選択規則で選んだ版を施行日の順にcommitとして積む派生ビューの一例 | [VIEW-01](../spec/common/v1alpha1/09-views.md#view-01-定義と一方向性)、[付録A（参考）](../spec/common/v1alpha1/appendix-a-history-branch.md) |
 | 生成器 | — | 正本の記録版から派生ビューを機械的に作るプログラム。同じ入力から同じビューを作る | [VIEW-01](../spec/common/v1alpha1/09-views.md#view-01-定義と一方向性)、[VIEW-03](../spec/common/v1alpha1/09-views.md#view-03-決定性と生成元の記録) |
-| 選択規則 | `LoJ-View-Rule` | 版を一本の列に並べるときの明示した規則。除いた版はビューで示す | [VIEW-02](../spec/common/v1alpha1/09-views.md#view-02-選択規則と主張の限界) |
-| 索引ファイル | `INDEX.md` | ビューの選択規則、除いた版と理由、ビューに含まれない情報を書くファイル | [VIEW-02](../spec/common/v1alpha1/09-views.md#view-02-選択規則と主張の限界) |
+| ビューの単位 | — | 派生ビューの形式で個々に参照できるまとまり（Gitの形式ではcommit、Webの表示ではページ等）。生成元を記録し、固定参照として案内しない | [VIEW-03](../spec/common/v1alpha1/09-views.md#view-03-決定性と生成元の記録)、[VIEW-04](../spec/common/v1alpha1/09-views.md#view-04-参照の区別) |
+| 選択規則 | `LoJ-View-Rule`（付録Aの形式） | 版を一本の列に並べるときの明示した規則。除いた版はビューで示す | [VIEW-02](../spec/common/v1alpha1/09-views.md#view-02-選択規則と主張の限界)、[付録A（参考）](../spec/common/v1alpha1/appendix-a-history-branch.md) |
+| 索引ファイル | `INDEX.md` | historyブランチの形式（付録A）で、ビューの選択規則、除いた版と理由、ビューに含まれない情報を書くファイル。規範ではない | [付録A（参考）](../spec/common/v1alpha1/appendix-a-history-branch.md)、[VIEW-02](../spec/common/v1alpha1/09-views.md#view-02-選択規則と主張の限界) |
 | 版間差分 | — | 二つの版の本文の変化。改正関係（どの改正がどこを改正したか）とは一致しないことがある | [VIEW-05](../spec/common/v1alpha1/09-views.md#view-05-版間差分) |
 
 ## 再構築
