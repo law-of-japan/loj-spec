@@ -492,6 +492,22 @@ case("ゼロ幅の字だけのセル（空白以外の文字）", ["DIR-02", "MD
      True)
 
 
+# 2026-11-15 (#73): a table is a rectangle of grid positions (TABLE-04). Rows place cells left to right and skip
+# the positions taken by a rowspan cell of an upper row.
+case("続く先にもセルを書いた表（列数の不一致）", ["TABLE-04", "TABLE-03"],
+     # Row 7tzd takes column 1 (rowspan above) and three written cells: four columns against three.
+     [("main.md", "main", ROWSPAN_MD.replace("<!-- loj:row key=7tzd -->\n",
+                                             "<!-- loj:row key=7tzd -->\n<!-- loj:cell -->\n第二条第一項\n<!-- loj:end-cell -->\n"))],
+     fail("TABLE-04"), False)
+case("最後の行を越えるrowspan", ["TABLE-04", "TABLE-03"],
+     [("main.md", "main", TABLE_MD.replace("<!-- loj:cell colspan=2 -->", "<!-- loj:cell colspan=2 rowspan=2 -->"))],
+     fail("TABLE-04"), False)
+case("rowspanのセルの位置に重なるcolspan", ["TABLE-04", "TABLE-03"],
+     # 一号倉庫 takes row 1-2, column 2; 雨雲 starts at row 2, column 1 and spans columns 1-2.
+     [("main.md", "main", TABLE_MD.replace("<!-- loj:cell -->\n一号倉庫", "<!-- loj:cell rowspan=2 -->\n一号倉庫"))],
+     fail("TABLE-04"), False)
+
+
 def main():
     index_path = DST / "manifest.json"
     index = json.loads(index_path.read_text(encoding="utf-8"))

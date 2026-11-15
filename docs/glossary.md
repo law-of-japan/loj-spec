@@ -77,7 +77,7 @@
 | 項の見出し | `caption=present`、Paragraphの`caption` | 項の前に置く括弧書きの見出し（附則の`（施行期日）`等）。属性で示し、項の本文の最初の行（見出しの行）に書く。条の見出しとは別に、Paragraphの`caption`に写す | [PARA-02](../spec/v1alpha2/09-structures.md#para-02-項の見出し) |
 | 号 | Item、`item` | 項の下の単位 | [DIR-01](../spec/v1alpha2/05-directives.md#dir-01-マーカーの字句)、[DIR-02](../spec/v1alpha2/05-directives.md#dir-02-対応入れ子空の禁止) |
 | 細分 | Subitem、`subitem`、`level` | 号の下の単位。`level`は1〜10で、飛び越せない | [DIR-02](../spec/v1alpha2/05-directives.md#dir-02-対応入れ子空の禁止) |
-| 表、行、セル | Table、Row、Cell | 項・号・細分の本文の中の法令の表。マーカーで書き、GFMの表は使わない | [TABLE-01](../spec/v1alpha2/09-structures.md#table-01-表の構造)、[TABLE-03](../spec/v1alpha2/09-structures.md#table-03-セル) |
+| 表、行、セル | Table、Row、Cell | 項・号・細分の本文の中の法令の表。マーカーで書き、GFMの表は使わない | [TABLE-01](../spec/v1alpha2/09-structures.md#table-01-表の構造)、[TABLE-03](../spec/v1alpha2/09-structures.md#table-03-セル)、[TABLE-04](../spec/v1alpha2/09-structures.md#table-04-表の矩形) |
 | 行のkey | `row key=…` | 表の行の不透明な識別子（Crockford Base32の小文字4文字）。同じ表の中で、版をまたいで同じ行であることを入力者が主張する。改正・訂正で変えず、削った行のkeyも再使用しない。付け方の誤りは記録訂正で直せる | [TABLE-02](../spec/v1alpha2/09-structures.md#table-02-行のkey)、[HIST-13](../spec/loj-history/v1alpha1/01-history.md#hist-13-表の行のkeyの再使用) |
 | 前文 | Preamble、`preamble` | 本則の前に置く前文。項として型付けしない | [PRE-01](../spec/v1alpha2/09-structures.md#pre-01-前文) |
 | 制定文 | EnactStatement、`enact-statement` | 「……この政令を制定する。」等の文。Lawの最初の子 | [PRE-02](../spec/v1alpha2/09-structures.md#pre-02-制定文) |
