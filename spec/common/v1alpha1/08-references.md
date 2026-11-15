@@ -7,7 +7,7 @@ Record・Revision・記録版を指す参照の形式と、解決の規則を定
 | 種類 | 指すもの | 指す内容が変わるか | 用途 |
 |---|---|---|---|
 | Record参照 | Record | — | 法令そのものを指す（RecordRef、[TYPE-01](05-types.md)） |
-| Revision参照 | 法令の状態 | 記録訂正・復元の進展で変わり得る | 「この法令のこの状態」を指す。派生ビューのタグと同じ意味 |
+| Revision参照 | 法令の状態 | 記録訂正・復元の進展で変わり得る | 「この法令のこの状態」を指す。派生ビューが版ごとに付ける名前（タグ等）と同じ意味 |
 | 固定参照 | 記録版 | 変わらない | 引用・検証の対象になった本文・根拠・判断を固定する |
 
 データの中では、次の構造化形式で書く。RevisionRefとFixedRefは[共通の型のschema](../../../schemas/common/v1alpha1/types.schema.json)で定義する。時点値の`sameAs`（[TIME-07](06-time.md)）はRevisionRef、Sourceの`fixed`（[TYPE-02](05-types.md)）でLoJの中の資料を指すものはFixedRefである。

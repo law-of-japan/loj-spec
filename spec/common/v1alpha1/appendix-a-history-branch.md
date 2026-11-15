@@ -6,7 +6,9 @@
 
 - `history`ブランチに、選択規則で選んだ版を、施行日の順に一つずつcommitとして積む。
 - 各commitの内容は、その版の版パッケージを写したものと、ブランチの最上位の索引ファイル（`INDEX.md`）とする。
-- 各commitに、revision_idのタグを付ける（[VIEW-04](09-views.md)）。
+- 各commitに、revision_idの名前のタグを付ける（[VIEW-04](09-views.md)）。可読ラベルによる別名のタグを付けてもよいが、ラベルの訂正で変わり得る。
+- 選択規則で除いた版（[VIEW-02](09-views.md)）は、各commitのtrailer（`LoJ-View-Excluded`）と、索引ファイルの両方で示す。
+- commitの作者・日時・メッセージを正本から決まった方法で作り、同じ記録版と同じ生成器の版からは、commitのハッシュまで一致させる（[VIEW-03](09-views.md)）。commitの日時に、法的な日付を使わない。
 
 ## trailer
 
