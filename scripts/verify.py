@@ -515,7 +515,7 @@ def schema_failures(folder, validators):
 
 
 def check_schema_mark(ident, case, inputs, validators):
-    """CONTRIBUTING (material management, CONF-01): a case marked rejectedBy: schema has an input YAML file that breaks its schema;
+    """CONF-01 (management info; see CONTRIBUTING): a case marked rejectedBy: schema has an input YAML file that breaks its schema;
     every input YAML file of any other case conforms to its schema. Returns the files checked."""
     count, failures = 0, []
     # Directory inputs hold the YAML files; file inputs are git bundles, whose YAML is not unpacked here.
@@ -546,7 +546,7 @@ def tree_bytes(path):
 
 
 def derivation_problem(entry):
-    """CONTRIBUTING (material management, CONF-01): applying the edits in order to a copy of from gives path, byte for byte. Returns the problem or None."""
+    """CONF-01 (management info; see CONTRIBUTING): applying the edits in order to a copy of from gives path, byte for byte. Returns the problem or None."""
     # The index schema's path pattern admits "." and ".." segments; a copy and its source stay inside the repository.
     for name in [entry["from"], entry["path"]] + [edit["file"] for edit in entry["edits"]]:
         if any(part in (".", "..") for part in name.split("/")):
@@ -576,7 +576,7 @@ def derivation_problem(entry):
 
 
 def check_derivations(ident, case):
-    """CONTRIBUTING (material management, CONF-01): each listed copy is an input of the case inside the case's own directory, and matches its source."""
+    """CONF-01 (management info; see CONTRIBUTING): each listed copy is an input of the case inside the case's own directory, and matches its source."""
     match = re.fullmatch(r"(conformance/.+)/expected/" + re.escape(ident) + r"\.json", case["expected"])
     require(match is not None, ident + " expected path is not <suite folder>/expected/<case ID>.json: " + case["expected"])
     own = match.group(1) + "/" + ("valid" if case["success"] else "invalid") + "/" + ident + "/"
