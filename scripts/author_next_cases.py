@@ -925,10 +925,10 @@ def invalid_review_records():
     The blank value needs --cleanup=verbatim: git's default cleanup strips trailing blanks from each line.
     """
     for title, trailers in [
-        ("ASTを生成できない版のファイルを、二つの人のレビューの記録を付けて書式変更で変える",
+        ("ASTを生成できない版のファイルを、人のレビューの記録を二つ付けて書式変更で変える",
          "LoJ-Reviewed: " + REVIEW_URL + "\nLoJ-Reviewed: https://example.invalid/law-repository/pull/13\n"),
-        ("ASTを生成できない版のファイルを、値が空の人のレビューの記録を付けて書式変更で変える", "LoJ-Reviewed:\n"),
-        ("ASTを生成できない版のファイルを、値が空白だけの人のレビューの記録を付けて書式変更で変える", "LoJ-Reviewed: \t \n"),
+        ("ASTを生成できない版のファイルを、人のレビューの記録を値を空にして付けて書式変更で変える", "LoJ-Reviewed:\n"),
+        ("ASTを生成できない版のファイルを、人のレビューの記録を値を空白だけにして付けて書式変更で変える", "LoJ-Reviewed: \t \n"),
     ]:
         bundle = next_dir("common", False) / "repo.bundle"
         _, c2, c3 = build_bundle(bundle, reviewed_format_steps(trailers), verbatim=True)
