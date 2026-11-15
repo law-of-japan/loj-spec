@@ -470,6 +470,28 @@ supp_case("附則の見出しの半角空白の位置（CRLF）", ["HEAD-03", "S
           fail_at("HEAD-03", "supp.md", 0, 11), False)
 
 
+# 2026-11-15 (#72): the blank characters are White_Space of Unicode 15.1 (MD-04). Code points are written with chr().
+IDEOGRAPHIC_SPACE, NBSP, ZWSP = chr(0x3000), chr(0x00A0), chr(0x200B)
+case("全角空白だけのセル", ["DIR-02", "MD-04"],
+     [("main.md", "main", TABLE_MD.replace("\n一号倉庫\n", "\n" + IDEOGRAPHIC_SPACE + "\n"))], fail("DIR-02"), False)
+case("NBSPだけの項", ["DIR-02", "MD-04"],
+     [("main.md", "main", ART + P1 + "<!-- loj:paragraph number=2 -->\n" + NBSP + "\n<!-- loj:end-paragraph -->\n")],
+     fail("DIR-02"), False)
+
+
+def zwsp_table_children(p):
+    children = table_children(p)
+    children[0]["content"][0]["content"][1]["content"] = [text(ZWSP + "\n")]
+    return children
+
+
+case("ゼロ幅の字だけのセル（空白以外の文字）", ["DIR-02", "MD-04", "TABLE-03"],
+     [("main.md", "main", TABLE_MD.replace("\n一号倉庫\n", "\n" + ZWSP + "\n"))],
+     {"ast": ast([article(MAIN, "1", "第一条",
+                          [lambda a: para(a, "1", "雲の保管の場所は、次の表のとおりとする。\n", children=zwsp_table_children)])])},
+     True)
+
+
 def main():
     index_path = DST / "manifest.json"
     index = json.loads(index_path.read_text(encoding="utf-8"))
