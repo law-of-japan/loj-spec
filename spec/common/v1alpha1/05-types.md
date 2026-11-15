@@ -51,7 +51,7 @@
 
 - 確認状態を持つ主張（`evidence`と`verification`を持つもの）は、`verification.state: confirmed`なら一つ以上のEvidenceを持たなければならない（MUST）。
 - Evidenceの数は、記載したEvidenceの数で数え、`source`が解決できるかを問わない。`source`が解決できないことは、[TYPE-03](#type-03-evidence)の違反として報告する。
-- 未確認・不明とした主張は、理由を持つ。不明の時点値の理由は[TIME-05](06-time.md)による。
+- 未確認・不明とした主張の理由は、本要件では求めない。確認状態の理由（`verification.reason`）は[TYPE-04](#type-04-verification)（`unverified`・`disputed`に書くことの推奨）による。不明・該当しないとした時点値の`reason`は[TIME-01](06-time.md)（状態の必須のフィールド）により、書く内容は[TIME-05](06-time.md)による。
 - この要件の検査は、出典の記載と形式を確かめる。出典の内容が主張を裏付けるかは判定しない。
 
 ## TYPE-06 Scope

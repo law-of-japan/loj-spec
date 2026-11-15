@@ -10,6 +10,12 @@
 - `verify.py`は、schemaから禁止を抽出して一覧と一致することを検査し（失敗）、禁止の文が本文にないフィールドを警告として挙げる（失敗にしない）。
 - 本文に禁止の文がない箇所（`category`、`determinedBy`、`conditions`、`totallyRevises`、`replacedBy`、`termination`の根拠、再構築報告の`count`・`examples`）は、仕様の欠陥として[law-of-japan/loj-spec#104](https://github.com/law-of-japan/loj-spec/issues/104)で扱う。
 
+## 未確認・不明とした主張の理由の要求の一本化（2026-11-16、草案）
+
+[law-of-japan/loj-spec#85](https://github.com/law-of-japan/loj-spec/issues/85)による変更である。草案の版（`common/v1alpha1`）への変更であり、版番号は上げない。適合の結果、診断の規則、ASTは変わらない。
+
+- TYPE-05: 「未確認・不明とした主張は、理由を持つ。」を、本要件では理由を求めないことと、理由の要求の正（確認状態の理由はTYPE-04のSHOULD、不明・該当しない時点値の`reason`はTIME-01の必須のフィールド、書く内容はTIME-05）へのリンクにした。TYPE-04のSHOULDと食い違って読めないようにするためである。
+
 ## 旧本文の採用の条件（2026-11-15、草案）
 
 [law-of-japan/loj-spec#89](https://github.com/law-of-japan/loj-spec/issues/89)による変更である。草案の版（`loj-rebuild/v1alpha1`）への変更であり、版番号は上げない。再構築報告の検査の結果、診断の規則、ASTは変わらない。
