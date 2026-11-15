@@ -516,8 +516,8 @@ class DiagnosticLocationTests(unittest.TestCase):
         self.path = v.ROOT / "conformance/v1alpha2/invalid/pkg-146/law.yaml"
         self.man = v.load_yaml(self.path.read_text(encoding="utf-8"))
 
-    def at(self, start, end, path="main.md"):
-        return v.location_problem(self.path, self.man, {"path": path, "start": start, "end": end})
+    def at(self, start, end, path="main.md", rule=None):
+        return v.location_problem(self.path, self.man, {"path": path, "start": start, "end": end}, rule)
 
     def test_whole_line_with_crlf_passes(self):
         self.assertIsNone(self.at(139, 160))
@@ -536,10 +536,12 @@ class DiagnosticLocationTests(unittest.TestCase):
 
     def test_whole_file_passes(self):
         # SRC-01: a blank follow-up file is located by the whole file, which may span lines (law-of-japan/loj-spec#81).
-        size = (self.path.parent / "main.md").stat().st_size
-        self.assertIsNone(self.at(0, size))
-        self.assertIsNotNone(self.at(0, size - 1))  # not the whole file, and not one line
-        self.assertIn("more than one line", self.at(13, size))
+        raw = (self.path.parent / "main.md").read_bytes()
+        size, first = len(raw), raw.index(b"\n") + 1
+        self.assertIsNone(self.at(0, size, rule="MAN-03"))
+        self.assertIn("more than one line", self.at(0, size, rule="DIR-02"))  # only MAN-03 is located by a whole file
+        self.assertIsNotNone(self.at(0, size - 1, rule="MAN-03"))  # not the whole file, and not one line
+        self.assertIn("more than one line", self.at(first, size, rule="MAN-03"))
 
     def test_unknown_path_rejected(self):
         self.assertIn("unknown path", self.at(0, 13, "other.md"))
