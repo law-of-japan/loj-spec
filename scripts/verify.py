@@ -435,7 +435,7 @@ def check_positive(path, man, expected, v2=False):
 
 def location_problem(law_path, man, location):
     """SRC-01/CONF-01: an expected diagnostic location names a listed document, stays inside it,
-    and covers one whole line (its line break included).
+    and covers one whole line (its line break included), or the whole file (a blank follow-up file, MAN-03).
     Returns None when the location is well formed; does not decide which line the rule points at.
     law.yaml is never named: its violations are Manifest violations, whose location SRC-01 does not fix.
     Empty files and bare CR line breaks never reach here (BASIC-02 rejects them at L0), so start < end and LF suffice."""
@@ -450,7 +450,7 @@ def location_problem(law_path, man, location):
         return "out of range"
     if (start and raw[start - 1:start] != b"\n") or (end < len(raw) and raw[end - 1:end] != b"\n"):
         return "not at line boundaries"
-    if b"\n" in raw[start:end - 1]:
+    if b"\n" in raw[start:end - 1] and (start, end) != (0, len(raw)):
         return "more than one line"
     return None
 

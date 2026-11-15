@@ -534,6 +534,13 @@ class DiagnosticLocationTests(unittest.TestCase):
             with self.subTest(start=start, end=end):
                 self.assertIn(reason, self.at(start, end))
 
+    def test_whole_file_passes(self):
+        # SRC-01: a blank follow-up file is located by the whole file, which may span lines (law-of-japan/loj-spec#81).
+        size = (self.path.parent / "main.md").stat().st_size
+        self.assertIsNone(self.at(0, size))
+        self.assertIsNotNone(self.at(0, size - 1))  # not the whole file, and not one line
+        self.assertIn("more than one line", self.at(13, size))
+
     def test_unknown_path_rejected(self):
         self.assertIn("unknown path", self.at(0, 13, "other.md"))
 
