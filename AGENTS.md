@@ -66,6 +66,7 @@ python -m unittest discover -s tests -v
 - 版パッケージのケースを除く負例で、入力のYAMLがschemaに合わないものには、索引の`rejectedBy: schema`の印を付ける（`author_next_cases.py`の`SCHEMA_REJECTED`）。schemaの誤りが期待する規則の違反と対応するかを確かめてから付ける。
 - 負例と索引は`scripts/author_*.py`が展開する。対象と実行の順は[CONTRIBUTING](CONTRIBUTING.md)の表にある。CIはこれらを実行しないので、実行したら生成された差分を確かめる。`author_data.py`（v1alpha1）は実行しない。
 - 負例の多くは正例の写しであり、元と変更が索引の`derivedFrom`にある。正例を直したら`author_next_cases.py`を実行し直す。忘れると`verify.py`が写しの食い違いとして失敗する。写しのファイルを手で直さない。
+- ケースの入力は、自身のディレクトリ（`<valid|invalid>/<ケースID>/`）に置くか、ほかのケースの正例を共有して読む。共有の正例だけを読むケースは正例に限る（[CONTRIBUTING](CONTRIBUTING.md#適合ケースの作り方)）。
 - `git bundle`を作り直すとcommitのハッシュが変わる。ハッシュを参照する索引と期待結果も確かめる。
 - 大文字・小文字だけが違うファイル名を作らない（Windowsで区別できない）。
 
