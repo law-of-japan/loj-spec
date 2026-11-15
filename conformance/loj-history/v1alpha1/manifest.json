@@ -1526,6 +1526,71 @@
           ]
         }
       ]
+    },
+    {
+      "id": "hist-054",
+      "title": "本文のない版のディレクトリに残った字体注記を検査にかけない",
+      "requirements": [
+        "HIST-08",
+        "GLYPH-01"
+      ],
+      "check": "L3",
+      "category": "evidence",
+      "normative": true,
+      "input": {
+        "kind": "repository",
+        "path": "conformance/loj-history/v1alpha1/valid/hist-054/repo"
+      },
+      "expected": "conformance/loj-history/v1alpha1/expected/hist-054.json",
+      "success": true,
+      "derivedFrom": [
+        {
+          "path": "conformance/loj-history/v1alpha1/valid/hist-054/repo",
+          "from": "conformance/loj-history/v1alpha1/valid/hist-001/repo",
+          "edits": [
+            {
+              "file": "history.yaml",
+              "old": "    text:\n      status: complete\n      sources:\n        - {source: src-goshomei-s41-86, locator: 2画像 本則（改正の内容）}\n      glyphCheck: unverified\n      glyphNotes: versions/zwgmz1rt/glyphs.yaml\n      correctionsSurveyed: {state: unsurveyed, reason: 官報（昭和41年6月25日）を入手していない（REB-05）}\n",
+              "new": "    text:\n      status: absent\n"
+            },
+            {
+              "file": "versions/zwgmz1rt/glyphs.yaml",
+              "old": "revision: zwgmz1rt",
+              "new": "revision: 98mj5vgx"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hist-055",
+      "title": "別の版の字体注記を指すglyphNotesで、指す先を自身の字体注記として読まない",
+      "requirements": [
+        "HIST-08",
+        "GLYPH-01"
+      ],
+      "check": "L3",
+      "category": "evidence",
+      "normative": true,
+      "input": {
+        "kind": "repository",
+        "path": "conformance/loj-history/v1alpha1/valid/hist-055/repo"
+      },
+      "expected": "conformance/loj-history/v1alpha1/expected/hist-055.json",
+      "success": true,
+      "derivedFrom": [
+        {
+          "path": "conformance/loj-history/v1alpha1/valid/hist-055/repo",
+          "from": "conformance/loj-history/v1alpha1/valid/hist-001/repo",
+          "edits": [
+            {
+              "file": "history.yaml",
+              "old": "      glyphNotes: versions/zwgmz1rt/glyphs.yaml\n",
+              "new": "      glyphNotes: versions/98mj5vgx/glyphs.yaml\n"
+            }
+          ]
+        }
+      ]
     }
   ]
 }
