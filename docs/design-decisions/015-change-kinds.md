@@ -61,10 +61,9 @@
 - 制約: PRの作業ブランチのcommitは統合後に正本ブランチから到達できず、固定参照に使えない（FIXREF-04）。squashでは作業の日時が残らないことがある（`docs/limitations.md`）。`migration`の禁止は草案の`loj/v1alpha2`と共通の要件の側の定めであり、凍結した`loj/v1alpha1`の内容とは関わらない。
 - 再検討: 正本ブランチにmergeのcommitを置く必要が出たとき。
 - 追記（2026-11-15、[DDR-024](024-scope-of-requirements.md)）: CHG-03から、PRの統合の操作（squashは種類が同じcommitに限り、種類の違うcommitを含むPRはrebaseで統合すること）を外し、[リポジトリ管理ガイドライン](https://github.com/law-of-japan/loj-repository-management-guideline)で定めることにした。CHG-03には、一つのcommitに一つの種類、各commitが単独で変更検査を受けること、mergeのcommitの禁止と不合格を残した。検査の結果は変わらない。種類の違うcommitをsquashした結果は、どのみち一つのcommitに一つの種類という規則に反するためである。線形履歴の制約を維持するかは、[law-of-japan/loj-spec#97](https://github.com/law-of-japan/loj-spec/issues/97)で判断する。
-- 追記（2026-11-16、[law-of-japan/loj-spec#97](https://github.com/law-of-japan/loj-spec/issues/97)）: 線形履歴の制約（mergeのcommitの禁止と不合格）を維持する。再検討の条件（mergeのcommitを置く必要）を満たす事情はない。統合の操作は運用で定め、squash・rebaseで一本の履歴を作れる。squash等で作業の日時が残らないことは制限として認めている（[制限](../limitations.md#検証の境界)）が、作業の日時は記録版の履歴として求めておらず、mergeのcommitを置く理由にならない。mergeを許すと、次の規則が要る。
-  - mergeのcommit自体の種類と検査（第一親と比べるか、取り込んだcommitの種類をどう合わせるか）。比べる変更前の記録版が親に一意に決まらなくなる。
+- 追記（2026-11-16、[law-of-japan/loj-spec#97](https://github.com/law-of-japan/loj-spec/issues/97)）: 線形履歴の制約（mergeのcommitの禁止と不合格）を維持する。再検討の条件（mergeのcommitを置く必要）を満たす事情はなく、再検討の条件も変えない。統合の操作は運用で定め、squash・rebaseで一本の履歴を作れる。squash等で作業の日時が残らないことは制限として認めている（[制限](../limitations.md#検証の境界)）が、作業の日時は記録版の履歴として求めておらず、mergeのcommitを置く理由にならない。mergeを許すと、次の規則が要る。
+  - mergeのcommit自体の種類と検査。第一親と比べるなら比べる相手は一意に決まるが、種類は取り込んだcommitの種類から決め直す必要がある（種類の違うcommitを取り込むと、一つのcommitに一つの種類にならない）。第一親以外とも比べるなら、比べる変更前の記録版が一意に決まらなくなる。
   - 取り込んだ作業ブランチの各commitを、正本ブランチのcommitとして検査するか。検査しない場合、それらのcommitは正本ブランチから到達でき、FIXREF-04では固定参照に使えるので、変更検査を受けていない記録版が固定参照の対象に入る。防ぐには、固定参照に使えるcommitを第一親の列に限る規則が要る。その規則を足しても、第一親の列だけを記録版の履歴とするなら、取り込んだcommitを正本ブランチに置く利点は作業の経過を残すことだけで、記録版の履歴としては線形履歴と同じになる。規則を増やす利点がないので、採らない。
-- 再検討の条件は変えない。
 
 ## ASTを生成できない版の書式の変換と、人のレビューの記録
 
