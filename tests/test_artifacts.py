@@ -801,7 +801,14 @@ class NextSuiteAuditTests(unittest.TestCase):
         self.assertTrue(any("/valid/" in p.as_posix() for p in v.input_files(case)))
         case["success"] = True
         case.pop("derivedFrom", None)
-        self.assert_rejected("case directory mismatch", "common/v1alpha1", broken)
+        self.assert_rejected("case directory mismatch$", "common/v1alpha1", broken)
+
+    def test_shared_input_from_another_negative(self):
+        """A case may not read the input of another negative as a shared input."""
+        broken = copy.deepcopy(self.indexes["common/v1alpha1"])
+        case = next(c for c in broken["cases"] if c["id"] == "common-003")
+        case["input"]["repositories"] = ["conformance/common/v1alpha1/invalid/common-002/hist-004"]
+        self.assert_rejected("shared input", "common/v1alpha1", broken)
 
     def test_shared_only_case_read_as_negative(self):
         """A case that reads only shared positive inputs (common-003) cannot be a negative."""

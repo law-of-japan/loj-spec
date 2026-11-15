@@ -631,7 +631,8 @@ def audit_suite(name, validators, rules):
         rels = ["/" + path.relative_to(ROOT).as_posix() for path in inputs]
         own = [r for r in rels if any(r.startswith("/conformance/%s/%s/%s/" % (folder, g, ident)) for g in ("valid", "invalid"))]
         require(all(r.startswith("/conformance/%s%s%s/" % (folder, group, ident)) for r in own), ident + " case directory mismatch")
-        require(all("/valid/" in r for r in rels if r not in own), ident + " case directory mismatch (shared input)")
+        shared_group = lambda r: (re.match(r"/conformance/.+?/(valid|invalid)/[^/]+/", r) or [None, None])[1]
+        require(all(shared_group(r) == "valid" for r in rels if r not in own), ident + " case directory mismatch (shared input)")
         require(own or case["success"], ident + " case directory mismatch (negative without its own input)")
         exp_path = ROOT / case["expected"]
         require(exp_path.is_file() and case["expected"] not in expected_paths, ident + " expected file")
