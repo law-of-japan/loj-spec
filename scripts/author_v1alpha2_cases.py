@@ -508,6 +508,23 @@ case("rowspanのセルの位置に重なるcolspan", ["TABLE-04", "TABLE-03"],
      fail("TABLE-04"), False)
 
 
+# 2026-11-15 (#81): locations of an appendix whose title does not match (HEAD-03) and of MAN-03 in Markdown.
+APPENDIX = {"appendices": [{"key": "table", "title": "別表"}]}
+APPENDIX_FILES = [("main.md", "main", ART + P1)]
+# one.md: "# 別表第一" is 2 + 12 + 1 = 15 bytes, the first heading line.
+case("附属資料の最初の見出しとtitleの不一致の位置", ["HEAD-03", "MAN-01", "SRC-01"],
+     APPENDIX_FILES + [("one.md", "appendix/table", "# 別表第一\n本文。\n")],
+     fail_at("HEAD-03", "one.md", 0, 15), False, man_extra=APPENDIX)
+# two.md (the last file) holds only blanks: " \n\t\n" is the whole file, 4 bytes over two lines.
+case("空白だけの後続のファイルの位置（ファイルの全体）", ["MAN-03", "SRC-01"],
+     APPENDIX_FILES + [("one.md", "appendix/table", "# 別表\n本文。\n"), ("two.md", "appendix/table", " \n\t\n")],
+     fail_at("MAN-03", "two.md", 0, 4), False, man_extra=APPENDIX)
+# one.md: "# 別表\n" is 2 + 6 + 1 = 9 bytes; the fence "```\n" opened there is not closed before two.md.
+case("後続のファイルの前で閉じないコードフェンスの位置（ブロックの開始行）", ["MAN-03", "SRC-01"],
+     APPENDIX_FILES + [("one.md", "appendix/table", "# 別表\n```\ncode\n"), ("two.md", "appendix/table", "本文。\n")],
+     fail_at("MAN-03", "one.md", 9, 13), False, man_extra=APPENDIX)
+
+
 def main():
     index_path = DST / "manifest.json"
     index = json.loads(index_path.read_text(encoding="utf-8"))

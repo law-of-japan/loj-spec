@@ -2900,6 +2900,55 @@
       },
       "expected": "conformance/v1alpha2/expected/pkg-179.json",
       "success": false
+    },
+    {
+      "id": "pkg-180",
+      "title": "附属資料の最初の見出しとtitleの不一致の位置",
+      "requirements": [
+        "HEAD-03",
+        "MAN-01",
+        "SRC-01"
+      ],
+      "check": "L1",
+      "normative": true,
+      "input": {
+        "kind": "package",
+        "path": "conformance/v1alpha2/invalid/pkg-180/law.yaml"
+      },
+      "expected": "conformance/v1alpha2/expected/pkg-180.json",
+      "success": false
+    },
+    {
+      "id": "pkg-181",
+      "title": "空白だけの後続のファイルの位置（ファイルの全体）",
+      "requirements": [
+        "MAN-03",
+        "SRC-01"
+      ],
+      "check": "L1",
+      "normative": true,
+      "input": {
+        "kind": "package",
+        "path": "conformance/v1alpha2/invalid/pkg-181/law.yaml"
+      },
+      "expected": "conformance/v1alpha2/expected/pkg-181.json",
+      "success": false
+    },
+    {
+      "id": "pkg-182",
+      "title": "後続のファイルの前で閉じないコードフェンスの位置（ブロックの開始行）",
+      "requirements": [
+        "MAN-03",
+        "SRC-01"
+      ],
+      "check": "L1",
+      "normative": true,
+      "input": {
+        "kind": "package",
+        "path": "conformance/v1alpha2/invalid/pkg-182/law.yaml"
+      },
+      "expected": "conformance/v1alpha2/expected/pkg-182.json",
+      "success": false
     }
   ]
 }

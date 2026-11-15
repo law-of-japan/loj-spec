@@ -433,9 +433,9 @@ def check_positive(path, man, expected, v2=False):
     return len(ids)
 
 
-def location_problem(law_path, man, location):
+def location_problem(law_path, man, location, rule=None):
     """SRC-01/CONF-01: an expected diagnostic location names a listed document, stays inside it,
-    and covers one whole line (its line break included).
+    and covers one whole line (its line break included), or, for MAN-03 only, the whole file (a blank follow-up file).
     Returns None when the location is well formed; does not decide which line the rule points at.
     law.yaml is never named: its violations are Manifest violations, whose location SRC-01 does not fix.
     Empty files and bare CR line breaks never reach here (BASIC-02 rejects them at L0), so start < end and LF suffice."""
@@ -450,7 +450,7 @@ def location_problem(law_path, man, location):
         return "out of range"
     if (start and raw[start - 1:start] != b"\n") or (end < len(raw) and raw[end - 1:end] != b"\n"):
         return "not at line boundaries"
-    if b"\n" in raw[start:end - 1]:
+    if b"\n" in raw[start:end - 1] and not (rule == "MAN-03" and (start, end) == (0, len(raw))):
         return "more than one line"
     return None
 
@@ -648,15 +648,15 @@ def audit_suite(name, validators, rules):
             require(not failed and not errors, ident + " positive case expects failure")
         else:
             require(bool(errors), ident + " negative case needs an error diagnostic")
-        located = [d["location"] for d in expected.get("diagnostics", []) if "location" in d]
+        located = [(d["location"], d["rule"]) for d in expected.get("diagnostics", []) if "location" in d]
         if case["input"]["kind"] == "package":
             v2 = name == "loj/v1alpha2"
             # CONF-01: L1/L2 positives carry the full AST; L0 positives carry the L0 pass result and no AST.
             require(("ast" in expected) == (case["success"] and v2 and case["check"] != "L0"), ident + " AST presence")
             path = ROOT / case["input"]["path"]
             issues, man = inspect_manifest(path, validators["v1alpha2/manifest.schema.json"], "loj/v1alpha2")
-            for location in located:
-                problem = location_problem(path, man, location)
+            for location, rule in located:
+                problem = location_problem(path, man, location, rule)
                 require(problem is None, ident + " diagnostic location " + str(location) + ": " + str(problem))
             if case["success"] and case["check"] == "L0":
                 # unsupportedFeatures may be declared: it fails L1 (BASIC-03), not L0.
