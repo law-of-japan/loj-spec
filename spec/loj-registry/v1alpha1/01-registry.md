@@ -14,7 +14,7 @@
   ```
 
 - Recordごとに一つのファイルとし、ファイル名はRecord IDとしなければならない（MUST）。ファイルの`id`は、ファイル名と一致しなければならない。
-- `schemaVersion`は厳密に`loj-registry/v1alpha1`でなければならない（MUST）。ほかの値（知らない版を含む）のファイルは、処理不能として未完了とし、不合格にしない（[VAL-04](../../common/v1alpha1/03-validation.md)）。YAMLのデータモデルは[CORE-03](../../common/v1alpha1/01-overview.md)に従う。schemaは閉じており、未知のフィールドを拒否する。
+- `schemaVersion`は厳密に`loj-registry/v1alpha1`でなければならない（MUST）。ほかの値（知らない版を含む）のファイルは、処理不能として未完了とし、不合格にしない（[VAL-04](../../common/v1alpha1/03-validation.md)）。YAMLのデータモデルは[CORE-03](../../common/v1alpha1/01-overview.md)に従う。ファイルは、その`schemaVersion`のschemaに合わなければならない（MUST）。schemaは閉じており、未知のフィールドを拒否する。schemaに合わない箇所の診断の規則は、[VAL-07](../../common/v1alpha1/03-validation.md)による。
 - 正本ブランチのGit履歴を、登録台帳の記録版の履歴とする（[CORE-01](../../common/v1alpha1/01-overview.md)）。
 - 撤回・統合・分割したRecordのファイルを削除してはならない（MUST NOT）。
 - `space.yaml`の形は本版では定めない。
@@ -43,6 +43,7 @@
 - `notCollected`から、本文の不存在を推論してはならない（MUST NOT）。
 - 題名と法令の種別は、登録台帳に持たない。版ごとに版パッケージ（`law.yaml`の`title`・`type`）にあり、改正で変わり得るためである。表示には`label`を使う。
 - 分割先が確定していない候補は、`verification.state: unverified`で残す。
+- `replacedBy`の各項目の`record`は、同じ登録台帳のRecordに解決できなければならない（MUST）。
 - 効力の終了（廃止・失効）は、`status`で表さない（[HIST-12](../../loj-history/v1alpha1/01-history.md)）。
 - `withdrawn`は、登録した対象が法令として存在しないこと（誤登録等）を確認して、登録を撤回したことを表す。L4では、不存在確認済みのRecordとする（[XREF-01](../../common/v1alpha1/10-cross-record.md)）。本文の不存在（`collection.state: nonexistentConfirmed`）とは別である。
 

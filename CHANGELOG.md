@@ -2,6 +2,21 @@
 
 見出しの「草案」は、[草案の版](spec/README.md#版の状態)への変更であることを示す。版の状態の正は、[規範仕様の入口](spec/README.md#規範とするもの)の表にある。版を公開したときは、公開の日付の項目を加える。
 
+## 表とschemaの読み方と、要求の語の欠け（2026-11-15、草案）
+
+[law-of-japan/loj-spec#63](https://github.com/law-of-japan/loj-spec/issues/63)による変更である。草案の版（`common/v1alpha1`、`loj-history/v1alpha1`、`loj-glyphs/v1alpha1`、`loj-registry/v1alpha1`、`loj-rebuild/v1alpha1`）への変更であり、版番号は上げない。表の「必須」の列やschemaだけが定め、本文に要求の語がなかった制約を、要求として読めるようにした。既存のケースの期待結果は変わらない。
+
+- 規範仕様の入口の要求レベル: 要件のフィールドの表の「必須」「任意」「〜で必須」と値の列挙の読み方を定めた。条件の外での禁止は、この読み方から導かず、本文に書くとした。schemaは表と本文の写しであり、食い違いは欠陥とした。
+- HIST-01・GLYPH-01・REG-01・REBR-01: ファイルが、その`schemaVersion`のschemaに合わなければならないとした。
+- VAL-07: schemaに合わない箇所を、その制約を定める要件の規則で報告し、未知のフィールド等は各種類のファイルと形式の要件で報告するとした。取得を伴わない参照の形の規則（FIXREF-01の構造化形式、FIXREF-03の`revision`、FIXREF-04のハッシュの書式、RID-04の登録空間の書式）の違反を、その参照を含むファイルの検査の結果として報告するとした。
+- TYPE-05: Evidenceの数を記載の数で数え、`source`の解決はTYPE-03で報告するとした。
+- TYPE-01: `space`の形をRID-04への要約とした。RID-04: 登録空間の識別子の書式に要求の語を付け、RecordRefの`space`の書式の違反もRID-04で報告するとした。
+- RID-01・RID-02・RID-05: 登録台帳の中のIDの衝突（大小文字の違いと別名を含む）を、一方が統合・分割・撤回したRecordならRID-05、そうでなければRID-01で報告するとした。大小文字だけが違うIDの禁止は、RID-01の衝突の確認に含め、RID-02は要約にした。
+- REG-02: `replacedBy`の`record`が同じ登録台帳で解決できなければならないとした。
+- REV-01、TIME-02、FIXREF-03、HIST-04、HIST-10: revision_idの形、`precision`に合わせた`value`の書式、固定参照の`revision`、`basedOn`の参照先と循環、`replacedBy`のrevision_idの存在に要求の語を付けた。
+- HIST-08: `absent`のRevisionが`package`・`sources`・`glyphCheck`・`glyphNotes`を持たないこと、`partial`でないRevisionが`gaps`を持たないこと、`sources`が一つ以上のEvidenceを持つことを、本文に書いた（schemaと同じ）。
+- 要件との対応表を更新した。
+
 ## 重複・見出しの違反の診断の位置と、Manifestの意味の違反（2026-11-13、草案）
 
 [law-of-japan/loj-spec#67](https://github.com/law-of-japan/loj-spec/issues/67)による変更である。草案の版（`loj/v1alpha2`、`common/v1alpha1`）への変更であり、版番号は上げない。診断の規則と意味ASTは変わらない。診断の位置の規則は、読み方が二つあった箇所を一つにした。`law.yaml`の中の重複の位置は、定めないことにした。既存のケースの期待結果は変わらない。

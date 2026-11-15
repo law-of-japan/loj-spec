@@ -3,7 +3,7 @@
 ## REV-01 revision_idの性質
 
 - Revisionは、組（Record ID、revision_id）で識別する。revision_idは、一つのRecordの中で一意であればよい。
-- revision_idは、Crockford Base32の小文字（`0-9a-hjkmnp-tv-z`）8文字の不透明な識別子とする。
+- revision_idは、Crockford Base32の小文字（`0-9a-hjkmnp-tv-z`）8文字の不透明な識別子でなければならない（MUST）。
 - revision_idから、施行日・改正法の番号・版の順序を導いてはならない（MUST NOT）。revision_idの並べ替えで施行の順を得てはならない。
 - 新しいrevision_idは、ランダムに発行し、同じRecordの既存のID（撤回・統合・分割したものを含む）と衝突しないことを確かめなければならない（MUST）。連番や時刻を含む方式を使ってはならない（MUST NOT）。
 - 次の変更では、revision_idを変えてはならない（MUST NOT）。施行日・改正法の番号の訂正、成立根拠や出典の追加、本文の記録訂正・復元の進展（記録版の更新）、可読ラベルの変更、施行時点の確定。
