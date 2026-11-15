@@ -2803,6 +2803,55 @@
       },
       "expected": "conformance/v1alpha2/expected/pkg-173.json",
       "success": false
+    },
+    {
+      "id": "pkg-174",
+      "title": "全角空白だけのセル",
+      "requirements": [
+        "DIR-02",
+        "MD-04"
+      ],
+      "check": "L1",
+      "normative": true,
+      "input": {
+        "kind": "package",
+        "path": "conformance/v1alpha2/invalid/pkg-174/law.yaml"
+      },
+      "expected": "conformance/v1alpha2/expected/pkg-174.json",
+      "success": false
+    },
+    {
+      "id": "pkg-175",
+      "title": "NBSPだけの項",
+      "requirements": [
+        "DIR-02",
+        "MD-04"
+      ],
+      "check": "L1",
+      "normative": true,
+      "input": {
+        "kind": "package",
+        "path": "conformance/v1alpha2/invalid/pkg-175/law.yaml"
+      },
+      "expected": "conformance/v1alpha2/expected/pkg-175.json",
+      "success": false
+    },
+    {
+      "id": "pkg-176",
+      "title": "ゼロ幅の字だけのセル（空白以外の文字）",
+      "requirements": [
+        "DIR-02",
+        "MD-04",
+        "TABLE-03"
+      ],
+      "check": "L1",
+      "normative": true,
+      "input": {
+        "kind": "package",
+        "path": "conformance/v1alpha2/valid/pkg-176/law.yaml"
+      },
+      "expected": "conformance/v1alpha2/expected/pkg-176.json",
+      "success": true
     }
   ]
 }
