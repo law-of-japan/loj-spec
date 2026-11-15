@@ -2,6 +2,14 @@
 
 見出しの「草案」は、[草案の版](spec/README.md#版の状態)への変更であることを示す。版の状態の正は、[規範仕様の入口](spec/README.md#規範とするもの)の表にある。版を公開したときは、公開の日付の項目を加える。
 
+## 記録がないものとして扱うLoJ-Reviewedの負例（2026-11-16、草案）
+
+[law-of-japan/loj-spec#86](https://github.com/law-of-japan/loj-spec/issues/86)による変更である。草案の版（`common/v1alpha1`）への変更であり、版番号は上げない。
+
+- CHG-03: 値の前後の空白（U+0020、U+0009）を除くと空になる`LoJ-Reviewed`も、値が空のものとして記録がないものとして扱うとした。空白だけの値を記録とみなすかが決まっていなかった。gitのtrailerの読み取りも値の前後の空白を除く。
+- 適合ケース: ASTを生成できない版のファイルを変える`format`のcommitで、`LoJ-Reviewed`を二つ置くもの（common-029）、値が空のもの（common-030）、値が空白だけのもの（common-031）の負例を加えた（CHG-04の違反）。
+- `author_next_cases.py`: 空白だけの値を残すため、`commit`の整形を`verbatim`にして書けるようにした。既存のバンドルとハッシュは変わらない。
+
 ## 未確認・不明とした主張の理由の要求の一本化（2026-11-16、草案）
 
 [law-of-japan/loj-spec#85](https://github.com/law-of-japan/loj-spec/issues/85)による変更である。草案の版（`common/v1alpha1`）への変更であり、版番号は上げない。適合の結果、診断の規則、ASTは変わらない。
