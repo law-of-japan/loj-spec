@@ -61,7 +61,7 @@ ASTは、`schemaVersion`・`law`・`root`への投影を、位置情報を除い
   LoJ-Reviewed: https://example.invalid/law-repository/pull/12
   ```
 
-- commitメッセージとtrailerは、UTF-8で書く。
+- commitメッセージとtrailerは、UTF-8で書く。本要件のtrailerの名前（`LoJ-Change`、`LoJ-Revisions`、`LoJ-Reviewed`）は、大文字・小文字を区別して比べる。
 - 種類の宣言を、ホスティングサービスのラベル等だけに置いてはならない（MUST NOT）。cloneした先でも記録版の履歴として読めるようにするためである。
 - 一つのcommitの種類は一つとする。PRを統合するときにcommitをまとめる（squash）場合は、種類が同じcommitに限る。種類の違うcommitを含むPRは、rebaseで統合する。その場合、正本ブランチに並ぶ各commitが、それぞれ単独で変更検査を受ける。
 - 正本ブランチへの統合は、正本ブランチの履歴が一本になる方法（squash、rebase）で行う。正本ブランチにmergeのcommit（親が二つ以上のcommit）を置いてはならない（MUST NOT）。種類の宣言を一つのcommitに一つとし、比べる変更前の記録版を親のcommitに一意に定めるためである。

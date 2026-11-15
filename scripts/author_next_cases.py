@@ -397,6 +397,7 @@ def build_bundle(path, steps=None):
         git("init", "-q", "-b", "main")
         git("config", "core.autocrlf", "false")
         for i, (subject, kind, with_revs, files, *extra) in enumerate(steps):
+            assert kind or not extra, subject  # trailers follow a declaration
             for old in repo.glob("versions/*/*.md"):
                 old.unlink()
             for name, body in files.items():
