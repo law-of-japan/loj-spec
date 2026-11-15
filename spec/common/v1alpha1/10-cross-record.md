@@ -4,7 +4,7 @@ L4「他法令との参照整合性」の検査を、Record間の参照につい
 
 ## XREF-01 関係の解決
 
-- 関係（改正・廃止・全部改正等）の起点・終点のRecordを、登録台帳で解決できるかを検査する。他の登録空間のRecordは、登録空間とRecord IDの組で解決する。
+- 関係（改正・廃止・全部改正等）の起点・終点のRecordを、登録台帳で解決できるかを検査する。他の登録空間のRecordは、登録空間とRecord IDの組で解決する。本版の入力は一つの登録台帳だけなので、他の登録空間のRecordは未取得になる（[VAL-03](03-validation.md)）。
 - 解決の対象はRecordであり、リポジトリの存在ではない。本文を収録していないRecordも、登録台帳にあれば解決済みとする。
 - 統合したRecordへの参照は統合先へ解決する。分割したRecordへの参照は候補を返し、解決済みにしてはならない（MUST NOT）。
 - 登録台帳で`status: withdrawn`（[REG-02](../../loj-registry/v1alpha1/01-registry.md)）のRecordを、不存在確認済みのRecordとする。確定した関係（`status: active`で、`verification.state`が`confirmed`の関係）が、起点または終点に不存在確認済みのRecordを参照している場合は、違反とする。

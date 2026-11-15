@@ -305,6 +305,34 @@
           ]
         }
       ]
+    },
+    {
+      "id": "reg-012",
+      "title": "他の登録空間を指す統合先",
+      "requirements": [
+        "REG-02",
+        "VAL-03"
+      ],
+      "check": "registry",
+      "normative": true,
+      "input": {
+        "kind": "registry",
+        "path": "conformance/loj-registry/v1alpha1/invalid/reg-012/registry"
+      },
+      "expected": "conformance/loj-registry/v1alpha1/expected/reg-012.json",
+      "success": false,
+      "derivedFrom": [
+        {
+          "path": "conformance/loj-registry/v1alpha1/invalid/reg-012/registry",
+          "from": "conformance/loj-registry/v1alpha1/valid/reg-001/registry",
+          "edits": [
+            {
+              "file": "records/k7m2p9qd3x.yaml",
+              "content": "schemaVersion: loj-registry/v1alpha1\nid: k7m2p9qd3x\nlabel: 祝日法の重複した登録（架空）\nstatus: merged\nidentity:\n  evidence: [{source: src-fiction, locator: 登録の記録}]\n  verification: {state: confirmed}\ncollection: {state: notCollected}\nsources:\n  - {id: src-fiction, kind: other, title: 架空の登録の記録（適合ケース）}\nnumbers: []\nexternalIds: []\nreplacedBy:\n  - record: {id: 19480720-law-178, space: other-space, label: 昭和二十三年法律第百七十八号}\n    evidence: [{source: src-fiction, locator: 統合の記録}]\n    verification: {state: confirmed}\n"
+            }
+          ]
+        }
+      ]
     }
   ]
 }
