@@ -10,6 +10,14 @@
 - 適合ケース: ASTを生成できない版のファイルを変える`format`のcommitで、`LoJ-Reviewed`を二つ置くもの（common-029）、値が空のもの（common-030）、値が空白だけのもの（common-031）の負例を加えた（CHG-04の違反）。
 - `author_next_cases.py`: 空白だけの値を残すため、`commit`の整形を`verbatim`にして書けるようにした。既存のバンドルとハッシュは変わらない。
 
+## 条件の外で禁止するフィールドの一覧（2026-11-16）
+
+[law-of-japan/loj-spec#83](https://github.com/law-of-japan/loj-spec/issues/83)による変更である。仕様の資料の検査の変更であり、規範の本文、schema、適合ケースは変わらない。
+
+- [要件との対応表](docs/coverage.md#条件の外で禁止するフィールド)に、草案の版のschemaが`if`/`then`/`else`で条件の外のフィールドを禁止している箇所と、その禁止を書いた本文の要件の一覧を加えた。
+- `verify.py`は、schemaから禁止を抽出して一覧と一致することを検査し（失敗）、禁止の文が本文にないフィールドを警告として挙げる（失敗にしない）。
+- 本文に禁止の文がない箇所（`category`、`determinedBy`、`conditions`、`totallyRevises`、`replacedBy`、`termination`の根拠、再構築報告の`count`・`examples`）は、仕様の欠陥として[law-of-japan/loj-spec#104](https://github.com/law-of-japan/loj-spec/issues/104)で扱う。
+
 ## 未確認・不明とした主張の理由の要求の一本化（2026-11-16、草案）
 
 [law-of-japan/loj-spec#85](https://github.com/law-of-japan/loj-spec/issues/85)による変更である。草案の版（`common/v1alpha1`）への変更であり、版番号は上げない。適合の結果、診断の規則、ASTは変わらない。
