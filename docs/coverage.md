@@ -133,6 +133,8 @@ XREF-05・XREF-06（2026-11-12、[law-of-japan/loj-spec#13](https://github.com/l
 
 適合レベルとは別に報告する検査の結果（VAL-04）と、宣言のないcommitの規則（CHG-03）（2026-11-16、[law-of-japan/loj-spec#115](https://github.com/law-of-japan/loj-spec/issues/115)）は、既存のケースが当たる。変更検査の未完了（common-025・027）、登録台帳・再構築報告の不合格（reg-002〜、rebuild-002〜）、宣言のないcommit（common-006・034・035）である。`LoJ-Change`の値が種類でない負例（common-040）を加えた。common-040の`requirements`のCHG-01は、値を比べる種類の表を示すもので、診断はCHG-03だけである（CHG-01の診断は出ない）。mergeのcommitのケースは、親が二つのcommitを持つ`git bundle`が要るので、まだない。参照の解決のケースは各参照の`references`で比べ、検査の結果を挙げていない（CONF-01）。
 
+CHG-02の`correction`・`officialCorrection`の根拠の判定（2026-11-16、[law-of-japan/loj-spec#116](https://github.com/law-of-japan/loj-spec/issues/116)）は、官報正誤のSourceを本文の出典に加える`officialCorrection`の正例（common-041）と、官報正誤のSource（`kind: officialCorrection`）を`sources`に置くが`text.sources`で指さない`officialCorrection`の負例（common-042）がある。`correction`の根拠は、既存の正例（common-004、common-024、common-032）の`text.sources`が当たる。本文のない版を宣言した`correction`の負例は、まだない。
+
 TIME-03は、hist-004、hist-015〜018のほか、`pending`を基準とする`derived`に`value`を書いた負例（hist-044）と、`value`の書式（`YYYY-MM-DD`）に反する負例（hist-045）がある。
 
 フィールドの改名（2026-11-12、[law-of-japan/loj-spec#29](https://github.com/law-of-japan/loj-spec/issues/29)）は、改めたschemaで正例のYAMLを検査して確かめる。`law.yaml`の`sourceUris`（旧`sources`）は任意のフィールドで、v1alpha2の正例に使用例がなく、まだケースがない。旧名は閉じたschemaにより未知のフィールドとして拒否されるが、旧名を使う負例は加えていない（未知のフィールドの負例は、Manifestのpkgのケースと、Revisionのhist-005にある）。
