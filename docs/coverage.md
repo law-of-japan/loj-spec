@@ -149,7 +149,7 @@ CHG-03のmergeのcommit（2026-11-16、[law-of-japan/loj-spec#120](https://githu
 
 宣言した版の本文の内容の変化（2026-11-16、[law-of-japan/loj-spec#122](https://github.com/law-of-japan/loj-spec/issues/122)）は、宣言した版の本文を変えず、`text.sources`の箇所だけを直す`correction`の正例（common-047）がある。CHG-01はこの宣言を禁じるが、CHG-02の検査は宣言した版のASTを比べないので、変更検査は合格する。宣言した版がASTを生成できない`correction`・`restoration`で、CHG-04の判定不能が出ないこと（2026-11-16、[law-of-japan/loj-spec#126](https://github.com/law-of-japan/loj-spec/issues/126)）は、L1が不合格の版（条の見出しに構造ラベルがない。HEAD-01）の本文を直し、変更後もL1が不合格のままの`correction`の正例（common-048）と、第一条だけの一部しか本文がない版（`text.status: partial`、`gaps`）に第二条を補い、`complete`にする`restoration`の正例（common-049）がある。どちらも宣言した版のほかに版がないので、比べるASTはなく、合格になる。ASTを比べる版（metadataではすべての版）がASTを生成できない場合の判定不能は、common-025が当たる。`officialCorrection`は、宣言した版の扱いが`correction`と同じ行なので、加えていない。
 
-TIME-03は、hist-004、hist-015〜018のほか、`pending`を基準とする`derived`に`value`を書いた負例（hist-044）と、`value`の書式（`YYYY-MM-DD`）に反する負例（hist-045）がある。
+TIME-03は、hist-004、hist-015〜018のほか、`pending`を基準とする`derived`に`value`を書いた負例（hist-044）と、`value`の書式（`YYYY-MM-DD`）に反する負例（hist-045）がある。`calc`のない`derived`の`value`を検査せず、結果を未完了にしないこと（2026-11-16、[law-of-japan/loj-spec#136](https://github.com/law-of-japan/loj-spec/issues/136)）は、`calc`のない施行の時点を持ち、L3（履歴構造）の合格を期待するhist-001が当たる。警告を出すかは任意（MAY）なので、警告は期待結果に挙げない。
 
 フィールドの改名（2026-11-12、[law-of-japan/loj-spec#29](https://github.com/law-of-japan/loj-spec/issues/29)）は、改めたschemaで正例のYAMLを検査して確かめる。`law.yaml`の`sourceUris`（旧`sources`）は任意のフィールドで、v1alpha2の正例に使用例がなく、まだケースがない。旧名は閉じたschemaにより未知のフィールドとして拒否されるが、旧名を使う負例は加えていない（未知のフィールドの負例は、Manifestのpkgのケースと、Revisionのhist-005にある）。
 
