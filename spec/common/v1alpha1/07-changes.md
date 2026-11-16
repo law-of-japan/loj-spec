@@ -76,8 +76,9 @@ ASTは、`schemaVersion`・`law`・`root`への投影を、位置情報を除い
   - `revisionFix`の取り消し（撤回・統合・分割の取り消し）: `revisionFix`とし、Revisionの`status`と`replacedBy`を戻す。Revisionを削除しない。
   - `migration`の取り消し: `migration`とし、旧い版への対応表を規範として提供する版の組に限る。対応表を提供する組がない本版では、`migration`もその取り消しも宣言できない。
   - そのほかの種類の取り消し: 取り消す変更と同じ種類とする（例: `correction`の取り消しは`correction`）。
-- mergeのcommit（親が二つ以上）は、比べずに変更検査で不合格とする。
-- そのほかの各commitは、その親のcommitと比べて検査する。二つの記録版の間に複数のcommitがある場合は、各commitを順に検査する。宣言のないcommitと、宣言と検査の結果が合わないcommitは、不合格とする。
+- mergeのcommitでない各commitは、その親のcommitと比べて検査する。二つの記録版の間に複数のcommitがある場合は、各commitを順に検査する。
+- 次のcommitは、種類ごとの検査をせずに不合格とし、本要件の規則で報告する。宣言のないcommit（trailerを持たないcommit、`LoJ-Change`のないcommit、構文に合わない宣言のcommitを含む）、`LoJ-Change`の値が種類（[CHG-01](#chg-01-変更の種類)の表）でないcommit、mergeのcommit（親が二つ以上。比べない）である。値が種類でない宣言は、種類の宣言に当たらない。
+- 宣言と検査の結果が合わないcommitは、不合格とし、その検査を定める要件の規則で報告する（例: `format`と宣言してASTを変えたcommitは[CHG-02](#chg-02-種類ごとの検査)、ASTを生成できない版の自動変換は[CHG-04](#chg-04-astを生成できない版)）。
 
 ## CHG-04 ASTを生成できない版
 

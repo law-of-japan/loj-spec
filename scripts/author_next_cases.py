@@ -1076,6 +1076,19 @@ def trailer_syntax():
         {"results": [{"check": "change", "result": "incomplete"}]}, True)
 
 
+# --- 2026-11-16 (#115): a LoJ-Change value that is no kind is reported by CHG-03 -------------------------
+def unknown_kind():
+    """The second commit declares a value that is not a kind of CHG-01; CHG-03 reports it and no kind check runs."""
+    bundle = next_dir("common", False) / "repo.bundle"
+    c1, c2 = build_bundle(bundle, [
+        ("制定時の版を加える", "revisionAdd", True, fictional_files("架空の雲を保管すろ。\n")),
+        ("第一条の誤転記を直す（種類でない値）", "fix", True, fictional_files("架空の雲を保管する。\n")),
+    ])
+    add("common", "変更の種類でない値の宣言", ["CHG-03", "CHG-01"], "change",
+        {"kind": "change", "bundle": rel(bundle), "base": c1, "head": c2},
+        {"results": [{"check": "change", "result": "fail"}], "diagnostics": [diag("CHG-03", SV["common"])]}, False)
+
+
 def main():
     for suite, folder in FOLDER.items():
         for group in ("invalid", "expected"):
@@ -1103,6 +1116,7 @@ def main():
     glyph_file_selection()
     conditional_fields()
     trailer_syntax()
+    unknown_kind()
     assert not DERIVED, sorted(DERIVED)  # every copy is listed by the case that owns it
     marked = {case["id"] for cases in INDEX.values() for case in cases if "rejectedBy" in case}
     assert marked == SCHEMA_REJECTED, SCHEMA_REJECTED - marked

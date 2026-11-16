@@ -131,6 +131,8 @@ XREF-05・XREF-06（2026-11-12、[law-of-japan/loj-spec#13](https://github.com/l
 
 条件の外で禁止するフィールド（2026-11-16、[law-of-japan/loj-spec#104](https://github.com/law-of-japan/loj-spec/issues/104)）は、本文に禁止を加えたフィールドごとに、schemaで落ちる負例がある。`conditions`のある`unsurveyed`の適用関係（hist-056、HIST-07）、制定の起点の`totallyRevises`（hist-057、HIST-04）、`active`のRevisionの`replacedBy`（hist-058、HIST-10）、`repealed`の項目の`evidence`・`verification`（hist-059、HIST-12）、`expired`の項目の`relation`（hist-060、HIST-12）、`pending`の`determinedBy`（hist-061、TIME-01）、`structure`の差の`count`（rebuild-005、REBR-05）、`active`のRecordの`replacedBy`（reg-013、REG-02）である。同じ文のほかのフィールド・値（`repealed`の`effective`、`totallyRevised`の項目、`examples`等）は、同じ規則・同じschemaの枝なので、加えていない。`category`の禁止（CONF-01）は、適合ケースの索引・期待結果と実装の報告の形であり、検査の入力にならないので、ケースを作らない。索引と期待結果は`verify.py`がschemaで検査する。
 
+適合レベルとは別に報告する検査の結果（VAL-04）と、宣言のないcommitの規則（CHG-03）（2026-11-16、[law-of-japan/loj-spec#115](https://github.com/law-of-japan/loj-spec/issues/115)）は、既存のケースが当たる。変更検査の未完了（common-025・027）、登録台帳・再構築報告の不合格（reg-002〜、rebuild-002〜）、宣言のないcommit（common-006・034・035）である。`LoJ-Change`の値が種類でない負例（common-040）を加えた。common-040の`requirements`のCHG-01は、値を比べる種類の表を示すもので、診断はCHG-03だけである（CHG-01の診断は出ない）。mergeのcommitのケースは、親が二つのcommitを持つ`git bundle`が要るので、まだない。参照の解決のケースは各参照の`references`で比べ、検査の結果を挙げていない（CONF-01）。
+
 TIME-03は、hist-004、hist-015〜018のほか、`pending`を基準とする`derived`に`value`を書いた負例（hist-044）と、`value`の書式（`YYYY-MM-DD`）に反する負例（hist-045）がある。
 
 フィールドの改名（2026-11-12、[law-of-japan/loj-spec#29](https://github.com/law-of-japan/loj-spec/issues/29)）は、改めたschemaで正例のYAMLを検査して確かめる。`law.yaml`の`sourceUris`（旧`sources`）は任意のフィールドで、v1alpha2の正例に使用例がなく、まだケースがない。旧名は閉じたschemaにより未知のフィールドとして拒否されるが、旧名を使う負例は加えていない（未知のフィールドの負例は、Manifestのpkgのケースと、Revisionのhist-005にある）。

@@ -991,6 +991,24 @@
       },
       "expected": "conformance/common/v1alpha1/expected/common-039.json",
       "success": true
+    },
+    {
+      "id": "common-040",
+      "title": "変更の種類でない値の宣言",
+      "requirements": [
+        "CHG-03",
+        "CHG-01"
+      ],
+      "check": "change",
+      "normative": true,
+      "input": {
+        "kind": "change",
+        "bundle": "conformance/common/v1alpha1/invalid/common-040/repo.bundle",
+        "base": "f1162fe2cfefa04e9a0d656706e37977fb3d0731",
+        "head": "49c7d236e715d4ce697907c49bdf0a5576defc36"
+      },
+      "expected": "conformance/common/v1alpha1/expected/common-040.json",
+      "success": false
     }
   ]
 }
