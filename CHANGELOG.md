@@ -2,6 +2,14 @@
 
 見出しの「草案」は、[草案の版](spec/README.md#版の状態)への変更であることを示す。版の状態の正は、[規範仕様の入口](spec/README.md#規範とするもの)の表にある。版を公開したときは、公開の日付の項目を加える。
 
+## mergeのcommitの適合ケース（2026-11-16）
+
+[law-of-japan/loj-spec#120](https://github.com/law-of-japan/loj-spec/issues/120)による変更である。適合ケースの追加であり、規範の本文は変えない。既存のケースの期待結果は変わらない。
+
+- 適合ケース: 分岐したブランチの記録訂正を、mergeのcommit（親が二つ）で`main`に統合する負例（common-046、CHG-03）を加えた。
+- `scripts/author_next_cases.py`: `build_bundle`に、ブランチを作る・切り替える手順と、mergeのcommitを作る手順を加えた。既存のバンドルとcommitのハッシュは変わらない。
+- 要件との対応表を更新した。
+
 ## 種類の宣言と宣言した版の重複（2026-11-16、草案）
 
 [law-of-japan/loj-spec#117](https://github.com/law-of-japan/loj-spec/issues/117)による変更である。草案の版（`common/v1alpha1`）への変更であり、版番号は上げない。既存のケースの期待結果は変わらない。判断はDDR-015に追記した。
