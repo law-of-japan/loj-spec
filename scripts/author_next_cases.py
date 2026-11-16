@@ -357,6 +357,8 @@ def cross_record():
 FIX_LAW = {"id": "20990101-act-1", "title": "架空雲保管法（実在しないサンプル）", "type": "act", "number": "架空法律第一号",
            "promulgatedAt": "2099-01-01", "language": "ja"}
 REV = "b7k2m9qd"
+# The kind of a build_bundle step whose subject is the whole commit message, written as given (CHG-03 syntax).
+RAW = "raw"
 NODE = "20990101-act-1/main/article/1/paragraph/1"
 
 
@@ -398,7 +400,7 @@ def build_bundle(path, steps=None, verbatim=False):
         git("init", "-q", "-b", "main")
         git("config", "core.autocrlf", "false")
         for i, (subject, kind, with_revs, files, *extra) in enumerate(steps):
-            assert kind or not extra, subject  # trailers follow a declaration
+            assert kind not in (None, RAW) or not extra, subject  # trailers follow a declaration
             for old in repo.glob("versions/*/*.md"):
                 old.unlink()
             for name, body in files.items():
@@ -406,9 +408,8 @@ def build_bundle(path, steps=None, verbatim=False):
                 target.parent.mkdir(parents=True, exist_ok=True)
                 target.write_bytes(body.encode("utf-8"))
             git("add", "-A")
-            # A subject with a line feed is a whole message, written as given (CHG-03: the trailer syntax).
-            message = subject if "\n" in subject else subject + "\n"
-            if kind:
+            message = subject if kind == RAW else subject + "\n"
+            if kind and kind != RAW:
                 message += "\nLoJ-Change: " + kind + "\n" + ("LoJ-Revisions: " + REV + "\n" if with_revs else "")
                 # Further trailers (CHG-04: LoJ-Reviewed) follow the declaration; a step without a kind has none.
                 message += "".join(extra)
@@ -1023,13 +1024,13 @@ def trailer_syntax():
     bundle_pos = next_dir("common", True) / "repo.bundle"
     c1, c2, c3, c4, c5 = build_bundle(bundle_pos, [
         ("制定時の版を加える", "revisionAdd", True, fictional_files("架空の雲を保管すろ。\n")),
-        ("第一条の誤転記を直す\n\nLoJ-Change:\tcorrection\nLoJ-Revisions:  " + REV + "\n", None, False,
+        ("第一条の誤転記を直す\n\nLoJ-Change:\tcorrection\nLoJ-Revisions:  " + REV + "\n", RAW, False,
          fictional_files("架空の雲を保管する。\n")),
         ("条ごとにファイルを分ける", "format", True, fictional_files("架空の雲を保管する。\n", files_split=True)),
-        ("第一条の誤転記を直す（名前とコロンの間に空白）\n\nLoJ-Change : correction\nLoJ-Revisions: " + REV + "\n", None, False,
+        ("第一条の誤転記を直す（名前とコロンの間に空白）\n\nLoJ-Change : correction\nLoJ-Revisions: " + REV + "\n", RAW, False,
          fictional_files("架空の雲を保管し続ける。\n", files_split=True)),
         ("第一条の誤転記を直す（trailerの後の段落）\n\nLoJ-Change: correction\nLoJ-Revisions: " + REV + "\n\n原典の箇所は第一条。\n",
-         None, False, fictional_files("架空の雲を保管し続けろ。\n", files_split=True)),
+         RAW, False, fictional_files("架空の雲を保管し続けろ。\n", files_split=True)),
     ])
     bundle = rel(bundle_pos)
     add("common", "コロンの後にタブと二つの空白を置いた種類の宣言", ["CHG-03", "CHG-02"], "change",
@@ -1056,6 +1057,22 @@ def trailer_syntax():
         add("common", title, ["CHG-04"], "change",
             {"kind": "change", "bundle": rel(dest), "base": first[ident]["base"], "head": first[ident]["head"]},
             {"results": [{"check": "change", "result": result}], "diagnostics": diagnostics}, success)
+    # CRLF line ends: the CR at the end of each line is removed, so the declaration reads as correction.
+    bundle_pos = next_dir("common", True) / "repo.bundle"
+    c1, c2 = build_bundle(bundle_pos, [
+        ("制定時の版を加える", "revisionAdd", True, fictional_files("架空の雲を保管すろ。\n")),
+        ("第一条の誤転記を直す（CRLFの行末）\r\n\r\nLoJ-Change: correction\r\nLoJ-Revisions: " + REV + "\r\n", RAW, False,
+         fictional_files("架空の雲を保管する。\n")),
+    ], verbatim=True)
+    add("common", "行末をCRLFにした種類の宣言", ["CHG-03", "CHG-02"], "change",
+        {"kind": "change", "bundle": rel(bundle_pos), "base": c1, "head": c2},
+        {"results": [{"check": "change", "result": "pass"}]}, True)
+    # Only U+0020 and U+0009 are trimmed: a value of U+3000 alone is a record, as in common-027.
+    bundle_pos = next_dir("common", True) / "repo.bundle"
+    _, c2, c3 = build_bundle(bundle_pos, reviewed_format_steps("LoJ-Reviewed: " + chr(0x3000) + "\n"), verbatim=True)
+    add("common", "ASTを生成できない版のファイルを、人のレビューの記録を値を全角空白だけにして付けて書式変更で変える",
+        ["CHG-04", "CHG-03"], "change", {"kind": "change", "bundle": rel(bundle_pos), "base": c2, "head": c3},
+        {"results": [{"check": "change", "result": "incomplete"}]}, True)
 
 
 def main():

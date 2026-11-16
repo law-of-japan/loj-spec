@@ -955,6 +955,42 @@
           "edits": []
         }
       ]
+    },
+    {
+      "id": "common-038",
+      "title": "行末をCRLFにした種類の宣言",
+      "requirements": [
+        "CHG-03",
+        "CHG-02"
+      ],
+      "check": "change",
+      "normative": true,
+      "input": {
+        "kind": "change",
+        "bundle": "conformance/common/v1alpha1/valid/common-038/repo.bundle",
+        "base": "f1162fe2cfefa04e9a0d656706e37977fb3d0731",
+        "head": "eddbd5c5e78677575c8daa27fb618cd141f15fe2"
+      },
+      "expected": "conformance/common/v1alpha1/expected/common-038.json",
+      "success": true
+    },
+    {
+      "id": "common-039",
+      "title": "ASTを生成できない版のファイルを、人のレビューの記録を値を全角空白だけにして付けて書式変更で変える",
+      "requirements": [
+        "CHG-04",
+        "CHG-03"
+      ],
+      "check": "change",
+      "normative": true,
+      "input": {
+        "kind": "change",
+        "bundle": "conformance/common/v1alpha1/valid/common-039/repo.bundle",
+        "base": "e9c821aea8a0fdcaaaa852ea27c08d9476dbb2a7",
+        "head": "779919dd0baced6704fd5eafdc17c498bd3690a9"
+      },
+      "expected": "conformance/common/v1alpha1/expected/common-039.json",
+      "success": true
     }
   ]
 }
