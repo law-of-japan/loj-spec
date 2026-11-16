@@ -61,7 +61,7 @@ ASTは、`schemaVersion`・`law`・`root`への投影を、位置情報を除い
   - 候補の段落のすべての行が、名前、コロン（`:`）、値の順の行（trailerの行）であるときだけ、その段落の各行をtrailerとして読む。名前はASCIIの英数字とハイフン（`-`）の1字以上の並びで、名前とコロンの間に空白を置かない。コロンの後の空白（U+0020、U+0009）は、なくても、いくつあってもよい。trailerの行に合わない行が一つでもあれば、そのcommitはtrailerを持たない。
   - 値は、コロンの後の文字列から、前後の空白（U+0020、U+0009）を除いたものとする。ほかの空白の字（U+3000、U+00A0等）は除かない。値のない行（例: `LoJ-Reviewed:`）もtrailerの行であり、値は空である。
 - `LoJ-Change`は、一つのcommitに一つだけ置く。値が同じでも、二つ以上置いてはならない（MUST NOT）。値は[CHG-01](#chg-01-変更の種類)の種類とする。
-- `LoJ-Revisions`は、一つのcommitに二つ以上置いてはならない（MUST NOT）。二つ以上の`LoJ-Revisions`の行を、まとめて読まない。これらの違反のcommitの扱いは、下の不合格のcommitの列挙による。`LoJ-Revisions`は、宣言した版（[CHG-02](#chg-02-種類ごとの検査)の表の「宣言した版」）のrevision_idを、カンマと空白（`, `）で区切って並べる。`LoJ-Revisions`のないcommitは、宣言した版がないものとして検査する。`format`、`metadata`、`migration`の検査は宣言した版を使わないので、これらの種類では、版パッケージのファイルを変えるかによらず、`LoJ-Revisions`を省略してよい（MAY）。書いても、検査の結果を変えない。
+- `LoJ-Revisions`は、一つのcommitに二つ以上置いてはならない（MUST NOT）。二つ以上の`LoJ-Revisions`の行を、まとめて読まない。`LoJ-Change`と`LoJ-Revisions`の重複のcommitの扱いは、どちらも下の不合格のcommitの列挙による。`LoJ-Revisions`は、宣言した版（[CHG-02](#chg-02-種類ごとの検査)の表の「宣言した版」）のrevision_idを、カンマと空白（`, `）で区切って並べる。`LoJ-Revisions`のないcommitは、宣言した版がないものとして検査する。`format`、`metadata`、`migration`の検査は宣言した版を使わないので、これらの種類では、版パッケージのファイルを変えるかによらず、`LoJ-Revisions`を省略してよい（MAY）。書いても、検査の結果を変えない。
 - `LoJ-Reviewed`は、人がレビューしたことの記録である。値は、レビューの所在（PRのURL、レビューした人等）を示す空でない文字列とする。一つのcommitに一つまで置ける（MAY）。値が空の`LoJ-Reviewed`と、二つ以上の`LoJ-Reviewed`は、記録がないものとして扱う。この記録を読むのは、ASTを生成できない版の書式の変換（[CHG-04](#chg-04-astを生成できない版)）だけである。それ以外のcommitの`LoJ-Reviewed`は、検査の結果を変えない。
 
   ```text
