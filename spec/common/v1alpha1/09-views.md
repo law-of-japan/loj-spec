@@ -26,7 +26,9 @@
   | 列に含めた版のうち、適用の条件がある版（`applicability.state: conditions`） | その版のrevision_idと、各条件の原文（`text`） |
   | 列に含めた版のうち、併存する版がある版 | その版のrevision_idと、併存する版それぞれのrevision_id |
 
-- 確定日は、時点値の要件（[TIME-03](06-time.md)）の定義による。併存する版とは、列に含めた版と同じ基礎状態（`basedOn`）を持つ、`status: active`の別のRevisionをいう（[HIST-04](../../loj-history/v1alpha1/01-history.md)の分岐）。併存する版を列から除いた場合は、除いた版としても示す。
+- 確定日は、時点値の要件（[TIME-03](06-time.md)）の定義による。併存する版とは、列に含めた版と同じrevision_idを基礎状態（`basedOn`）に持つ、`status: active`の別のRevisionをいう（[HIST-04](../../loj-history/v1alpha1/01-history.md)の分岐）。`basedOn`を持たない起点どうしと、`basedOn`が`{state: unknown}`のRevisionどうしは、同じ基礎状態の根拠がないので、併存する版としない。併存する版を列から除いた場合は、除いた版としても示す。
+- 併存する版は、基礎状態の分岐の事実だけで決める。分岐した版が適用関係の上で同時に適用されるかは、判断しない。
+- 適用の条件を調べていない版（`applicability.state: unsurveyed`）は、表の「適用の条件がある版」に当たらない。これは、その版に条件がないことを示すものではない。ビューは、これらの版に条件がないとも表示しない（上の、適用関係を主張しないことの要求による）。
 - 示すのは正本の値だけであり、どの版が適用されるか等の判断を加えない（[VIEW-01](#view-01-定義と一方向性)）。
 - 示す場所と書式は、ビューの形式による。Gitのブランチの形式の一例（commitのtrailerと索引ファイル）は、[付録A（参考）](appendix-a-history-branch.md)にある。
 
