@@ -1089,6 +1089,41 @@ def unknown_kind():
         {"results": [{"check": "change", "result": "fail"}], "diagnostics": [diag("CHG-03", SV["common"])]}, False)
 
 
+# --- 2026-11-16 (#116): the evidence of each declared version of officialCorrection (CHG-02) ----------------
+def official_correction_evidence():
+    """officialCorrection needs, after the change, an Evidence of text.sources that points to an officialCorrection Source."""
+    def with_seigo(files, cited=True):
+        """Add the officialCorrection Source; cite it from text.sources only when cited."""
+        out = dict(files)
+        history = out["history.yaml"].replace(
+            "  - {id: src-fiction, kind: other, title: 架空の原典}\n",
+            "  - {id: src-fiction, kind: other, title: 架空の原典}\n"
+            "  - {id: src-seigo, kind: officialCorrection, title: 架空の官報正誤}\n", 1)
+        assert history != files["history.yaml"]  # the Source was added
+        if cited:
+            cited_history = history.replace("      sources: [{source: src-fiction, locator: 本則}]\n",
+                                            "      sources: [{source: src-fiction, locator: 本則}, {source: src-seigo, locator: 第一条}]\n", 1)
+            assert cited_history != history  # the Evidence was added
+            history = cited_history
+        out["history.yaml"] = history
+        return out
+    bundle_pos = next_dir("common", True) / "repo.bundle"
+    c1, c2, c3 = build_bundle(bundle_pos, [
+        ("制定時の版を加える", "revisionAdd", True, fictional_files("架空の雲を保管すろ。\n")),
+        ("官報正誤により第一条を直す", "officialCorrection", True, with_seigo(fictional_files("架空の雲を保管する。\n"))),
+        ("官報正誤と宣言して、官報正誤を根拠にせず第一条を直す", "officialCorrection", True,
+         with_seigo(fictional_files("架空の雲を保管し続ける。\n"), cited=False)),
+    ])
+    add("common", "官報正誤のSourceを本文の出典に加える官報正誤", ["CHG-02", "CHG-01"], "change",
+        {"kind": "change", "bundle": rel(bundle_pos), "base": c1, "head": c2},
+        {"results": [{"check": "change", "result": "pass"}]}, True)
+    dest = next_dir("common", False) / "repo.bundle"
+    copy_file(dest, bundle_pos)
+    add("common", "官報正誤のSourceを本文の出典で指さない官報正誤", ["CHG-02", "CHG-01"], "change",
+        {"kind": "change", "bundle": rel(dest), "base": c2, "head": c3},
+        {"results": [{"check": "change", "result": "fail"}], "diagnostics": [diag("CHG-02", SV["common"])]}, False)
+
+
 def main():
     for suite, folder in FOLDER.items():
         for group in ("invalid", "expected"):
@@ -1117,6 +1152,7 @@ def main():
     conditional_fields()
     trailer_syntax()
     unknown_kind()
+    official_correction_evidence()
     assert not DERIVED, sorted(DERIVED)  # every copy is listed by the case that owns it
     marked = {case["id"] for cases in INDEX.values() for case in cases if "rejectedBy" in case}
     assert marked == SCHEMA_REJECTED, SCHEMA_REJECTED - marked

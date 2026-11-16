@@ -1009,6 +1009,49 @@
       },
       "expected": "conformance/common/v1alpha1/expected/common-040.json",
       "success": false
+    },
+    {
+      "id": "common-041",
+      "title": "官報正誤のSourceを本文の出典に加える官報正誤",
+      "requirements": [
+        "CHG-02",
+        "CHG-01"
+      ],
+      "check": "change",
+      "normative": true,
+      "input": {
+        "kind": "change",
+        "bundle": "conformance/common/v1alpha1/valid/common-041/repo.bundle",
+        "base": "f1162fe2cfefa04e9a0d656706e37977fb3d0731",
+        "head": "a335815db319570e97a2046e12f7918b78f9042a"
+      },
+      "expected": "conformance/common/v1alpha1/expected/common-041.json",
+      "success": true
+    },
+    {
+      "id": "common-042",
+      "title": "官報正誤のSourceを本文の出典で指さない官報正誤",
+      "requirements": [
+        "CHG-02",
+        "CHG-01"
+      ],
+      "check": "change",
+      "normative": true,
+      "input": {
+        "kind": "change",
+        "bundle": "conformance/common/v1alpha1/invalid/common-042/repo.bundle",
+        "base": "a335815db319570e97a2046e12f7918b78f9042a",
+        "head": "d759229e030d88651032d4f81d2feaf54168c2a4"
+      },
+      "expected": "conformance/common/v1alpha1/expected/common-042.json",
+      "success": false,
+      "derivedFrom": [
+        {
+          "path": "conformance/common/v1alpha1/invalid/common-042/repo.bundle",
+          "from": "conformance/common/v1alpha1/valid/common-041/repo.bundle",
+          "edits": []
+        }
+      ]
     }
   ]
 }

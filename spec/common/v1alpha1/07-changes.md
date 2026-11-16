@@ -34,6 +34,10 @@ ASTは、`schemaVersion`・`law`・`root`への投影を、位置情報を除い
 | `revisionFix` | 宣言した版と、撤回・統合・分割の対応の記録 | 宣言していない版のASTが一致する。撤回・統合・分割した旧IDを再利用していない |
 | `migration` | すべての版 | 新しい仕様の版が規範として提供するASTの対応表で変換した旧ASTが、新ASTと一致する |
 
+- `correction`・`officialCorrection`の「宣言した版ごとに根拠がある」は、変更後の記録版で、宣言した各版について次を確かめる。満たさない版があれば、本要件の規則で報告する。
+  - `correction`: 当該Revisionの`text.sources`が、Evidenceを一つ以上持つ。
+  - `officialCorrection`: 上に加えて、`text.sources`のEvidenceの少なくとも一つが、`kind: officialCorrection`のSource（官報正誤）を指す。
+- この確かめは、そのcommitが根拠を加えた・更新したことを求めない。根拠の内容が訂正に合うかは、原典と比べて確かめる事柄であり、変更検査では判定しない。
 - 従属するファイルの更新は、宣言した種類の変更に含まれ、別の種類として分けない（[CHG-01](#chg-01-変更の種類)の「種類ごとに別のcommitに分ける」には当たらない）。従属するファイルは、ASTの一致の検査の対象ではない。宣言していない版のASTは、従属するファイルを更新しても、変わってはならない（MUST NOT）。
 - 従属して更新できるのは、宣言した版（`revisionAdd`では加えた版）に関する部分に限る。宣言していない版のRevisionの項目、字体注記、再構築報告の対応を変えた場合は、変更検査で不合格とする。
 - `loj/v1alpha2`は、`loj/v1alpha1`からのASTの対応表を提供しない。`loj/v1alpha1`から`loj/v1alpha2`への移行は再構築（[REB-01](../../loj-rebuild/v1alpha1/01-rebuild.md)）で行い、`migration`を宣言してはならない（MUST NOT）。

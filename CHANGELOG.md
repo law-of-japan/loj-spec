@@ -2,6 +2,14 @@
 
 見出しの「草案」は、[草案の版](spec/README.md#版の状態)への変更であることを示す。版の状態の正は、[規範仕様の入口](spec/README.md#規範とするもの)の表にある。版を公開したときは、公開の日付の項目を加える。
 
+## 記録訂正と官報正誤の根拠の判定基準（2026-11-16、草案）
+
+[law-of-japan/loj-spec#116](https://github.com/law-of-japan/loj-spec/issues/116)による変更である。草案の版（`common/v1alpha1`）への変更であり、版番号は上げない。既存のケースの期待結果は変わらない。判断はDDR-015に追記した。
+
+- CHG-02: 「宣言した版ごとに根拠がある」を、変更後の記録版で判定するとした。`correction`では宣言した各版の`text.sources`がEvidenceを一つ以上持つこと、`officialCorrection`ではそれに加えて、少なくとも一つが`kind: officialCorrection`のSourceを指すこととした。そのcommitで根拠を加えることは求めない。違反はCHG-02の規則で報告する。
+- 適合ケース: 官報正誤のSourceを本文の出典に加える`officialCorrection`の正例（common-041）と、官報正誤のSourceを本文の出典で指さない`officialCorrection`の負例（common-042、CHG-02）を加えた。
+- 要件との対応表を更新した。
+
 ## 適合レベルとは別に報告する検査の結果と、宣言のないcommitの規則（2026-11-16、草案）
 
 [law-of-japan/loj-spec#115](https://github.com/law-of-japan/loj-spec/issues/115)による変更である。草案の版（`common/v1alpha1`）への変更であり、版番号は上げない。既存のケースの期待結果は変わらない。判断はDDR-016に追記した。
