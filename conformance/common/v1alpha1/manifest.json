@@ -1110,6 +1110,23 @@
       },
       "expected": "conformance/common/v1alpha1/expected/common-045.json",
       "success": false
+    },
+    {
+      "id": "common-046",
+      "title": "正本ブランチに置いたmergeのcommit",
+      "requirements": [
+        "CHG-03"
+      ],
+      "check": "change",
+      "normative": true,
+      "input": {
+        "kind": "change",
+        "bundle": "conformance/common/v1alpha1/invalid/common-046/repo.bundle",
+        "base": "f1162fe2cfefa04e9a0d656706e37977fb3d0731",
+        "head": "d803085ff73980588773dd7bbf3185fe04ccf505"
+      },
+      "expected": "conformance/common/v1alpha1/expected/common-046.json",
+      "success": false
     }
   ]
 }

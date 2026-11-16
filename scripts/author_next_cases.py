@@ -360,6 +360,15 @@ REV = "b7k2m9qd"
 # The kind of a build_bundle step whose subject is the whole commit message, written as given (CHG-03 syntax).
 RAW = "raw"
 NODE = "20990101-act-1/main/article/1/paragraph/1"
+# build_bundle steps that make no commit: create a branch at HEAD and switch to it, or switch to a branch (CHG-03 merge).
+BRANCH = "branch"
+CHECKOUT = "checkout"
+
+
+class Merge:
+    """The files of a build_bundle step that merges the named branch into HEAD with a merge commit (two parents)."""
+    def __init__(self, branch):
+        self.branch = branch
 
 
 def fictional_files(body1, files_split=False, label="制定", locator="本則"):
@@ -383,6 +392,14 @@ def fictional_files(body1, files_split=False, label="制定", locator="本則"):
 
 
 def build_bundle(path, steps=None, verbatim=False):
+    """Build a git bundle of the branch main from steps; return the hash of each commit, in the order of the steps.
+
+    A step is (subject, kind, with_revs, files, *trailers), or (BRANCH, name) and (CHECKOUT, name), which make no
+    commit. files is the whole set of files to write, or Merge(branch) for a merge commit of that branch.
+    The date of a commit is fixed by the number of its step, counting the steps that make no commit, so a step
+    put in before others changes the hashes of the commits after it. The bundle holds main only: a branch must
+    be merged into main, or its commits are left out.
+    """
     steps = steps if steps is not None else [
         ("制定時の版を加える", "revisionAdd", True, fictional_files("架空の雲を保管すろ。\n")),
         ("第一条の誤転記を直す", "correction", True, fictional_files("架空の雲を保管する。\n")),
@@ -396,19 +413,27 @@ def build_bundle(path, steps=None, verbatim=False):
     with tempfile.TemporaryDirectory() as tmp:
         repo = Path(tmp) / "repo"
         repo.mkdir()
-        git = lambda *args, **kw: subprocess.run(["git", "-C", str(repo), *args], check=True, capture_output=True, env=env, **kw)
+        git = lambda *args, **kw: subprocess.run(["git", "-C", str(repo), "-c", "commit.gpgsign=false", *args], check=True, capture_output=True, env=env, **kw)
         git("init", "-q", "-b", "main")
         git("config", "core.autocrlf", "false")
-        for i, (subject, kind, with_revs, files, *extra) in enumerate(steps):
+        for i, step in enumerate(steps):
+            if step[0] in (BRANCH, CHECKOUT):
+                git("checkout", "-q", *(["-b"] if step[0] == BRANCH else []), step[1])
+                continue
+            subject, kind, with_revs, files, *extra = step
             # Further trailers follow a declaration: a step without a kind, or with the whole message (RAW), has none.
             assert kind not in (None, RAW) or not extra, subject
-            for old in repo.glob("versions/*/*.md"):
-                old.unlink()
-            for name, body in files.items():
-                target = repo / name
-                target.parent.mkdir(parents=True, exist_ok=True)
-                target.write_bytes(body.encode("utf-8"))
-            git("add", "-A")
+            if isinstance(files, Merge):
+                # --no-ff keeps two parents even when HEAD could fast-forward; the commit below records the merge.
+                git("merge", "-q", "--no-ff", "--no-commit", files.branch)
+            else:
+                for old in repo.glob("versions/*/*.md"):
+                    old.unlink()
+                for name, body in files.items():
+                    target = repo / name
+                    target.parent.mkdir(parents=True, exist_ok=True)
+                    target.write_bytes(body.encode("utf-8"))
+                git("add", "-A")
             message = subject if kind == RAW else subject + "\n"
             if kind and kind != RAW:
                 message += "\nLoJ-Change: " + kind + "\n" + ("LoJ-Revisions: " + REV + "\n" if with_revs else "")
@@ -1155,6 +1180,26 @@ def duplicate_trailers():
         {"results": [{"check": "change", "result": "fail"}], "diagnostics": [diag("CHG-03", SV["common"])]}, False)
 
 
+# --- 2026-11-16 (#120): a merge commit on the canonical branch (CHG-03) ------------------------------------
+def merge_commit():
+    """A correction made on a branch is merged into main by a merge commit; CHG-03 fails the merge commit unchecked.
+
+    The correction (c2) alone passes, so however the commits between base and head are counted, only the merge
+    commit fails. It declares correction and the version, but a merge commit is not compared (CHG-03).
+    """
+    bundle = next_dir("common", False) / "repo.bundle"
+    c1, _, merge = build_bundle(bundle, [
+        ("制定時の版を加える", "revisionAdd", True, fictional_files("架空の雲を保管すろ。\n")),
+        (BRANCH, "fix"),
+        ("第一条の誤転記を直す", "correction", True, fictional_files("架空の雲を保管する。\n")),
+        (CHECKOUT, "main"),
+        ("第一条の誤転記の訂正をmergeする", "correction", True, Merge("fix")),
+    ])
+    add("common", "正本ブランチに置いたmergeのcommit", ["CHG-03"], "change",
+        {"kind": "change", "bundle": rel(bundle), "base": c1, "head": merge},
+        {"results": [{"check": "change", "result": "fail"}], "diagnostics": [diag("CHG-03", SV["common"])]}, False)
+
+
 def main():
     for suite, folder in FOLDER.items():
         for group in ("invalid", "expected"):
@@ -1185,6 +1230,7 @@ def main():
     unknown_kind()
     official_correction_evidence()
     duplicate_trailers()
+    merge_commit()
     assert not DERIVED, sorted(DERIVED)  # every copy is listed by the case that owns it
     marked = {case["id"] for cases in INDEX.values() for case in cases if "rejectedBy" in case}
     assert marked == SCHEMA_REJECTED, SCHEMA_REJECTED - marked
