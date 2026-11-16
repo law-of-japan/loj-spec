@@ -397,7 +397,8 @@ def build_bundle(path, steps=None, verbatim=False):
     A step is (subject, kind, with_revs, files, *trailers), or (BRANCH, name) and (CHECKOUT, name), which make no
     commit. files is the whole set of files to write, or Merge(branch) for a merge commit of that branch.
     The date of a commit is fixed by the number of its step, counting the steps that make no commit, so a step
-    put in before others changes the hashes of the commits after it.
+    put in before others changes the hashes of the commits after it. The bundle holds main only: a branch must
+    be merged into main, or its commits are left out.
     """
     steps = steps if steps is not None else [
         ("制定時の版を加える", "revisionAdd", True, fictional_files("架空の雲を保管すろ。\n")),
@@ -412,7 +413,7 @@ def build_bundle(path, steps=None, verbatim=False):
     with tempfile.TemporaryDirectory() as tmp:
         repo = Path(tmp) / "repo"
         repo.mkdir()
-        git = lambda *args, **kw: subprocess.run(["git", "-C", str(repo), *args], check=True, capture_output=True, env=env, **kw)
+        git = lambda *args, **kw: subprocess.run(["git", "-C", str(repo), "-c", "commit.gpgsign=false", *args], check=True, capture_output=True, env=env, **kw)
         git("init", "-q", "-b", "main")
         git("config", "core.autocrlf", "false")
         for i, step in enumerate(steps):
