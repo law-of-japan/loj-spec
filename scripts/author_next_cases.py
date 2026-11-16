@@ -1213,7 +1213,7 @@ def correction_without_text_change():
         ("本文の出典の箇所を直す（記録訂正と宣言）", "correction", True,
          fictional_files("架空の雲を保管する。\n", locator="本則第一条")),
     ])
-    add("common", "宣言した版の本文を変えず、本文の出典の箇所だけを直す記録訂正", ["CHG-02", "CHG-01"], "change",
+    add("common", "宣言した版の本文を変えず、本文の出典の箇所だけを直す記録訂正（CHG-01の宣言の誤りだが、変更検査は判定しない）", ["CHG-02", "CHG-01"], "change",
         {"kind": "change", "bundle": rel(bundle), "base": c1, "head": c2},
         {"results": [{"check": "change", "result": "pass"}]}, True)
 
