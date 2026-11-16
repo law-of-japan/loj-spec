@@ -406,7 +406,8 @@ def build_bundle(path, steps=None, verbatim=False):
                 target.parent.mkdir(parents=True, exist_ok=True)
                 target.write_bytes(body.encode("utf-8"))
             git("add", "-A")
-            message = subject + "\n"
+            # A subject with a line feed is a whole message, written as given (CHG-03: the trailer syntax).
+            message = subject if "\n" in subject else subject + "\n"
             if kind:
                 message += "\nLoJ-Change: " + kind + "\n" + ("LoJ-Revisions: " + REV + "\n" if with_revs else "")
                 # Further trailers (CHG-04: LoJ-Reviewed) follow the declaration; a step without a kind has none.
@@ -1012,6 +1013,51 @@ def conditional_fields():
         {"results": [{"check": "registry", "result": "fail"}], "diagnostics": [diag("REG-02", SV["reg"])]}, False)
 
 
+# --- 2026-11-16 (#107): the trailer syntax (CHG-03) and the undetermined AST check of CHG-04 ----------------
+def trailer_syntax():
+    """CHG-03 reads trailers from the last paragraph only when every line of it is a trailer line.
+
+    The two correction commits that break the syntax have no declaration, so CHG-03 fails them. The format commit
+    with LoJ-Revisions passes: the format check does not use declared versions.
+    """
+    bundle_pos = next_dir("common", True) / "repo.bundle"
+    c1, c2, c3, c4, c5 = build_bundle(bundle_pos, [
+        ("制定時の版を加える", "revisionAdd", True, fictional_files("架空の雲を保管すろ。\n")),
+        ("第一条の誤転記を直す\n\nLoJ-Change:\tcorrection\nLoJ-Revisions:  " + REV + "\n", None, False,
+         fictional_files("架空の雲を保管する。\n")),
+        ("条ごとにファイルを分ける", "format", True, fictional_files("架空の雲を保管する。\n", files_split=True)),
+        ("第一条の誤転記を直す（名前とコロンの間に空白）\n\nLoJ-Change : correction\nLoJ-Revisions: " + REV + "\n", None, False,
+         fictional_files("架空の雲を保管し続ける。\n", files_split=True)),
+        ("第一条の誤転記を直す（trailerの後の段落）\n\nLoJ-Change: correction\nLoJ-Revisions: " + REV + "\n\n原典の箇所は第一条。\n",
+         None, False, fictional_files("架空の雲を保管し続けろ。\n", files_split=True)),
+    ])
+    bundle = rel(bundle_pos)
+    add("common", "コロンの後にタブと二つの空白を置いた種類の宣言", ["CHG-03", "CHG-02"], "change",
+        {"kind": "change", "bundle": bundle, "base": c1, "head": c2}, {"results": [{"check": "change", "result": "pass"}]}, True)
+    add("common", "宣言した版を書いた書式変更", ["CHG-03", "CHG-02"], "change",
+        {"kind": "change", "bundle": bundle, "base": c2, "head": c3}, {"results": [{"check": "change", "result": "pass"}]}, True)
+    for title, base, head in [("名前とコロンの間に空白を置いた種類の宣言", c3, c4),
+                              ("trailerの後に段落が続く種類の宣言", c4, c5)]:
+        dest = next_dir("common", False) / "repo.bundle"
+        copy_file(dest, bundle_pos)
+        add("common", title, ["CHG-03"], "change", {"kind": "change", "bundle": rel(dest), "base": base, "head": head},
+            {"results": [{"check": "change", "result": "fail"}], "diagnostics": [diag("CHG-03", SV["common"])]}, False)
+    # The undetermined AST check is a CHG-04 diagnostic (class undetermined), also next to a CHG-04 violation.
+    first = {case["id"]: case["input"] for case in INDEX["common"]}
+    for success, ident, title, diagnostics in [
+        (True, "common-025", "ASTを生成できない版を含む変更の判定不能の診断",
+         [diag("CHG-04", SV["common"], "undetermined")]),
+        (False, "common-026", "ASTを生成できない版のファイルを書式変更で変える違反と判定不能の診断",
+         [diag("CHG-04", SV["common"]), diag("CHG-04", SV["common"], "undetermined")]),
+    ]:
+        dest = next_dir("common", success) / "repo.bundle"
+        copy_file(dest, ROOT / first[ident]["bundle"])
+        result = "incomplete" if success else "fail"
+        add("common", title, ["CHG-04"], "change",
+            {"kind": "change", "bundle": rel(dest), "base": first[ident]["base"], "head": first[ident]["head"]},
+            {"results": [{"check": "change", "result": result}], "diagnostics": diagnostics}, success)
+
+
 def main():
     for suite, folder in FOLDER.items():
         for group in ("invalid", "expected"):
@@ -1038,6 +1084,7 @@ def main():
     invalid_review_records()
     glyph_file_selection()
     conditional_fields()
+    trailer_syntax()
     assert not DERIVED, sorted(DERIVED)  # every copy is listed by the case that owns it
     marked = {case["id"] for cases in INDEX.values() for case in cases if "rejectedBy" in case}
     assert marked == SCHEMA_REJECTED, SCHEMA_REJECTED - marked

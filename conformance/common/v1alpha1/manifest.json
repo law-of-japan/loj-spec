@@ -823,6 +823,138 @@
       },
       "expected": "conformance/common/v1alpha1/expected/common-031.json",
       "success": false
+    },
+    {
+      "id": "common-032",
+      "title": "コロンの後にタブと二つの空白を置いた種類の宣言",
+      "requirements": [
+        "CHG-03",
+        "CHG-02"
+      ],
+      "check": "change",
+      "normative": true,
+      "input": {
+        "kind": "change",
+        "bundle": "conformance/common/v1alpha1/valid/common-032/repo.bundle",
+        "base": "f1162fe2cfefa04e9a0d656706e37977fb3d0731",
+        "head": "d0f831f16c2631cb80356fc1da0451e72f06636a"
+      },
+      "expected": "conformance/common/v1alpha1/expected/common-032.json",
+      "success": true
+    },
+    {
+      "id": "common-033",
+      "title": "宣言した版を書いた書式変更",
+      "requirements": [
+        "CHG-03",
+        "CHG-02"
+      ],
+      "check": "change",
+      "normative": true,
+      "input": {
+        "kind": "change",
+        "bundle": "conformance/common/v1alpha1/valid/common-032/repo.bundle",
+        "base": "d0f831f16c2631cb80356fc1da0451e72f06636a",
+        "head": "4a43fc06ed289805610c8a362c6dbfb742f33e0e"
+      },
+      "expected": "conformance/common/v1alpha1/expected/common-033.json",
+      "success": true
+    },
+    {
+      "id": "common-034",
+      "title": "名前とコロンの間に空白を置いた種類の宣言",
+      "requirements": [
+        "CHG-03"
+      ],
+      "check": "change",
+      "normative": true,
+      "input": {
+        "kind": "change",
+        "bundle": "conformance/common/v1alpha1/invalid/common-034/repo.bundle",
+        "base": "4a43fc06ed289805610c8a362c6dbfb742f33e0e",
+        "head": "a1489efefc405eaf4baedb64154a833ebe782e93"
+      },
+      "expected": "conformance/common/v1alpha1/expected/common-034.json",
+      "success": false,
+      "derivedFrom": [
+        {
+          "path": "conformance/common/v1alpha1/invalid/common-034/repo.bundle",
+          "from": "conformance/common/v1alpha1/valid/common-032/repo.bundle",
+          "edits": []
+        }
+      ]
+    },
+    {
+      "id": "common-035",
+      "title": "trailerの後に段落が続く種類の宣言",
+      "requirements": [
+        "CHG-03"
+      ],
+      "check": "change",
+      "normative": true,
+      "input": {
+        "kind": "change",
+        "bundle": "conformance/common/v1alpha1/invalid/common-035/repo.bundle",
+        "base": "a1489efefc405eaf4baedb64154a833ebe782e93",
+        "head": "91480d413b7a5e3de488d742a57caa1ae1741320"
+      },
+      "expected": "conformance/common/v1alpha1/expected/common-035.json",
+      "success": false,
+      "derivedFrom": [
+        {
+          "path": "conformance/common/v1alpha1/invalid/common-035/repo.bundle",
+          "from": "conformance/common/v1alpha1/valid/common-032/repo.bundle",
+          "edits": []
+        }
+      ]
+    },
+    {
+      "id": "common-036",
+      "title": "ASTを生成できない版を含む変更の判定不能の診断",
+      "requirements": [
+        "CHG-04"
+      ],
+      "check": "change",
+      "normative": true,
+      "input": {
+        "kind": "change",
+        "bundle": "conformance/common/v1alpha1/valid/common-036/repo.bundle",
+        "base": "b4fb14ad30b1886f64ca1a04185e54c52d8a9588",
+        "head": "e9c821aea8a0fdcaaaa852ea27c08d9476dbb2a7"
+      },
+      "expected": "conformance/common/v1alpha1/expected/common-036.json",
+      "success": true,
+      "derivedFrom": [
+        {
+          "path": "conformance/common/v1alpha1/valid/common-036/repo.bundle",
+          "from": "conformance/common/v1alpha1/valid/common-025/repo.bundle",
+          "edits": []
+        }
+      ]
+    },
+    {
+      "id": "common-037",
+      "title": "ASTを生成できない版のファイルを書式変更で変える違反と判定不能の診断",
+      "requirements": [
+        "CHG-04"
+      ],
+      "check": "change",
+      "normative": true,
+      "input": {
+        "kind": "change",
+        "bundle": "conformance/common/v1alpha1/invalid/common-037/repo.bundle",
+        "base": "e9c821aea8a0fdcaaaa852ea27c08d9476dbb2a7",
+        "head": "a933fe6b04f6a664ca8fb5f93bd7f153362913e3"
+      },
+      "expected": "conformance/common/v1alpha1/expected/common-037.json",
+      "success": false,
+      "derivedFrom": [
+        {
+          "path": "conformance/common/v1alpha1/invalid/common-037/repo.bundle",
+          "from": "conformance/common/v1alpha1/invalid/common-026/repo.bundle",
+          "edits": []
+        }
+      ]
     }
   ]
 }
