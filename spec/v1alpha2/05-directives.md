@@ -39,7 +39,7 @@
 
   | マーカー | 親 |
   |---|---|
-  | `paragraph` | Article、または直接の項の形式のSupplementaryProvision |
+  | `paragraph` | Article、直接の項の形式のSupplementaryProvision、または項の形式のMainProvision（[PARA-03](09-structures.md)） |
   | `item` | Paragraph |
   | `subitem` | `level=1`はItem、`level=n`は`level=n-1`のSubitem（`level`は1〜10、飛び越し不可） |
   | `table` | Paragraph、Item、Subitem |

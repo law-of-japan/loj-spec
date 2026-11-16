@@ -12,7 +12,7 @@
   | 親 | 許す子・回数 |
   |---|---|
   | Law | EnactStatement 0〜1、Toc 0〜1、Preamble 0〜1、MainProvision ちょうど1、SupplementaryProvision 0以上、AppendedMaterial 0以上。この順 |
-  | MainProvision | rank 1〜5の分類またはArticle、計1以上 |
+  | MainProvision | rank 1〜5の分類・Articleの群、またはParagraphの群のどちらか、計1以上（[PARA-03](09-structures.md)） |
   | Part/Chapter/Section/Subsection/Division | 自身より大きいrankの分類またはArticle、計1以上 |
   | Article（active） | Paragraph 1以上 |
   | Article（deleted） | 子なし、本文なし |

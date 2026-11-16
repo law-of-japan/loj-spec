@@ -253,7 +253,9 @@ def check_tree(ast, man, v2=False):
         if kind in RANK and kind != "Article":
             require(all(RANK.get(k, 0) > RANK[kind] for k in child_kinds), "Rank constraint")
         elif kind == "MainProvision":
-            require(all(k in RANK for k in child_kinds), "Main children")
+            # PARA-03 (v1alpha2): the article form or the paragraph form, never mixed.
+            require(all(k in RANK for k in child_kinds) or v2 and all(k == "Paragraph" for k in child_kinds),
+                    "Main children")
         elif kind == "SupplementaryProvision":
             require(all(k in RANK for k in child_kinds) or all(k == "Paragraph" for k in child_kinds), "Supplement mode")
             require(bool(re.fullmatch("附\u3000*則", node["display"])) if v2 else node["display"] == "附則",

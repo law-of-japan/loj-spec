@@ -525,6 +525,49 @@ case("後続のファイルの前で閉じないコードフェンスの位置�
      fail_at("MAN-03", "one.md", 9, 13), False, man_extra=APPENDIX)
 
 
+# 2026-11-16 (#131): a main provision without articles is written in the paragraph form (PARA-03).
+# Its paragraphs are children of MainProvision; no article number is added that the original does not have.
+GENGO_P1 = "１　雲の名前は、政令で定める。\n"
+GENGO_P2 = "２　雲の名前は、新しい雲が見つかつた場合に限り改める。\n"
+GENGO_MD = ("<!-- loj:paragraph number=1 -->\n" + GENGO_P1 + "<!-- loj:end-paragraph -->\n"
+            "<!-- loj:paragraph number=2 -->\n" + GENGO_P2 + "<!-- loj:end-paragraph -->\n")
+SUPP_P1_MD = SUPP_HEAD + "<!-- loj:paragraph number=1 -->\nこの法律は、公布の日から施行する。\n<!-- loj:end-paragraph -->\n"
+SUPP_P1_AST = node("SupplementaryProvision", SUPP, None, "附　則", [para(SUPP, "1", "この法律は、公布の日から施行する。\n")])
+case("項だけからなる本則（表示番号のある二つの項）", ["PARA-03", "DISP-01", "ID-01", "AST-01", "DIR-02"],
+     [("main.md", "main", GENGO_MD), ("supp.md", "supplement/original", SUPP_P1_MD)],
+     {"ast": ast([para(MAIN, "1", GENGO_P1, display="１"), para(MAIN, "2", GENGO_P2, display="２")],
+                 supplements=[SUPP_P1_AST])}, True, man_extra=ORIGINAL)
+AMEND_BODY = ("架空雨量法（架空法律第二号）の一部を次のように改正する。\n\n"
+              "第二条中「白雲」を「白雲及び巻雲」に改め、同条第二項を削る。\n")
+case("改正法の本則（項番号のない一つの項）", ["PARA-03", "DISP-01", "ID-01", "AST-01"],
+     [("main.md", "main", "<!-- loj:paragraph number=1 -->\n" + AMEND_BODY + "<!-- loj:end-paragraph -->\n"),
+      ("supp.md", "supplement/original", SUPP_P1_MD)],
+     {"ast": ast([para(MAIN, "1", AMEND_BODY)], supplements=[SUPP_P1_AST])}, True, man_extra=ORIGINAL)
+REPEAL_P1, REPEAL_P2 = "架空雲保管令は、廃止する。\n", "架空雨量令は、廃止する。\n"
+IMPLICIT_MAIN_MD = ("<!-- loj:paragraph number=1 numbering=implicit -->\n" + REPEAL_P1 + "<!-- loj:end-paragraph -->\n"
+                    "<!-- loj:paragraph number=2 numbering=implicit -->\n" + REPEAL_P2 + "<!-- loj:end-paragraph -->\n")
+case("制定文と、無番号の二つの項からなる本則", ["PARA-03", "PARA-01", "PRE-02", "ID-01", "AST-01"],
+     [("main.md", "main", ENACT_MD + IMPLICIT_MAIN_MD)],
+     {"ast": ast([para(MAIN, "1", REPEAL_P1, numbering="implicit"), para(MAIN, "2", REPEAL_P2, numbering="implicit")],
+                 lead=[node("EnactStatement", LID + "/enact-statement", None, "",
+                            [text("内閣は、架空の法律に基づき、この政令を制定する。\n")])])}, True)
+case("項の後の条の見出し（本則の形式の混在）", ["PARA-03"],
+     [("main.md", "main", GENGO_MD + ART + P1)], fail("PARA-03"), False)
+case("二つのファイルに分けた項の形式の本則", ["PARA-03", "MAN-03"],
+     [("one.md", "main", "<!-- loj:paragraph number=1 -->\n" + GENGO_P1 + "<!-- loj:end-paragraph -->\n"),
+      ("two.md", "main", "<!-- loj:paragraph number=2 -->\n" + GENGO_P2 + "<!-- loj:end-paragraph -->\n")],
+     fail("PARA-03"), False)
+case("条を置かない章の下の項", ["DIR-02", "PARA-03"],
+     [("main.md", "main", "# 第一章　総則\n" + P1)], fail("DIR-02"), False)
+case("制定文だけで条も項もない本則", ["PARA-03", "PRE-02"],
+     [("main.md", "main", ENACT_MD)], fail("PARA-03"), False)
+case("項の形式の本則の項の後の制定文", ["PRE-02", "PARA-03"],
+     [("main.md", "main", IMPLICIT_MAIN_MD + ENACT_MD)], fail("PRE-02"), False)
+case("項の形式の本則の一つだけの無番号の項", ["PARA-01", "PARA-03"],
+     [("main.md", "main", "<!-- loj:paragraph number=1 numbering=implicit -->\n" + AMEND_BODY + "<!-- loj:end-paragraph -->\n")],
+     fail("PARA-01"), False)
+
+
 def main():
     index_path = DST / "manifest.json"
     index = json.loads(index_path.read_text(encoding="utf-8"))
