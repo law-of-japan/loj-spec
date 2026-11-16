@@ -9,7 +9,9 @@
 - 表は親のIDに`/table/{number}`を、行は表のIDに`/row/{key}`を、セルは行のIDに`/cell/{c}`（`c`は行の中での位置、1始まり）を加える。
 - IDに、ファイル名、見出しのHレベル、バイト位置、出現の順序を含めてはならない（MUST NOT）。例外はセルの行の中での位置だけである。
 
-例: `20990101-act-1/main/article/2-3/paragraph/1/item/2/subitem/1/1`、`19480720-law-178/main/article/2/paragraph/1/table/1/row/b6gr/cell/3`。
+項の形式の本則（[PARA-03](09-structures.md)）の項は、本則のscopeのIDに`/paragraph/{number}`を加える。条のIDを挟まない。
+
+例: `20990101-act-1/main/article/2-3/paragraph/1/item/2/subitem/1/1`、`20990101-act-1/main/paragraph/2`、`19480720-law-178/main/article/2/paragraph/1/table/1/row/b6gr/cell/3`。
 
 ## ID-02 IDの安定性
 

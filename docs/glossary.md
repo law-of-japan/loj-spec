@@ -64,7 +64,7 @@
 | 用語 | 表記 | 意味 | 定義 |
 |---|---|---|---|
 | scope | `main`、`supplement/<key>`、`appendix/<key>` | 本則・附則・附属資料のそれぞれの区間。`documents`の`parent`で指定し、この順に連続して置く | [MAN-01](../spec/v1alpha2/02-manifest.md#man-01-lawyamlの形)、[MAN-03](../spec/v1alpha2/02-manifest.md#man-03-読み込みの順序とファイルの分割) |
-| 本則 | MainProvision | 法令の本則のscope | [AST-01](../spec/v1alpha2/06-semantic-model.md#ast-01-意味astの形)、[ID-01](../spec/v1alpha2/07-identifiers.md#id-01-idの導出) |
+| 本則 | MainProvision | 法令の本則のscope。条の形式か項の形式のどちらか | [AST-01](../spec/v1alpha2/06-semantic-model.md#ast-01-意味astの形)、[ID-01](../spec/v1alpha2/07-identifiers.md#id-01-idの導出) |
 | 附則 | SupplementaryProvision、`supplements` | `key`で区別する附則のscope。条の形式か直接の項の形式のどちらか。改正法の附則は収録しない | [HEAD-03](../spec/v1alpha2/04-headings.md#head-03-附則と附属資料のscope)、[BASIC-03](../spec/v1alpha2/01-overview.md#basic-03-対象とする構造と収録しないもの) |
 | key | `key` | 附則・附属資料を区別する名前（小文字の英数字とハイフン）。位置による自動採番を禁止する。制定時の附則の推奨は`original` | [MAN-01](../spec/v1alpha2/02-manifest.md#man-01-lawyamlの形) |
 | 附属資料 | AppendedMaterial、`appendices` | 別表等。内部を型付けせず、不透明な本文として保持する | [HEAD-03](../spec/v1alpha2/04-headings.md#head-03-附則と附属資料のscope)、[BASIC-03](../spec/v1alpha2/01-overview.md#basic-03-対象とする構造と収録しないもの) |
@@ -72,7 +72,8 @@
 | rank | — | 分類の深さ。Part=1〜Division=5、Article=6。見出しの`#`の数（Hレベル）ではなくrankで所属を決める | [HEAD-02](../spec/v1alpha2/04-headings.md#head-02-分類と所属) |
 | 条 | Article | `第N条`・`第N條`の見出しで始まる単位。`status`は`active`か`deleted` | [HEAD-01](../spec/v1alpha2/04-headings.md#head-01-見出しの形)、[AST-01](../spec/v1alpha2/06-semantic-model.md#ast-01-意味astの形) |
 | 削除条 | `status: deleted` | ラベルの直後の行に`削除`だけを置いた条。項を持たず、元の条のIDを保つ | [HEAD-04](../spec/v1alpha2/04-headings.md#head-04-削除条) |
-| 項 | Paragraph、`paragraph` | 条（または直接の項の形式の附則）の下の単位 | [DIR-01](../spec/v1alpha2/05-directives.md#dir-01-マーカーの字句)、[DIR-02](../spec/v1alpha2/05-directives.md#dir-02-対応入れ子空の禁止) |
+| 項 | Paragraph、`paragraph` | 条（または直接の項の形式の附則、項の形式の本則）の下の単位 | [DIR-01](../spec/v1alpha2/05-directives.md#dir-01-マーカーの字句)、[DIR-02](../spec/v1alpha2/05-directives.md#dir-02-対応入れ子空の禁止) |
+| 項の形式の本則 | MainProvisionの子のParagraph | 条を持たない本則。本則のscopeの直下に項を書く。原典にない条・項の番号を補わない | [PARA-03](../spec/v1alpha2/09-structures.md#para-03-項の形式の本則) |
 | 無番号の項 | `numbering=implicit` | 原典に項番号がない項。`number`は原典上の順序で明示する。省略時は`explicit` | [PARA-01](../spec/v1alpha2/09-structures.md#para-01-無番号の項) |
 | 項の見出し | `caption=present`、Paragraphの`caption` | 項の前に置く括弧書きの見出し（附則の`（施行期日）`等）。属性で示し、項の本文の最初の行（見出しの行）に書く。条の見出しとは別に、Paragraphの`caption`に写す | [PARA-02](../spec/v1alpha2/09-structures.md#para-02-項の見出し) |
 | 号 | Item、`item` | 項の下の単位 | [DIR-01](../spec/v1alpha2/05-directives.md#dir-01-マーカーの字句)、[DIR-02](../spec/v1alpha2/05-directives.md#dir-02-対応入れ子空の禁止) |
