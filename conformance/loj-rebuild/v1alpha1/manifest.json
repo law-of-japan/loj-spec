@@ -104,6 +104,35 @@
           ]
         }
       ]
+    },
+    {
+      "id": "rebuild-005",
+      "title": "構造の差の件数",
+      "requirements": [
+        "REBR-05"
+      ],
+      "check": "rebuild",
+      "normative": true,
+      "input": {
+        "kind": "repository",
+        "path": "conformance/loj-rebuild/v1alpha1/invalid/rebuild-005/repo"
+      },
+      "expected": "conformance/loj-rebuild/v1alpha1/expected/rebuild-005.json",
+      "success": false,
+      "rejectedBy": "schema",
+      "derivedFrom": [
+        {
+          "path": "conformance/loj-rebuild/v1alpha1/invalid/rebuild-005/repo",
+          "from": "conformance/loj-history/v1alpha1/valid/hist-001/repo",
+          "edits": [
+            {
+              "file": "rebuild.yaml",
+              "old": "    note: 旧本文は祝日の表を箇条書きで書いている\n",
+              "new": "    note: 旧本文は祝日の表を箇条書きで書いている\n    count: 1\n"
+            }
+          ]
+        }
+      ]
     }
   ]
 }

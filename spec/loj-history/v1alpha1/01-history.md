@@ -68,7 +68,7 @@
   | `totalRevision` | 全部改正による新しいRecordの最初の状態。`totallyRevises: {record, relation}`で、旧Recordの全部改正の関係（RecordRefと関係の`id`）を参照しなければならない（MUST） |
   | `coverageStart` | 収録の開始。それより前の状態が未収録・不明 |
 
-- 起点以外のRevisionは`origin`を持ってはならない（MUST NOT）。履歴マニフェストは一つ以上の起点を持つ。
+- 起点以外のRevisionは`origin`を持ってはならない（MUST NOT）。`origin`が`totalRevision`でないRevisionは、`totallyRevises`を持ってはならない（MUST NOT）。履歴マニフェストは一つ以上の起点を持つ。
 - 一つのRevisionを、複数のRevisionが`basedOn`として参照してよい（MAY）。経過措置による新旧の状態の併存は、この分岐と適用関係（HIST-07）で表す。
 - 適用の順が不明な場合は、`basedOn`を`{state: unknown, reason}`とし、推測で順序を補ってはならない（MUST NOT）。改正法令の法令番号の順などで、機械的に順序を決めてはならない（MUST NOT）。
 - `basedOn`は、同じ履歴マニフェストに存在するrevision_idを指さなければならない（MUST）。`basedOn`の連なりは、循環してはならない（MUST NOT）。
@@ -112,6 +112,7 @@
   | `conditions` | 適用の条件がある | `conditions`（各項目は`scope`、`text`（条件の原文）、`evidence`、`verification`、任意の`machineEvaluable`） |
 
 - `noneConfirmed`と`unsurveyed`を区別しなければならない（MUST）。条件がないことの確認には根拠を要する。
+- `state`が`conditions`でない`applicability`は、`conditions`を持ってはならない（MUST NOT）。
 - 効力が終了した後の適用（経過措置で「なお従前の例による」等）は、`applicability`で表す（HIST-12）。
 - 本版は、時点照会（指定した日・対象・条件に適用されるRevisionを求めること）の入力・手順・結果を定めない。L3（履歴構造）の合格は、ある日に適用されるRevisionが一つに決まることを保証しない。
 - 履歴マニフェストを読んで時点照会を提供する実装は、日付だけから一つのRevisionが決まると仮定してはならない（MUST NOT）。基礎状態の分岐（HIST-04）と適用の条件により、複数の`status: active`のRevisionが、同じ日に施行済みで、適用され得る状態（候補）になり得る。
@@ -155,7 +156,7 @@
 
 - 各Revisionは`status`（`active`／`retracted`／`merged`／`split`）を持たなければならない（MUST）。
 - 撤回・統合・分割したRevisionを、履歴マニフェストから削除してはならない（MUST NOT）。
-- `merged`・`split`のRevisionは、`replacedBy`（`revisions`＝統合先・分割先のrevision_idの一覧、`evidence`、`verification`）を持たなければならない（MUST）。`replacedBy`のrevision_idは、同じ履歴マニフェストに存在しなければならない（MUST）。
+- `merged`・`split`のRevisionは、`replacedBy`（`revisions`＝統合先・分割先のrevision_idの一覧、`evidence`、`verification`）を持たなければならない（MUST）。`replacedBy`のrevision_idは、同じ履歴マニフェストに存在しなければならない（MUST）。`merged`・`split`でないRevisionは、`replacedBy`を持ってはならない（MUST NOT）。
 - 撤回・統合・分割の変更は、変更の種類`revisionFix`（[CHG-01](../../common/v1alpha1/07-changes.md)）で記録する。
 
 ## HIST-11 収録範囲
@@ -178,6 +179,7 @@
   | `totallyRevised` | `totallyRevises`の関係の`id`（`relation`） | 同上 |
   | `expired` | 自身の規定による失効（時限、条件付きの失効）。`evidence`（例: 附則第二条）と`verification` | `effective`（TimePoint）。条件付きで時点が決まらないものは`pending`とし、条件の原文を`delegation`に書く |
 
+- `repealed`・`totallyRevised`の項目は、`effective`、`evidence`、`verification`を持ってはならない（MUST NOT）。時点と根拠・確認状態は、根拠とする関係の側にある。`expired`の項目は、`relation`を持ってはならない（MUST NOT）。
 - `repealed`・`totallyRevised`の`relation`は、同じ履歴マニフェストに存在し、種類が合う関係でなければならない（MUST）。
 - `repealed`・`totallyRevised`の`relation`は、`status: active`の関係でなければならない（MUST）。撤回した関係（`status: retracted`）を根拠とする項目は違反とする。
 - 終了の時点は、関係の`items`のうち、`verification.state`が`retracted`でない内訳の`effective`から得る。撤回した内訳の`effective`は使わない。すべての内訳を撤回した関係を根拠としてはならない（MUST NOT）。撤回していない内訳は一つに限られる（[HIST-03](#hist-03-関係と内訳)）ので、終了の時点はその内訳の`effective`である。撤回していない内訳が二つ以上ある関係（HIST-03の違反）では、終了の時点を決めず、次の警告を判定しない。

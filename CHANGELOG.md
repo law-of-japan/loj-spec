@@ -2,6 +2,21 @@
 
 見出しの「草案」は、[草案の版](spec/README.md#版の状態)への変更であることを示す。版の状態の正は、[規範仕様の入口](spec/README.md#規範とするもの)の表にある。版を公開したときは、公開の日付の項目を加える。
 
+## 条件の外で禁止するフィールドの本文の禁止（2026-11-16、草案）
+
+[law-of-japan/loj-spec#104](https://github.com/law-of-japan/loj-spec/issues/104)による変更である。草案の版（`common/v1alpha1`、`loj-history/v1alpha1`、`loj-registry/v1alpha1`、`loj-rebuild/v1alpha1`）への変更であり、版番号は上げない。schemaは変わらない。schemaが条件の外で禁止していたが本文に禁止の文がなかったフィールドについて、本文に禁止を書き、schemaに合わせた。schemaで拒否していた入力の扱いは変わらない。
+
+- CONF-01: `check`がL3・L4でない索引のケース、期待結果の結果、実装の報告の結果は、`category`を持たないとした。
+- TIME-01: `pending`の時点値は`determinedBy`を持たないとした。`unknown`・`notApplicable`に`raw`を置かないという文に、要求の語（MUST NOT）を付けた。
+- HIST-04: `origin`が`totalRevision`でないRevisionは、`totallyRevises`を持たないとした。
+- HIST-07: `state`が`conditions`でない`applicability`は、`conditions`を持たないとした。
+- HIST-10: `merged`・`split`でないRevisionは、`replacedBy`を持たないとした。
+- HIST-12: `repealed`・`totallyRevised`の項目は`effective`・`evidence`・`verification`を、`expired`の項目は`relation`を持たないとした。
+- REBR-05: `class`が`glyph`でない項目は、`count`・`examples`を持たないとした。
+- REG-02: `merged`・`split`でないRecordは、`replacedBy`を持たないとした。
+- 適合ケース: schemaで落ちる負例を加えた（hist-056〜061、rebuild-005、reg-013。`rejectedBy: schema`）。`category`の禁止は索引・期待結果・報告の形であり、ケースを加えていない。
+- 要件との対応表の「条件の外で禁止するフィールド」を更新した。`verify.py`の警告はなくなった。
+
 ## 字体注記の検査にかけるファイルの選び方のケース（2026-11-16）
 
 [law-of-japan/loj-spec#87](https://github.com/law-of-japan/loj-spec/issues/87)による変更である。適合ケースを加えた。規範の本文とschemaは変わらない。

@@ -42,6 +42,7 @@
 - `provisional`のRecordの`identity.verification.state`を、`confirmed`にしてはならない（MUST NOT）。
 - `notCollected`から、本文の不存在を推論してはならない（MUST NOT）。
 - 題名と法令の種別は、登録台帳に持たない。版ごとに版パッケージ（`law.yaml`の`title`・`type`）にあり、改正で変わり得るためである。表示には`label`を使う。
+- `merged`・`split`でないRecordは、`replacedBy`を持ってはならない（MUST NOT）。
 - 分割先が確定していない候補は、`verification.state: unverified`で残す。
 - `replacedBy`の各項目の`record`は、同じ登録台帳のRecordに解決できなければならない（MUST）。`space`が登録空間の入力と異なる`record`は、他の登録空間のRecordを指すので、この要求に反する。統合・分割の先は、同じ登録空間のRecordである。
 - 効力の終了（廃止・失効）は、`status`で表さない（[HIST-12](../../loj-history/v1alpha1/01-history.md)）。

@@ -13,7 +13,7 @@
 | `notApplicable` | 該当しない | `reason` | 公布行為を伴わない状態 |
 
 - 時点値は、状態ごとの必須のフィールドを持たなければならない（MUST）。
-- `pending`・`unknown`・`notApplicable`に`value`を、`derived`以外の状態に`rule`・`calc`・`base`を置いてはならない（MUST NOT）。`unknown`・`notApplicable`に`raw`を置いてはならない。
+- `pending`・`unknown`・`notApplicable`に`value`を、`derived`以外の状態に`rule`・`calc`・`base`を、`unknown`・`notApplicable`に`raw`を、`pending`に`determinedBy`を置いてはならない（MUST NOT）。確定させた根拠（`determinedBy`）は、確定して`date`とした時点値が持つ（TIME-04）。
 
 ## TIME-02 date
 

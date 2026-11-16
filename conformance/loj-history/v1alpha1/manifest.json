@@ -1591,6 +1591,186 @@
           ]
         }
       ]
+    },
+    {
+      "id": "hist-056",
+      "title": "適用の条件を調べていない版の条件",
+      "requirements": [
+        "HIST-07"
+      ],
+      "check": "L3",
+      "category": "historyStructure",
+      "normative": true,
+      "input": {
+        "kind": "repository",
+        "path": "conformance/loj-history/v1alpha1/invalid/hist-056/repo"
+      },
+      "expected": "conformance/loj-history/v1alpha1/expected/hist-056.json",
+      "success": false,
+      "rejectedBy": "schema",
+      "derivedFrom": [
+        {
+          "path": "conformance/loj-history/v1alpha1/invalid/hist-056/repo",
+          "from": "conformance/loj-history/v1alpha1/valid/hist-001/repo",
+          "edits": [
+            {
+              "file": "history.yaml",
+              "old": "    applicability: {state: unsurveyed}\n",
+              "new": "    applicability:\n      state: unsurveyed\n      conditions:\n        - scope: {text: 全部}\n          text: 架空の適用の条件\n          evidence: [{source: src-kanpo-19480720, locator: 附則第一項}]\n          verification: {state: unverified, reason: 適合ケースのための架空の変更}\n"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hist-057",
+      "title": "制定の起点が持つ全部改正の参照",
+      "requirements": [
+        "HIST-04"
+      ],
+      "check": "L3",
+      "category": "historyStructure",
+      "normative": true,
+      "input": {
+        "kind": "repository",
+        "path": "conformance/loj-history/v1alpha1/invalid/hist-057/repo"
+      },
+      "expected": "conformance/loj-history/v1alpha1/expected/hist-057.json",
+      "success": false,
+      "rejectedBy": "schema",
+      "derivedFrom": [
+        {
+          "path": "conformance/loj-history/v1alpha1/invalid/hist-057/repo",
+          "from": "conformance/loj-history/v1alpha1/valid/hist-001/repo",
+          "edits": [
+            {
+              "file": "history.yaml",
+              "old": "    origin: enactment\n",
+              "new": "    origin: enactment\n    totallyRevises: {record: {id: 20990101-law-5, label: 架空の旧法}, relation: rel-total}\n"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hist-058",
+      "title": "有効な版の統合先",
+      "requirements": [
+        "HIST-10"
+      ],
+      "check": "L3",
+      "category": "historyStructure",
+      "normative": true,
+      "input": {
+        "kind": "repository",
+        "path": "conformance/loj-history/v1alpha1/invalid/hist-058/repo"
+      },
+      "expected": "conformance/loj-history/v1alpha1/expected/hist-058.json",
+      "success": false,
+      "rejectedBy": "schema",
+      "derivedFrom": [
+        {
+          "path": "conformance/loj-history/v1alpha1/invalid/hist-058/repo",
+          "from": "conformance/loj-history/v1alpha1/valid/hist-001/repo",
+          "edits": [
+            {
+              "file": "history.yaml",
+              "old": "      glyphNotes: versions/98mj5vgx/glyphs.yaml\n    status: active\n",
+              "new": "      glyphNotes: versions/98mj5vgx/glyphs.yaml\n    status: active\n    replacedBy:\n      revisions: [zwgmz1rt]\n      evidence: [{source: src-kanpo-19480720, locator: 1コマ}]\n      verification: {state: unverified, reason: 適合ケースのための架空の変更}\n"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hist-059",
+      "title": "廃止の項目に写した根拠と確認状態",
+      "requirements": [
+        "HIST-12"
+      ],
+      "check": "L3",
+      "category": "historyStructure",
+      "normative": true,
+      "input": {
+        "kind": "repository",
+        "path": "conformance/loj-history/v1alpha1/invalid/hist-059/repo"
+      },
+      "expected": "conformance/loj-history/v1alpha1/expected/hist-059.json",
+      "success": false,
+      "rejectedBy": "schema",
+      "derivedFrom": [
+        {
+          "path": "conformance/loj-history/v1alpha1/invalid/hist-059/repo",
+          "from": "conformance/loj-history/v1alpha1/valid/hist-002/repo",
+          "edits": [
+            {
+              "file": "history.yaml",
+              "old": "  - {type: repealed, relation: rel-repeal}",
+              "new": "  - {type: repealed, relation: rel-repeal, evidence: [{source: src-egov-s34-122, locator: 第二条}], verification: {state: unverified, reason: 官報と未照合}}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hist-060",
+      "title": "自身の規定による失効が持つ関係",
+      "requirements": [
+        "HIST-12"
+      ],
+      "check": "L3",
+      "category": "historyStructure",
+      "normative": true,
+      "input": {
+        "kind": "repository",
+        "path": "conformance/loj-history/v1alpha1/invalid/hist-060/repo"
+      },
+      "expected": "conformance/loj-history/v1alpha1/expected/hist-060.json",
+      "success": false,
+      "rejectedBy": "schema",
+      "derivedFrom": [
+        {
+          "path": "conformance/loj-history/v1alpha1/invalid/hist-060/repo",
+          "from": "conformance/loj-history/v1alpha1/valid/hist-003/repo",
+          "edits": [
+            {
+              "file": "history.yaml",
+              "old": "  - type: expired\n",
+              "new": "  - type: expired\n    relation: rel-repeal\n"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hist-061",
+      "title": "確定していない時点の確定の根拠",
+      "requirements": [
+        "TIME-01"
+      ],
+      "check": "L3",
+      "category": "historyStructure",
+      "normative": true,
+      "input": {
+        "kind": "repository",
+        "path": "conformance/loj-history/v1alpha1/invalid/hist-061/repo"
+      },
+      "expected": "conformance/loj-history/v1alpha1/expected/hist-061.json",
+      "success": false,
+      "rejectedBy": "schema",
+      "derivedFrom": [
+        {
+          "path": "conformance/loj-history/v1alpha1/invalid/hist-061/repo",
+          "from": "conformance/loj-history/v1alpha1/valid/hist-003/repo",
+          "edits": [
+            {
+              "file": "history.yaml",
+              "old": "      delegation: {raw: この法律の施行の日以前に皇室典範第四条の規定による皇位の継承があったとき, evidence: [{source: src-egov-h29-63, locator: 附則第二条}]}\n",
+              "new": "      delegation: {raw: この法律の施行の日以前に皇室典範第四条の規定による皇位の継承があったとき, evidence: [{source: src-egov-h29-63, locator: 附則第二条}]}\n      determinedBy: {record: {id: unregistered, label: 平成二十九年政令第三百二号}, evidence: [{source: src-egov-h29-302, locator: 本則}]}\n"
+            }
+          ]
+        }
+      ]
     }
   ]
 }
