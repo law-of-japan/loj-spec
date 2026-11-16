@@ -1218,6 +1218,44 @@ def correction_without_text_change():
         {"results": [{"check": "change", "result": "pass"}]}, True)
 
 
+# --- 2026-11-16 (#126): declared versions without an AST are not compared (CHG-02, CHG-04) ------------------
+def partial_text(files):
+    """Leave out the second article and record the version as partial, with the article as its gap (HIST-07)."""
+    out = dict(files)
+    md = "versions/" + REV + "/main.md"
+    article2 = "# 第二条\n"
+    assert article2 in out[md]
+    out[md] = out[md][:out[md].index(article2)]
+    status = "      status: complete\n"
+    assert out["history.yaml"].count(status) == 1
+    out["history.yaml"] = out["history.yaml"].replace(status, "      status: partial\n      gaps: [{text: 第二条}]\n", 1)
+    return out
+
+
+def declared_versions_without_ast():
+    """correction and restoration do not build the AST of the declared version, so no CHG-04 undetermined is reported.
+
+    The correction fixes the text of a version that fails L1 (HEAD-01) and still fails it after the change. The
+    restoration adds the missing article to a partial version and records it as complete.
+    """
+    bundle = next_dir("common", True) / "repo.bundle"
+    c1, c2 = build_bundle(bundle, [
+        ("見出しの誤った版を加える", "revisionAdd", True, broken(fictional_files("架空の雲を保管すろ。\n"))),
+        ("見出しの誤った版の第一条の誤転記を直す", "correction", True, broken(fictional_files("架空の雲を保管する。\n"))),
+    ])
+    add("common", "ASTを生成できない版の本文を直す記録訂正", ["CHG-02", "CHG-04"], "change",
+        {"kind": "change", "bundle": rel(bundle), "base": c1, "head": c2},
+        {"results": [{"check": "change", "result": "pass"}]}, True)
+    bundle = next_dir("common", True) / "repo.bundle"
+    c1, c2 = build_bundle(bundle, [
+        ("第一条だけの版を加える", "revisionAdd", True, partial_text(fictional_files("架空の雲を保管する。\n"))),
+        ("欠けていた第二条を補う", "restoration", True, fictional_files("架空の雲を保管する。\n")),
+    ])
+    add("common", "一部しか本文がない版の欠落を補う復元", ["CHG-02", "CHG-04"], "change",
+        {"kind": "change", "bundle": rel(bundle), "base": c1, "head": c2},
+        {"results": [{"check": "change", "result": "pass"}]}, True)
+
+
 def main():
     for suite, folder in FOLDER.items():
         for group in ("invalid", "expected"):
@@ -1250,6 +1288,7 @@ def main():
     duplicate_trailers()
     merge_commit()
     correction_without_text_change()
+    declared_versions_without_ast()
     assert not DERIVED, sorted(DERIVED)  # every copy is listed by the case that owns it
     marked = {case["id"] for cases in INDEX.values() for case in cases if "rejectedBy" in case}
     assert marked == SCHEMA_REJECTED, SCHEMA_REJECTED - marked
