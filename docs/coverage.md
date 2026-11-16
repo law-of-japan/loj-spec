@@ -86,7 +86,7 @@ CHG-04（2026-11-12）は、L1が不合格の版を含む`metadata`の変更を�
 CHG-03のtrailerの構文とCHG-04の判定不能の診断（2026-11-16、[law-of-japan/loj-spec#107](https://github.com/law-of-japan/loj-spec/issues/107)）は、次のケースがある。
 - 正例: コロンの後にタブと二つの空白を置いた`correction`の宣言（common-032）、`LoJ-Revisions`を書いた`format`（common-033）、行末をCRLFにした宣言（common-038）、U+3000だけの値の`LoJ-Reviewed`（common-039）。common-038・039のメッセージは、gitの`commit`の既定の整形で変わらないよう、バンドルの中のバイト列で固定した。
 - 負例（宣言のないcommitとしてCHG-03の違反）: 名前とコロンの間に空白を置いた宣言（common-034）と、trailerの後に段落が続く宣言（common-035）。
-- 判定不能の診断を期待結果に挙げたケース: common-025の写しで、CHG-04の`undetermined`の診断を挙げる正例（common-036）と、common-026の写しで、CHG-04の違反と`undetermined`の診断の両方を挙げる負例（common-037）。
+- 判定不能の診断を期待結果に挙げたケース: common-025の写しで、CHG-04の`undetermined`の診断を挙げる正例（common-036）と、common-026の写しで、CHG-04の違反と`undetermined`の診断の両方を挙げる負例（common-037）。common-025・026の期待結果に診断を足さず、写しのケースにしたのは、既存の期待結果を変えないためである。
 - 加えていないケース: 値のない行は、`LoJ-Reviewed`の空の値（common-030）が当たる。最初の段落だけのメッセージは、宣言のないcommit（common-006）が当たる。`metadata`の`LoJ-Revisions`は、`format`と同じ文で定めるので、加えていない。`migration`は、本版で宣言できない（CHG-03の取り消しの項）ので、ケースを作れない。
 
 登録空間の入力（VAL-03、2026-11-15、[law-of-japan/loj-spec#68](https://github.com/law-of-japan/loj-spec/issues/68)）は、他の登録空間のRecordを起点とする関係を未取得とする正例（common-028）と、他の登録空間を指す統合先の負例（reg-012、REG-02）がある。`space`を入力と同じ`loj`と書いた参照は、既存のケース（reg-009の`replacedBy`等）が解決済みとして確かめる。登録空間の入力がない場合の判定不能と、`space.yaml`を置いた登録台帳のケースは、加えていない。前者は、ケースの実行で入力を`loj`とする（CONF-01）ので、索引で表せない。後者は、`space.yaml`の形を定めていないので、適合ケースの登録台帳に置かない（CONF-01）。
