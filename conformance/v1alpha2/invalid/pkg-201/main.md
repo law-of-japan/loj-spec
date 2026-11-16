@@ -7,8 +7,8 @@
 <!-- loj:subitem level=1 number=3 -->
 ハ　霧雨
 <!-- loj:end-subitem -->
-<!-- loj:subitem level=2 number=1 -->
-（１）　小さな霧雨
+<!-- loj:subitem level=2 number=4 -->
+ニ　小さな霧雨
 <!-- loj:end-subitem -->
 <!-- loj:end-amendment-content -->
 <!-- loj:end-amendment -->

@@ -711,7 +711,7 @@ amd_case("項と表を混ぜた改正内容", ["AMEND-02", "AMEND-03"],
 amd_case("空の改正内容", ["AMEND-02"], AMD_HEAD + amendment_md("1", B_INS[0], "\n") + AMD_END, "AMEND-02")
 amd_case("levelの違う細分を並べた改正内容", ["AMEND-02"],
          AMD_HEAD + amendment_md("1", B_INS[2], "<!-- loj:subitem level=1 number=3 -->\n" + B_S3 + "<!-- loj:end-subitem -->\n"
-                                 "<!-- loj:subitem level=2 number=1 -->\n（１）　小さな霧雨\n<!-- loj:end-subitem -->\n") + AMD_END,
+                                 "<!-- loj:subitem level=2 number=4 -->\nニ　小さな霧雨\n<!-- loj:end-subitem -->\n") + AMD_END,
          "AMEND-02")
 amd_case("改正内容の中の改正規定", ["AMEND-02", "AMEND-03"],
          AMD_HEAD + amendment_md("1", B_INS[0], "<!-- loj:paragraph number=3 -->\n" + B_P3 +
