@@ -1127,6 +1127,24 @@
       },
       "expected": "conformance/common/v1alpha1/expected/common-046.json",
       "success": false
+    },
+    {
+      "id": "common-047",
+      "title": "宣言した版の本文を変えず、本文の出典の箇所だけを直す記録訂正（CHG-01の宣言の誤りだが、変更検査は判定しない）",
+      "requirements": [
+        "CHG-02",
+        "CHG-01"
+      ],
+      "check": "change",
+      "normative": true,
+      "input": {
+        "kind": "change",
+        "bundle": "conformance/common/v1alpha1/valid/common-047/repo.bundle",
+        "base": "342736570869225d992c96fcdd63e4534a97ef74",
+        "head": "c3a15b209135a5d4690f8674c2b226ab8b08bb91"
+      },
+      "expected": "conformance/common/v1alpha1/expected/common-047.json",
+      "success": true
     }
   ]
 }
