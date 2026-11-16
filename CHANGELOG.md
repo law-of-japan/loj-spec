@@ -7,7 +7,7 @@
 [law-of-japan/loj-spec#120](https://github.com/law-of-japan/loj-spec/issues/120)による変更である。適合ケースの追加であり、規範の本文は変えない。既存のケースの期待結果は変わらない。
 
 - 適合ケース: 分岐したブランチの記録訂正を、mergeのcommit（親が二つ）で`main`に統合する負例（common-046、CHG-03）を加えた。
-- `scripts/author_next_cases.py`: `build_bundle`に、ブランチを作る・切り替える手順と、mergeのcommitを作る手順を加えた。既存のバンドルとcommitのハッシュは変わらない。
+- `scripts/author_next_cases.py`: `build_bundle`に、ブランチを作る・切り替える手順と、mergeのcommitを作る手順を加えた。gitの各呼び出しで署名の設定（`commit.gpgsign`）を無効にし、環境によらず同じハッシュで作り直せるようにした。既存のバンドルとcommitのハッシュは変わらない。
 - 要件との対応表を更新した。
 
 ## 種類の宣言と宣言した版の重複（2026-11-16、草案）
