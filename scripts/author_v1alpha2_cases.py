@@ -568,6 +568,172 @@ case("項の形式の本則の一つだけの無番号の項", ["PARA-01", "PARA
      fail("PARA-01"), False)
 
 
+# 2026-11-16 (#132): amendments (AMEND-01..03). The instruction is text; what it adds or replaces is the content,
+# which is a scope of its own and never the amending law's own article, paragraph or table.
+def mk_cell(row, c, value):
+    return node("Cell", row + "/cell/" + str(c), str(c), "", [text(value + "\n")])
+
+
+def mk_table(parent, key, values):
+    t = parent + "/table/1"
+    r = t + "/row/" + key
+    return node("Table", t, "1", "", [node("Row", r, None, "", [mk_cell(r, c, v) for c, v in enumerate(values, 1)], key=key)])
+
+
+def mk_amendment(parent, number, instruction, children=None, body=None):
+    a = parent + "/amendment/" + number
+    c = a + "/content"
+    content = [text(body)] if body is not None else children(c)
+    return node("Amendment", a, number, "", [text(instruction), node("AmendmentContent", c, None, "", content)])
+
+
+def table_md(key, values):
+    return ("<!-- loj:table number=1 -->\n<!-- loj:row key=" + key + " -->\n" +
+            "".join("<!-- loj:cell -->\n" + v + "\n<!-- loj:end-cell -->\n" for v in values) +
+            "<!-- loj:end-row -->\n<!-- loj:end-table -->\n")
+
+
+def amendment_md(number, instruction, inner):
+    return ("<!-- loj:amendment number=" + number + " -->\n" + instruction + "<!-- loj:amendment-content -->\n" + inner +
+            "<!-- loj:end-amendment-content -->\n<!-- loj:end-amendment -->\n")
+
+
+# The structure of 昭和四十一年法律第八十六号 with invented text: a main provision of one paragraph that adds table
+# rows, and supplementary paragraphs that add a row, amend by text only, and replace a whole article.
+ROW1, ROW2 = ["巻雲", "政令で定める日", "高い空の雲を観る。"], ["層雲", "九月十五日", "低い空の雲を観る。"]
+MAIN_LEAD = "架空雨量法（架空法律第二号）の一部を次のように改正する。\n"
+INS1, INS2 = "第二条白雲の項の次に次のように加える。\n", "第二条積雲の項の次に次のように加える。\n"
+S41_MAIN = ("<!-- loj:paragraph number=1 -->\n" + MAIN_LEAD + amendment_md("1", INS1, table_md("q7cz", ROW1)) +
+            amendment_md("2", INS2, table_md("h4ts", ROW2)) + "<!-- loj:end-paragraph -->\n")
+SP1 = "（施行期日）\n１　この法律は、公布の日から施行する。\n"
+SP2 = "（架空雲台帳法の一部改正）\n２　架空雲台帳法（架空法律第三号）の一部を次のように改正する。\n"
+SP2_INS = "第十五条第一項の表中白雲審議会の項の次に次のように加える。\n"
+SP2_ROW = ["巻雲審議会", "巻雲について調査審議すること。"]
+SP2_AFTER = "附則第四項中「審議会」の下に「、巻雲審議会」を加える。\n"
+SP3 = ("（架空雲観測法の一部改正）\n３　架空雲観測法（架空法律第四号）の一部を次のように改正する。\n\n"
+       "第五条の見出しを「（雲の日の行事）」に改め、同条第一項及び第二項を削り、同条第三項中「雲の行事」を「雲の日の行事」に改め、"
+       "同項を同条とする。\n")
+SP4 = "（架空雲福祉法の一部改正）\n４　架空雲福祉法（架空法律第五号）の一部を次のように改正する。\n"
+SP4_INS = "第五条を次のように改める。\n"
+SP4_BODY = "国は、雲の日において、雲についての関心を深める行事を行う。\n"
+S41_SUPP = (SUPP_HEAD +
+            "<!-- loj:paragraph number=1 caption=present -->\n" + SP1 + "<!-- loj:end-paragraph -->\n"
+            "<!-- loj:paragraph number=2 caption=present -->\n" + SP2 + amendment_md("1", SP2_INS, table_md("x2fe", SP2_ROW)) +
+            SP2_AFTER + "<!-- loj:end-paragraph -->\n"
+            "<!-- loj:paragraph number=3 caption=present -->\n" + SP3 + "<!-- loj:end-paragraph -->\n"
+            "<!-- loj:paragraph number=4 caption=present -->\n" + SP4 +
+            amendment_md("1", SP4_INS, "# 第五条（雲の日の行事）\n<!-- loj:paragraph number=1 -->\n" + SP4_BODY +
+                         "<!-- loj:end-paragraph -->\n") + "<!-- loj:end-paragraph -->\n")
+S41_P1 = MAIN + "/paragraph/1"
+S41_AST = ast([node("Paragraph", S41_P1, "1", "", [
+    text(MAIN_LEAD), mk_amendment(S41_P1, "1", INS1, lambda c: [mk_table(c, "q7cz", ROW1)]),
+    mk_amendment(S41_P1, "2", INS2, lambda c: [mk_table(c, "h4ts", ROW2)])], numbering="explicit")],
+    supplements=[node("SupplementaryProvision", SUPP, None, "附　則", [
+        para(SUPP, "1", SP1, display="１", caption="（施行期日）"),
+        node("Paragraph", SUPP + "/paragraph/2", "2", "２", [
+            text(SP2), mk_amendment(SUPP + "/paragraph/2", "1", SP2_INS, lambda c: [mk_table(c, "x2fe", SP2_ROW)]),
+            text(SP2_AFTER)], numbering="explicit", caption="（架空雲台帳法の一部改正）"),
+        para(SUPP, "3", SP3, display="３", caption="（架空雲観測法の一部改正）"),
+        node("Paragraph", SUPP + "/paragraph/4", "4", "４", [
+            text(SP4), mk_amendment(SUPP + "/paragraph/4", "1", SP4_INS, lambda c: [
+                article(c, "5", "第五条（雲の日の行事）", [lambda a: para(a, "1", SP4_BODY)])])],
+            numbering="explicit", caption="（架空雲福祉法の一部改正）")])])
+case("改正法の本則と附則の改正規定（表の行・条の全文・本文だけの改正の指示）",
+     ["AMEND-01", "AMEND-02", "AMEND-03", "PARA-03", "ID-01", "AST-01", "TABLE-01"],
+     [("main.md", "main", S41_MAIN), ("supp.md", "supplement/original", S41_SUPP)], {"ast": S41_AST}, True,
+     man_extra=ORIGINAL)
+
+# Independent of PARA-03: an article-form amending law whose contents are a paragraph, an item, a subitem, a block
+# of text, and a chapter whose article numbers repeat the amending law's own (the content is a scope of its own).
+B_LEAD1 = "架空雨量法（架空法律第二号）の一部を次のように改正する。\n"
+B_INS = ["第三条に次の一項を加える。\n", "第四条第一項に次の一号を加える。\n", "第四条第一項第一号に次のように加える。\n",
+         "第七条の見出しを次のように改める。\n"]
+B_P3, B_I3, B_S3, B_CAP = "３　雨量は、毎日記録する。\n", "三　雪\n", "ハ　霧雨\n", "（雨量の公表）\n"
+B_LEAD2 = "架空雪量法（架空法律第六号）の一部を次のように改正する。\n"
+B_INS5 = "第五章の次に次の一章を加える。\n"
+B_A2, B_A22 = "雪量は、毎年報告する。\n", "報告は、公表する。\n"
+B_MAIN = ("# 第一条\n<!-- loj:paragraph number=1 -->\n" + B_LEAD1 +
+          amendment_md("1", B_INS[0], "<!-- loj:paragraph number=3 -->\n" + B_P3 + "<!-- loj:end-paragraph -->\n") +
+          amendment_md("2", B_INS[1], "<!-- loj:item number=3 -->\n" + B_I3 + "<!-- loj:end-item -->\n") +
+          amendment_md("3", B_INS[2], "<!-- loj:subitem level=1 number=3 -->\n" + B_S3 + "<!-- loj:end-subitem -->\n") +
+          amendment_md("4", B_INS[3], B_CAP) + "<!-- loj:end-paragraph -->\n"
+          "# 第二条\n<!-- loj:paragraph number=1 -->\n" + B_LEAD2 +
+          amendment_md("1", B_INS5, "# 第六章　雑則\n# 第二条（報告）\n<!-- loj:paragraph number=1 -->\n" + B_A2 +
+                       "<!-- loj:end-paragraph -->\n# 第二条の二（公表）\n<!-- loj:paragraph number=1 -->\n" + B_A22 +
+                       "<!-- loj:end-paragraph -->\n") + "<!-- loj:end-paragraph -->\n")
+B_A1P = MAIN + "/article/1/paragraph/1"
+B_A2P = MAIN + "/article/2/paragraph/1"
+
+
+def b_chapter(c):
+    ch = c + "/chapter/6"
+    return [node("Chapter", ch, "6", "第六章　雑則", [
+        article(c, "2", "第二条（報告）", [lambda a: para(a, "1", B_A2)]),
+        article(c, "2-2", "第二条の二（公表）", [lambda a: para(a, "1", B_A22)])])]
+
+
+B_AST = ast([
+    node("Article", MAIN + "/article/1", "1", "第一条", [node("Paragraph", B_A1P, "1", "", [
+        text(B_LEAD1),
+        mk_amendment(B_A1P, "1", B_INS[0], lambda c: [para(c, "3", B_P3, display="３")]),
+        mk_amendment(B_A1P, "2", B_INS[1], lambda c: [node("Item", c + "/item/3", "3", "三", [text(B_I3)])]),
+        mk_amendment(B_A1P, "3", B_INS[2], lambda c: [node("Subitem", c + "/subitem/1/3", "3", "ハ", [text(B_S3)], level=1)]),
+        mk_amendment(B_A1P, "4", B_INS[3], body=B_CAP)], numbering="explicit")], status="active"),
+    node("Article", MAIN + "/article/2", "2", "第二条", [node("Paragraph", B_A2P, "1", "", [
+        text(B_LEAD2), mk_amendment(B_A2P, "1", B_INS5, b_chapter)], numbering="explicit")], status="active")])
+case("条の形式の改正法の改正内容（項・号・細分・本文・章と同じ番号の条）",
+     ["AMEND-01", "AMEND-02", "HEAD-02", "ID-01", "AST-01", "DIR-02"], [("main.md", "main", B_MAIN)], {"ast": B_AST}, True)
+
+# Negatives on one amendment that adds a paragraph to another law.
+AMD_HEAD = ART + "<!-- loj:paragraph number=1 -->\n" + B_LEAD1
+AMD_P3 = "<!-- loj:paragraph number=3 -->\n" + B_P3 + "<!-- loj:end-paragraph -->\n"
+AMD_END = "<!-- loj:end-paragraph -->\n"
+AMD_MD = AMD_HEAD + amendment_md("1", B_INS[0], AMD_P3) + AMD_END
+
+
+def amd_case(title, requirements, body, rule):
+    case(title, requirements, [("main.md", "main", body)], fail(rule), False)
+
+
+amd_case("改正内容のない改正規定", ["AMEND-01"],
+         AMD_HEAD + "<!-- loj:amendment number=1 -->\n第三条中「毎日」を「毎週」に改める。\n<!-- loj:end-amendment -->\n" + AMD_END,
+         "AMEND-01")
+amd_case("改正内容の後の改正規定の本文", ["AMEND-01"],
+         AMD_MD.replace("<!-- loj:end-amendment-content -->\n", "<!-- loj:end-amendment-content -->\n同条第二項を削る。\n"), "AMEND-01")
+amd_case("改正の指示のない改正規定", ["AMEND-01"], AMD_MD.replace(B_INS[0], ""), "AMEND-01")
+amd_case("改正規定の番号が1から始まらない", ["AMEND-01"],
+         AMD_MD.replace("amendment number=1", "amendment number=2"), "AMEND-01")
+amd_case("改正規定の外の改正内容", ["DIR-02", "AMEND-01"],
+         AMD_HEAD + B_INS[0] + "<!-- loj:amendment-content -->\n" + AMD_P3 + "<!-- loj:end-amendment-content -->\n" + AMD_END,
+         "DIR-02")
+amd_case("項と表を混ぜた改正内容", ["AMEND-02", "AMEND-03"],
+         AMD_HEAD + amendment_md("1", B_INS[0], AMD_P3 + table_md("q7cz", ROW1)) + AMD_END, "AMEND-02")
+amd_case("空の改正内容", ["AMEND-02"], AMD_HEAD + amendment_md("1", B_INS[0], "\n") + AMD_END, "AMEND-02")
+amd_case("levelの違う細分を並べた改正内容", ["AMEND-02"],
+         AMD_HEAD + amendment_md("1", B_INS[2], "<!-- loj:subitem level=1 number=3 -->\n" + B_S3 + "<!-- loj:end-subitem -->\n"
+                                 "<!-- loj:subitem level=2 number=4 -->\nニ　小さな霧雨\n<!-- loj:end-subitem -->\n") + AMD_END,
+         "AMEND-02")
+amd_case("改正内容の中の改正規定", ["AMEND-02", "AMEND-03"],
+         AMD_HEAD + amendment_md("1", B_INS[0], "<!-- loj:paragraph number=3 -->\n" + B_P3 +
+                                 amendment_md("1", "第一条中「雨」を「雨雪」に改める。\n", "（雨雪）\n") +
+                                 "<!-- loj:end-paragraph -->\n") + AMD_END, "AMEND-02")
+amd_case("改正規定の本文の中の条の見出し（改正内容の外の引用条）", ["DIR-02", "MD-03", "AMEND-01"],
+         AMD_HEAD + "<!-- loj:amendment number=1 -->\n第三条を次のように改める。\n# 第三条（雨量）\n<!-- loj:amendment-content -->\n"
+         "<!-- loj:paragraph number=1 -->\n雨量は、毎日記録する。\n<!-- loj:end-paragraph -->\n"
+         "<!-- loj:end-amendment-content -->\n<!-- loj:end-amendment -->\n" + AMD_END, "DIR-02")
+# A heading inside a paragraph crosses the open marker (DIR-02), as in pkg-071; the content does not change that.
+amd_case("改正内容の中の項の中の見出し", ["DIR-02", "MD-03", "AMEND-02"],
+         AMD_MD.replace(B_P3, B_P3 + "# 第四条\n"), "DIR-02")
+amd_case("改正内容の中の条の番号の重複", ["HEAD-02", "AMEND-02"],
+         AMD_HEAD + amendment_md("1", B_INS5, "# 第二条（報告）\n<!-- loj:paragraph number=1 -->\n" + B_A2 +
+                                 "<!-- loj:end-paragraph -->\n# 第二条（公表）\n<!-- loj:paragraph number=1 -->\n" + B_A22 +
+                                 "<!-- loj:end-paragraph -->\n") + AMD_END, "HEAD-02")
+amd_case("改正内容の中の条を置かない章の下の項", ["DIR-02", "AMEND-02"],
+         AMD_HEAD + amendment_md("1", B_INS5, "# 第六章　雑則\n" + AMD_P3) + AMD_END, "DIR-02")
+amd_case("改正内容の中の附則の見出し", ["HEAD-01", "AMEND-03"],
+         AMD_HEAD + amendment_md("1", "附則に次の一項を加える。\n", "# 附則\n" + AMD_P3) + AMD_END, "HEAD-01")
+
+
 def main():
     index_path = DST / "manifest.json"
     index = json.loads(index_path.read_text(encoding="utf-8"))

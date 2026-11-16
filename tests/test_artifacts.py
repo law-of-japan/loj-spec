@@ -144,6 +144,43 @@ class ArtifactAuditTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             v.check_tree(ast, man, v2=True)
 
+    def test_v1alpha2_amendment_shapes(self):
+        # AMEND-01/02 in the positive-fixture audit: pkg-193 passes; breaking its tree must not.
+        path = v.ROOT / "conformance/v1alpha2/valid/pkg-193/law.yaml"
+        man = v.load_yaml(path.read_bytes())
+        source = v.read_json(v.ROOT / "conformance/v1alpha2/expected/pkg-193.json")["ast"]
+        v.check_tree(source, man, v2=True)
+
+        def first_paragraph(ast):
+            return ast["root"]["content"][0]["content"][0]["content"][0]
+
+        def mixed_group(ast):
+            amendment = first_paragraph(ast)["content"][1]
+            content = amendment["content"][1]
+            item = first_paragraph(ast)["content"][2]["content"][1]["content"][0]
+            item = json.loads(json.dumps(item).replace(item["id"].rsplit("/item/", 1)[0], content["id"]))
+            content["content"].append(item)
+
+        def text_after_content(ast):
+            first_paragraph(ast)["content"][1]["content"].append({"text": "同条第二項を削る。\n"})
+
+        def amendment_in_content(ast):
+            amendment = first_paragraph(ast)["content"][1]
+            quoted = amendment["content"][1]["content"][0]
+            nested = json.loads(json.dumps(first_paragraph(ast)["content"][4]).replace(
+                first_paragraph(ast)["id"], quoted["id"]))
+            quoted["content"].append(nested)
+
+        def content_id(ast):
+            first_paragraph(ast)["content"][1]["content"][1]["id"] += "s"
+
+        for breaker, message in ((mixed_group, "Amendment content group"), (text_after_content, "Amendment shape"),
+                                 (amendment_in_content, "Amendment shape"), (content_id, "Amendment content ID")):
+            ast = json.loads(json.dumps(source))
+            breaker(ast)
+            with self.subTest(breaker=breaker.__name__), self.assertRaisesRegex(ValueError, message):
+                v.check_tree(ast, man, v2=True)
+
     def test_v1alpha2_caption_parentheses(self):
         for value in ("（定義）", "（雲（白雲を除く。）の保管）", "（a(b)）"):
             with self.subTest(value=value):

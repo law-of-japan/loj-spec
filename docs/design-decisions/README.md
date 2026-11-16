@@ -45,5 +45,6 @@ DDR-023の公開の条件に書いた`rejectedBy: schema`の印の付け方の�
 2026-11-16採用。
 
 - [025 条を持たない本則](025-main-provision-paragraphs.md)
+- [026 改正規定と改正内容](026-amendments.md)
 
 DDR-012の制約で未対応とした条のない本則は、DDR-025で型付けした。

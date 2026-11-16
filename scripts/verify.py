@@ -132,9 +132,10 @@ def inspect_manifest(path, validator, version="loj/v1alpha1"):
 
 RANK = {"Part": 1, "Chapter": 2, "Section": 3, "Subsection": 4, "Division": 5, "Article": 6}
 TEXT_KINDS = {"Paragraph", "Item", "Subitem", "AppendedMaterial"}
-TEXT_KINDS_V2 = TEXT_KINDS | {"Cell", "Preamble", "EnactStatement", "Toc"}
+TEXT_KINDS_V2 = TEXT_KINDS | {"Cell", "Preamble", "EnactStatement", "Toc", "Amendment", "AmendmentContent"}
 CONTAINERS_V2 = {"paragraph": "Paragraph", "item": "Item", "subitem": "Subitem", "table": "Table", "row": "Row",
-                 "cell": "Cell", "preamble": "Preamble", "enact-statement": "EnactStatement", "toc": "Toc"}
+                 "cell": "Cell", "preamble": "Preamble", "enact-statement": "EnactStatement", "toc": "Toc",
+                 "amendment": "Amendment", "amendment-content": "AmendmentContent"}
 # DISP-01: iroha subitem display numbers, valued by their position in this sequence (1..47).
 IROHA = "イロハニホヘトチリヌルヲワカヨタレソツネナラムウヰノオクヤマケフコエテアサキユメミシヱヒモセス"
 
@@ -217,7 +218,7 @@ def check_tree(ast, man, v2=False):
     require(top == scopes, "Scope order")
     text_kinds = TEXT_KINDS_V2 if v2 else TEXT_KINDS
 
-    def visit(node, parent=None, scope=None):
+    def visit(node, parent=None, scope=None, quoted=False):
         kind, ident = node["kind"], node["id"]
         require(ident not in seen, "Duplicate ID: " + ident)
         seen.add(ident)
@@ -225,6 +226,11 @@ def check_tree(ast, man, v2=False):
             scope = ident
         elif kind in ("EnactStatement", "Preamble", "Toc"):
             require(node["number"] is None and node["display"] == "", "Preamble/enact/toc fields")
+        elif kind == "AmendmentContent":
+            # AMEND-01/02: the content of an amendment is a scope of its own for its divisions and articles.
+            require(parent["kind"] == "Amendment" and ident == parent["id"] + "/content" and node["number"] is None
+                    and node["display"] == "", "Amendment content ID/fields: " + ident)
+            scope, quoted = ident, True
         elif kind == "Row":
             require(ident == parent["id"] + "/row/" + node["key"] and node["number"] is None, "Row ID: " + ident)
         elif kind == "Cell":
@@ -239,7 +245,7 @@ def check_tree(ast, man, v2=False):
         texts = [c["text"] for c in content if "text" in c]
         require(not texts or kind in text_kinds, "Text in structural parent")
         require(all(not ("text" in x and "text" in y) for x, y in zip(content, content[1:])), "Adjacent text")
-        if kind in text_kinds:
+        if kind in text_kinds and not (kind == "AmendmentContent" and children):
             require(bool("".join(texts).strip()), "Empty body")
         if kind in ("Cell", "Preamble", "EnactStatement", "Toc"):
             require(not children and len(texts) == 1, "Text-only container")
@@ -264,14 +270,27 @@ def check_tree(ast, man, v2=False):
             require((node["status"] == "deleted" and not content) or
                     (node["status"] == "active" and bool(children) and all(k == "Paragraph" for k in child_kinds)), "Article children")
         elif kind == "Paragraph":
-            require(all(k == "Item" or v2 and k == "Table" for k in child_kinds), "Paragraph children")
+            require(all(k == "Item" or v2 and k in ("Table", "Amendment") for k in child_kinds), "Paragraph children")
         elif kind in ("Item", "Subitem"):
             next_level = 1 if kind == "Item" else node["level"] + 1
-            require(all(c["kind"] == "Subitem" and c["level"] == next_level or v2 and c["kind"] == "Table"
+            require(all(c["kind"] == "Subitem" and c["level"] == next_level or v2 and c["kind"] in ("Table", "Amendment")
                         for c in children), "Subitem children")
             if v2:
                 kinds = {subitem_display_kind(c["display"]) or "decimal" for c in children if c["kind"] == "Subitem"}
                 require(len(kinds) <= 1, "Sibling subitem displays mix character kinds (DISP-01): " + ident)
+        elif kind == "Amendment":
+            # AMEND-01: instruction text first, then exactly one content, nothing after it; never inside a content.
+            require(not quoted and child_kinds == ["AmendmentContent"] and "text" in content[0] and "kind" in content[-1]
+                    and node["display"] == "", "Amendment shape: " + ident)
+        elif kind == "AmendmentContent":
+            # AMEND-02: exactly one group, or text only.
+            groups = [all(k in RANK for k in child_kinds), all(k == "Paragraph" for k in child_kinds),
+                      all(k == "Item" for k in child_kinds), all(k == "Table" for k in child_kinds),
+                      all(k == "Subitem" for k in child_kinds) and len({c["level"] for c in children}) == 1]
+            require((bool(children) and not texts and any(groups)) or (not children and len(texts) == 1),
+                    "Amendment content group: " + ident)
+            kinds = {subitem_display_kind(c["display"]) or "decimal" for c in children if c["kind"] == "Subitem"}
+            require(len(kinds) <= 1, "Sibling subitem displays mix character kinds (DISP-01): " + ident)
         elif kind == "AppendedMaterial":
             require(not children, "Opaque appendix children")
         if kind == "MainProvision":
@@ -312,7 +331,7 @@ def check_tree(ast, man, v2=False):
             else:
                 require(kind == "Paragraph" and node["number"] == "1", "Required display")
         for child in children:
-            visit(child, node, scope)
+            visit(child, node, scope, quoted)
     visit(root)
     return seen
 
@@ -320,7 +339,7 @@ def check_tree(ast, man, v2=False):
 def marker_attrs(kind, node):
     """Attributes a v1alpha2 marker carries for this node (defaults omitted)."""
     attrs = {}
-    if kind in ("Paragraph", "Item", "Subitem", "Table"):
+    if kind in ("Paragraph", "Item", "Subitem", "Table", "Amendment"):
         attrs["number"] = node["number"]
     if kind == "Subitem":
         attrs["level"] = str(node["level"])

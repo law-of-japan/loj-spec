@@ -22,6 +22,8 @@ e-Govの本文は新字体に置き換えている。版の本文の根拠は公
 | ParagraphCaption | `caption=present`と見出しの行、Paragraphの`caption` | 項の本文の最初の行に、括弧を含めて書く（PARA-02）。一つの見出しが続く項にかかる場合も、最初の項にだけ書く |
 | Item / ItemTitle | `Item` | 表示番号の範囲はDISP-01 |
 | Subitem1〜Subitem10 | `Subitem`（level 1〜10） | 表示はASCIIの十進、いろは、括弧付きの十進（DISP-01）。ローマ数字等は未対応 |
+| AmendProvision / AmendProvisionSentence | `Amendment`と、その本文 | 改正内容（NewProvision）を持つものだけを`Amendment`とする（AMEND-01）。NewProvisionのないAmendProvisionは、親の本文とする |
+| NewProvision | `AmendmentContent` | 一つの改正規定の改正内容を一つの`AmendmentContent`にまとめる。中の条・項・表は、改正内容をscopeとして書く（AMEND-02）。二つ以上の種類を含むものは未対応（AMEND-03） |
 | Sentence等の本文 | `text` | 原文のMarkdown。文・列の型は再現しない |
 | TableStruct / Table / TableRow / TableColumn | `Table` / `Row` / `Cell` | 項・号・細分の本文の中の表（TABLE-01〜03）。罫線・配置・列の幅は記録しない。罫線を省いて上の欄が続く空の`TableColumn`は、上の欄の結合（`rowspan`）として書く（原典で確かめる）。罫線に囲まれた空の欄、セルの中の項・号・表、入れ子の表は未対応 |
 | SupplProvision | `SupplementaryProvision` | `law.yaml`の永続key。その法令自身の附則だけを収録する |
