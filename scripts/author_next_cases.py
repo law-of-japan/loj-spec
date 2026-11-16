@@ -1200,6 +1200,24 @@ def merge_commit():
         {"results": [{"check": "change", "result": "fail"}], "diagnostics": [diag("CHG-03", SV["common"])]}, False)
 
 
+# --- 2026-11-16 (#122): a correction that keeps the text of the declared version (CHG-01, CHG-02) ------------
+def correction_without_text_change():
+    """The correction changes only the locator of text.sources; the AST of the declared version is the same.
+
+    CHG-01 forbids declaring a version whose text does not change, but the change check does not compare the AST of
+    the declared versions (CHG-02), so the check passes. The text.sources Evidence is there, so CHG-02 holds.
+    """
+    bundle = next_dir("common", True) / "repo.bundle"
+    c1, c2 = build_bundle(bundle, [
+        ("制定時の版を加える", "revisionAdd", True, fictional_files("架空の雲を保管する。\n")),
+        ("本文の出典の箇所を直す（記録訂正と宣言）", "correction", True,
+         fictional_files("架空の雲を保管する。\n", locator="本則第一条")),
+    ])
+    add("common", "宣言した版の本文を変えず、本文の出典の箇所だけを直す記録訂正", ["CHG-02", "CHG-01"], "change",
+        {"kind": "change", "bundle": rel(bundle), "base": c1, "head": c2},
+        {"results": [{"check": "change", "result": "pass"}]}, True)
+
+
 def main():
     for suite, folder in FOLDER.items():
         for group in ("invalid", "expected"):
@@ -1231,6 +1249,7 @@ def main():
     official_correction_evidence()
     duplicate_trailers()
     merge_commit()
+    correction_without_text_change()
     assert not DERIVED, sorted(DERIVED)  # every copy is listed by the case that owns it
     marked = {case["id"] for cases in INDEX.values() for case in cases if "rejectedBy" in case}
     assert marked == SCHEMA_REJECTED, SCHEMA_REJECTED - marked

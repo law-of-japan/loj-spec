@@ -2,6 +2,15 @@
 
 見出しの「草案」は、[草案の版](spec/README.md#版の状態)への変更であることを示す。版の状態の正は、[規範仕様の入口](spec/README.md#規範とするもの)の表にある。版を公開したときは、公開の日付の項目を加える。
 
+## 宣言した版の本文の内容の変化（2026-11-16、草案）
+
+[law-of-japan/loj-spec#122](https://github.com/law-of-japan/loj-spec/issues/122)による変更である。草案の版（`common/v1alpha1`）への変更であり、版番号は上げない。既存のケースの期待結果は変わらない。判断はDDR-015に追記した。
+
+- CHG-01: `correction`・`officialCorrection`・`restoration`で宣言する版を、そのcommitで本文の内容を変える版に限った。本文の内容を変えない版を宣言してはならない。本文の内容を変えず根拠・出典・確認状態等だけを更新する変更は`metadata`とする。この宣言の誤りは、変更検査では判定せず、レビューで確かめる。
+- CHG-02: `correction`・`officialCorrection`・`restoration`の検査は、宣言した版の本文の内容が変わったことを確かめず、宣言した版のASTを生成・比較しないとした。宣言した版がASTを生成できなくても、CHG-04の判定不能に当たらない。
+- 適合ケース: 宣言した版の本文を変えず、本文の出典の箇所だけを直す`correction`の正例（common-047）を加えた。
+- 要件との対応表を更新した。
+
 ## mergeのcommitの適合ケース（2026-11-16）
 
 [law-of-japan/loj-spec#120](https://github.com/law-of-japan/loj-spec/issues/120)による変更である。適合ケースの追加であり、規範の本文は変えない。既存のケースの期待結果は変わらない。

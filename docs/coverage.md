@@ -73,6 +73,7 @@ T076〜T105は承認されたMAN-03 B案の独立ケース。附属資料の通�
 | RID-03、REV-02 | リポジトリの名前と可読ラベルは参照の解決に使わない、という制約 |
 | TIME-05 | `reason`に書く理由の中身と、確認した範囲（SHOULD）は、レビューで確かめる。`reason`があることはTIME-01の必須のフィールドとして検査する（2026-11-12、[law-of-japan/loj-spec#32](https://github.com/law-of-japan/loj-spec/issues/32)） |
 | CHG-05 | 変更検査の結果を適合レベルとして主張しないことは、実装と適合の主張への要求であり、レビューで確かめる（同上） |
+| CHG-01の一部（`correction`・`officialCorrection`・`restoration`で、本文の内容を変えない版を宣言しない） | 変更検査は宣言した版のASTを生成・比較しない（CHG-02）ので、レビューで確かめる。変更検査で合格することはcommon-047が当たる（2026-11-16、[law-of-japan/loj-spec#122](https://github.com/law-of-japan/loj-spec/issues/122)） |
 | TABLE-02の一部（既存の行の`key`の維持、基礎の版の同じ行が同じ`key`を持つこと） | 行の同一性は法的な判断であり、機械では確かめられない。入力者への要件とする（2026-11-12、[law-of-japan/loj-spec#23](https://github.com/law-of-japan/loj-spec/issues/23)） |
 
 [規範仕様の入口](../spec/README.md#版の状態)の版の状態の定め（要件IDなし）にも、ケースを作らない。仕様の資料そのものの管理の規則であり、法令の入力の成否として検査できないためである。状態の表の形は`scripts/verify.py`が検査する。タグを打つことは、公開の手順（[CONTRIBUTING](../CONTRIBUTING.md)）で確かめる。
@@ -138,6 +139,8 @@ CHG-02の`correction`・`officialCorrection`の根拠の判定（2026-11-16、[l
 CHG-03の宣言の重複（2026-11-16、[law-of-japan/loj-spec#117](https://github.com/law-of-japan/loj-spec/issues/117)）は、同じ値の`LoJ-Change`を二つ置いた`correction`の負例（common-043）と、同じrevision_idの`LoJ-Revisions`を二行に置いた`correction`の負例（common-044）と、`LoJ-Revisions`を省略してよい`format`で二行に置いた負例（common-045）がある。common-044のbaseは、common-043で不合格のcommitである。各commitは親とだけ比べて単独で検査される（CHG-03）ので、baseの不合格は影響しない。重複を除いた同じ`correction`が合格することは、common-004が当たる。値の違う`LoJ-Change`の重複は、同じ文の範囲なので加えていない。`LoJ-Reviewed`の重複は、記録がないものとして扱う（common-029）。
 
 CHG-03のmergeのcommit（2026-11-16、[law-of-japan/loj-spec#120](https://github.com/law-of-japan/loj-spec/issues/120)）は、分岐したブランチの`correction`を、`correction`と宣言したmergeのcommitで`main`に統合する負例（common-046）がある。baseは分岐の元のcommit、headはmergeのcommitである。分岐したブランチの`correction`は、単独では合格する記録訂正（common-004と同じ変更）なので、baseとheadの間のcommitの数え方によらず、不合格になるのはmergeのcommitだけである。mergeのcommitは、宣言によらず比べずに不合格とする（CHG-03）。宣言のないmergeのcommitと、親が三つ以上のcommitは、同じ文の範囲なので加えていない。
+
+宣言した版の本文の内容の変化（2026-11-16、[law-of-japan/loj-spec#122](https://github.com/law-of-japan/loj-spec/issues/122)）は、宣言した版の本文を変えず、`text.sources`の箇所だけを直す`correction`の正例（common-047）がある。CHG-01はこの宣言を禁じるが、CHG-02の検査は宣言した版のASTを比べないので、変更検査は合格する。宣言した版がASTを生成できない`correction`・`restoration`で、CHG-04の判定不能が出ないことのケースは、まだない。一部しか本文がない版の版パッケージと、その`restoration`の入力を、まだ定めていない。
 
 TIME-03は、hist-004、hist-015〜018のほか、`pending`を基準とする`derived`に`value`を書いた負例（hist-044）と、`value`の書式（`YYYY-MM-DD`）に反する負例（hist-045）がある。
 
