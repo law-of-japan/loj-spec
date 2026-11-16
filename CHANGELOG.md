@@ -2,6 +2,17 @@
 
 見出しの「草案」は、[草案の版](spec/README.md#版の状態)への変更であることを示す。版の状態の正は、[規範仕様の入口](spec/README.md#規範とするもの)の表にある。版を公開したときは、公開の日付の項目を加える。
 
+## trailerの構文、宣言した版、判定不能の診断（2026-11-16、草案）
+
+[law-of-japan/loj-spec#107](https://github.com/law-of-japan/loj-spec/issues/107)による変更である。草案の版（`common/v1alpha1`）への変更であり、版番号は上げない。判断はDDR-015に追記した。
+
+- CHG-03: trailerの構文を定めた。最初の段落を除く最後の段落の、すべての行が`名前:値`の形（名前とコロンの間に空白なし、コロンの後の空白は任意）であるときだけtrailerとする。値は前後の空白（U+0020、U+0009）を除いたもので、値のない行も値が空のtrailerとする。gitの`interpret-trailers`の読み方には依らない。この構文に合わない宣言は、宣言のないcommitになる。
+- CHG-03: `LoJ-Revisions`はCHG-02の「宣言した版」を示すとした。`format`・`metadata`・`migration`では、版パッケージのファイルを変えるかによらず省略してよく、書いても検査の結果を変えない。`LoJ-Revisions`のないcommitは、宣言した版がないものとして検査する。
+- CHG-04: ASTを比べられない版の判定不能を、CHG-04の規則の`undetermined`の診断として版ごとに報告し、同じcommitにCHG-04の違反があるときも報告するとした。
+- 適合ケース: 正例 common-032（コロンの後のタブと空白）、common-033（`LoJ-Revisions`を書いた`format`）、common-036（判定不能の診断）。common-038（CRLFの行末）、common-039（値がU+3000だけの`LoJ-Reviewed`は記録）。負例 common-034（名前とコロンの間の空白）、common-035（trailerの後の段落）、common-037（違反と判定不能の診断）。既存のケースの期待結果は変えていない。
+- `author_next_cases.py`: 種類を`RAW`とした手順の題名を、commitメッセージの全体としてそのまま書けるようにした。既存のバンドルとハッシュは変わらない。
+- 実装ガイド、要件との対応表を更新した。
+
 ## 条件の外で禁止するフィールドの本文の禁止（2026-11-16、草案）
 
 [law-of-japan/loj-spec#104](https://github.com/law-of-japan/loj-spec/issues/104)による変更である。草案の版（`common/v1alpha1`、`loj-history/v1alpha1`、`loj-registry/v1alpha1`、`loj-rebuild/v1alpha1`）への変更であり、版番号は上げない。schemaは変わらない。schemaが条件の外で禁止していたが本文に禁止の文がなかったフィールドについて、本文に禁止を書き、schemaに合わせた。schemaで拒否していた入力の扱いは変わらない。
