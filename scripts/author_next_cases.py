@@ -1099,10 +1099,12 @@ def official_correction_evidence():
             "  - {id: src-fiction, kind: other, title: 架空の原典}\n",
             "  - {id: src-fiction, kind: other, title: 架空の原典}\n"
             "  - {id: src-seigo, kind: officialCorrection, title: 架空の官報正誤}\n", 1)
+        assert history != files["history.yaml"]  # the Source was added
         if cited:
-            history = history.replace("      sources: [{source: src-fiction, locator: 本則}]\n",
-                                      "      sources: [{source: src-fiction, locator: 本則}, {source: src-seigo, locator: 第一条}]\n", 1)
-        assert history != files["history.yaml"]
+            cited_history = history.replace("      sources: [{source: src-fiction, locator: 本則}]\n",
+                                            "      sources: [{source: src-fiction, locator: 本則}, {source: src-seigo, locator: 第一条}]\n", 1)
+            assert cited_history != history  # the Evidence was added
+            history = cited_history
         out["history.yaml"] = history
         return out
     bundle_pos = next_dir("common", True) / "repo.bundle"
