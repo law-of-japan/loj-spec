@@ -78,6 +78,8 @@ ASTは、`schemaVersion`・`law`・`root`への投影を、位置情報を除い
   - そのほかの種類の取り消し: 取り消す変更と同じ種類とする（例: `correction`の取り消しは`correction`）。
 - mergeのcommit（親が二つ以上）は、比べずに変更検査で不合格とする。
 - そのほかの各commitは、その親のcommitと比べて検査する。二つの記録版の間に複数のcommitがある場合は、各commitを順に検査する。宣言のないcommitと、宣言と検査の結果が合わないcommitは、不合格とする。
+- 次のcommitは、本要件の規則で報告する。宣言のないcommit（trailerを持たないcommit、`LoJ-Change`のないcommit、構文に合わない宣言のcommitを含む）、`LoJ-Change`の値が種類（[CHG-01](#chg-01-変更の種類)の表）でないcommit、mergeのcommitである。これらのcommitは、種類ごとの検査をしない。
+- 宣言と検査の結果が合わないcommitは、その検査を定める要件の規則で報告する（例: `format`と宣言してASTを変えたcommitは[CHG-02](#chg-02-種類ごとの検査)、ASTを生成できない版の自動変換は[CHG-04](#chg-04-astを生成できない版)）。
 
 ## CHG-04 ASTを生成できない版
 
