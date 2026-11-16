@@ -396,6 +396,8 @@ def build_bundle(path, steps=None, verbatim=False):
 
     A step is (subject, kind, with_revs, files, *trailers), or (BRANCH, name) and (CHECKOUT, name), which make no
     commit. files is the whole set of files to write, or Merge(branch) for a merge commit of that branch.
+    The date of a commit is fixed by the number of its step, counting the steps that make no commit, so a step
+    put in before others changes the hashes of the commits after it.
     """
     steps = steps if steps is not None else [
         ("制定時の版を加える", "revisionAdd", True, fictional_files("架空の雲を保管すろ。\n")),
