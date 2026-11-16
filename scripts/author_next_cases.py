@@ -1124,6 +1124,37 @@ def official_correction_evidence():
         {"results": [{"check": "change", "result": "fail"}], "diagnostics": [diag("CHG-02", SV["common"])]}, False)
 
 
+# --- 2026-11-16 (#117): two LoJ-Change or two LoJ-Revisions trailers in one commit (CHG-03) -----------------
+def duplicate_trailers():
+    """Each correction commit declares a trailer twice; CHG-03 reports it and no kind check runs."""
+    bundle_pos = next_dir("common", False) / "repo.bundle"
+    c1, c2, c3 = build_bundle(bundle_pos, [
+        ("制定時の版を加える", "revisionAdd", True, fictional_files("架空の雲を保管すろ。\n")),
+        ("第一条の誤転記を直す（種類の宣言を二つ）\n\nLoJ-Change: correction\nLoJ-Change: correction\nLoJ-Revisions: " + REV + "\n",
+         RAW, False, fictional_files("架空の雲を保管する。\n")),
+        ("第一条の誤転記を直す（宣言した版を二行）\n\nLoJ-Change: correction\nLoJ-Revisions: " + REV + "\nLoJ-Revisions: " + REV + "\n",
+         RAW, False, fictional_files("架空の雲を保管し続ける。\n")),
+    ])
+    add("common", "同じ値の種類の宣言を二つ置いたcommit", ["CHG-03"], "change",
+        {"kind": "change", "bundle": rel(bundle_pos), "base": c1, "head": c2},
+        {"results": [{"check": "change", "result": "fail"}], "diagnostics": [diag("CHG-03", SV["common"])]}, False)
+    dest = next_dir("common", False) / "repo.bundle"
+    copy_file(dest, bundle_pos)
+    add("common", "宣言した版を二行に置いたcommit", ["CHG-03"], "change",
+        {"kind": "change", "bundle": rel(dest), "base": c2, "head": c3},
+        {"results": [{"check": "change", "result": "fail"}], "diagnostics": [diag("CHG-03", SV["common"])]}, False)
+    # format may omit LoJ-Revisions, but two of them still fail (the form of the declaration does not depend on the kind).
+    bundle = next_dir("common", False) / "repo.bundle"
+    c1, c2 = build_bundle(bundle, [
+        ("制定時の版を加える", "revisionAdd", True, fictional_files("架空の雲を保管する。\n")),
+        ("条ごとにファイルを分ける（宣言した版を二行）\n\nLoJ-Change: format\nLoJ-Revisions: " + REV + "\nLoJ-Revisions: " + REV + "\n",
+         RAW, False, fictional_files("架空の雲を保管する。\n", files_split=True)),
+    ])
+    add("common", "宣言した版を二行に置いた書式変更", ["CHG-03"], "change",
+        {"kind": "change", "bundle": rel(bundle), "base": c1, "head": c2},
+        {"results": [{"check": "change", "result": "fail"}], "diagnostics": [diag("CHG-03", SV["common"])]}, False)
+
+
 def main():
     for suite, folder in FOLDER.items():
         for group in ("invalid", "expected"):
@@ -1153,6 +1184,7 @@ def main():
     trailer_syntax()
     unknown_kind()
     official_correction_evidence()
+    duplicate_trailers()
     assert not DERIVED, sorted(DERIVED)  # every copy is listed by the case that owns it
     marked = {case["id"] for cases in INDEX.values() for case in cases if "rejectedBy" in case}
     assert marked == SCHEMA_REJECTED, SCHEMA_REJECTED - marked

@@ -2,6 +2,14 @@
 
 見出しの「草案」は、[草案の版](spec/README.md#版の状態)への変更であることを示す。版の状態の正は、[規範仕様の入口](spec/README.md#規範とするもの)の表にある。版を公開したときは、公開の日付の項目を加える。
 
+## 種類の宣言と宣言した版の重複（2026-11-16、草案）
+
+[law-of-japan/loj-spec#117](https://github.com/law-of-japan/loj-spec/issues/117)による変更である。草案の版（`common/v1alpha1`）への変更であり、版番号は上げない。既存のケースの期待結果は変わらない。判断はDDR-015に追記した。
+
+- CHG-03: `LoJ-Change`は、値が同じでも二つ以上置かないとした。`LoJ-Revisions`は一つのcommitに一つまでとし、二つ以上の行をまとめて読まないとした。`LoJ-Change`または`LoJ-Revisions`を二つ以上置いたcommitは、種類によらず、種類ごとの検査をせずに不合格とし、CHG-03の規則で報告する。
+- 適合ケース: 同じ値の`LoJ-Change`を二つ置いた負例（common-043）と、`LoJ-Revisions`を二行に置いた負例（common-044）、`format`で`LoJ-Revisions`を二行に置いた負例（common-045）を加えた（CHG-03）。
+- 要件との対応表を更新した。
+
 ## 記録訂正と官報正誤の根拠の判定基準（2026-11-16、草案）
 
 [law-of-japan/loj-spec#116](https://github.com/law-of-japan/loj-spec/issues/116)による変更である。草案の版（`common/v1alpha1`）への変更であり、版番号は上げない。既存のケースの期待結果は変わらない。判断はDDR-015に追記した。

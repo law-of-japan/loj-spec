@@ -1052,6 +1052,64 @@
           "edits": []
         }
       ]
+    },
+    {
+      "id": "common-043",
+      "title": "同じ値の種類の宣言を二つ置いたcommit",
+      "requirements": [
+        "CHG-03"
+      ],
+      "check": "change",
+      "normative": true,
+      "input": {
+        "kind": "change",
+        "bundle": "conformance/common/v1alpha1/invalid/common-043/repo.bundle",
+        "base": "f1162fe2cfefa04e9a0d656706e37977fb3d0731",
+        "head": "b0b236c28c5a46dd630b6352e12ea1922a5b25b3"
+      },
+      "expected": "conformance/common/v1alpha1/expected/common-043.json",
+      "success": false
+    },
+    {
+      "id": "common-044",
+      "title": "宣言した版を二行に置いたcommit",
+      "requirements": [
+        "CHG-03"
+      ],
+      "check": "change",
+      "normative": true,
+      "input": {
+        "kind": "change",
+        "bundle": "conformance/common/v1alpha1/invalid/common-044/repo.bundle",
+        "base": "b0b236c28c5a46dd630b6352e12ea1922a5b25b3",
+        "head": "225ee0ee33b12da83bb663e7178b0f2e71fea755"
+      },
+      "expected": "conformance/common/v1alpha1/expected/common-044.json",
+      "success": false,
+      "derivedFrom": [
+        {
+          "path": "conformance/common/v1alpha1/invalid/common-044/repo.bundle",
+          "from": "conformance/common/v1alpha1/invalid/common-043/repo.bundle",
+          "edits": []
+        }
+      ]
+    },
+    {
+      "id": "common-045",
+      "title": "宣言した版を二行に置いた書式変更",
+      "requirements": [
+        "CHG-03"
+      ],
+      "check": "change",
+      "normative": true,
+      "input": {
+        "kind": "change",
+        "bundle": "conformance/common/v1alpha1/invalid/common-045/repo.bundle",
+        "base": "342736570869225d992c96fcdd63e4534a97ef74",
+        "head": "8c0193b619f62ea9021a09bf908a130eb547cedd"
+      },
+      "expected": "conformance/common/v1alpha1/expected/common-045.json",
+      "success": false
     }
   ]
 }
