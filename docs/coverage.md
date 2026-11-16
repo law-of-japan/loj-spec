@@ -123,6 +123,8 @@ XREF-02（2026-11-12、[law-of-japan/loj-spec#16](https://github.com/law-of-japa
 
 XREF-05・XREF-06（2026-11-12、[law-of-japan/loj-spec#13](https://github.com/law-of-japan/loj-spec/issues/13)・[law-of-japan/loj-spec#19](https://github.com/law-of-japan/loj-spec/issues/19)）は、ケースがあるが一部だけである（common-013〜016）。common-013は`structured.period.raw`と`raw`を続けた文字列との一致に当たる。採用中の主張が`nonexistent`・`unknown`の場合の警告、`conflicting`等の判定しない場合、XREF-06の判定不能の場合のケースは、まだない。
 
+条件の外で禁止するフィールド（2026-11-16、[law-of-japan/loj-spec#104](https://github.com/law-of-japan/loj-spec/issues/104)）は、本文に禁止を加えたフィールドごとに、schemaで落ちる負例がある。`conditions`のある`unsurveyed`の適用関係（hist-056、HIST-07）、制定の起点の`totallyRevises`（hist-057、HIST-04）、`active`のRevisionの`replacedBy`（hist-058、HIST-10）、`repealed`の項目の`evidence`・`verification`（hist-059、HIST-12）、`expired`の項目の`relation`（hist-060、HIST-12）、`pending`の`determinedBy`（hist-061、TIME-01）、`structure`の差の`count`（rebuild-005、REBR-05）、`active`のRecordの`replacedBy`（reg-013、REG-02）である。同じ文のほかのフィールド・値（`repealed`の`effective`、`totallyRevised`の項目、`examples`等）は、同じ規則・同じschemaの枝なので、加えていない。`category`の禁止（CONF-01）は、適合ケースの索引・期待結果と実装の報告の形であり、検査の入力にならないので、ケースを作らない。索引と期待結果は`verify.py`がschemaで検査する。
+
 TIME-03は、hist-004、hist-015〜018のほか、`pending`を基準とする`derived`に`value`を書いた負例（hist-044）と、`value`の書式（`YYYY-MM-DD`）に反する負例（hist-045）がある。
 
 フィールドの改名（2026-11-12、[law-of-japan/loj-spec#29](https://github.com/law-of-japan/loj-spec/issues/29)）は、改めたschemaで正例のYAMLを検査して確かめる。`law.yaml`の`sourceUris`（旧`sources`）は任意のフィールドで、v1alpha2の正例に使用例がなく、まだケースがない。旧名は閉じたschemaにより未知のフィールドとして拒否されるが、旧名を使う負例は加えていない（未知のフィールドの負例は、Manifestのpkgのケースと、Revisionのhist-005にある）。
@@ -263,26 +265,26 @@ TIME-03は、hist-004、hist-015〜018のほか、`pending`を基準とする`de
 
 | schema | 位置 | 条件 | 禁止するフィールド | 本文の要件 | 本文になし |
 |---|---|---|---|---|---|
-| `common/v1alpha1/conformance.schema.json` | `/properties/cases/items/allOf/1/else` | `check`がL3・L4でない | `category` | — | `category` |
-| `common/v1alpha1/expected.schema.json` | `/properties/results/items/allOf/0/else` | `check`がL3・L4でない | `category` | — | `category` |
-| `common/v1alpha1/report.schema.json` | `/properties/results/items/allOf/0/else` | `check`がL3・L4でない | `category` | — | `category` |
+| `common/v1alpha1/conformance.schema.json` | `/properties/cases/items/allOf/1/else` | `check`がL3・L4でない | `category` | CONF-01 | — |
+| `common/v1alpha1/expected.schema.json` | `/properties/results/items/allOf/0/else` | `check`がL3・L4でない | `category` | CONF-01 | — |
+| `common/v1alpha1/report.schema.json` | `/properties/results/items/allOf/0/else` | `check`がL3・L4でない | `category` | CONF-01 | — |
 | `common/v1alpha1/types.schema.json` | `/$defs/TimePoint/allOf/1/then` | `state: date` | `base`、`calc`、`rule` | TIME-01 | — |
 | `common/v1alpha1/types.schema.json` | `/$defs/TimePoint/allOf/5/else` | `state`が`derived`でない | `base`、`calc`、`rule` | TIME-01 | — |
-| `common/v1alpha1/types.schema.json` | `/$defs/TimePoint/allOf/6/then` | `state: pending` | `determinedBy`、`value` | TIME-01 | `determinedBy` |
+| `common/v1alpha1/types.schema.json` | `/$defs/TimePoint/allOf/6/then` | `state: pending` | `determinedBy`、`value` | TIME-01 | — |
 | `common/v1alpha1/types.schema.json` | `/$defs/TimePoint/allOf/7/then` | `state`が`unknown`・`notApplicable` | `raw`、`value` | TIME-01 | — |
-| `loj-history/v1alpha1/history.schema.json` | `/properties/revisions/items/properties/applicability/allOf/0/else` | `state`が`conditions`でない | `conditions` | — | `conditions` |
+| `loj-history/v1alpha1/history.schema.json` | `/properties/revisions/items/properties/applicability/allOf/0/else` | `state`が`conditions`でない | `conditions` | HIST-07 | — |
 | `loj-history/v1alpha1/history.schema.json` | `/properties/revisions/items/properties/text/properties/correctionsSurveyed/allOf/0/then` | `state: surveyed` | `reason` | HIST-08 | — |
 | `loj-history/v1alpha1/history.schema.json` | `/properties/revisions/items/properties/text/properties/correctionsSurveyed/allOf/1/then` | `state: unsurveyed` | `evidence` | HIST-08 | — |
 | `loj-history/v1alpha1/history.schema.json` | `/properties/revisions/items/properties/text/allOf/0/else` | `status`が`complete`・`partial`でない | `glyphCheck`、`glyphNotes`、`package`、`sources` | HIST-08 | — |
 | `loj-history/v1alpha1/history.schema.json` | `/properties/revisions/items/properties/text/allOf/1/else` | `status`が`partial`でない | `gaps` | HIST-08 | — |
 | `loj-history/v1alpha1/history.schema.json` | `/properties/revisions/items/properties/text/allOf/2/then` | `status: absent` | `correctionsSurveyed`、`variances` | HIST-08 | — |
 | `loj-history/v1alpha1/history.schema.json` | `/properties/revisions/items/allOf/0/then` | `origin`を持つ | `basedOn`、`basis` | HIST-04、HIST-05 | — |
-| `loj-history/v1alpha1/history.schema.json` | `/properties/revisions/items/allOf/1/else` | `origin`が`totalRevision`でない | `totallyRevises` | — | `totallyRevises` |
-| `loj-history/v1alpha1/history.schema.json` | `/properties/revisions/items/allOf/2/else` | `status`が`merged`・`split`でない | `replacedBy` | — | `replacedBy` |
-| `loj-history/v1alpha1/history.schema.json` | `/properties/termination/items/allOf/0/then` | `type`が`repealed`・`totallyRevised` | `effective`、`evidence`、`verification` | HIST-12 | `evidence`、`verification` |
-| `loj-history/v1alpha1/history.schema.json` | `/properties/termination/items/allOf/0/else` | `type`が`repealed`・`totallyRevised`でない | `relation` | — | `relation` |
-| `loj-rebuild/v1alpha1/rebuild.schema.json` | `/properties/differences/items/allOf/4/else` | `class`が`glyph`でない | `count`、`examples` | — | `count`、`examples` |
-| `loj-registry/v1alpha1/record.schema.json` | `/allOf/1/else` | `status`が`merged`・`split`でない | `replacedBy` | — | `replacedBy` |
+| `loj-history/v1alpha1/history.schema.json` | `/properties/revisions/items/allOf/1/else` | `origin`が`totalRevision`でない | `totallyRevises` | HIST-04 | — |
+| `loj-history/v1alpha1/history.schema.json` | `/properties/revisions/items/allOf/2/else` | `status`が`merged`・`split`でない | `replacedBy` | HIST-10 | — |
+| `loj-history/v1alpha1/history.schema.json` | `/properties/termination/items/allOf/0/then` | `type`が`repealed`・`totallyRevised` | `effective`、`evidence`、`verification` | HIST-12 | — |
+| `loj-history/v1alpha1/history.schema.json` | `/properties/termination/items/allOf/0/else` | `type`が`repealed`・`totallyRevised`でない | `relation` | HIST-12 | — |
+| `loj-rebuild/v1alpha1/rebuild.schema.json` | `/properties/differences/items/allOf/4/else` | `class`が`glyph`でない | `count`、`examples` | REBR-05 | — |
+| `loj-registry/v1alpha1/record.schema.json` | `/allOf/1/else` | `status`が`merged`・`split`でない | `replacedBy` | REG-02 | — |
 | `v1alpha2/ast.schema.json` | `/$defs/node/allOf/0/else` | `kind`が`Article`でない | `status` | AST-01 | — |
 | `v1alpha2/ast.schema.json` | `/$defs/node/allOf/1/else` | `kind`が`Subitem`でない | `level` | AST-01 | — |
 | `v1alpha2/ast.schema.json` | `/$defs/node/allOf/3/else` | `kind`が`Paragraph`でない | `numbering` | AST-01 | — |

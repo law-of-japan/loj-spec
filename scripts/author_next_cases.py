@@ -34,7 +34,8 @@ ZWG = "versions/zwgmz1rt/"
 # of each one was checked to be the violation of the case's expected rule (law-of-japan/loj-spec#32).
 SCHEMA_REJECTED = {"hist-005", "hist-006", "hist-010", "hist-012", "hist-013", "hist-020", "hist-021", "hist-022",
                    "hist-026", "hist-038", "hist-041", "hist-042", "hist-043", "hist-045", "hist-046", "glyph-005", "reg-005",
-                   "reg-006", "reg-007", "reg-010", "rebuild-002"}
+                   "reg-006", "reg-007", "reg-010", "rebuild-002", "hist-056", "hist-057", "hist-058", "hist-059",
+                   "hist-060", "hist-061", "rebuild-005", "reg-013"}
 
 
 def write_json(path, value):
@@ -958,6 +959,59 @@ def glyph_file_selection():
             {"results": [l3("evidence")]}, True, "evidence")
 
 
+# --- 2026-11-16 (#104): fields the schemas forbid outside their condition, now forbidden in the text ----------
+def conditional_fields():
+    """Each input adds one field outside the condition that allows it; the schema rejects it (SCHEMA_REJECTED).
+
+    The category field has no case: it belongs to the forms of the index, the expected results and the report,
+    which are no input of a check (docs/coverage.md).
+    """
+    fiction = "verification: {state: unverified, reason: 適合ケースのための架空の変更}"
+    hist2 = "conformance/loj-history/v1alpha1/valid/hist-002/repo"
+    hist3 = "conformance/loj-history/v1alpha1/valid/hist-003/repo"
+    pending = ("      delegation: {raw: この法律の施行の日以前に皇室典範第四条の規定による皇位の継承があったとき, "
+               "evidence: [{source: src-egov-h29-63, locator: 附則第二条}]}\n")
+    for title, rule, source, edits in [
+        ("適用の条件を調べていない版の条件", "HIST-07", HIST_POS,
+         [("history.yaml", "    applicability: {state: unsurveyed}\n",
+           "    applicability:\n      state: unsurveyed\n      conditions:\n        - scope: {text: 全部}\n"
+           "          text: 架空の適用の条件\n          evidence: [{source: src-kanpo-19480720, locator: 附則第一項}]\n"
+           "          " + fiction + "\n")]),
+        ("制定の起点が持つ全部改正の参照", "HIST-04", HIST_POS,
+         [("history.yaml", "    origin: enactment\n",
+           "    origin: enactment\n    totallyRevises: {record: {id: 20990101-law-5, label: 架空の旧法}, relation: rel-total}\n")]),
+        ("有効な版の統合先", "HIST-10", HIST_POS,
+         [("history.yaml", "      glyphNotes: versions/98mj5vgx/glyphs.yaml\n    status: active\n",
+           "      glyphNotes: versions/98mj5vgx/glyphs.yaml\n    status: active\n    replacedBy:\n      revisions: [zwgmz1rt]\n"
+           "      evidence: [{source: src-kanpo-19480720, locator: 1コマ}]\n      " + fiction + "\n")]),
+        ("廃止の項目に写した根拠と確認状態", "HIST-12", hist2,
+         [("history.yaml", "  - {type: repealed, relation: rel-repeal}",
+           "  - {type: repealed, relation: rel-repeal, evidence: [{source: src-egov-s34-122, locator: 第二条}], "
+           "verification: {state: unverified, reason: 官報と未照合}}")]),
+        ("自身の規定による失効が持つ関係", "HIST-12", hist3,
+         [("history.yaml", "  - type: expired\n", "  - type: expired\n    relation: rel-repeal\n")]),
+        ("確定していない時点の確定の根拠", "TIME-01", hist3,
+         [("history.yaml", pending, pending + "      determinedBy: {record: {id: unregistered, label: 平成二十九年政令第三百二号}, "
+                                       "evidence: [{source: src-egov-h29-302, locator: 本則}]}\n")]),
+    ]:
+        dest = next_dir("hist", False) / "repo"
+        mutate(dest, source, edits)
+        sv = SV["common"] if rule.startswith("TIME") else SV["hist"]
+        add("hist", title, [rule], "L3", {"kind": "repository", "path": rel(dest)},
+            {"results": [l3("historyStructure", "fail")], "diagnostics": [diag(rule, sv)]}, False, "historyStructure")
+    dest = next_dir("rebuild", False) / "repo"
+    mutate(dest, HIST_POS, [("rebuild.yaml", "    note: 旧本文は祝日の表を箇条書きで書いている\n",
+                             "    note: 旧本文は祝日の表を箇条書きで書いている\n    count: 1\n")])
+    add("rebuild", "構造の差の件数", ["REBR-05"], "rebuild", {"kind": "repository", "path": rel(dest)},
+        {"results": [{"check": "rebuild", "result": "fail"}], "diagnostics": [diag("REBR-05", SV["rebuild"])]}, False)
+    dest = next_dir("reg", False) / "registry"
+    mutate(dest, REG_POS, [("records/19660625-act-86.yaml", "status: active\n",
+                            "status: active\nreplacedBy:\n  - record: {id: 19480720-law-178, label: 昭和二十三年法律第百七十八号}\n"
+                            "    evidence: [{source: src-goshomei-s41-86, locator: 1・2画像}]\n    " + fiction + "\n")])
+    add("reg", "有効なRecordの統合先", ["REG-02"], "registry", {"kind": "registry", "path": rel(dest)},
+        {"results": [{"check": "registry", "result": "fail"}], "diagnostics": [diag("REG-02", SV["reg"])]}, False)
+
+
 def main():
     for suite, folder in FOLDER.items():
         for group in ("invalid", "expected"):
@@ -983,6 +1037,7 @@ def main():
     registration_space()
     invalid_review_records()
     glyph_file_selection()
+    conditional_fields()
     assert not DERIVED, sorted(DERIVED)  # every copy is listed by the case that owns it
     marked = {case["id"] for cases in INDEX.values() for case in cases if "rejectedBy" in case}
     assert marked == SCHEMA_REJECTED, SCHEMA_REJECTED - marked

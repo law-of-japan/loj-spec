@@ -333,6 +333,35 @@
           ]
         }
       ]
+    },
+    {
+      "id": "reg-013",
+      "title": "有効なRecordの統合先",
+      "requirements": [
+        "REG-02"
+      ],
+      "check": "registry",
+      "normative": true,
+      "input": {
+        "kind": "registry",
+        "path": "conformance/loj-registry/v1alpha1/invalid/reg-013/registry"
+      },
+      "expected": "conformance/loj-registry/v1alpha1/expected/reg-013.json",
+      "success": false,
+      "rejectedBy": "schema",
+      "derivedFrom": [
+        {
+          "path": "conformance/loj-registry/v1alpha1/invalid/reg-013/registry",
+          "from": "conformance/loj-registry/v1alpha1/valid/reg-001/registry",
+          "edits": [
+            {
+              "file": "records/19660625-act-86.yaml",
+              "old": "status: active\n",
+              "new": "status: active\nreplacedBy:\n  - record: {id: 19480720-law-178, label: 昭和二十三年法律第百七十八号}\n    evidence: [{source: src-goshomei-s41-86, locator: 1・2画像}]\n    verification: {state: unverified, reason: 適合ケースのための架空の変更}\n"
+            }
+          ]
+        }
+      ]
     }
   ]
 }
