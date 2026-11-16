@@ -1256,6 +1256,18 @@ def declared_versions_without_ast():
         {"results": [{"check": "change", "result": "pass"}]}, True)
 
 
+# --- 2026-11-16 (#132): a sourceEdit note in the amending law's own version, on a cell of an amendment content ---
+def amendment_glyph_notes():
+    """The Record of 昭和四十一年法律第八十六号 itself, its enactment version only (hand-written, not a copy).
+
+    The note points to a cell inside the content of the first amendment of the main provision (AMEND-02, GLYPH-04,
+    GLYPH-09). The version package uses the paragraph form of the main provision (PARA-03) and amendments (AMEND-01).
+    """
+    add("glyph", "改正法の版の改正内容の中のセルを指す見え消しの注記", ["GLYPH-04", "GLYPH-09", "AMEND-02", "PARA-03"],
+        "L3", {"kind": "repository", "path": "conformance/loj-glyphs/v1alpha1/valid/glyph-012/repo"},
+        {"results": [l3("evidence")]}, True, "evidence")
+
+
 def main():
     for suite, folder in FOLDER.items():
         for group in ("invalid", "expected"):
@@ -1289,6 +1301,7 @@ def main():
     merge_commit()
     correction_without_text_change()
     declared_versions_without_ast()
+    amendment_glyph_notes()
     assert not DERIVED, sorted(DERIVED)  # every copy is listed by the case that owns it
     marked = {case["id"] for cases in INDEX.values() for case in cases if "rejectedBy" in case}
     assert marked == SCHEMA_REJECTED, SCHEMA_REJECTED - marked
