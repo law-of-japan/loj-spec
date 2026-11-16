@@ -1145,6 +1145,42 @@
       },
       "expected": "conformance/common/v1alpha1/expected/common-047.json",
       "success": true
+    },
+    {
+      "id": "common-048",
+      "title": "ASTを生成できない版の本文を直す記録訂正",
+      "requirements": [
+        "CHG-02",
+        "CHG-04"
+      ],
+      "check": "change",
+      "normative": true,
+      "input": {
+        "kind": "change",
+        "bundle": "conformance/common/v1alpha1/valid/common-048/repo.bundle",
+        "base": "79ab67ea77bdfd3bb548afb78a1c771f9ed2e337",
+        "head": "aff26a5d09faaebe5d60ac22953515afaa237c44"
+      },
+      "expected": "conformance/common/v1alpha1/expected/common-048.json",
+      "success": true
+    },
+    {
+      "id": "common-049",
+      "title": "一部しか本文がない版の欠落を補う復元",
+      "requirements": [
+        "CHG-02",
+        "CHG-04"
+      ],
+      "check": "change",
+      "normative": true,
+      "input": {
+        "kind": "change",
+        "bundle": "conformance/common/v1alpha1/valid/common-049/repo.bundle",
+        "base": "cca9787c25fdc0aaf6e8864bce831e8afca1708e",
+        "head": "97518846c2f74bfaa203f1db4261ef65a6accea3"
+      },
+      "expected": "conformance/common/v1alpha1/expected/common-049.json",
+      "success": true
     }
   ]
 }

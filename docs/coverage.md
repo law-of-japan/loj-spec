@@ -140,7 +140,7 @@ CHG-03の宣言の重複（2026-11-16、[law-of-japan/loj-spec#117](https://gith
 
 CHG-03のmergeのcommit（2026-11-16、[law-of-japan/loj-spec#120](https://github.com/law-of-japan/loj-spec/issues/120)）は、分岐したブランチの`correction`を、`correction`と宣言したmergeのcommitで`main`に統合する負例（common-046）がある。baseは分岐の元のcommit、headはmergeのcommitである。分岐したブランチの`correction`は、単独では合格する記録訂正（common-004と同じ変更）なので、baseとheadの間のcommitの数え方によらず、不合格になるのはmergeのcommitだけである。mergeのcommitは、宣言によらず比べずに不合格とする（CHG-03）。宣言のないmergeのcommitと、親が三つ以上のcommitは、同じ文の範囲なので加えていない。
 
-宣言した版の本文の内容の変化（2026-11-16、[law-of-japan/loj-spec#122](https://github.com/law-of-japan/loj-spec/issues/122)）は、宣言した版の本文を変えず、`text.sources`の箇所だけを直す`correction`の正例（common-047）がある。CHG-01はこの宣言を禁じるが、CHG-02の検査は宣言した版のASTを比べないので、変更検査は合格する。宣言した版がASTを生成できない`correction`・`restoration`で、CHG-04の判定不能が出ないことのケースは、まだない。一部しか本文がない版の版パッケージと、その`restoration`の入力を、まだ定めていない。
+宣言した版の本文の内容の変化（2026-11-16、[law-of-japan/loj-spec#122](https://github.com/law-of-japan/loj-spec/issues/122)）は、宣言した版の本文を変えず、`text.sources`の箇所だけを直す`correction`の正例（common-047）がある。CHG-01はこの宣言を禁じるが、CHG-02の検査は宣言した版のASTを比べないので、変更検査は合格する。宣言した版がASTを生成できない`correction`・`restoration`で、CHG-04の判定不能が出ないこと（2026-11-16、[law-of-japan/loj-spec#126](https://github.com/law-of-japan/loj-spec/issues/126)）は、L1が不合格の版（条の見出しに構造ラベルがない。HEAD-01）の本文を直し、変更後もL1が不合格のままの`correction`の正例（common-048）と、第一条だけの一部しか本文がない版（`text.status: partial`、`gaps`）に第二条を補い、`complete`にする`restoration`の正例（common-049）がある。どちらも宣言した版のほかに版がないので、比べるASTはなく、合格になる。ASTを比べる版（metadataではすべての版）がASTを生成できない場合の判定不能は、common-025が当たる。`officialCorrection`は、宣言した版の扱いが`correction`と同じ行なので、加えていない。
 
 TIME-03は、hist-004、hist-015〜018のほか、`pending`を基準とする`derived`に`value`を書いた負例（hist-044）と、`value`の書式（`YYYY-MM-DD`）に反する負例（hist-045）がある。
 
