@@ -400,7 +400,8 @@ def build_bundle(path, steps=None, verbatim=False):
         git("init", "-q", "-b", "main")
         git("config", "core.autocrlf", "false")
         for i, (subject, kind, with_revs, files, *extra) in enumerate(steps):
-            assert kind not in (None, RAW) or not extra, subject  # trailers follow a declaration
+            # Further trailers follow a declaration: a step without a kind, or with the whole message (RAW), has none.
+            assert kind not in (None, RAW) or not extra, subject
             for old in repo.glob("versions/*/*.md"):
                 old.unlink()
             for name, body in files.items():
