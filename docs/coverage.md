@@ -135,7 +135,7 @@ XREF-05・XREF-06（2026-11-12、[law-of-japan/loj-spec#13](https://github.com/l
 
 CHG-02の`correction`・`officialCorrection`の根拠の判定（2026-11-16、[law-of-japan/loj-spec#116](https://github.com/law-of-japan/loj-spec/issues/116)）は、官報正誤のSourceを本文の出典に加える`officialCorrection`の正例（common-041）と、官報正誤のSource（`kind: officialCorrection`）を`sources`に置くが`text.sources`で指さない`officialCorrection`の負例（common-042）がある。`correction`の根拠は、既存の正例（common-004、common-024、common-032）の`text.sources`が当たる。本文のない版を宣言した`correction`の負例は、まだない。本文のない版には版パッケージがなく、訂正する本文もない。そのため、この入力では根拠の欠け（CHG-02）のほかに、宣言した版の範囲・AST検査の扱い（CHG-02の表、CHG-04）が関係しうる。期待する規則を一つに決められる入力を、まだ定めていない。
 
-CHG-03の宣言の重複（2026-11-16、[law-of-japan/loj-spec#117](https://github.com/law-of-japan/loj-spec/issues/117)）は、同じ値の`LoJ-Change`を二つ置いた`correction`の負例（common-043）と、同じrevision_idの`LoJ-Revisions`を二行に置いた`correction`の負例（common-044）がある。値の違う`LoJ-Change`の重複と、`format`等で`LoJ-Revisions`を二つ置くケースは、同じ文の範囲なので加えていない。`LoJ-Reviewed`の重複は、記録がないものとして扱う（common-029）。
+CHG-03の宣言の重複（2026-11-16、[law-of-japan/loj-spec#117](https://github.com/law-of-japan/loj-spec/issues/117)）は、同じ値の`LoJ-Change`を二つ置いた`correction`の負例（common-043）と、同じrevision_idの`LoJ-Revisions`を二行に置いた`correction`の負例（common-044）と、`LoJ-Revisions`を省略してよい`format`で二行に置いた負例（common-045）がある。common-044のbaseは、common-043で不合格のcommitである。各commitは親とだけ比べて単独で検査される（CHG-03）ので、baseの不合格は影響しない。重複を除いた同じ`correction`が合格することは、common-004が当たる。値の違う`LoJ-Change`の重複は、同じ文の範囲なので加えていない。`LoJ-Reviewed`の重複は、記録がないものとして扱う（common-029）。
 
 TIME-03は、hist-004、hist-015〜018のほか、`pending`を基準とする`derived`に`value`を書いた負例（hist-044）と、`value`の書式（`YYYY-MM-DD`）に反する負例（hist-045）がある。
 

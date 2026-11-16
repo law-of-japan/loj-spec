@@ -1143,6 +1143,16 @@ def duplicate_trailers():
     add("common", "宣言した版を二行に置いたcommit", ["CHG-03"], "change",
         {"kind": "change", "bundle": rel(dest), "base": c2, "head": c3},
         {"results": [{"check": "change", "result": "fail"}], "diagnostics": [diag("CHG-03", SV["common"])]}, False)
+    # format may omit LoJ-Revisions, but two of them still fail (the form of the declaration does not depend on the kind).
+    bundle = next_dir("common", False) / "repo.bundle"
+    c1, c2 = build_bundle(bundle, [
+        ("制定時の版を加える", "revisionAdd", True, fictional_files("架空の雲を保管する。\n")),
+        ("条ごとにファイルを分ける（宣言した版を二行）\n\nLoJ-Change: format\nLoJ-Revisions: " + REV + "\nLoJ-Revisions: " + REV + "\n",
+         RAW, False, fictional_files("架空の雲を保管する。\n", files_split=True)),
+    ])
+    add("common", "宣言した版を二行に置いた書式変更", ["CHG-03"], "change",
+        {"kind": "change", "bundle": rel(bundle), "base": c1, "head": c2},
+        {"results": [{"check": "change", "result": "fail"}], "diagnostics": [diag("CHG-03", SV["common"])]}, False)
 
 
 def main():

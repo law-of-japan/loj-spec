@@ -1093,6 +1093,23 @@
           "edits": []
         }
       ]
+    },
+    {
+      "id": "common-045",
+      "title": "宣言した版を二行に置いた書式変更",
+      "requirements": [
+        "CHG-03"
+      ],
+      "check": "change",
+      "normative": true,
+      "input": {
+        "kind": "change",
+        "bundle": "conformance/common/v1alpha1/invalid/common-045/repo.bundle",
+        "base": "342736570869225d992c96fcdd63e4534a97ef74",
+        "head": "8c0193b619f62ea9021a09bf908a130eb547cedd"
+      },
+      "expected": "conformance/common/v1alpha1/expected/common-045.json",
+      "success": false
     }
   ]
 }
