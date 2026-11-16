@@ -34,7 +34,7 @@ revisions:
       status: complete
       sources:
         - {source: src-goshomei-s41-86, locator: "2画像 本則、3・4画像 附則"}
-        - {source: src-shugiin, locator: "全文（構成の確認と下書き。字体の根拠にしない）"}
+        - {source: src-shugiin, locator: 全文}
       glyphCheck: unverified
       glyphNotes: versions/p3x8k6dt/glyphs.yaml
       correctionsSurveyed: {state: unsurveyed, reason: 官報（昭和41年6月25日）を入手していない（REB-05）}
