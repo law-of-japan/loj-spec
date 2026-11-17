@@ -73,6 +73,7 @@ T076〜T105は承認されたMAN-03 B案の独立ケース。附属資料の通�
 | RID-03、REV-02 | リポジトリの名前と可読ラベルは参照の解決に使わない、という制約 |
 | TIME-05 | `reason`に書く理由の中身と、確認した範囲（SHOULD）は、レビューで確かめる。`reason`があることはTIME-01の必須のフィールドとして検査する（2026-11-12、[law-of-japan/loj-spec#32](https://github.com/law-of-japan/loj-spec/issues/32)） |
 | CHG-05 | 変更検査の結果を適合レベルとして主張しないことは、実装と適合の主張への要求であり、レビューで確かめる（同上） |
+| CHG-01の一部（正本のデータのファイルを変えないcommitを`auxiliary`と宣言する） | 変更検査は宣言した種類の検査だけで合否を決めるので、ほかの種類と宣言する誤りはレビューで確かめる（2026-11-17、[law-of-japan/loj-spec#138](https://github.com/law-of-japan/loj-spec/issues/138)） |
 | CHG-01の一部（`correction`・`officialCorrection`・`restoration`で、本文の内容を変えない版を宣言しない） | 変更検査は宣言した版のASTを生成・比較しない（CHG-02）ので、レビューで確かめる。変更検査で合格することはcommon-047が当たる（2026-11-16、[law-of-japan/loj-spec#122](https://github.com/law-of-japan/loj-spec/issues/122)） |
 | TABLE-02の一部（既存の行の`key`の維持、基礎の版の同じ行が同じ`key`を持つこと） | 行の同一性は法的な判断であり、機械では確かめられない。入力者への要件とする（2026-11-12、[law-of-japan/loj-spec#23](https://github.com/law-of-japan/loj-spec/issues/23)） |
 

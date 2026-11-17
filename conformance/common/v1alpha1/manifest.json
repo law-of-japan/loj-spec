@@ -1249,7 +1249,8 @@
       "title": "ASTを生成できない版を持つリポジトリにCIの設定を加える正本のデータの外の変更",
       "requirements": [
         "CHG-02",
-        "CHG-04"
+        "CHG-04",
+        "CHG-01"
       ],
       "check": "change",
       "normative": true,

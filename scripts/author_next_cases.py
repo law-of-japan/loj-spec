@@ -1315,7 +1315,7 @@ def auxiliary_changes():
         ("見出しの誤った版を加える", "revisionAdd", True, broken(fictional_files(body))),
         ("検証のワークフローを加える", "auxiliary", False, with_workflow(broken(fictional_files(body)))),
     ])
-    add("common", "ASTを生成できない版を持つリポジトリにCIの設定を加える正本のデータの外の変更", ["CHG-02", "CHG-04"], "change",
+    add("common", "ASTを生成できない版を持つリポジトリにCIの設定を加える正本のデータの外の変更", ["CHG-02", "CHG-04", "CHG-01"], "change",
         {"kind": "change", "bundle": rel(bundle), "base": c1, "head": c2},
         {"results": [{"check": "change", "result": "pass"}]}, True)
     # Every file under versions/ is a file of the data, a document that is not part of the version package too (CHG-01).
