@@ -433,8 +433,8 @@ class OwnResultTests(unittest.TestCase):
 class CompatibilityIdeographTests(unittest.TestCase):
     """GLYPH-11 lists the code points in the compatibility blocks that have no canonical decomposition.
 
-    VAL-08 fixes Unicode 15.1, but this test reads the running Python's unicodedata (13.0 on 3.9,
-    15.0 on 3.12). No character was added to or changed in these blocks after Unicode 6.1, so any of
+    VAL-08 fixes Unicode 15.1, but this test reads the running Python's unicodedata (14.0 on 3.10,
+    17.0 on 3.15). No character was added to or changed in these blocks after Unicode 6.1, so any of
     those versions gives the same answer; the version actually used is in the failure message.
     """
 
