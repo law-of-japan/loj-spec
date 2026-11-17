@@ -1318,6 +1318,17 @@ def auxiliary_changes():
     add("common", "ASTを生成できない版を持つリポジトリにCIの設定を加える正本のデータの外の変更", ["CHG-02", "CHG-04"], "change",
         {"kind": "change", "bundle": rel(bundle), "base": c1, "head": c2},
         {"results": [{"check": "change", "result": "pass"}]}, True)
+    # Every file under versions/ is a file of the data, a document that is not part of the version package too (CHG-01).
+    bundle = next_dir("common", False) / "repo.bundle"
+    readme = dict(fictional_files(body))
+    readme["versions/" + REV + "/README.md"] = "この版の説明である。\n"
+    c1, c2 = build_bundle(bundle, [
+        ("制定時の版を加える", "revisionAdd", True, fictional_files(body)),
+        ("版のディレクトリに説明の文書を加える（正本のデータの外の変更と宣言）", "auxiliary", False, readme),
+    ])
+    add("common", "正本のデータの外の変更と宣言して、版のディレクトリにファイルを加える", ["CHG-02", "CHG-01"], "change",
+        {"kind": "change", "bundle": rel(bundle), "base": c1, "head": c2},
+        {"results": [{"check": "change", "result": "fail"}], "diagnostics": [diag("CHG-02", SV["common"])]}, False)
 
 
 def main():

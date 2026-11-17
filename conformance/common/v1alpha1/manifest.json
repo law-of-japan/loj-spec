@@ -1261,6 +1261,24 @@
       },
       "expected": "conformance/common/v1alpha1/expected/common-053.json",
       "success": true
+    },
+    {
+      "id": "common-054",
+      "title": "正本のデータの外の変更と宣言して、版のディレクトリにファイルを加える",
+      "requirements": [
+        "CHG-02",
+        "CHG-01"
+      ],
+      "check": "change",
+      "normative": true,
+      "input": {
+        "kind": "change",
+        "bundle": "conformance/common/v1alpha1/invalid/common-054/repo.bundle",
+        "base": "342736570869225d992c96fcdd63e4534a97ef74",
+        "head": "bc01429ce2fa20d58320849b004e5522f8ceb1f3"
+      },
+      "expected": "conformance/common/v1alpha1/expected/common-054.json",
+      "success": false
     }
   ]
 }
