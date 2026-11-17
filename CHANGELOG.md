@@ -10,7 +10,7 @@
 - CHG-02: `auxiliary`の検査を、正本のデータのファイルが変更前後で一致すること（追加・削除・パスの変更がなく、バイト列とGitのファイルのモードが同じ）とした。ASTを比べないので、ASTを生成できない版があってもCHG-04の判定不能に当たらない。`metadata`の変更してよい範囲を「版パッケージ以外の正本のデータのファイル」とした。
 - CHG-03: `LoJ-Revisions`を省略してよい種類に`auxiliary`を加えた。
 - CHG-04: `auxiliary`はASTを比べないことを、CHG-02へのリンクとともに書いた。
-- 適合ケース: CIの設定だけを加える`auxiliary`の正例（common-050）、CIの設定の変更を含む`correction`の正例（common-051）、`auxiliary`と宣言して`history.yaml`を変える負例（common-052、CHG-02）、ASTを生成できない版を持つリポジトリの`auxiliary`の正例（common-053）、`auxiliary`と宣言して`versions/`の下に説明の文書を加える負例（common-054、CHG-02）を加えた。
+- 適合ケース: CIの設定だけを加える`auxiliary`の正例（common-050）、CIの設定の変更を含む`correction`の正例（common-051）、`auxiliary`と宣言して`history.yaml`を変える負例（common-052、CHG-02）、ASTを生成できない版を持つリポジトリの`auxiliary`の正例（common-053）、`auxiliary`と宣言して`versions/`の下に説明の文書を加える負例（common-054、CHG-02）、`LoJ-Revisions`を書いた`auxiliary`の正例（common-055、CHG-03）を加えた。
 - 既存の法令リポジトリへの影響: CIの設定・文書だけの変更を`metadata`と宣言していたcommitは、今後は`auxiliary`と宣言する。既に正本ブランチにあるそのようなcommitは、ASTを生成できる版だけなら`metadata`の検査で合格のままであり、履歴を書き換えて直す必要はない（CORE-01）。
 - 用語集、要件との対応表を更新した。
 

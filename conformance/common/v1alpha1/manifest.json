@@ -1279,6 +1279,24 @@
       },
       "expected": "conformance/common/v1alpha1/expected/common-054.json",
       "success": false
+    },
+    {
+      "id": "common-055",
+      "title": "宣言した版を書いた正本のデータの外の変更",
+      "requirements": [
+        "CHG-03",
+        "CHG-02"
+      ],
+      "check": "change",
+      "normative": true,
+      "input": {
+        "kind": "change",
+        "bundle": "conformance/common/v1alpha1/valid/common-055/repo.bundle",
+        "base": "342736570869225d992c96fcdd63e4534a97ef74",
+        "head": "31a9351b7ce9349067cc689d22e58fb132b5534c"
+      },
+      "expected": "conformance/common/v1alpha1/expected/common-055.json",
+      "success": true
     }
   ]
 }

@@ -1329,6 +1329,15 @@ def auxiliary_changes():
     add("common", "正本のデータの外の変更と宣言して、版のディレクトリにファイルを加える", ["CHG-02", "CHG-01"], "change",
         {"kind": "change", "bundle": rel(bundle), "base": c1, "head": c2},
         {"results": [{"check": "change", "result": "fail"}], "diagnostics": [diag("CHG-02", SV["common"])]}, False)
+    # auxiliary may omit LoJ-Revisions; written, it does not change the result (CHG-03).
+    bundle = next_dir("common", True) / "repo.bundle"
+    c1, c2 = build_bundle(bundle, [
+        ("制定時の版を加える", "revisionAdd", True, fictional_files(body)),
+        ("検証のワークフローを加える（宣言した版を書く）", "auxiliary", True, with_workflow(fictional_files(body))),
+    ])
+    add("common", "宣言した版を書いた正本のデータの外の変更", ["CHG-03", "CHG-02"], "change",
+        {"kind": "change", "bundle": rel(bundle), "base": c1, "head": c2},
+        {"results": [{"check": "change", "result": "pass"}]}, True)
 
 
 def main():
