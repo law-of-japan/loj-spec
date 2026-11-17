@@ -1268,6 +1268,58 @@ def amendment_glyph_notes():
         {"results": [l3("evidence")]}, True, "evidence")
 
 
+# --- 2026-11-17 (#138): a commit that changes no file of the canonical data declares auxiliary (CHG-01, CHG-02) ---
+WORKFLOW = ".github/workflows/validate.yml"
+
+
+def with_workflow(files, job="validate"):
+    """Add a CI setting, a file outside the canonical data (CHG-01), to the files of a step."""
+    out = dict(files)
+    out[WORKFLOW] = ("name: validate\non: [push, pull_request]\njobs:\n  " + job + ":\n    runs-on: ubuntu-latest\n"
+                     "    steps:\n      - uses: actions/checkout@v4\n")
+    return out
+
+
+def auxiliary_changes():
+    """auxiliary checks only that no file of the canonical data changes; it compares no AST.
+
+    The first bundle adds a CI setting by auxiliary, then corrects the text in a commit that also changes the CI
+    setting (a file outside the data is in no kind's check, CHG-01), then declares auxiliary but changes the label
+    of the Revision in history.yaml (a file of the data, CHG-02). The second bundle has a version whose L1 fails
+    (HEAD-01): adding the CI setting by auxiliary compares no AST, so no CHG-04 undetermined is reported.
+    """
+    body = "架空の雲を保管する。\n"
+    bundle_pos = next_dir("common", True) / "repo.bundle"
+    c1, c2, c3, c4 = build_bundle(bundle_pos, [
+        ("制定時の版を加える", "revisionAdd", True, fictional_files("架空の雲を保管すろ。\n")),
+        ("検証のワークフローを加える", "auxiliary", False, with_workflow(fictional_files("架空の雲を保管すろ。\n"))),
+        ("第一条の誤転記を直し、検証のワークフローのジョブの名前を改める", "correction", True,
+         with_workflow(fictional_files(body), "check")),
+        ("正本のデータの外の変更と宣言して、ラベルを改める", "auxiliary", False,
+         with_workflow(fictional_files(body, False, "制定時"), "check")),
+    ])
+    bundle = rel(bundle_pos)
+    add("common", "CIの設定だけを加える正本のデータの外の変更", ["CHG-01", "CHG-02", "CHG-03"], "change",
+        {"kind": "change", "bundle": bundle, "base": c1, "head": c2},
+        {"results": [{"check": "change", "result": "pass"}]}, True)
+    add("common", "CIの設定の変更を含む記録訂正", ["CHG-01", "CHG-02"], "change",
+        {"kind": "change", "bundle": bundle, "base": c2, "head": c3},
+        {"results": [{"check": "change", "result": "pass"}]}, True)
+    dest = next_dir("common", False) / "repo.bundle"
+    copy_file(dest, bundle_pos)
+    add("common", "正本のデータの外の変更と宣言して、履歴マニフェストを変える", ["CHG-02", "CHG-01"], "change",
+        {"kind": "change", "bundle": rel(dest), "base": c3, "head": c4},
+        {"results": [{"check": "change", "result": "fail"}], "diagnostics": [diag("CHG-02", SV["common"])]}, False)
+    bundle = next_dir("common", True) / "repo.bundle"
+    c1, c2 = build_bundle(bundle, [
+        ("見出しの誤った版を加える", "revisionAdd", True, broken(fictional_files(body))),
+        ("検証のワークフローを加える", "auxiliary", False, with_workflow(broken(fictional_files(body)))),
+    ])
+    add("common", "ASTを生成できない版を持つリポジトリにCIの設定を加える正本のデータの外の変更", ["CHG-02", "CHG-04"], "change",
+        {"kind": "change", "bundle": rel(bundle), "base": c1, "head": c2},
+        {"results": [{"check": "change", "result": "pass"}]}, True)
+
+
 def main():
     for suite, folder in FOLDER.items():
         for group in ("invalid", "expected"):
@@ -1302,6 +1354,7 @@ def main():
     correction_without_text_change()
     declared_versions_without_ast()
     amendment_glyph_notes()
+    auxiliary_changes()
     assert not DERIVED, sorted(DERIVED)  # every copy is listed by the case that owns it
     marked = {case["id"] for cases in INDEX.values() for case in cases if "rejectedBy" in case}
     assert marked == SCHEMA_REJECTED, SCHEMA_REJECTED - marked
