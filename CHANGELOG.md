@@ -2,6 +2,18 @@
 
 見出しの「草案」は、[草案の版](spec/README.md#版の状態)への変更であることを示す。版の状態の正は、[規範仕様の入口](spec/README.md#規範とするもの)の表にある。版を公開したときは、公開の日付の項目を加える。
 
+## 正本のデータの外の変更の種類（2026-11-17、草案）
+
+[law-of-japan/loj-spec#138](https://github.com/law-of-japan/loj-spec/issues/138)による変更である。草案の版（`common/v1alpha1`）への変更であり、版番号は上げない。既存のケースの期待結果は変わらない。判断はDDR-015に追記した。
+
+- CHG-01: 変更の種類に`auxiliary`（正本のデータの外の変更）を加えた。正本のデータのファイルを、法令リポジトリの`history.yaml`・`rebuild.yaml`・`versions/`の下のファイルと、登録台帳のリポジトリの`space.yaml`・`records/`の下のファイルとして定めた。正本のデータのファイルを変えないcommitは`auxiliary`とする。ほかの種類と宣言する誤りは変更検査では判定せず、レビューで確かめる。正本のデータの外のファイル（CIの設定、生成器、文書等）の変更は、どの種類の検査の対象にもならず、ほかの種類のcommitに含めてよい。従来の「分類の対象外」は、宣言を求めるCHG-03と食い違っていた。
+- CHG-02: `auxiliary`の検査を、正本のデータのファイルが変更前後で一致すること（追加・削除・パスの変更がなく、バイト列とGitのファイルのモードが同じ）とした。ASTを比べないので、ASTを生成できない版があってもCHG-04の判定不能に当たらない。`metadata`の変更してよい範囲を「版パッケージ以外の正本のデータのファイル」とした。
+- CHG-03: `LoJ-Revisions`を省略してよい種類に`auxiliary`を加えた。
+- CHG-04: `auxiliary`はASTを比べないことを、CHG-02へのリンクとともに書いた。
+- 適合ケース: CIの設定だけを加える`auxiliary`の正例（common-050）、CIの設定の変更を含む`correction`の正例（common-051）、`auxiliary`と宣言して`history.yaml`を変える負例（common-052、CHG-02）、ASTを生成できない版を持つリポジトリの`auxiliary`の正例（common-053）、`auxiliary`と宣言して`versions/`の下に説明の文書を加える負例（common-054、CHG-02）、`LoJ-Revisions`を書いた`auxiliary`の正例（common-055、CHG-03）を加えた。
+- 既存の法令リポジトリへの影響: CIの設定・文書だけの変更を`metadata`と宣言していたcommitは、今後は`auxiliary`と宣言する。既に正本ブランチにあるそのようなcommitは、ASTを生成できる版だけなら`metadata`の検査で合格のままであり、履歴を書き換えて直す必要はない（CORE-01）。
+- 用語集、要件との対応表を更新した。
+
 ## calcのないderivedの計算結果の報告（2026-11-16、草案）
 
 [law-of-japan/loj-spec#136](https://github.com/law-of-japan/loj-spec/issues/136)による変更である。草案の版（`common/v1alpha1`）への変更であり、版番号は上げない。既存のケースの期待結果は変わらない。判断はDDR-014に追記した。
