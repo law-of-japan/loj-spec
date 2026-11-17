@@ -2,6 +2,14 @@
 
 見出しの「草案」は、[草案の版](spec/README.md#版の状態)への変更であることを示す。版の状態の正は、[規範仕様の入口](spec/README.md#規範とするもの)の表にある。版を公開したときは、公開の日付の項目を加える。
 
+## 検査のPythonと依存の更新（2026-11-17）
+
+このリポジトリの検査の環境の変更である。規範と適合ケースは変えていない。
+
+- CIのPythonを3.12から3.15にした。
+- `requirements.txt`を、jsonschema 4.26.0、PyYAML 6.0.3、markdown-it-py 4.3.0にした。jsonschemaとmarkdown-it-pyがPython 3.10以上を求めるので、READMEの前提を「Python 3.9以上」から「Python 3.10以上」にした。
+- READMEに、C拡張をビルドできない環境でPyYAMLを入れる方法（`PYYAML_FORCE_LIBYAML=0`）を書いた。
+
 ## 正本のデータの外の変更の種類（2026-11-17、草案）
 
 [law-of-japan/loj-spec#138](https://github.com/law-of-japan/loj-spec/issues/138)による変更である。草案の版（`common/v1alpha1`）への変更であり、版番号は上げない。既存のケースの期待結果は変わらない。判断はDDR-015に追記した。
