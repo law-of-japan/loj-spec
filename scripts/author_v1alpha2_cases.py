@@ -581,10 +581,13 @@ def mk_table(parent, key, values):
 
 
 def mk_amendment(parent, number, instruction, children=None, body=None):
+    """An amendment; instruction None is one with instruction=implicit (no instruction text, AMEND-01)."""
     a = parent + "/amendment/" + number
     c = a + "/content"
     content = [text(body)] if body is not None else children(c)
-    return node("Amendment", a, number, "", [text(instruction), node("AmendmentContent", c, None, "", content)])
+    lead = [] if instruction is None else [text(instruction)]
+    return node("Amendment", a, number, "", lead + [node("AmendmentContent", c, None, "", content)],
+                instruction="explicit" if instruction is not None else "implicit")
 
 
 def table_md(key, values):
@@ -594,8 +597,10 @@ def table_md(key, values):
 
 
 def amendment_md(number, instruction, inner):
-    return ("<!-- loj:amendment number=" + number + " -->\n" + instruction + "<!-- loj:amendment-content -->\n" + inner +
-            "<!-- loj:end-amendment-content -->\n<!-- loj:end-amendment -->\n")
+    """instruction None writes instruction=implicit and no instruction text (AMEND-01)."""
+    attrs = " instruction=implicit" if instruction is None else ""
+    return ("<!-- loj:amendment number=" + number + attrs + " -->\n" + (instruction or "") +
+            "<!-- loj:amendment-content -->\n" + inner + "<!-- loj:end-amendment-content -->\n<!-- loj:end-amendment -->\n")
 
 
 # The structure of 昭和四十一年法律第八十六号 with invented text: a main provision of one paragraph that adds table
@@ -795,6 +800,66 @@ list_case("numberのない列記のマーカー", ["DIR-01", "LIST-01"],
           L_ART1 + "<!-- loj:list -->\n白雲局\n<!-- loj:end-list -->\n" + L_END, "DIR-01")
 list_case("列記と号を混ぜた改正内容", ["AMEND-02", "LIST-02"],
           L_ART1.replace(L_LEAD, L_LEAD4) + amendment_md("1", L_INS4, list_md(L_FOG) + L_ITEM) + L_END, "AMEND-02")
+
+
+# 2026-11-20 (#143): amendments without an instruction sentence (AMEND-01 instruction=implicit), as in 労働省設置法
+# （昭和二十二年法律第九十七号）附則第十四條・第十五條: a deleted-article form and a whole article are set out as the
+# amended provisions, between instructions written as text; a quoted phrase spans two lines (MD-04).
+I_LEAD1 = "架空雲官制（架空勅令第一号）の一部を次のように改正する。\n第一條中「、白雲」を削る。\n"
+I_Q = "第三條中「五局」を「三局」に改め、「雨雲局\n雪雲局」を削る。\n"
+I_INS5, I_A5 = "第五條を次のように改める。\n", "架空雲省に、大臣官房及び三局を置く。\n"
+I_MID = "第七條ノ二及び第七條ノ三を削る。\n"
+I_LEAD2 = "架空雨量法（架空法律第二号）の一部を次のように改正する。\n"
+I_P = ["白雲局長は、雨量の記録について、必要な援助を与える。\n", "白雲局長は、記録を閲覧せしめることができる。\n",
+       "第十一條の規定は、白雲局長について準用する。\n"]
+I_TAIL2 = "第十二條第一号中「第十條」を「第十條、第十條の二」に改める。\n"
+I_ART5 = "# 第五條\n<!-- loj:paragraph number=1 -->\n" + I_A5 + "<!-- loj:end-paragraph -->\n"
+DELETED7 = "# 第七條\n削除\n\n"
+I_A10_2 = "# 第十條の二\n" + "".join("<!-- loj:paragraph number=" + str(n) + " numbering=implicit -->\n" + b +
+                                    "<!-- loj:end-paragraph -->\n" for n, b in enumerate(I_P, 1))
+IMPLICIT_MD = ("# 第十四條\n<!-- loj:paragraph number=1 -->\n" + I_LEAD1 + I_Q + amendment_md("1", I_INS5, I_ART5) +
+               amendment_md("2", None, DELETED7) + I_MID + amendment_md("3", None, "# 第二十三條\n削除\n\n") +
+               "<!-- loj:end-paragraph -->\n"
+               "# 第十五條\n<!-- loj:paragraph number=1 -->\n" + I_LEAD2 + amendment_md("1", None, I_A10_2) + I_TAIL2 +
+               "<!-- loj:end-paragraph -->\n")
+I_P14, I_P15 = MAIN + "/article/14/paragraph/1", MAIN + "/article/15/paragraph/1"
+
+
+def deleted_article(scope, number, display):
+    return node("Article", scope + "/article/" + number, number, display, [], status="deleted")
+
+
+IMPLICIT_AST = ast([
+    article(MAIN, "14", "第十四條", [lambda a: node("Paragraph", a + "/paragraph/1", "1", "", [
+        text(I_LEAD1 + I_Q),
+        mk_amendment(I_P14, "1", I_INS5, lambda c: [article(c, "5", "第五條", [lambda x: para(x, "1", I_A5)])]),
+        mk_amendment(I_P14, "2", None, lambda c: [deleted_article(c, "7", "第七條")]),
+        text(I_MID),
+        mk_amendment(I_P14, "3", None, lambda c: [deleted_article(c, "23", "第二十三條")])], numbering="explicit")]),
+    article(MAIN, "15", "第十五條", [lambda a: node("Paragraph", a + "/paragraph/1", "1", "", [
+        text(I_LEAD2),
+        mk_amendment(I_P15, "1", None, lambda c: [article(c, "10-2", "第十條の二", [
+            lambda x, n=n, b=b: para(x, str(n), b, numbering="implicit") for n, b in enumerate(I_P, 1)])]),
+        text(I_TAIL2)], numbering="explicit")])])
+case("改正の指示の文のない改正規定（削除条の形、無番号の項からなる条の全文、後に続く改正の指示、二行にわたる引いた字句）",
+     ["AMEND-01", "AMEND-02", "AMEND-03", "HEAD-04", "PARA-01", "MD-04", "ID-01", "AST-01", "DIR-01"],
+     [("main.md", "main", IMPLICIT_MD)], {"ast": IMPLICIT_AST}, True)
+
+I_HEAD = "# 第十四條\n<!-- loj:paragraph number=1 -->\n" + I_LEAD1
+I_END = "<!-- loj:end-paragraph -->\n"
+amd_case("改正の指示の本文を持つinstruction=implicitの改正規定", ["AMEND-01"],
+         I_HEAD + amendment_md("1", None, DELETED7).replace(
+             "<!-- loj:amendment-content -->\n", "第七條を次のように改める。\n<!-- loj:amendment-content -->\n", 1) + I_END,
+         "AMEND-01")
+amd_case("改正内容のないinstruction=implicitの改正規定", ["AMEND-01"],
+         I_HEAD + "<!-- loj:amendment number=1 instruction=implicit -->\n<!-- loj:end-amendment -->\n" + I_END, "AMEND-01")
+amd_case("続けて置いたinstruction=implicitの改正規定", ["AMEND-01"],
+         I_HEAD + amendment_md("1", None, DELETED7) + amendment_md("2", None, "# 第八條\n削除\n\n") + I_END, "AMEND-01")
+amd_case("instruction=explicitを書いた改正規定", ["DIR-01", "AMEND-01"],
+         I_HEAD + amendment_md("1", I_INS5, I_ART5).replace("amendment number=1 -->", "amendment number=1 instruction=explicit -->")
+         + I_END, "DIR-01")
+amd_case("改正内容の中の削除条の後に空行がない", ["HEAD-04", "AMEND-02"],
+         I_HEAD + amendment_md("1", None, "# 第七條\n削除\n") + I_END, "HEAD-04")
 
 
 def main():

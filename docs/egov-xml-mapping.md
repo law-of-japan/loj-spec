@@ -23,7 +23,7 @@ e-Govの本文は新字体に置き換えている。版の本文の根拠は公
 | Item / ItemTitle | `Item` | 表示番号の範囲はDISP-01 |
 | Subitem1〜Subitem10 | `Subitem`（level 1〜10） | 表示はASCIIの十進、いろは、括弧付きの十進（DISP-01）。ローマ数字等は未対応 |
 | List / ListSentence | `List` | 番号のない列挙の一つの行（LIST-01）。`List`一つを`list`のマーカー一つで書き、`number`は同じ親の中の列記の順序とする。e-Govの`List`は番号の属性を持たない。法令標準XMLスキーマ v3.0の`Paragraph`は`Item`の後にしか`List`を置けないが、実際のデータ（会計検査院法第十二条第二項等）は号のない項に置いている。号と列記が同じ親に並ぶもの、`Sublist1`〜`Sublist3`、`Column`の列記は未対応（LIST-02） |
-| AmendProvision / AmendProvisionSentence | `Amendment`と、その本文 | 改正内容（NewProvision）を持つものだけを`Amendment`とする（AMEND-01）。NewProvisionのないAmendProvisionは、親の本文とする |
+| AmendProvision / AmendProvisionSentence | `Amendment`と、その本文 | 改正内容（NewProvision）を持つものだけを`Amendment`とする（AMEND-01）。NewProvisionのないAmendProvisionは、親の本文とする。AmendProvisionSentenceがなくNewProvisionだけのもの（指示の文を置かない旧い書き方）は、`instruction=implicit`の`Amendment`とする |
 | NewProvision | `AmendmentContent` | 一つの改正規定の改正内容を一つの`AmendmentContent`にまとめる。中の条・項・表は、改正内容をscopeとして書く（AMEND-02）。二つ以上の種類を含むものは未対応（AMEND-03） |
 | Sentence等の本文 | `text` | 原文のMarkdown。文・列の型は再現しない |
 | TableStruct / Table / TableRow / TableColumn | `Table` / `Row` / `Cell` | 項・号・細分の本文の中の表（TABLE-01〜03）。罫線・配置・列の幅は記録しない。罫線を省いて上の欄が続く空の`TableColumn`は、上の欄の結合（`rowspan`）として書く（原典で確かめる）。罫線に囲まれた空の欄、セルの中の項・号・表、入れ子の表は未対応 |
