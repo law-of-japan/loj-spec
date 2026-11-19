@@ -132,8 +132,8 @@ def inspect_manifest(path, validator, version="loj/v1alpha1"):
 
 RANK = {"Part": 1, "Chapter": 2, "Section": 3, "Subsection": 4, "Division": 5, "Article": 6}
 TEXT_KINDS = {"Paragraph", "Item", "Subitem", "AppendedMaterial"}
-TEXT_KINDS_V2 = TEXT_KINDS | {"Cell", "Preamble", "EnactStatement", "Toc", "Amendment", "AmendmentContent"}
-CONTAINERS_V2 = {"paragraph": "Paragraph", "item": "Item", "subitem": "Subitem", "table": "Table", "row": "Row",
+TEXT_KINDS_V2 = TEXT_KINDS | {"List", "Cell", "Preamble", "EnactStatement", "Toc", "Amendment", "AmendmentContent"}
+CONTAINERS_V2 = {"paragraph": "Paragraph", "item": "Item", "subitem": "Subitem", "list": "List", "table": "Table", "row": "Row",
                  "cell": "Cell", "preamble": "Preamble", "enact-statement": "EnactStatement", "toc": "Toc",
                  "amendment": "Amendment", "amendment-content": "AmendmentContent"}
 # DISP-01: iroha subitem display numbers, valued by their position in this sequence (1..47).
@@ -247,8 +247,16 @@ def check_tree(ast, man, v2=False):
         require(all(not ("text" in x and "text" in y) for x, y in zip(content, content[1:])), "Adjacent text")
         if kind in text_kinds and not (kind == "AmendmentContent" and children):
             require(bool("".join(texts).strip()), "Empty body")
-        if kind in ("Cell", "Preamble", "EnactStatement", "Toc"):
+        if kind in ("List", "Cell", "Preamble", "EnactStatement", "Toc"):
             require(not children and len(texts) == 1, "Text-only container")
+        if v2:
+            # LIST-01: lists are numbered by their order among the sibling lists, 1..n, and carry no display number.
+            lists = [c for c in children if c["kind"] == "List"]
+            require([c["number"] for c in lists] == [str(i) for i in range(1, len(lists) + 1)]
+                    and all(c["display"] == "" for c in lists), "List order/display: " + ident)
+            # LIST-02: an item or subitem never shares its parent with a list (outside an amendment content).
+            require(kind == "AmendmentContent" or not lists or
+                    all(c["kind"] not in ("Item", "Subitem") for c in children), "Items/subitems mixed with lists: " + ident)
         if kind in ("Table", "Row"):
             require(bool(children) and all(c["kind"] == ("Row" if kind == "Table" else "Cell") for c in children),
                     "Table rows/cells")
@@ -270,10 +278,10 @@ def check_tree(ast, man, v2=False):
             require((node["status"] == "deleted" and not content) or
                     (node["status"] == "active" and bool(children) and all(k == "Paragraph" for k in child_kinds)), "Article children")
         elif kind == "Paragraph":
-            require(all(k == "Item" or v2 and k in ("Table", "Amendment") for k in child_kinds), "Paragraph children")
+            require(all(k == "Item" or v2 and k in ("List", "Table", "Amendment") for k in child_kinds), "Paragraph children")
         elif kind in ("Item", "Subitem"):
             next_level = 1 if kind == "Item" else node["level"] + 1
-            require(all(c["kind"] == "Subitem" and c["level"] == next_level or v2 and c["kind"] in ("Table", "Amendment")
+            require(all(c["kind"] == "Subitem" and c["level"] == next_level or v2 and c["kind"] in ("List", "Table", "Amendment")
                         for c in children), "Subitem children")
             if v2:
                 kinds = {subitem_display_kind(c["display"]) or "decimal" for c in children if c["kind"] == "Subitem"}
@@ -286,6 +294,7 @@ def check_tree(ast, man, v2=False):
             # AMEND-02: exactly one group, or text only.
             groups = [all(k in RANK for k in child_kinds), all(k == "Paragraph" for k in child_kinds),
                       all(k == "Item" for k in child_kinds), all(k == "Table" for k in child_kinds),
+                      all(k == "List" for k in child_kinds),
                       all(k == "Subitem" for k in child_kinds) and len({c["level"] for c in children}) == 1]
             require((bool(children) and not texts and any(groups)) or (not children and len(texts) == 1),
                     "Amendment content group: " + ident)
@@ -339,7 +348,7 @@ def check_tree(ast, man, v2=False):
 def marker_attrs(kind, node):
     """Attributes a v1alpha2 marker carries for this node (defaults omitted)."""
     attrs = {}
-    if kind in ("Paragraph", "Item", "Subitem", "Table", "Amendment"):
+    if kind in ("Paragraph", "Item", "Subitem", "List", "Table", "Amendment"):
         attrs["number"] = node["number"]
     if kind == "Subitem":
         attrs["level"] = str(node["level"])

@@ -19,6 +19,7 @@
 | AMEND-03で未対応とした改正規定（改正内容の中の改正規定、二つ以上の群からなる改正内容、改正前後の対照表による改正等）、ルビの意味型、図、表のセルの中の項・号・表、入れ子の表 | 版パッケージで未対応。`unsupportedFeatures`に記録し、L1は不合格。その版を持つRecordは、字体注記とScopeの`nodes`を判定できず、L3（根拠）が未完了になる。L3（履歴構造）は影響を受けない（VAL-05、TYPE-07、GLYPH-11）。L1のほかの規則の診断は、参考の集計として報告できるが、適合の主張に使えない（BASIC-03） |
 | 別表の内部構造（表の行・セル、見出しの行、結合） | 本版では見送り、次の版（v1alpha3）で扱う（[law-of-japan/loj-spec#27](https://github.com/law-of-japan/loj-spec/issues/27)、DDR-012）。別表は不透明な附属資料として書け、L1は不合格にならない |
 | ローマ数字等、DISP-01の表にない細分の表示と、いろは・括弧付きの十進の細分の枝番号 | 未対応（DISP-01）。`unsupportedFeatures`に記録し、L1は不合格。記録がなければ、DISP-01の違反としてL1は不合格 |
+| 号・細分と列記が同じ親に並ぶもの、入れ子の列記、段に分けた列記 | 未対応（LIST-02、[law-of-japan/loj-spec#142](https://github.com/law-of-japan/loj-spec/issues/142)）。`unsupportedFeatures`に記録し、L1は不合格。号・細分と列記の混在は、記録がなければLIST-02の違反としてL1は不合格。入れ子の列記は、記録がなくてもDIR-02の違反になる |
 | 目次と本文の見出しの一致 | 検査しない（TOC-01）。目次は不透明な本文で、一致は原典照合で確かめる |
 | 矩形でない表 | 未対応（TABLE-04、[law-of-japan/loj-spec#73](https://github.com/law-of-japan/loj-spec/issues/73)）。`unsupportedFeatures`に記録し、L1は不合格。実在の法令に矩形でない表があるかは、網羅的には確かめていない |
 | 原典で罫線に囲まれた空の表の欄 | 未対応（TABLE-03、[law-of-japan/loj-spec#57](https://github.com/law-of-japan/loj-spec/issues/57)）。`unsupportedFeatures`に記録し、L1は不合格。上の欄・左の欄が続く箇所は、結合したセルとして書ける |
