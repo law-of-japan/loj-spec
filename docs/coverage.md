@@ -136,6 +136,11 @@ v1alpha2の列記（2026-11-20、[law-of-japan/loj-spec#142](https://github.com/
 - pkg-210・211の索引の`requirements`にBASIC-03を挙げるのは、申告のない機械で認識できる未対応の構造を、その構造を扱う規則（ここではLIST-02）の違反とするのがBASIC-03の定めだからである。期待結果の診断はLIST-02だけである。pkg-212との対で、申告の有無で診断の規則が変わることを確かめる（ローマ数字の細分のpkg-074・pkg-153と同じ形）。
 - 加えていないケース: 法令の列記を行に分けた本文で書くこと、番号のない列挙を号として書くこと（号と列記の区別）、段に分けた列記を一つの本文で書くことは、構造の形としては正しく、原典と比べないと判定できない（原典照合）。
 
+v1alpha2の改正の指示の文のない改正規定（2026-11-20、[law-of-japan/loj-spec#143](https://github.com/law-of-japan/loj-spec/issues/143)、AMEND-01の`instruction=implicit`）は、次のケースがある。
+- 正例: 労働省設置法（昭和二十二年法律第九十七号）附則第十四條・第十五條と同じ構造の架空の改正規定（pkg-217）。第十四條は、本文だけの改正の指示と二行にわたる引いた字句（MD-04。改行は本文の`text`に残る）、指示の文を持つ改正規定、その直後の指示の文のない削除条の形（第七條）、本文だけの改正の指示、指示の文のない削除条の形（第二十三條）を一つの項に並べる。第十五條は、指示の文のない、無番号の三つの項（`numbering=implicit`）からなる条の全文（第十條の二）と、その後に続く本文だけの改正の指示を置く。改正内容の中の削除条は、`削除`の行の後に空行を置く（HEAD-04）。
+- 負例: 改正の指示の本文を持つ`instruction=implicit`の改正規定（pkg-218、AMEND-01）、改正内容のない`instruction=implicit`の改正規定（pkg-219、AMEND-01）、続けて置いた`instruction=implicit`の改正規定（pkg-220、AMEND-01）、`instruction=explicit`を書いた改正規定（pkg-221、DIR-01。書ける値は`implicit`だけ）、改正内容の中の削除条の後に空行がないもの（pkg-222、HEAD-04）。
+- 加えていないケース: 原典にない改正の指示の文を補うこと、原典に指示の文がある改正規定に`instruction=implicit`を書くこと、掲げた規定の範囲、指示の文を持つ改正規定の改正内容の直後に掲げた規定を、その続きとするか別の改正規定とするかは、原典と比べないと判定できない（原典照合）。改行が引用元の行の区切りか組版か（MD-04）も同じである。同じ時期のほかの法令の改正規定を試料としたケースは、調査の後に加える。
+
 v1alpha2の未対応の構造の申告の有無（2026-11-13、[law-of-japan/loj-spec#50](https://github.com/law-of-japan/loj-spec/issues/50)）は、ローマ数字の細分の表示`（ｉ）`を、申告せずに書いた負例（pkg-074、L1でDISP-01）と、申告して書いた負例（pkg-153、L1でBASIC-03）・L0の正例（pkg-144）の対と、空の`unsupportedFeatures`の負例（pkg-154、L0でMAN-01）がある。pkg-074の入力は、細分の字種にいろはを加えた変更（[law-of-japan/loj-spec#54](https://github.com/law-of-japan/loj-spec/pull/54)）の後、`イ　細分。`がDISP-01に違反しなくなっていたので、`（ｉ）　細分。`に直した（期待結果は変わらない）。[CONF-01](../spec/common/v1alpha1/04-conformance.md)は期待結果に挙げていない診断が加わることを許すので、申告のないpkg-074でBASIC-03を報告する実装と、申告のあるpkg-153でDISP-01をL1の診断として報告する実装を、固定ケースでは区別できない。
 
 GLYPH-05・GLYPH-07・GLYPH-10・GLYPH-11（2026-11-12、[law-of-japan/loj-spec#21](https://github.com/law-of-japan/loj-spec/issues/21)）: 正規分解を持たない互換漢字のブロックの字に注記がなくても合格する正例（glyph-010）と、字体を保持する資料を指さずに字体を照合済みにする負例（glyph-011）がある。`ivd`の必須、`variance`の`candidates`、`text.variances`・`text.correctionsSurveyed`はschemaにあるが、正例・負例はまだない。`text.correctionsSurveyed`は、hist-001の正例で使っている。
@@ -243,7 +248,7 @@ TIME-03は、hist-004、hist-015〜018のほか、`pending`を基準とする`de
 | PARA-03 | 二つの形式の混在、ファイルの数、分類・条・項のどれもない本則 | データ | 機械検査（L1） |
 | PARA-03 | 原典にない条・項の番号を補わない | 入力者 | 原典照合 |
 | AMEND-01 | マーカー、改正規定の中の順序と番号、改正内容のない改正規定 | データ | 機械検査（L1） |
-| AMEND-01 | 改正内容を改正法自身の条・項・表として書かない。改正内容をマーカーで囲まずに本文として書かない | 入力者 | 原典照合 |
+| AMEND-01 | 改正内容を改正法自身の条・項・表として書かない。改正内容をマーカーで囲まずに本文として書かない。原典にない改正の指示の文を補わない。原典に指示の文がある改正規定に`instruction=implicit`を書かない。掲げた規定の範囲 | 入力者 | 原典照合 |
 | AMEND-02 | 全体 | データ | 機械検査（L1） |
 | AMEND-03 | 未対応の改正規定の申告 | 入力者 | 原典照合 |
 | AMEND-03 | 改正の指示の文を構造と推測しない | 実装 | 適合ケース |
@@ -337,3 +342,4 @@ TIME-03は、hist-004、hist-015〜018のほか、`pending`を基準とする`de
 | `v1alpha2/ast.schema.json` | `/$defs/node/allOf/4/else` | `kind`が`Row`でない | `key` | AST-01 | — |
 | `v1alpha2/ast.schema.json` | `/$defs/node/allOf/5/else` | `kind`が`Cell`でない | `colspan`、`rowspan` | AST-01 | — |
 | `v1alpha2/ast.schema.json` | `/$defs/node/allOf/7/else` | `kind`が`Paragraph`でない | `caption` | AST-01 | — |
+| `v1alpha2/ast.schema.json` | `/$defs/node/allOf/9/else` | `kind`が`Amendment`でない | `instruction` | AST-01 | — |

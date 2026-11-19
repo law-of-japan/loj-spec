@@ -213,6 +213,35 @@ class ArtifactAuditTests(unittest.TestCase):
             with self.subTest(breaker=breaker.__name__), self.assertRaisesRegex(ValueError, message):
                 v.check_tree(ast, man, v2=True)
 
+    def test_v1alpha2_implicit_amendment_shapes(self):
+        # AMEND-01 instruction=implicit in the positive-fixture audit: pkg-217 passes; breaking its tree must not.
+        path = v.ROOT / "conformance/v1alpha2/valid/pkg-217/law.yaml"
+        man = v.load_yaml(path.read_bytes())
+        source = v.read_json(v.ROOT / "conformance/v1alpha2/expected/pkg-217.json")["ast"]
+        v.check_tree(source, man, v2=True)
+
+        def paragraph(ast):
+            return ast["root"]["content"][0]["content"][0]["content"][0]
+
+        def with_text(ast):
+            paragraph(ast)["content"][2]["content"].insert(0, {"text": "第七條を次のように改める。\n"})
+
+        def adjacent(ast):
+            del paragraph(ast)["content"][3]
+
+        def missing(ast):
+            del paragraph(ast)["content"][2]["instruction"]
+
+        def unknown(ast):
+            paragraph(ast)["content"][1]["instruction"] = "absent"
+
+        for breaker, message in ((with_text, "Amendment shape"), (adjacent, "Adjacent implicit amendments"),
+                                 (missing, "Empty body"), (unknown, "Amendment shape")):
+            ast = json.loads(json.dumps(source))
+            breaker(ast)
+            with self.subTest(breaker=breaker.__name__), self.assertRaisesRegex(ValueError, message):
+                v.check_tree(ast, man, v2=True)
+
     def test_v1alpha2_caption_parentheses(self):
         for value in ("（定義）", "（雲（白雲を除く。）の保管）", "（a(b)）"):
             with self.subTest(value=value):

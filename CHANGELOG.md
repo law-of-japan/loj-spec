@@ -2,6 +2,19 @@
 
 見出しの「草案」は、[草案の版](spec/README.md#版の状態)への変更であることを示す。版の状態の正は、[規範仕様の入口](spec/README.md#規範とするもの)の表にある。版を公開したときは、公開の日付の項目を加える。
 
+## 改正の指示の文のない改正規定（2026-11-20、草案）
+
+[law-of-japan/loj-spec#143](https://github.com/law-of-japan/loj-spec/issues/143)による変更である。草案の版（`loj/v1alpha2`）への変更であり、版番号は上げない。意味ASTのAmendmentに`instruction`を加えたので、既存の正例（pkg-192・193・208）の期待結果のAmendmentに`instruction: explicit`を加えた。判断はDDR-028に書いた。
+
+- AMEND-01: 改正の指示の文を置かずに、改めた後の規定（削除条の形、条の全文等）だけを掲げる改正規定を、`amendment`のマーカーに`instruction=implicit`を書いて表すことにした。値は`implicit`だけで、省略時は指示の本文を持つ改正規定とする。`instruction=implicit`の改正規定は改正内容だけからなり、別の`instruction=implicit`の改正規定の直後に置かない（続けて掲げた規定は一つの改正内容に書く）。原典にない指示の文を補わないこと、原典に指示の文がある改正規定に属性を書かないことを加えた。改正内容の後に改正の指示が続く書き方の例を加えた。意味ASTのAmendmentの`instruction`（`explicit`／`implicit`）を定めた。
+- AMEND-02: 改正内容の中の削除条の後の空行と、項がすべて無番号の条の書き方を明記した。
+- AMEND-03: 書ける改正規定に`instruction=implicit`の改正規定を加えた。番号のない項の未対応を、項の群の改正内容に限ることを明記した（条の全文の中の項は`numbering=implicit`で書ける）。引いた字句の中の行の扱いをMD-04へのリンクで示した。
+- MD-04: 同じ文言をほかの幅・ほかの組版で組んでも残る改行（引用元で一行ずつ掲げた字句を、その行のまま引くもの）を本文の改行として書き、続く行の頭をそろえる字下げを組版とすることにした。
+- DIR-01・AST-01・検査の章: `amendment`の任意の属性`instruction`、Amendmentの`instruction`と子の形、L1とL3で確かめる範囲を加えた。
+- AST Schema、マーカーの文法を更新した。
+- 適合ケース: 正例（pkg-217）と負例（pkg-218〜222）を加えた。
+- 用語集、要件との対応表、e-Gov法令XMLとの対応を更新した。
+
 ## 番号のない列挙（列記）（2026-11-20、草案）
 
 [law-of-japan/loj-spec#142](https://github.com/law-of-japan/loj-spec/issues/142)による変更である。草案の版（`loj/v1alpha2`）への変更であり、版番号は上げない。既存のケースの期待結果は変わらない。判断はDDR-027に書いた。

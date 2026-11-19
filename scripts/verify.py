@@ -245,11 +245,21 @@ def check_tree(ast, man, v2=False):
         texts = [c["text"] for c in content if "text" in c]
         require(not texts or kind in text_kinds, "Text in structural parent")
         require(all(not ("text" in x and "text" in y) for x, y in zip(content, content[1:])), "Adjacent text")
-        if kind in text_kinds and not (kind == "AmendmentContent" and children):
+        implicit = kind == "Amendment" and node.get("instruction") == "implicit"
+        if kind in text_kinds and not (kind == "AmendmentContent" and children) and not implicit:
             require(bool("".join(texts).strip()), "Empty body")
         if kind in ("List", "Cell", "Preamble", "EnactStatement", "Toc"):
             require(not children and len(texts) == 1, "Text-only container")
         if v2:
+            # AMEND-01: an implicit amendment never directly follows another implicit one (no non-blank text between).
+            previous = None
+            for c in content:
+                if c.get("kind") == "Amendment":
+                    require(not (c.get("instruction") == "implicit" and previous == "implicit"),
+                            "Adjacent implicit amendments: " + c["id"])
+                    previous = c.get("instruction")
+                elif "kind" in c or c["text"].strip():
+                    previous = None
             # LIST-01: lists are numbered by their order among the sibling lists, 1..n, and carry no display number.
             lists = [c for c in children if c["kind"] == "List"]
             require([c["number"] for c in lists] == [str(i) for i in range(1, len(lists) + 1)]
@@ -288,8 +298,10 @@ def check_tree(ast, man, v2=False):
                 require(len(kinds) <= 1, "Sibling subitem displays mix character kinds (DISP-01): " + ident)
         elif kind == "Amendment":
             # AMEND-01: instruction text first, then exactly one content, nothing after it; never inside a content.
-            require(not quoted and child_kinds == ["AmendmentContent"] and "text" in content[0] and "kind" in content[-1]
-                    and node["display"] == "", "Amendment shape: " + ident)
+            # With instruction=implicit there is no instruction text: the content is all there is.
+            require(not quoted and child_kinds == ["AmendmentContent"] and "kind" in content[-1]
+                    and node["display"] == "" and node.get("instruction") in ("explicit", "implicit")
+                    and (len(content) == 1 if implicit else "text" in content[0]), "Amendment shape: " + ident)
         elif kind == "AmendmentContent":
             # AMEND-02: exactly one group, or text only.
             groups = [all(k in RANK for k in child_kinds), all(k == "Paragraph" for k in child_kinds),
@@ -356,6 +368,8 @@ def marker_attrs(kind, node):
         attrs["numbering"] = "implicit"
     if kind == "Paragraph" and "caption" in node:
         attrs["caption"] = "present"
+    if kind == "Amendment" and node.get("instruction") == "implicit":
+        attrs["instruction"] = "implicit"
     if kind == "Row":
         attrs["key"] = node["key"]
     for span in ("rowspan", "colspan"):
@@ -422,6 +436,8 @@ def source_trace(path, man, v2=False):
             close = re.fullmatch(r"<!-- loj:end-(" + names + r") -->", clean) if i not in protected else None
             if appendix and not (first_scope and i == 0):
                 heading = marker = close = None
+            # Directly inside an amendment content, a heading starts an article of the content (AMEND-02).
+            in_content = v2 and bool(open_stack) and trace[open_stack[-1]][1][0] == "amendment-content"
             if heading:
                 trace.append(("heading", heading[1])); spans.append(span)
             elif marker:
@@ -436,8 +452,10 @@ def source_trace(path, man, v2=False):
                 trace.append(("close", close[1])); spans.append(span)
                 require(bool(open_stack), "Positive source has extra close")
                 spans[open_stack.pop()]["end"] = span["end"]
-            elif clean == "削除" and not open_stack and not appendix:
+            elif clean == "削除" and not appendix and (not open_stack or in_content and trace[-1][0] == "heading"):
                 trace.append(("deleted", clean)); spans.append(span)
+            elif in_content and trace[-1][0] == "deleted" and not clean.strip():
+                pass  # HEAD-04/AMEND-02: the blank line after a deleted article in an amendment content separates it.
             elif open_stack or appendix:
                 if trace and trace[-1][0] == "text":
                     trace[-1] = ("text", trace[-1][1] + line)
