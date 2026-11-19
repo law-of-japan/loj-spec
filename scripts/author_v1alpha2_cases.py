@@ -734,6 +734,69 @@ amd_case("改正内容の中の附則の見出し", ["HEAD-01", "AMEND-03"],
          AMD_HEAD + amendment_md("1", "附則に次の一項を加える。\n", "# 附則\n" + AMD_P3) + AMD_END, "HEAD-01")
 
 
+# 2026-11-20 (#142): lists (LIST-01/02), the unnumbered lines that follow a paragraph's lead, as in
+# 労働省設置法（昭和二十二年法律第九十七号）第三條. Each line is one List; number is its order among the sibling lists.
+def list_md(values, first=1):
+    return "".join("<!-- loj:list number=" + str(n) + " -->\n" + v + "\n<!-- loj:end-list -->\n"
+                   for n, v in enumerate(values, first))
+
+
+def mk_lists(parent, values):
+    return [node("List", parent + "/list/" + str(n), str(n), "", [text(v + "\n")]) for n, v in enumerate(values, 1)]
+
+
+L_LEAD, L_BUREAUS = "架空雲省に大臣官房及び左の三局を置く。\n", ["白雲局", "雨雲局", "雪雲局"]
+L_LEAD2, L_I1, L_I2, L_STORES = "白雲局においては、左の事務を掌る。\n", "一　白雲の保管に関すること。\n", \
+    "二　左に掲げる倉庫の管理に関すること。\n", ["一号倉庫", "二号倉庫"]
+L_LEAD3, L_RULES = "左の命令は、これを廃止する。\n", ["一　架空雲取締規則（架空省令第一号）", "一　架空霧取締規則（架空省令第二号）"]
+L_TAIL3 = "前に掲げる命令の廃止前にした行為の処罰については、なお従前の例による。\n"
+L_LEAD4, L_INS4 = "架空雨量法（架空法律第二号）の一部を次のように改正する。\n", "第三条中雨局の下に次のように加える。\n"
+L_FOG = ["霧局"]
+L_ART1 = "# 第一条\n<!-- loj:paragraph number=1 -->\n" + L_LEAD
+LIST_MD = (L_ART1 + list_md(L_BUREAUS) + "<!-- loj:end-paragraph -->\n"
+           "# 第二条\n<!-- loj:paragraph number=1 -->\n" + L_LEAD2 + "<!-- loj:item number=1 -->\n" + L_I1 +
+           "<!-- loj:end-item -->\n<!-- loj:item number=2 -->\n" + L_I2 + list_md(L_STORES) + "<!-- loj:end-item -->\n"
+           "<!-- loj:end-paragraph -->\n"
+           "# 第三条\n<!-- loj:paragraph number=1 -->\n" + L_LEAD3 + list_md(L_RULES) + L_TAIL3 + "<!-- loj:end-paragraph -->\n"
+           "# 第四条\n<!-- loj:paragraph number=1 -->\n" + L_LEAD4 + amendment_md("1", L_INS4, list_md(L_FOG)) +
+           "<!-- loj:end-paragraph -->\n")
+L_P = [MAIN + "/article/" + str(n) + "/paragraph/1" for n in range(1, 5)]
+LIST_AST = ast([
+    article(MAIN, "1", "第一条", [lambda a: para(a, "1", L_LEAD, children=lambda p: mk_lists(p, L_BUREAUS))]),
+    article(MAIN, "2", "第二条", [lambda a: para(a, "1", L_LEAD2, children=lambda p: [
+        node("Item", p + "/item/1", "1", "一", [text(L_I1)]),
+        node("Item", p + "/item/2", "2", "二", [text(L_I2)] + mk_lists(p + "/item/2", L_STORES))])]),
+    article(MAIN, "3", "第三条", [lambda a: para(a, "1", L_LEAD3, children=lambda p: mk_lists(p, L_RULES) + [text(L_TAIL3)])]),
+    article(MAIN, "4", "第四条", [lambda a: para(a, "1", L_LEAD4, children=lambda p: [
+        mk_amendment(p, "1", L_INS4, lambda c: mk_lists(c, L_FOG))])])])
+case("列記（項の列記、号の中の列記、行の頭に「一」を置く列記と柱書の続き、改正内容の列記）",
+     ["LIST-01", "LIST-02", "DISP-01", "ID-01", "AST-01", "AMEND-02"], [("main.md", "main", LIST_MD)], {"ast": LIST_AST}, True)
+
+
+def list_case(title, requirements, body, rule, man_extra=None):
+    case(title, requirements, [("main.md", "main", body)], fail(rule), False, man_extra=man_extra)
+
+
+L_END = "<!-- loj:end-paragraph -->\n"
+L_ITEM = "<!-- loj:item number=1 -->\n一　白雲の保管に関すること。\n<!-- loj:end-item -->\n"
+list_case("列記の番号が連番でない", ["LIST-01"],
+          L_ART1 + list_md(L_BUREAUS[:2]) + list_md(L_BUREAUS[2:], first=4) + L_END, "LIST-01")
+list_case("申告のない号と列記の混在", ["LIST-02", "BASIC-03"], L_ART1 + L_ITEM + list_md(L_BUREAUS) + L_END, "LIST-02")
+list_case("申告のない細分と列記の混在", ["LIST-02", "BASIC-03"],
+          L_ART1 + "<!-- loj:item number=2 -->\n" + L_I2 + "<!-- loj:subitem level=1 number=1 -->\nイ　一号倉庫\n"
+          "<!-- loj:end-subitem -->\n" + list_md(L_STORES[1:]) + "<!-- loj:end-item -->\n" + L_END, "LIST-02")
+list_case("申告した号と列記の混在（L1の診断はBASIC-03だけ）", ["BASIC-03", "LIST-02"],
+          L_ART1 + L_ITEM + list_md(L_BUREAUS) + L_END, "BASIC-03",
+          man_extra={"unsupportedFeatures": ["号と列記の混在"]})
+list_case("列記の中の列記", ["DIR-02", "LIST-02"],
+          L_ART1 + "<!-- loj:list number=1 -->\n白雲局\n" + list_md(["白雲課"]) + "<!-- loj:end-list -->\n" + L_END, "DIR-02")
+list_case("空の列記", ["DIR-02", "LIST-01"], L_ART1 + list_md(L_BUREAUS[:1] + ["　"]) + L_END, "DIR-02")
+list_case("numberのない列記のマーカー", ["DIR-01", "LIST-01"],
+          L_ART1 + "<!-- loj:list -->\n白雲局\n<!-- loj:end-list -->\n" + L_END, "DIR-01")
+list_case("列記と号を混ぜた改正内容", ["AMEND-02", "LIST-02"],
+          L_ART1.replace(L_LEAD, L_LEAD4) + amendment_md("1", L_INS4, list_md(L_FOG) + L_ITEM) + L_END, "AMEND-02")
+
+
 def main():
     index_path = DST / "manifest.json"
     index = json.loads(index_path.read_text(encoding="utf-8"))

@@ -181,6 +181,38 @@ class ArtifactAuditTests(unittest.TestCase):
             with self.subTest(breaker=breaker.__name__), self.assertRaisesRegex(ValueError, message):
                 v.check_tree(ast, man, v2=True)
 
+    def test_v1alpha2_list_shapes(self):
+        # LIST-01/02 in the positive-fixture audit: pkg-208 passes; breaking its tree must not.
+        path = v.ROOT / "conformance/v1alpha2/valid/pkg-208/law.yaml"
+        man = v.load_yaml(path.read_bytes())
+        source = v.read_json(v.ROOT / "conformance/v1alpha2/expected/pkg-208.json")["ast"]
+        v.check_tree(source, man, v2=True)
+
+        def paragraph(ast, article):
+            return ast["root"]["content"][0]["content"][article]["content"][0]
+
+        def gap(ast):
+            third = paragraph(ast, 0)["content"][3]
+            third["number"], third["id"] = "4", third["id"][:-1] + "4"
+
+        def display(ast):
+            paragraph(ast, 2)["content"][1]["display"] = "一"
+
+        def mixed(ast):
+            item = paragraph(ast, 1)["content"][2]
+            paragraph(ast, 1)["content"].append(json.loads(json.dumps(item["content"][1]).replace(item["id"], paragraph(ast, 1)["id"])))
+
+        def child(ast):
+            first = paragraph(ast, 0)["content"][1]
+            first["content"].append(dict(paragraph(ast, 0)["content"][2], id=first["id"] + "/list/1", number="1"))
+
+        for breaker, message in ((gap, "List order/display"), (display, "List order/display"),
+                                 (mixed, "Items/subitems mixed with lists"), (child, "Text-only container")):
+            ast = json.loads(json.dumps(source))
+            breaker(ast)
+            with self.subTest(breaker=breaker.__name__), self.assertRaisesRegex(ValueError, message):
+                v.check_tree(ast, man, v2=True)
+
     def test_v1alpha2_caption_parentheses(self):
         for value in ("（定義）", "（雲（白雲を除く。）の保管）", "（a(b)）"):
             with self.subTest(value=value):
