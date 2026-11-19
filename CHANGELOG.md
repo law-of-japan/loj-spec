@@ -4,7 +4,7 @@
 
 ## 改正の指示の文のない改正規定（2026-11-20、草案）
 
-[law-of-japan/loj-spec#143](https://github.com/law-of-japan/loj-spec/issues/143)による変更である。草案の版（`loj/v1alpha2`）への変更であり、版番号は上げない。意味ASTのAmendmentに`instruction`を加えたので、既存の正例（pkg-192・193・208）の期待結果のAmendmentに`instruction: explicit`を加えた。判断はDDR-028に書いた。
+[law-of-japan/loj-spec#143](https://github.com/law-of-japan/loj-spec/issues/143)による変更である。草案の版（`loj/v1alpha2`）への変更であり、版番号は上げない。意味ASTのAmendmentに`instruction`を加えたので、既存の正例（pkg-192・193・208）の期待結果のAmendmentに`instruction: explicit`を加えた。この書き換えは規範（AST-01）の変更によるもので、検査器の出力を写したものではない。判断はDDR-028に書いた。
 
 - AMEND-01: 改正の指示の文を置かずに、改めた後の規定（削除条の形、条の全文等）だけを掲げる改正規定を、`amendment`のマーカーに`instruction=implicit`を書いて表すことにした。値は`implicit`だけで、省略時は指示の本文を持つ改正規定とする。`instruction=implicit`の改正規定は改正内容だけからなり、別の`instruction=implicit`の改正規定の直後に置かない（続けて掲げた規定は一つの改正内容に書く）。原典にない指示の文を補わないこと、原典に指示の文がある改正規定に属性を書かないことを加えた。改正内容の後に改正の指示が続く書き方の例を加えた。意味ASTのAmendmentの`instruction`（`explicit`／`implicit`）を定めた。
 - AMEND-02: 改正内容の中の削除条の後の空行と、項がすべて無番号の条の書き方を明記した。
