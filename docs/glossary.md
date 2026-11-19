@@ -170,7 +170,7 @@
 | 踊り字 | 々、〻、ゝ、〳〵等 | 原典に印刷された記号のまま転記し、展開しない | [CHAR-02](../spec/common/v1alpha1/02-characters.md#char-02-字体の自動変換の禁止)、[GLYPH-08](../spec/loj-glyphs/v1alpha1/01-glyphs.md#glyph-08-踊り字) |
 | 〓（ゲタ） | U+3013 | 判読困難・符号化不能の字の代わりに本文に置く字。本文の〓にはすべて注記が要る | [GLYPH-03](../spec/loj-glyphs/v1alpha1/01-glyphs.md#glyph-03-本文に置く字)、[GLYPH-02](../spec/loj-glyphs/v1alpha1/01-glyphs.md#glyph-02-注記する場合) |
 | 字体注記の種類 | `kind` | `ambiguous`、`illegible`、`unencodable`、`literal`、`spacing`、`variance`、`sourceEdit`、`selected` | [GLYPH-02](../spec/loj-glyphs/v1alpha1/01-glyphs.md#glyph-02-注記する場合) |
-| 字の決め方 | `basis`（字体注記） | `ambiguous`の字の選び方。`unifiedDefault`、`otherSource`、`sameSource`、`provisional`、`undetermined` | [GLYPH-05](../spec/loj-glyphs/v1alpha1/01-glyphs.md#glyph-05-注記の内容)、[GLYPH-06](../spec/loj-glyphs/v1alpha1/01-glyphs.md#glyph-06-コードポイントの選択基準) |
+| 字の決め方 | `basis`（字体注記） | `ambiguous`の字の選び方と、`illegible`の字をほかの原典資料で読めた字で置いたか（`otherSource`）。`unifiedDefault`、`otherSource`、`sameSource`、`provisional`、`undetermined` | [GLYPH-05](../spec/loj-glyphs/v1alpha1/01-glyphs.md#glyph-05-注記の内容)、[GLYPH-06](../spec/loj-glyphs/v1alpha1/01-glyphs.md#glyph-06-コードポイントの選択基準) |
 | 注記の位置 | `node`、`field`、`offset`、`recorded` | ノードIDと、そのノード自身の本文の中のコードポイント単位の位置で字を指す | [GLYPH-04](../spec/loj-glyphs/v1alpha1/01-glyphs.md#glyph-04-注記の位置) |
 | 見え消し | `kind: sourceEdit` | 原典の中で印刷を消して書き直した箇所。訂正後の字句を本文に置く | [GLYPH-09](../spec/loj-glyphs/v1alpha1/01-glyphs.md#glyph-09-原典の中の訂正) |
 | 下書きの資料 | — | 本文の下書きに使った機械可読の資料（e-Gov等）。字体を決められないときの仮の字に使う | [GLYPH-06](../spec/loj-glyphs/v1alpha1/01-glyphs.md#glyph-06-コードポイントの選択基準) |
@@ -267,7 +267,7 @@
 | `pending` | 時点値では「法令上まだ定まっていない」。番号主張の`decision`では「保留」。再構築報告では「未再構築の改正」。診断の`class`では「保留」 |
 | `unknown` | 時点値では「調査上不明」。番号主張の`state`、`basedOn`、資料の確認結果（`sourceChecks.glyphPreservation`）でもそれぞれ「不明」を表す。いずれも推測で値を補わない |
 | `glyphs`と`glyph`で始まる名前 | `glyphs.yaml`は字体注記のファイル、番号主張の`glyphs`は`raw`の字体注記（注記の配列）。履歴マニフェストの`text.glyphCheck`は字体の照合状態、`text.glyphNotes`は字体注記のファイルのパス。`glyphPreservation`は資料が字体を保持しているかで、Sourceと再構築報告の`sourceChecks`で同じ値を使う（GLYPH-10の条件はSourceの値で確かめる） |
-| `basis` | Revisionの`basis`は成立根拠（関係と内訳）。字体注記の`basis`は曖昧な字の決め方 |
+| `basis` | Revisionの`basis`は成立根拠（関係と内訳）。字体注記の`basis`は曖昧な字・判読困難な字の本文の字の決め方 |
 | `text` | 版パッケージのASTの`text`は本文。履歴マニフェストの`text`は本文の状態。Scopeの`text`は対象範囲の原文、適用条件の`text`は条件の原文。登録台帳の本文の取得状況は`collection`であり、字体注記の`ivd.collection`（IVDのコレクションの名前）とは別である |
 | `sources` | 履歴マニフェストと登録台帳の`sources`はSourceの一覧（資料の定義）。Revisionの`text.sources`はEvidenceの一覧（定義した資料の箇所）。版パッケージの`law.yaml`の出典のURIは`sourceUris`であり、資料の定義ではない（凍結した`loj/v1alpha1`の`law.yaml`では`sources`）|
 | `state`と`status` | `state`は知識・判断の状態（時点値、適用関係、収録範囲、番号主張、確認状態、本文の取得状況）、`status`は記録の生存の状態（Revision、関係、Record、条の`active`・`retracted`・`deleted`等）。例外として、Revisionの`text.status`は本文の状態（`complete`等）を表す（[DDR-022](design-decisions/022-spec-structure.md)）。番号主張の`decision`は採否で、別の軸である |

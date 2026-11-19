@@ -35,7 +35,8 @@ ZWG = "versions/zwgmz1rt/"
 SCHEMA_REJECTED = {"hist-005", "hist-006", "hist-010", "hist-012", "hist-013", "hist-020", "hist-021", "hist-022",
                    "hist-026", "hist-038", "hist-041", "hist-042", "hist-043", "hist-045", "hist-046", "glyph-005", "reg-005",
                    "reg-006", "reg-007", "reg-010", "rebuild-002", "hist-056", "hist-057", "hist-058", "hist-059",
-                   "hist-060", "hist-061", "rebuild-005", "reg-013"}
+                   "hist-060", "hist-061", "rebuild-005", "reg-013", "glyph-014", "glyph-015",
+                   "glyph-016", "glyph-019"}
 
 
 def write_json(path, value):
@@ -1340,6 +1341,62 @@ def auxiliary_changes():
         {"results": [{"check": "change", "result": "pass"}]}, True)
 
 
+# --- 2026-11-20 (#141): an illegible character read in another original source (GLYPH-05, GLYPH-06 6) ---------
+ENA = "versions/98mj5vgx/"
+ILLEGIBLE_OTHER = ('  - id: g20\n'
+                   '    node: 19480720-law-178/main/article/1/paragraph/1\n'
+                   '    offset: 3\n'
+                   '    recorded: "平和"\n'
+                   '    kind: illegible\n'
+                   '    basis: otherSource\n'
+                   '    evidence: [{source: src-kanpo-19480720, locator: "1コマ 第一條（汚れ）"}, {source: src-goshomei, locator: "第一條"}]\n'
+                   '    verification: {state: confirmed, reason: "官報の画像では汚れで読めず、御署名原本で読めた。'
+                   '「平」は右端だけが見え、御署名原本の字と合う"}\n')
+ILLEGIBLE_PLAIN = ('  - id: g21\n'
+                   '    node: 19480720-law-178/main/article/2/paragraph/1/table/1/row/b6gr/cell/1\n'
+                   '    offset: 1\n'
+                   '    recorded: "〓"\n'
+                   '    kind: illegible\n'
+                   '    evidence: [{source: src-kanpo-19480720, locator: "1コマ 第二條 元日の項"}]\n'
+                   '    verification: {state: unverified, reason: "ほかの原典資料を確かめていない"}\n')
+
+
+def illegible_other_source():
+    """The enactment version gets two illegible notes: 平和 read in the 御署名原本 (basis: otherSource, the text keeps
+    the characters) and 元〓 not read anywhere (basis omitted, the same as undetermined). The negatives change the
+    first note only."""
+    pos = next_dir("glyph", True) / "repo"
+    mutate(pos, HIST_POS, [(ENA + "glyphs.yaml", "  - id: g15\n", ILLEGIBLE_OTHER + ILLEGIBLE_PLAIN + "  - id: g15\n"),
+                           (ENA + "main.md", "元日\n", "元〓\n")])
+    add("glyph", "官報の複製で読めず、ほかの原典資料で読めた字を本文に置く判読困難の注記",
+        ["GLYPH-02", "GLYPH-03", "GLYPH-05", "GLYPH-06", "GLYPH-07", "GLYPH-10"], "L3",
+        {"kind": "repository", "path": rel(pos)}, {"results": [l3("evidence")]}, True, "evidence")
+    kanpo = '{source: src-kanpo-19480720, locator: "1コマ 第一條（汚れ）"}'
+    goshomei = '{source: src-goshomei, locator: "第一條"}'
+    negatives = [
+        ("判読困難の字を下書きの資料の字で置く", [(ENA + "glyphs.yaml", '    kind: illegible\n    basis: otherSource\n',
+                                         '    kind: illegible\n    basis: provisional\n')]),
+        ("ほかの原典資料で読めたとして〓を置く",
+         [(ENA + "glyphs.yaml", '    recorded: "平和"\n    kind: illegible\n', '    recorded: "〓〓"\n    kind: illegible\n'),
+          (ENA + "main.md", "自由と平和を", "自由と〓〓を")]),
+        ("ほかの原典資料で読めた字の根拠が一件だけ", [(ENA + "glyphs.yaml", kanpo + ", " + goshomei, goshomei)]),
+        ("ほかの原典資料で読めた字の根拠が同じ資料だけ",
+         [(ENA + "glyphs.yaml", kanpo + ", " + goshomei,
+           kanpo + ', {source: src-kanpo-19480720, locator: "1コマ 第一條"}')]),
+        ("ほかの原典資料で読めた字の根拠に公布された本文がない",
+         [(ENA + "glyphs.yaml", kanpo + ", " + goshomei, '{source: src-egov, locator: "第一条"}, ' + goshomei)]),
+        ("字の決め方のない判読困難の注記で〓でない字を置く", [(ENA + "glyphs.yaml", '    kind: illegible\n    basis: otherSource\n',
+                                                 '    kind: illegible\n')]),
+        ("ほかの原典資料で読めた字の根拠が下書きの資料",
+         [(ENA + "glyphs.yaml", kanpo + ", " + goshomei, kanpo + ', {source: src-egov, locator: "第一条"}')]),
+    ]
+    for title, edits in negatives:
+        dest = next_dir("glyph", False) / "repo"
+        mutate(dest, rel(pos), edits)
+        add("glyph", title, ["GLYPH-05"], "L3", {"kind": "repository", "path": rel(dest)},
+            {"results": [l3("evidence", "fail")], "diagnostics": [diag("GLYPH-05", SV["glyph"])]}, False, "evidence")
+
+
 def main():
     for suite, folder in FOLDER.items():
         for group in ("invalid", "expected"):
@@ -1375,6 +1432,7 @@ def main():
     declared_versions_without_ast()
     amendment_glyph_notes()
     auxiliary_changes()
+    illegible_other_source()
     assert not DERIVED, sorted(DERIVED)  # every copy is listed by the case that owns it
     marked = {case["id"] for cases in INDEX.values() for case in cases if "rejectedBy" in case}
     assert marked == SCHEMA_REJECTED, SCHEMA_REJECTED - marked
