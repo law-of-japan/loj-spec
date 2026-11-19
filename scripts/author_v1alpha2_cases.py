@@ -783,7 +783,7 @@ list_case("列記の番号が連番でない", ["LIST-01"],
           L_ART1 + list_md(L_BUREAUS[:2]) + list_md(L_BUREAUS[2:], first=4) + L_END, "LIST-01")
 list_case("申告のない号と列記の混在", ["LIST-02", "BASIC-03"], L_ART1 + L_ITEM + list_md(L_BUREAUS) + L_END, "LIST-02")
 list_case("申告のない細分と列記の混在", ["LIST-02", "BASIC-03"],
-          L_ART1 + "<!-- loj:item number=1 -->\n" + L_I2 + "<!-- loj:subitem level=1 number=1 -->\nイ　一号倉庫\n"
+          L_ART1 + "<!-- loj:item number=2 -->\n" + L_I2 + "<!-- loj:subitem level=1 number=1 -->\nイ　一号倉庫\n"
           "<!-- loj:end-subitem -->\n" + list_md(L_STORES[1:]) + "<!-- loj:end-item -->\n" + L_END, "LIST-02")
 list_case("申告した号と列記の混在（L1の診断はBASIC-03だけ）", ["BASIC-03", "LIST-02"],
           L_ART1 + L_ITEM + list_md(L_BUREAUS) + L_END, "BASIC-03",
