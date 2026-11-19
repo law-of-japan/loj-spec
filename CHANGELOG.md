@@ -2,6 +2,18 @@
 
 見出しの「草案」は、[草案の版](spec/README.md#版の状態)への変更であることを示す。版の状態の正は、[規範仕様の入口](spec/README.md#規範とするもの)の表にある。版を公開したときは、公開の日付の項目を加える。
 
+## 官報の複製で読めない字（2026-11-20、草案）
+
+[law-of-japan/loj-spec#141](https://github.com/law-of-japan/loj-spec/issues/141)による変更である。草案の版（`loj-glyphs/v1alpha1`。登録台帳の番号主張の`glyphs`も同じ形による）への変更であり、版番号は上げない。既存のケースの期待結果は変わらない。判断はDDR-021に追記した。
+
+- GLYPH-02: `illegible`の場合に複製の傷を加え、読めない原因（印刷のかすれか複製の傷か）で種類を分けないことにした。字の一部だけが見える場合は、従来の`illegible`と`ambiguous`の境界によることを明記した。
+- GLYPH-03・GLYPH-05・GLYPH-06の6: 入手できた官報の複製で読めず、ほかの原典資料（御署名原本、法令全書等）で読めた字は、本文に置いてよいことにした。`illegible`、`basis: otherSource`として注記する。`illegible`の`basis`は`otherSource`か`undetermined`（省略と同じ）に限り、`otherSource`でなければ`recorded`は従来どおり〓とする。`otherSource`の`recorded`は〓を含まず、`evidence`は二つ以上の異なるSourceを指し、一つ以上は公布された本文（`kind`が`promulgation`または`officialCorrection`）、それとは別の一つ以上は`kind`が`egov`・`index`でないSourceとする。同じ資料のほかの箇所と下書きの資料の字は、読めない字には置かない。
+- GLYPH-07: 同じ号の官報の別の複製で読めた字は、官報の字として本文に置き、読めない字・曖昧な字としては注記しないことにした。その複製を別のSource（`kind: promulgation`）として記録し、`text.sources`から指す。ほかの原典資料を使える場合に、読めない字の確認を加えた。字が合わない場合も、読めない字に置いた〓はGLYPH-02により注記し、文言の食い違いは`text.variances`に記録することを明記した。GLYPH-06の3aの資料の例から「より高い解像度の画像」を除き、この規則へのリンクにした。
+- GLYPH-10: `otherSource`の判読困難の注記が残っていても`verified`にできることを明記した。
+- Schema: 字体注記と登録台帳のRecordの`glyphs`で、上の`illegible`の条件を表した。`evidence`のSourceが異なることとSourceの`kind`の条件は、検査器が確かめる。
+- 適合ケース: 正例（glyph-013）と、負例（glyph-014〜020。glyph-014〜016・019はschemaで不合格）を加えた。
+- 用語集、要件との対応表を更新した。
+
 ## 検査のPythonと依存の更新（2026-11-17）
 
 このリポジトリの検査の環境の変更である。規範と適合ケースは変えていない。
