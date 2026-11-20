@@ -445,10 +445,10 @@ def build_bundle(path, steps=None, verbatim=False):
                 executable = set(files.get(EXECUTABLE, ()))
                 listed = git("ls-files", "-s", "-z").stdout.decode("utf-8").split("\0")
                 staged = [line.split("\t", 1) for line in listed if line]
-                regular = [path for info, path in staged if info.startswith("100755") and path not in executable]
-                for flag, paths in (("--chmod=+x", sorted(executable)), ("--chmod=-x", regular)):
-                    if paths:
-                        git("update-index", flag, "--", *paths)
+                demote = [name for info, name in staged if info.split()[0] == "100755" and name not in executable]
+                for flag, names in (("--chmod=+x", sorted(executable)), ("--chmod=-x", demote)):
+                    if names:
+                        git("update-index", flag, "--", *names)
             message = subject if kind == RAW else subject + "\n"
             if kind and kind != RAW:
                 message += "\nLoJ-Change: " + kind + "\n" + ("LoJ-Revisions: " + REV + "\n" if with_revs else "")
