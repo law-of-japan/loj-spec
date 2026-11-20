@@ -1447,6 +1447,15 @@ def file_modes():
 
 
 # --- 2026-11-20 (#149): the first commit of a repository, checked with no base (CHG-02, CHG-03) ------------------
+def root_commits(bundle):
+    """The commits without a parent of the branch main of a git bundle."""
+    with tempfile.TemporaryDirectory() as tmp:
+        subprocess.run(["git", "clone", "-q", "--bare", str(bundle), tmp + "/r"], check=True, capture_output=True)
+        out = subprocess.run(["git", "-C", tmp + "/r", "rev-list", "--max-parents=0", "main"], check=True,
+                             capture_output=True).stdout.decode()
+    return out.split()
+
+
 def first_commits():
     """The first commit (without a parent) is checked with no record before it; the index omits base.
 
@@ -1456,12 +1465,15 @@ def first_commits():
     """
     first = {case["id"]: case["input"] for case in INDEX["common"]}
     shared = first["common-004"]
+    # A case without base reads head as the first commit: each head must be the only commit without a parent.
+    assert root_commits(ROOT / shared["bundle"]) == [shared["base"]], shared
     add("common", "法令リポジトリの最初のcommitで、制定時の版を加える", ["CHG-02", "CHG-03"], "change",
         {"kind": "change", "bundle": shared["bundle"], "head": shared["base"]},
         {"results": [{"check": "change", "result": "pass"}]}, True)
     body = "架空の雲を保管すろ。\n"
     bundle = next_dir("common", False) / "repo.bundle"
     (c1,) = build_bundle(bundle, [("制定時の版を加える（書式変更と宣言）", "format", False, fictional_files(body))])
+    assert root_commits(bundle) == [c1], bundle
     add("common", "法令リポジトリの最初のcommitを、書式変更と宣言する", ["CHG-03"], "change",
         {"kind": "change", "bundle": rel(bundle), "head": c1},
         {"results": [{"check": "change", "result": "fail"}], "diagnostics": [diag("CHG-03", SV["common"])]}, False)
@@ -1469,6 +1481,7 @@ def first_commits():
     executable[EXECUTABLE] = ["versions/" + REV + "/main.md"]
     bundle = next_dir("common", False) / "repo.bundle"
     (c1,) = build_bundle(bundle, [("制定時の版を加える（本文のファイルを実行可能にする）", "revisionAdd", True, executable)])
+    assert root_commits(bundle) == [c1], bundle
     add("common", "法令リポジトリの最初のcommitで、版パッケージのファイルを実行可能にして置く", ["CHG-02"], "change",
         {"kind": "change", "bundle": rel(bundle), "head": c1},
         {"results": [{"check": "change", "result": "fail"}], "diagnostics": [diag("CHG-02", SV["common"])]}, False)
