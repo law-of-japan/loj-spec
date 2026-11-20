@@ -2,6 +2,15 @@
 
 見出しの「草案」は、[草案の版](spec/README.md#版の状態)への変更であることを示す。版の状態の正は、[規範仕様の入口](spec/README.md#規範とするもの)の表にある。版を公開したときは、公開の日付の項目を加える。
 
+## 最初のcommitの変更検査（2026-11-20、草案）
+
+[law-of-japan/loj-spec#149](https://github.com/law-of-japan/loj-spec/issues/149)による変更である。草案の版（共通の型`common/v1alpha1`）への変更であり、版番号は上げない。既存のケースの期待結果は変わらない。判断はDDR-015に追記した。
+
+- CHG-03: 法令リポジトリの最初のcommit（親のないcommit）は`revisionAdd`を宣言しなければならない（MUST）とした。`revisionAdd`でない種類を宣言した最初のcommitを、種類ごとの検査をせずにCHG-03で不合格とするcommitの列挙に加えた。
+- 適合ケースの索引のschema: 変更の入力（`input.kind: change`）の`base`を任意にした。`base`のない入力は、最初のcommit（親のないcommit）から`head`までの各commitを順に検査し、最初のcommitを変更前の版がないものとして検査する。実装ガイドとCONTRIBUTINGに読み方を書いた。
+- 適合ケース: `revisionAdd`の最初のcommitの正例（common-059）と、最初のcommitを`format`と宣言する負例（common-060。CHG-03）、最初のcommitに`100755`の版の本文のファイルを置く負例（common-061。CHG-02）を加えた。
+- 要件との対応表を更新した。
+
 ## 正本のデータのファイルのモード（2026-11-20、草案）
 
 [law-of-japan/loj-spec#147](https://github.com/law-of-japan/loj-spec/issues/147)による変更である。草案の版（共通の型`common/v1alpha1`）への変更であり、版番号は上げない。既存のケースの期待結果は変わらない。判断はDDR-015に追記した。

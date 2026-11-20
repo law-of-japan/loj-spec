@@ -50,6 +50,7 @@
 - 索引は種類ごとにある（`conformance/<種類>/<版>/manifest.json`）。形は[索引のschema](../schemas/common/v1alpha1/conformance.schema.json)、期待結果は[期待結果のschema](../schemas/common/v1alpha1/expected.schema.json)にある。
 - 入力の`kind`は、`package`（`law.yaml`）、`repository`（法令リポジトリのディレクトリ）、`registry`（登録台帳のディレクトリ）、`records`（登録台帳と複数の法令リポジトリ）、`change`（`git bundle`と、比べる二つのcommit）、`reference`（`git bundle`、登録台帳、参照の文字列）である。
 - `git bundle`は、`git clone <bundle> <dir>`で取り出す。commitのハッシュは固定であり、作り直すと変わる。
+- 変更の入力の`base`と`head`は、比べる二つのcommitである。`base`の後から`head`までの各commitを、順にその親と比べて検査する（CHG-03）。`base`のない入力は、法令リポジトリの最初のcommitからの検査である。`head`から親を辿った最初のcommit（親のないcommit）から`head`までの各commitを順に検査し、最初のcommitは変更前の版がないものとして検査する（common-059〜061）。
 - 成功するケースは、期待結果に挙げた`results`がすべて報告にあって一致し、期待結果に挙げた診断（警告等。hist-027、hist-052、common-014）がすべて報告にあり、ケースの検査（L3・L4は区分）に属する規則の`error`の診断がないことを確かめる。期待結果に挙げていない検査（区分）の結果と診断は比べない（CONF-01）。版パッケージのL1の正例では、意味ASTを位置情報を除いて完全一致で比べ、`positions`をソースのバイトで照合する。L0の正例はASTを持たず、L0の`pass`だけを比べる。L1の違反を含む入力も、L0では合格する（pkg-145）。
 - 失敗するケースは、期待する`error`の診断（`rule`と`schemaVersion`の組）をすべて含むことを確かめる。ほかの診断が加わってもよい。部分的なASTは比べない。期待結果の診断に`location`があれば、同じ規則の診断の`location`の`path`・`start`・`end`も一致させる。位置はUTF-8のバイトで数え、行は行末の改行（CRLFは2バイト）まで含む（SRC-01）。重複の「後」は`documents`の順で決め、ファイルの名前の順にはよらない。Manifestの意味の違反には位置を定めないので、期待結果に位置はない。このリポジトリの検査は、期待結果の位置が行の境界にあることだけを確かめ、規則が指すべき行かは確かめていない。位置は規範の本文（SRC-01）に従って報告し、期待結果と食い違ったときは、[CONTRIBUTING](../CONTRIBUTING.md#検査器と期待結果が食い違ったとき)の手続きによる。検査器の出力に合わせて期待結果を直さない。
 - 索引の`derivedFrom`は、写しで作った入力の元と変更の記録である。資料の検査のためのもので、検査器は読まなくてよい。入力はチェックインしたファイルをそのまま読む（CONF-01）。

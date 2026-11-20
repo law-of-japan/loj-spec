@@ -1446,6 +1446,34 @@ def file_modes():
         {"results": [{"check": "change", "result": "fail"}], "diagnostics": [diag("CHG-02", SV["common"])]}, False)
 
 
+# --- 2026-11-20 (#149): the first commit of a repository, checked with no base (CHG-02, CHG-03) ------------------
+def first_commits():
+    """The first commit (without a parent) is checked with no record before it; the index omits base.
+
+    The positive is the first commit of the bundle of common-004 (revisionAdd). The first negative adds the same
+    files but declares format: a first commit that is not revisionAdd (CHG-03). The second declares revisionAdd but
+    records the text of the version as executable: every file of the data of a first commit is checked (CHG-02).
+    """
+    first = {case["id"]: case["input"] for case in INDEX["common"]}
+    shared = first["common-004"]
+    add("common", "法令リポジトリの最初のcommitで、制定時の版を加える", ["CHG-02", "CHG-03"], "change",
+        {"kind": "change", "bundle": shared["bundle"], "head": shared["base"]},
+        {"results": [{"check": "change", "result": "pass"}]}, True)
+    body = "架空の雲を保管すろ。\n"
+    bundle = next_dir("common", False) / "repo.bundle"
+    (c1,) = build_bundle(bundle, [("制定時の版を加える（書式変更と宣言）", "format", False, fictional_files(body))])
+    add("common", "法令リポジトリの最初のcommitを、書式変更と宣言する", ["CHG-03"], "change",
+        {"kind": "change", "bundle": rel(bundle), "head": c1},
+        {"results": [{"check": "change", "result": "fail"}], "diagnostics": [diag("CHG-03", SV["common"])]}, False)
+    executable = dict(fictional_files(body))
+    executable[EXECUTABLE] = ["versions/" + REV + "/main.md"]
+    bundle = next_dir("common", False) / "repo.bundle"
+    (c1,) = build_bundle(bundle, [("制定時の版を加える（本文のファイルを実行可能にする）", "revisionAdd", True, executable)])
+    add("common", "法令リポジトリの最初のcommitで、版パッケージのファイルを実行可能にして置く", ["CHG-02"], "change",
+        {"kind": "change", "bundle": rel(bundle), "head": c1},
+        {"results": [{"check": "change", "result": "fail"}], "diagnostics": [diag("CHG-02", SV["common"])]}, False)
+
+
 def main():
     for suite, folder in FOLDER.items():
         for group in ("invalid", "expected"):
@@ -1483,6 +1511,7 @@ def main():
     auxiliary_changes()
     illegible_other_source()
     file_modes()
+    first_commits()
     assert not DERIVED, sorted(DERIVED)  # every copy is listed by the case that owns it
     marked = {case["id"] for cases in INDEX.values() for case in cases if "rejectedBy" in case}
     assert marked == SCHEMA_REJECTED, SCHEMA_REJECTED - marked
