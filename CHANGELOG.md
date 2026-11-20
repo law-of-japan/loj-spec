@@ -6,7 +6,7 @@
 
 [law-of-japan/loj-spec#149](https://github.com/law-of-japan/loj-spec/issues/149)による変更である。草案の版（共通の型`common/v1alpha1`）への変更であり、版番号は上げない。既存のケースの期待結果は変わらない。判断はDDR-015に追記した。
 
-- CHG-03: 法令リポジトリの最初のcommit（親のないcommit）は`revisionAdd`を宣言しなければならない（MUST）とした。`revisionAdd`でない種類を宣言した最初のcommitを、種類ごとの検査をせずにCHG-03で不合格とするcommitの列挙に加えた。
+- CHG-03: 法令リポジトリの最初のcommit（親のないcommit）は`revisionAdd`を宣言しなければならない（MUST）とした。`revisionAdd`でない種類を宣言した最初のcommitを、種類ごとの検査をせずにCHG-03で不合格とするcommitの列挙に加えた。列挙したcommitには、CHG-02の検査（ファイルのモードの確かめを含む）とCHG-04の検査をせず、CHG-03の規則だけで報告することを明記した（CHG-02のモードの確かめの「宣言した種類によらず」から、これらのcommitを除いた）。
 - 適合ケースの索引のschema: 変更の入力（`input.kind: change`）の`base`を任意にした。`base`のない入力は、最初のcommit（親のないcommit）から`head`までの各commitを順に検査し、最初のcommitを変更前の版がないものとして検査する。実装ガイドとCONTRIBUTINGに読み方を書いた。
 - 適合ケース: `revisionAdd`の最初のcommitの正例（common-059）と、最初のcommitを`format`と宣言する負例（common-060。CHG-03）、最初のcommitに`100755`の版の本文のファイルを置く負例（common-061。CHG-02）を加えた。
 - 要件との対応表を更新した。
