@@ -181,7 +181,7 @@
 
 | 用語 | 表記 | 意味 | 定義 |
 |---|---|---|---|
-| 正本のデータのファイル | — | 法令リポジトリの`history.yaml`、`rebuild.yaml`、`versions/`の下のファイルと、登録台帳のリポジトリの`space.yaml`、`records/`の下のファイル。正本ブランチのそれ以外のファイル（CIの設定、生成器、文書等）は正本のデータの外のファイルで、どの種類の変更検査の対象にもならない。正本のデータのファイルを変えないcommitは`auxiliary`と宣言する | [CHG-01](../spec/common/v1alpha1/07-changes.md#chg-01-変更の種類)、[CHG-02](../spec/common/v1alpha1/07-changes.md#chg-02-種類ごとの検査) |
+| 正本のデータのファイル | — | 法令リポジトリの`history.yaml`、`rebuild.yaml`、`versions/`の下のファイルと、登録台帳のリポジトリの`space.yaml`、`records/`の下のファイル。正本ブランチのそれ以外のファイル（CIの設定、生成器、文書等）は正本のデータの外のファイルで、どの種類の変更検査の対象にもならない。正本のデータのファイルを変えないcommitは`auxiliary`と宣言する。正本のデータのファイルのGitのモードは`100644`（実行可能でない通常のファイル）に限り、モードだけの変更もファイルの変更に当たる | [CHG-01](../spec/common/v1alpha1/07-changes.md#chg-01-変更の種類)、[CHG-02](../spec/common/v1alpha1/07-changes.md#chg-02-種類ごとの検査) |
 | 変更の種類 | `LoJ-Change` | 正本の各commitが宣言する種類。`format`、`correction`、`officialCorrection`、`restoration`、`metadata`、`revisionAdd`、`revisionFix`、`migration`、`auxiliary` | [CHG-01](../spec/common/v1alpha1/07-changes.md#chg-01-変更の種類) |
 | 書式変更 | `format` | ASTが変わらない表現の変更（書式・マーカー・ファイル分割） | [CHG-01](../spec/common/v1alpha1/07-changes.md#chg-01-変更の種類)、[CHG-02](../spec/common/v1alpha1/07-changes.md#chg-02-種類ごとの検査) |
 | 記録訂正 | `correction` | LoJの転記・復元の誤りを原典に照らして直す。Revisionは変わらない | [CHG-01](../spec/common/v1alpha1/07-changes.md#chg-01-変更の種類) |

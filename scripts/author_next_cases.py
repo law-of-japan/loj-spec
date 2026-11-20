@@ -364,6 +364,9 @@ NODE = "20990101-act-1/main/article/1/paragraph/1"
 # build_bundle steps that make no commit: create a branch at HEAD and switch to it, or switch to a branch (CHG-03 merge).
 BRANCH = "branch"
 CHECKOUT = "checkout"
+# A key of the files of a build_bundle step, not a path: the paths to record with the Git mode 100755 (executable).
+# Every other file is recorded as 100644, so a file leaves EXECUTABLE to go back to a regular file (CHG-02).
+EXECUTABLE = "<executable>"
 
 
 class Merge:
@@ -396,7 +399,8 @@ def build_bundle(path, steps=None, verbatim=False):
     """Build a git bundle of the branch main from steps; return the hash of each commit, in the order of the steps.
 
     A step is (subject, kind, with_revs, files, *trailers), or (BRANCH, name) and (CHECKOUT, name), which make no
-    commit. files is the whole set of files to write, or Merge(branch) for a merge commit of that branch.
+    commit. files is the whole set of files to write, or Merge(branch) for a merge commit of that branch. The modes
+    are set in the index, not read from the working tree, so the bundle is the same on every system (EXECUTABLE).
     The date of a commit is fixed by the number of its step, counting the steps that make no commit, so a step
     put in before others changes the hashes of the commits after it. The bundle holds main only: a branch must
     be merged into main, or its commits are left out.
@@ -417,6 +421,7 @@ def build_bundle(path, steps=None, verbatim=False):
         git = lambda *args, **kw: subprocess.run(["git", "-C", str(repo), "-c", "commit.gpgsign=false", *args], check=True, capture_output=True, env=env, **kw)
         git("init", "-q", "-b", "main")
         git("config", "core.autocrlf", "false")
+        git("config", "core.filemode", "false")
         for i, step in enumerate(steps):
             if step[0] in (BRANCH, CHECKOUT):
                 git("checkout", "-q", *(["-b"] if step[0] == BRANCH else []), step[1])
@@ -431,10 +436,19 @@ def build_bundle(path, steps=None, verbatim=False):
                 for old in repo.glob("versions/*/*.md"):
                     old.unlink()
                 for name, body in files.items():
+                    if name == EXECUTABLE:
+                        continue
                     target = repo / name
                     target.parent.mkdir(parents=True, exist_ok=True)
                     target.write_bytes(body.encode("utf-8"))
                 git("add", "-A")
+                executable = set(files.get(EXECUTABLE, ()))
+                listed = git("ls-files", "-s", "-z").stdout.decode("utf-8").split("\0")
+                staged = [line.split("\t", 1) for line in listed if line]
+                demote = [name for info, name in staged if info.split()[0] == "100755" and name not in executable]
+                for flag, names in (("--chmod=+x", sorted(executable)), ("--chmod=-x", demote)):
+                    if names:
+                        git("update-index", flag, "--", *names)
             message = subject if kind == RAW else subject + "\n"
             if kind and kind != RAW:
                 message += "\nLoJ-Change: " + kind + "\n" + ("LoJ-Revisions: " + REV + "\n" if with_revs else "")
@@ -1397,6 +1411,41 @@ def illegible_other_source():
             {"results": [l3("evidence", "fail")], "diagnostics": [diag("GLYPH-05", SV["glyph"])]}, False, "evidence")
 
 
+# --- 2026-11-20 (#147): a change of the Git mode of a file of the data changes the file (CHG-02) -----------------
+def file_modes():
+    """A file of the data is a regular file of mode 100644, checked on the files a commit adds or changes.
+
+    The bundle adds the version, then makes its text executable by format (in the range of format, but a mode other
+    than 100644), then makes it a regular file again by format (in the range: passes, though the parent fails). The
+    second bundle makes it a regular file again by metadata, which may not change a file of the version package:
+    the mode alone is out of the range, and the mode it leaves is 100644.
+    """
+    body = "架空の雲を保管する。\n"
+    executable = dict(fictional_files(body))
+    executable[EXECUTABLE] = ["versions/" + REV + "/main.md"]
+    steps = [
+        ("制定時の版を加える", "revisionAdd", True, fictional_files(body)),
+        ("本文のファイルを実行可能にする（書式変更と宣言）", "format", False, executable),
+    ]
+    bundle_pos = next_dir("common", True) / "repo.bundle"
+    c1, c2, c3 = build_bundle(bundle_pos, steps + [
+        ("本文のファイルを通常のファイルに戻す", "format", False, fictional_files(body))])
+    add("common", "書式変更で、版パッケージのファイルのモードを通常のファイルに戻す", ["CHG-02"], "change",
+        {"kind": "change", "bundle": rel(bundle_pos), "base": c2, "head": c3},
+        {"results": [{"check": "change", "result": "pass"}]}, True)
+    dest = next_dir("common", False) / "repo.bundle"
+    copy_file(dest, bundle_pos)
+    add("common", "書式変更で、版パッケージのファイルを実行可能にする", ["CHG-02"], "change",
+        {"kind": "change", "bundle": rel(dest), "base": c1, "head": c2},
+        {"results": [{"check": "change", "result": "fail"}], "diagnostics": [diag("CHG-02", SV["common"])]}, False)
+    bundle = next_dir("common", False) / "repo.bundle"
+    _, c2, c3 = build_bundle(bundle, steps + [
+        ("本文のファイルを通常のファイルに戻す（属性の更新と宣言）", "metadata", False, fictional_files(body))])
+    add("common", "属性の更新と宣言して、版パッケージのファイルのモードだけを変える", ["CHG-02"], "change",
+        {"kind": "change", "bundle": rel(bundle), "base": c2, "head": c3},
+        {"results": [{"check": "change", "result": "fail"}], "diagnostics": [diag("CHG-02", SV["common"])]}, False)
+
+
 def main():
     for suite, folder in FOLDER.items():
         for group in ("invalid", "expected"):
@@ -1433,6 +1482,7 @@ def main():
     amendment_glyph_notes()
     auxiliary_changes()
     illegible_other_source()
+    file_modes()
     assert not DERIVED, sorted(DERIVED)  # every copy is listed by the case that owns it
     marked = {case["id"] for cases in INDEX.values() for case in cases if "rejectedBy" in case}
     assert marked == SCHEMA_REJECTED, SCHEMA_REJECTED - marked
