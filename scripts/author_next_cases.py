@@ -1515,6 +1515,14 @@ def registry_first_commits():
             expected["diagnostics"] = [diag("CHG-03", SV["common"])]
         add("common", title, ["CHG-02", "CHG-03"] if success else ["CHG-03"], "change",
             {"kind": "change", "bundle": rel(bundle), "head": c1, "repository": "registry"}, expected, success)
+    # A first commit with neither space.yaml nor history.yaml: the kind of repository comes from the input alone
+    # (CHG-03). Read as a law repository, metadata would not be revisionAdd and the commit would fail.
+    bundle = next_dir("common", True) / "repo.bundle"
+    (c1,) = build_bundle(bundle, [("説明を置く", "metadata", False, {"README.md": "架空の登録台帳である。\n"})])
+    assert root_commits(bundle) == [c1], bundle
+    add("common", "登録台帳のリポジトリの最初のcommitで、正本のデータのファイルを置かずに説明だけを置く", ["CHG-03"], "change",
+        {"kind": "change", "bundle": rel(bundle), "head": c1, "repository": "registry"},
+        {"results": [{"check": "change", "result": "pass"}]}, True)
 
 
 def main():

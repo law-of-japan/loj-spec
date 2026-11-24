@@ -1440,6 +1440,23 @@
       },
       "expected": "conformance/common/v1alpha1/expected/common-063.json",
       "success": false
+    },
+    {
+      "id": "common-064",
+      "title": "登録台帳のリポジトリの最初のcommitで、正本のデータのファイルを置かずに説明だけを置く",
+      "requirements": [
+        "CHG-03"
+      ],
+      "check": "change",
+      "normative": true,
+      "input": {
+        "kind": "change",
+        "bundle": "conformance/common/v1alpha1/valid/common-064/repo.bundle",
+        "head": "54803c6c79c3284a37bcdfb59a4b58953d0c6084",
+        "repository": "registry"
+      },
+      "expected": "conformance/common/v1alpha1/expected/common-064.json",
+      "success": true
     }
   ]
 }
