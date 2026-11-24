@@ -4,9 +4,10 @@
 
 ## 字体注記の範囲（2026-11-24、草案）
 
-[law-of-japan/loj-spec#161](https://github.com/law-of-japan/loj-spec/issues/161)による変更である。草案の版（`loj-glyphs/v1alpha1`）への変更であり、版番号は上げない。既存のケースの期待結果は変わらない。判断はDDR-030に追記した。
+[law-of-japan/loj-spec#161](https://github.com/law-of-japan/loj-spec/issues/161)による変更である。草案の版（`loj-glyphs/v1alpha1`と`loj/v1alpha2`）への変更であり、版番号は上げない。既存のケースの期待結果は変わらない。判断はDDR-030に追記した。
 
 - GLYPH-04: 注記の範囲（`offset`から`recorded`の長さだけの区間）は、`field`の指す文字列の中になければならず、両端がCRLFのCRとLFの間にあってはならない（MUST）とした。空の`recorded`の注記の`offset`は文字列の長さ以下とする。CRLFの行の終端を記録する注記は、CRとLFの2字をCRの位置で記録するほかない。機械の検査（L3）が確かめる範囲に、注記の範囲を加えた。
+- AST-01（`loj/v1alpha2`、草案）: 本文の行の終端を元の入力のまま（LFまたはCRLF）とし、正規化しないことを明記した。既存のCRLFの正例の期待結果は既にそうなっており、意味は変わらない。
 - 適合ケース: 文字列の長さを超える`offset`の空の注記（glyph-023）と、CRLFのLFの位置を指してLFだけを記録した注記（glyph-024）の負例を加えた。
 - 要件との対応表を更新した。
 
