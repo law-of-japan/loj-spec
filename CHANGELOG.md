@@ -2,6 +2,12 @@
 
 見出しの「草案」は、[草案の版](spec/README.md#版の状態)への変更であることを示す。版の状態の正は、[規範仕様の入口](spec/README.md#規範とするもの)の表にある。版を公開したときは、公開の日付の項目を加える。
 
+## 改名の転送に頼るか（2026-11-25、草案）
+
+[law-of-japan/loj-spec#165](https://github.com/law-of-japan/loj-spec/issues/165)による変更である。草案の版（`loj-rebuild/v1alpha1`）への変更であり、版番号は上げない。既存のケースの期待結果は変わらない。判断はDDR-020・DDR-024に追記した。
+
+- REB-08: 「ホスティングサービスの改名の転送に、到達性を依存させない」を削り、転送に頼るかを、ブランチの配置・名前を保つ方法と並べて移行の運用で定めることとした。旧commitへの到達性（MUST）、既存のURLでの到達性（SHOULD）、旧commitと新しい記録版を同じ記録として案内しないこと（MUST NOT）は変えていない。
+
 ## 旧リポジトリのcommitの上に始めた正本ブランチ（2026-11-24、草案）
 
 [law-of-japan/loj-spec#163](https://github.com/law-of-japan/loj-spec/issues/163)による変更である。草案の版（`common/v1alpha1`と`loj-rebuild/v1alpha1`）への変更であり、版番号は上げない。既存のケースの期待結果は変わらない。判断はDDR-031にある。
