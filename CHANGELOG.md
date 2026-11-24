@@ -6,7 +6,7 @@
 
 [law-of-japan/loj-spec#163](https://github.com/law-of-japan/loj-spec/issues/163)による変更である。草案の版（`common/v1alpha1`と`loj-rebuild/v1alpha1`）への変更であり、版番号は上げない。既存のケースの期待結果は変わらない。判断はDDR-031にある。
 
-- CHG-03: 法令リポジトリの正本ブランチを、旧リポジトリのcommitの上に始めてよいとし、その親のcommitを旧履歴の境界とした。変更検査は境界を任意の入力として受け取り、境界とその祖先（旧履歴のcommit）を検査しない。境界を親とするcommitを最初のcommitとする。境界をファイル（`rebuild.yaml`の`legacy.frozenAt`等）やtrailerの有無から推定してはならない（MUST NOT）とした。条件に合わない境界（`head`から到達できない、`head`そのもの、登録台帳のリポジトリに与えた）を与えた検査は、CHG-03で不合格とする。旧履歴のmergeのcommitは、mergeのcommitの禁止に当たらない。
+- CHG-03: 法令リポジトリの正本ブランチを、旧リポジトリのcommitの上に始めてよいとし、その親のcommitを旧履歴の境界とした。変更検査は境界を任意の入力として受け取り、境界とその祖先（旧履歴のcommit）を検査しない。`head`から到達でき、境界から到達できないcommitを正本のcommitとし、境界を親とする正本のcommitを最初のcommitとする。境界をファイル（`rebuild.yaml`の`legacy.frozenAt`等）やtrailerの有無から推定してはならない（MUST NOT）とした。条件に合わない境界（`head`から到達できない、`head`そのもの、登録台帳のリポジトリに与えた）を与えた検査は、CHG-03で不合格とする。旧履歴のmergeのcommitは、mergeのcommitの禁止に当たらない。
 - CHG-01・CHG-02: 最初のcommitの文が、旧履歴の境界を親とするcommitを含むことを明記した。境界の木のファイルは、変更前の記録版のファイルとして比べない。
 - CORE-01: 旧履歴のcommitを記録版の履歴に含まないことを要約した。
 - REB-08: 正本ブランチを親のないcommitから始めても、旧commitの上に始めてもよい（MAY）とし、後者の変更検査の扱いをCHG-03へのリンクで要約した。境界は`legacy.frozenAt`と同じでなくてもよい。

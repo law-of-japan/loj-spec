@@ -96,9 +96,10 @@ ASTは、`schemaVersion`・`law`・`root`への投影を、位置情報を除い
 - 法令リポジトリの正本ブランチは、親のないcommitから始めるか、旧リポジトリから移したRecord（[REB-01](../../loj-rebuild/v1alpha1/01-rebuild.md)）では、旧リポジトリのcommitを親とするcommitから始める（[REB-08](../../loj-rebuild/v1alpha1/01-rebuild.md#reb-08-既存の参照の維持と旧形式)）。後者の親のcommitを、旧履歴の境界とする。
 - 変更検査は、法令リポジトリの検査で、旧履歴の境界を任意の入力として受け取る。境界は、`head`から親を辿って到達できるcommitで、`head`でないものとする。境界を与えた検査では、次のとおりとする。
   - 境界と、境界から親を辿って到達できるcommitを、旧履歴のcommitとする。旧履歴のcommitは、正本のcommitではなく、記録版を持たない。変更検査の対象にせず、宣言のないcommitやmergeのcommitであっても報告しない。
-  - 境界を親とするcommitを、正本ブランチの最初のcommitとする。
+  - `head`から親を辿って到達できるcommitのうち、旧履歴のcommitでないものを、正本のcommitとして検査する。mergeのcommitのほかの親から到達できるcommitも、境界から到達できなければ正本のcommitであり、旧履歴のcommitとして扱わない。
+  - 境界を親とする正本のcommitを、正本ブランチの最初のcommitとする。そのようなcommitが二つ以上あれば、それらを合わせるmergeのcommitがあり、そのmergeのcommitは下の不合格のcommitの列挙による。それぞれを最初のcommitとして検査する。
   - `base`が旧履歴のcommitであれば、最初のcommitから`head`までの各commitを順に検査する。
-- 境界を与えない検査では、親のないcommitを最初のcommitとする。登録台帳のリポジトリは旧リポジトリから移さないので、その検査には境界を与えない。
+- 境界を与えない検査では、親のないcommitを最初のcommitとし、すべてのcommitを正本のcommitとして検査する。`base`が旧リポジトリのcommitでも同じであり、`base`より後の旧リポジトリのcommitは、宣言がなければ下の不合格のcommitの列挙による。登録台帳のリポジトリは旧リポジトリから移さないので、その検査には境界を与えない。
 - 上の条件に合わない境界（リポジトリにないcommitを含む、`head`から親を辿って到達できないcommit、`head`そのもの、登録台帳のリポジトリの検査に与えた境界）を与えた検査は、合格としてはならない（MUST NOT）。どのcommitが旧履歴のcommitかを決められないので、各commitを検査せず、不合格とし、本要件の規則で報告する。
 - 旧履歴の境界を、リポジトリの中のファイル（`rebuild.yaml`の`legacy.frozenAt`等）や、commitメッセージ（trailerの有無等）から推定してはならない（MUST NOT）。`legacy.frozenAt`は凍結した時点の規定のブランチのcommitであり、境界と同じとは限らない（[REBR-02](../../loj-rebuild/v1alpha1/02-report.md)）。`rebuild.yaml`は最初のcommitが作るファイルであり、宣言のないcommitは本要件の違反として報告するものだからである。
 - 法令リポジトリの最初のcommitは、`revisionAdd`を宣言しなければならない（MUST）。登録台帳のリポジトリの最初のcommitは、`metadata`を宣言しなければならない（MUST）。どちらも、変更前の記録版はないものとみなして検査する（法令リポジトリで、履歴だけで本文のない版を加える場合も同じ）。最初のcommitで作れるファイルの範囲は[CHG-02](#chg-02-種類ごとの検査)による。最初のcommitの種類の規定に反する最初のcommitの扱いは、下の不合格のcommitの列挙による。
