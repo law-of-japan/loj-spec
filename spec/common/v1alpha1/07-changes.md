@@ -99,6 +99,7 @@ ASTは、`schemaVersion`・`law`・`root`への投影を、位置情報を除い
   - 境界を親とするcommitを、正本ブランチの最初のcommitとする。
   - `base`が旧履歴のcommitであれば、最初のcommitから`head`までの各commitを順に検査する。
 - 境界を与えない検査では、親のないcommitを最初のcommitとする。登録台帳のリポジトリは旧リポジトリから移さないので、その検査には境界を与えない。
+- 上の条件に合わない境界（リポジトリにないcommitを含む、`head`から親を辿って到達できないcommit、`head`そのもの、登録台帳のリポジトリの検査に与えた境界）を与えた検査は、合格としてはならない（MUST NOT）。どのcommitが旧履歴のcommitかを決められないので、各commitを検査せず、不合格とし、本要件の規則で報告する。
 - 旧履歴の境界を、リポジトリの中のファイル（`rebuild.yaml`の`legacy.frozenAt`等）や、commitメッセージ（trailerの有無等）から推定してはならない（MUST NOT）。`legacy.frozenAt`は凍結した時点の規定のブランチのcommitであり、境界と同じとは限らない（[REBR-02](../../loj-rebuild/v1alpha1/02-report.md)）。`rebuild.yaml`は最初のcommitが作るファイルであり、宣言のないcommitは本要件の違反として報告するものだからである。
 - 法令リポジトリの最初のcommitは、`revisionAdd`を宣言しなければならない（MUST）。登録台帳のリポジトリの最初のcommitは、`metadata`を宣言しなければならない（MUST）。どちらも、変更前の記録版はないものとみなして検査する（法令リポジトリで、履歴だけで本文のない版を加える場合も同じ）。最初のcommitで作れるファイルの範囲は[CHG-02](#chg-02-種類ごとの検査)による。最初のcommitの種類の規定に反する最初のcommitの扱いは、下の不合格のcommitの列挙による。
 - 変更の取り消し（revert）は、前の変更を意味の上で取り消すcommitをいう。`git revert`が生成する差分そのものを指さない。取り消しのcommitは、原則として取り消す変更と同じ種類を宣言し、その種類の検査を受ける。例外は`revisionAdd`の取り消しで、`revisionFix`とする。

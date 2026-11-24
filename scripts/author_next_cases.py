@@ -1564,6 +1564,12 @@ def legacy_boundary():
         {"kind": "change", "bundle": rel(dest), "head": c2},
         {"results": [{"check": "change", "result": "fail"}],
          "diagnostics": [diag("CHG-03", SV["common"]), diag("CHG-02", SV["common"])]}, False)
+    # A boundary that is head itself is not a boundary (CHG-03): the check fails by CHG-03 without checking a commit.
+    dest = next_dir("common", False) / "repo.bundle"
+    copy_file(dest, pos)
+    add("common", "headそのものを旧履歴の境界として与える", ["CHG-03"], "change",
+        {"kind": "change", "bundle": rel(dest), "head": c2, "legacyBoundary": c2},
+        {"results": [{"check": "change", "result": "fail"}], "diagnostics": [diag("CHG-03", SV["common"])]}, False)
     bundle = next_dir("common", False) / "repo.bundle"
     _, l2, c1 = build_bundle(bundle, LEGACY_STEPS + [("制定時の版を加える（書式変更と宣言）", "format", False, fictional_files(body))])
     add("common", "旧履歴の境界を親とする最初のcommitを、書式変更と宣言する", ["CHG-03"], "change",

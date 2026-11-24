@@ -196,8 +196,9 @@ CHG-03のmergeのcommit（2026-11-16、[law-of-japan/loj-spec#120](https://githu
 - 索引の変更の入力の`legacyBoundary`に二つ目の旧commitを与え、`base`を省く正例（common-065）。旧履歴のcommitを検査せず、境界の子を最初のcommitとして、最初のcommitの範囲で検査する。
 - `base`に一つ目の旧commit（旧履歴のcommit）を与える正例（common-066）。common-065と同じく、境界の子から検査する。
 - 同じ`git bundle`の写しで、境界を与えない負例（common-067。CHG-02・CHG-03）。親のないcommitが最初のcommitになり、二つの旧commitが宣言のないcommitとしてCHG-03で、`revisionAdd`のcommitが変更前の記録版を持つので、`history.yaml`の最上位のフィールドを作る範囲の外の変更としてCHG-02で不合格になる。境界をファイルやtrailerの有無から推定しないこと（CHG-03）を確かめる。
-- 境界の子を`format`と宣言する負例（common-068。CHG-03）。common-060と同じく、`revisionAdd`でない最初のcommitである。
-- 加えていないケース: 旧履歴にmergeのcommitを含むもの（旧履歴のcommitを報告しない同じ文の範囲で、common-065と同じ結果になる）、`head`の祖先でない境界を与えるもの（境界の定義に合わない入力で、検査の結果を定めていない）、境界の木に正本のデータのファイルの名前のファイルがあるもの（境界の木と比べない同じ文の範囲）、`rebuild.yaml`を置く最初のcommit（上の#152の項と同じ）。
+- `head`そのものを境界として与える負例（common-068。CHG-03）。境界の条件に合わない入力は、各commitを検査せずに不合格とする。
+- 境界の子を`format`と宣言する負例（common-069。CHG-03）。common-060と同じく、`revisionAdd`でない最初のcommitである。
+- 加えていないケース: 旧履歴にmergeのcommitを含むもの（旧履歴のcommitを報告しない同じ文の範囲で、common-065と同じ結果になる）、`head`から到達できない境界・登録台帳のリポジトリに与えた境界（common-068と同じ文の範囲）、境界の木に正本のデータのファイルの名前のファイルがあるもの（境界の木と比べない同じ文の範囲）、`rebuild.yaml`を置く最初のcommit（上の#152の項と同じ）。
 
 TIME-03は、hist-004、hist-015〜018のほか、`pending`を基準とする`derived`に`value`を書いた負例（hist-044）と、`value`の書式（`YYYY-MM-DD`）に反する負例（hist-045）がある。`calc`のない`derived`の`value`を検査せず、結果を未完了にしないこと（2026-11-16、[law-of-japan/loj-spec#136](https://github.com/law-of-japan/loj-spec/issues/136)）は、`calc`のない施行の時点を持ち、L3（履歴構造）の合格を期待するhist-001が当たる。警告を出すかは任意（MAY）なので、警告は期待結果に挙げない。
 
