@@ -699,6 +699,35 @@
           ]
         }
       ]
+    },
+    {
+      "id": "glyph-025",
+      "title": "文字列の長さに等しいoffsetを持つ空の字間の注記（文字列の末尾）",
+      "requirements": [
+        "GLYPH-04"
+      ],
+      "check": "L3",
+      "category": "evidence",
+      "normative": true,
+      "input": {
+        "kind": "repository",
+        "path": "conformance/loj-glyphs/v1alpha1/valid/glyph-025/repo"
+      },
+      "expected": "conformance/loj-glyphs/v1alpha1/expected/glyph-025.json",
+      "success": true,
+      "derivedFrom": [
+        {
+          "path": "conformance/loj-glyphs/v1alpha1/valid/glyph-025/repo",
+          "from": "conformance/loj-glyphs/v1alpha1/valid/glyph-021/repo",
+          "edits": [
+            {
+              "file": "versions/q7v3n2xc/glyphs.yaml",
+              "old": "offset: 9\n",
+              "new": "offset: 28\n"
+            }
+          ]
+        }
+      ]
     }
   ]
 }
