@@ -39,7 +39,7 @@ python -m unittest discover -s tests -v
 
 - 凍結した版: `spec/v1alpha1`、`schemas/v1alpha1`、`grammar/v1alpha1`、`conformance/v1alpha1`。
 - `docs/archive/`の文書の内容。直してよいのは、冒頭の`状態:`の行、リンク先、要件IDの見出しの形だけである。削除もしない。
-- 既存の期待結果を、検査や実装の都合で書き換えない。期待結果は規範から人が書く。検査器やパーサーの出力を写して正解にしない（[CONF-01](spec/common/v1alpha1/04-conformance.md)）。
+- 既存の期待結果を、検査や実装の都合で書き換えない。期待結果は規範から人が書く。検査器やパーサーの出力を写して正解にしない（[CONF-01](spec/common/v1alpha1/04-conformance.md)、[CONTRIBUTING](CONTRIBUTING.md#適合ケースの作り方)）。
 - 公開した版の意味と、一度公開した要件IDの番号の意味。廃止した番号は欠番として残す。
 
 版の状態（草案・公開・凍結）は、[規範仕様の入口](spec/README.md#規範とするもの)の表を正とする。変更の前に、対象の版の状態を確かめる。
