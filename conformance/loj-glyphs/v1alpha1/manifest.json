@@ -593,6 +593,54 @@
           ]
         }
       ]
+    },
+    {
+      "id": "glyph-021",
+      "title": "二行割りの行の区切りを書いた・書かなかった字間の注記（LFとCRLFの本文）",
+      "requirements": [
+        "GLYPH-02",
+        "GLYPH-04",
+        "MD-04"
+      ],
+      "check": "L3",
+      "category": "evidence",
+      "normative": true,
+      "input": {
+        "kind": "repository",
+        "path": "conformance/loj-glyphs/v1alpha1/valid/glyph-021/repo"
+      },
+      "expected": "conformance/loj-glyphs/v1alpha1/expected/glyph-021.json",
+      "success": true
+    },
+    {
+      "id": "glyph-022",
+      "title": "CRLFの行の区切りをLFだけで記録した字間の注記",
+      "requirements": [
+        "GLYPH-04",
+        "GLYPH-02"
+      ],
+      "check": "L3",
+      "category": "evidence",
+      "normative": true,
+      "input": {
+        "kind": "repository",
+        "path": "conformance/loj-glyphs/v1alpha1/invalid/glyph-022/repo"
+      },
+      "expected": "conformance/loj-glyphs/v1alpha1/expected/glyph-022.json",
+      "success": false,
+      "derivedFrom": [
+        {
+          "path": "conformance/loj-glyphs/v1alpha1/invalid/glyph-022/repo",
+          "from": "conformance/loj-glyphs/v1alpha1/valid/glyph-021/repo",
+          "edits": [
+            {
+              "file": "versions/q7v3n2xc/glyphs.yaml",
+              "old": "recorded: \"\\r\\n\"",
+              "new": "recorded: \"\\n\""
+            }
+          ]
+        }
+      ]
     }
   ]
 }

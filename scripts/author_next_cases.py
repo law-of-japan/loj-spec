@@ -1525,6 +1525,27 @@ def registry_first_commits():
         {"results": [{"check": "change", "result": "pass"}]}, True)
 
 
+
+# --- 2026-11-24 (#159): spacing notes on line breaks of a two-line setting (GLYPH-02, GLYPH-04, MD-04) ----------
+SPACING_POS = "conformance/loj-glyphs/v1alpha1/valid/glyph-021/repo"
+
+
+def spacing_line_breaks():
+    """A fictional imperial order whose version has three spacing notes on 二行割り line breaks (hand-written).
+
+    one.md uses LF and two.md CRLF. g1 records the LF written in the text, g2 the CR and LF of a CRLF line (its
+    offset is the CR), g3 the empty string for a break not written (its offset is after the last character of the
+    line read first). The negative records only LF for the CRLF line break of g2: the text at the offset is CR LF.
+    """
+    add("glyph", "二行割りの行の区切りを書いた・書かなかった字間の注記（LFとCRLFの本文）",
+        ["GLYPH-02", "GLYPH-04", "MD-04"], "L3", {"kind": "repository", "path": SPACING_POS},
+        {"results": [l3("evidence")]}, True, "evidence")
+    dest = next_dir("glyph", False) / "repo"
+    mutate(dest, SPACING_POS, [("versions/q7v3n2xc/glyphs.yaml", r'recorded: "\r\n"', r'recorded: "\n"')])
+    add("glyph", "CRLFの行の区切りをLFだけで記録した字間の注記", ["GLYPH-04", "GLYPH-02"], "L3",
+        {"kind": "repository", "path": rel(dest)},
+        {"results": [l3("evidence", "fail")], "diagnostics": [diag("GLYPH-04", SV["glyph"])]}, False, "evidence")
+
 def main():
     for suite, folder in FOLDER.items():
         for group in ("invalid", "expected"):
@@ -1564,6 +1585,7 @@ def main():
     file_modes()
     first_commits()
     registry_first_commits()
+    spacing_line_breaks()
     assert not DERIVED, sorted(DERIVED)  # every copy is listed by the case that owns it
     marked = {case["id"] for cases in INDEX.values() for case in cases if "rejectedBy" in case}
     assert marked == SCHEMA_REJECTED, SCHEMA_REJECTED - marked
