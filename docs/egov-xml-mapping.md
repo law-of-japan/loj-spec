@@ -17,7 +17,7 @@ e-Govの本文は新字体に置き換えている。版の本文の根拠は公
 | TOC | `Toc` | TOC-01。中身は不透明な本文で、TOCLabel・TOCChapter等の構造を型付けしない。`EnactStatement`の後、`Preamble`の前 |
 | MainProvision | `MainProvision` | 子が条・分類なら条の形式、子が`Paragraph`だけなら項の形式（PARA-03）。ParagraphNumが空の一つの項は、表示番号のない`paragraph number=1`とする |
 | Part / Chapter / Section / Subsection / Division | `Part` / `Chapter` / `Section` / `Subsection` / `Division` | 編・章・節・款・目 |
-| Article / ArticleTitle / ArticleCaption | `Article`と表示 | 番号と見出し。見出しの括弧書きを含む（HEAD-01）。削除条を含む |
+| Article / ArticleTitle / ArticleCaption | `Article`と表示 | 番号と見出し。見出しの括弧書きを含む（HEAD-01）。削除条を含む。範囲の削除条（`Num="66:68"`、ArticleTitleが`第六十六条から第六十八条まで`等）は、範囲の番号`66:68`を持つ一つの`Article`とする（HEAD-04） |
 | Paragraph / ParagraphNum | `Paragraph` | 番号のある項は`numbering: explicit`。ParagraphNumが空の項は`implicit`（PARA-01） |
 | ParagraphCaption | `caption=present`と見出しの行、Paragraphの`caption` | 項の本文の最初の行に、括弧を含めて書く（PARA-02）。一つの見出しが続く項にかかる場合も、最初の項にだけ書く |
 | Item / ItemTitle | `Item` | 表示番号の範囲はDISP-01 |
