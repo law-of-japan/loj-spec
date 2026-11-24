@@ -192,6 +192,7 @@
 | 状態の追加、状態の訂正 | `revisionAdd`、`revisionFix` | 新しい改正による版の追加と、状態の取り違えの訂正（撤回・統合・分割）。法令の改正に当たるのは`revisionAdd`だけ | [CHG-01](../spec/common/v1alpha1/07-changes.md#chg-01-変更の種類) |
 | 仕様の版の移行 | `migration` | 版パッケージを別のschemaVersionへ変換する | [CHG-01](../spec/common/v1alpha1/07-changes.md#chg-01-変更の種類)、[CHG-02](../spec/common/v1alpha1/07-changes.md#chg-02-種類ごとの検査) |
 | 変更検査 | — | 変更前後の二つの記録版を比べ、宣言した種類のとおりかを確かめる検査。適合レベルとは別に報告する | [CHG-02](../spec/common/v1alpha1/07-changes.md#chg-02-種類ごとの検査)、[CHG-05](../spec/common/v1alpha1/07-changes.md#chg-05-適合との関係) |
+| 旧履歴の境界、旧履歴のcommit | `legacyBoundary`（適合ケースの索引） | 旧リポジトリのcommitの上に始めた正本ブランチで、最初のcommitの親である旧リポジトリのcommit。変更検査が任意の入力として受け取り、ファイルやtrailerの有無から推定しない。境界と、境界から親を辿って到達できるcommitが旧履歴のcommitで、正本のcommitではなく、変更検査の対象にならない。境界を親とするcommitが正本ブランチの最初のcommitである。再構築報告の`legacy.frozenAt`と同じとは限らない | [CHG-03](../spec/common/v1alpha1/07-changes.md#chg-03-種類の宣言)、[REB-08](../spec/loj-rebuild/v1alpha1/01-rebuild.md#reb-08-既存の参照の維持と旧形式) |
 | trailer | `LoJ-Change`、`LoJ-Revisions`、`LoJ-Reviewed` | commitメッセージの末尾に置く種類と対象の版の宣言と、人のレビューの記録 | [CHG-03](../spec/common/v1alpha1/07-changes.md#chg-03-種類の宣言) |
 | 人のレビューの記録 | `LoJ-Reviewed` | ASTを生成できない版の書式の変換を、人がレビューしたことの記録のtrailer。値はレビューの所在 | [CHG-04](../spec/common/v1alpha1/07-changes.md#chg-04-astを生成できない版) |
 
