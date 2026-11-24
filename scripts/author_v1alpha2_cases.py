@@ -864,7 +864,9 @@ amd_case("改正内容の中の削除条の後に空行がない", ["HEAD-04", "
 
 # 2026-11-24 (#150): samples from amendments of 1947-1949 found in the 官報 (docs/survey-showa-amendments.md), with
 # invented text. (1) 國有林野法の一部を改正する法律（昭和二十二年法律第百七十四号）: the main provision is one
-# paragraph whose only amendment is a deleted article set out without an instruction.
+# paragraph whose only amendment is a deleted article set out without an instruction. Its supplementary provision is
+# one paragraph without a number, written as number=1 without numbering=implicit (PARA-01 does not allow implicit for
+# a single paragraph), unlike the three unnumbered paragraphs of (2).
 S1_LEAD = "架空雲林法（架空法律第七号）の一部を次のように改正する。\n"
 S1_SUPP = "この法律は、公布の日から、これを施行する。\n"
 S1_MAIN = ("<!-- loj:paragraph number=1 -->\n" + S1_LEAD + amendment_md("1", None, "# 第二十六條\n削除\n\n") +
@@ -907,7 +909,9 @@ case("条ごとの、指示の文のない条の全文の改正規定と、無�
 
 # (3) 國有財產法施行令の一部を改正する政令（昭和二十二年政令第四十五号）: a deleted article right after the
 # opening sentence, instructions written as text, and four deleted articles set out one after another without an
-# instruction between them, which form one content (AMEND-01).
+# instruction between them, which form one content (AMEND-01). The numbers skip 第七條 as in the source: "set out one
+# after another" in AMEND-01 is about their position (no instruction sentence between them), not about consecutive
+# article numbers.
 S3_LEAD = "架空雲税令（架空勅令第二号）の一部を次のように改正する。\n"
 S3_MID = ("第三條中「大臣」を「各省各廳ノ長」に改める。\n第四條中「所管大臣」を「各省各廳ノ長」に改める。\n"
           "第五條中「各省大臣」を「各省各廳ノ長」に改める。\n")
