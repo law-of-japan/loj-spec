@@ -1525,6 +1525,51 @@ def registry_first_commits():
         {"results": [{"check": "change", "result": "pass"}]}, True)
 
 
+# --- 2026-11-24 (#163): a canonical branch started on a commit of the legacy repository (CHG-02, CHG-03) -----------
+LEGACY_STEPS = [
+    ("Initial commit", None, False, {"README.md": "架空法律第一号の旧リポジトリである。\n"}),
+    ("旧形式の本文を加える", None, False, {"README.md": "架空法律第一号の旧リポジトリである。\n",
+                                       "main.md": "# 第一条\n\n架空の雲を保管すろ。\n"}),
+]
+
+
+def legacy_boundary():
+    """The canonical branch main starts on the commits of the legacy repository; the index gives legacyBoundary.
+
+    The bundle holds two legacy commits without a declaration (the second is the boundary), then the first commit
+    of the canonical branch (revisionAdd, which makes history.yaml whole) and a correction. Given the boundary, the
+    legacy commits are not checked and its child is the first commit, in the range of a first commit (CHG-02); a
+    base on a legacy commit starts at the same first commit. Without the boundary, the commit without a parent is
+    the first commit: both legacy commits fail by CHG-03, and the commit of revisionAdd has a record before it, so
+    making the top-level fields of history.yaml is out of its range (CHG-02). The boundary is never inferred from
+    the files or the missing trailers (CHG-03). The last negative declares the child of the boundary format.
+    """
+    body = "架空の雲を保管すろ。\n"
+    steps = LEGACY_STEPS + [
+        ("制定時の版を加える", "revisionAdd", True, fictional_files(body)),
+        ("第一条の誤転記を直す", "correction", True, fictional_files("架空の雲を保管する。\n")),
+    ]
+    pos = next_dir("common", True) / "repo.bundle"
+    l1, l2, c1, c2 = build_bundle(pos, steps)
+    assert root_commits(pos) == [l1], pos
+    add("common", "旧リポジトリのcommitの上に始めた正本ブランチを、旧履歴の境界を与えて検査する", ["CHG-02", "CHG-03"], "change",
+        {"kind": "change", "bundle": rel(pos), "head": c2, "legacyBoundary": l2},
+        {"results": [{"check": "change", "result": "pass"}]}, True)
+    add("common", "旧履歴の境界を与え、旧履歴のcommitをbaseとして検査する", ["CHG-03"], "change",
+        {"kind": "change", "bundle": rel(pos), "base": l1, "head": c2, "legacyBoundary": l2},
+        {"results": [{"check": "change", "result": "pass"}]}, True)
+    dest = next_dir("common", False) / "repo.bundle"
+    copy_file(dest, pos)
+    add("common", "旧リポジトリのcommitの上に始めた正本ブランチを、旧履歴の境界を与えずに検査する", ["CHG-02", "CHG-03"], "change",
+        {"kind": "change", "bundle": rel(dest), "head": c2},
+        {"results": [{"check": "change", "result": "fail"}],
+         "diagnostics": [diag("CHG-03", SV["common"]), diag("CHG-02", SV["common"])]}, False)
+    bundle = next_dir("common", False) / "repo.bundle"
+    _, l2, c1 = build_bundle(bundle, LEGACY_STEPS + [("制定時の版を加える（書式変更と宣言）", "format", False, fictional_files(body))])
+    add("common", "旧履歴の境界を親とする最初のcommitを、書式変更と宣言する", ["CHG-03"], "change",
+        {"kind": "change", "bundle": rel(bundle), "head": c1, "legacyBoundary": l2},
+        {"results": [{"check": "change", "result": "fail"}], "diagnostics": [diag("CHG-03", SV["common"])]}, False)
+
 
 # --- 2026-11-24 (#159): spacing notes on line breaks of a two-line setting (GLYPH-02, GLYPH-04, MD-04) ----------
 SPACING_POS = "conformance/loj-glyphs/v1alpha1/valid/glyph-021/repo"
@@ -1611,6 +1656,7 @@ def main():
     file_modes()
     first_commits()
     registry_first_commits()
+    legacy_boundary()
     spacing_line_breaks()
     assert not DERIVED, sorted(DERIVED)  # every copy is listed by the case that owns it
     marked = {case["id"] for cases in INDEX.values() for case in cases if "rejectedBy" in case}

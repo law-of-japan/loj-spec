@@ -2,6 +2,17 @@
 
 見出しの「草案」は、[草案の版](spec/README.md#版の状態)への変更であることを示す。版の状態の正は、[規範仕様の入口](spec/README.md#規範とするもの)の表にある。版を公開したときは、公開の日付の項目を加える。
 
+## 旧リポジトリのcommitの上に始めた正本ブランチ（2026-11-24、草案）
+
+[law-of-japan/loj-spec#163](https://github.com/law-of-japan/loj-spec/issues/163)による変更である。草案の版（`common/v1alpha1`と`loj-rebuild/v1alpha1`）への変更であり、版番号は上げない。既存のケースの期待結果は変わらない。判断はDDR-031にある。
+
+- CHG-03: 法令リポジトリの正本ブランチを、旧リポジトリのcommitの上に始めてよいとし、その親のcommitを旧履歴の境界とした。変更検査は境界を任意の入力として受け取り、境界とその祖先（旧履歴のcommit）を検査しない。境界を親とするcommitを最初のcommitとする。境界をファイル（`rebuild.yaml`の`legacy.frozenAt`等）やtrailerの有無から推定してはならない（MUST NOT）とした。旧履歴のmergeのcommitは、mergeのcommitの禁止に当たらない。
+- CHG-01・CHG-02: 最初のcommitの文が、旧履歴の境界を親とするcommitを含むことを明記した。境界の木のファイルは、変更前の記録版のファイルとして比べない。
+- CORE-01: 旧履歴のcommitを記録版の履歴に含まないことを要約した。
+- REB-08: 正本ブランチを親のないcommitから始めても、旧commitの上に始めてもよい（MAY）とし、後者の変更検査の扱いをCHG-03へのリンクで要約した。境界は`legacy.frozenAt`と同じでなくてもよい。
+- 適合ケースの索引の変更の入力に`legacyBoundary`を加えた（索引のschema）。旧commitの上に始めた正本ブランチを境界を与えて検査する正例（common-065）、旧履歴のcommitを`base`とする正例（common-066）、境界を与えない負例（common-067。CHG-02・CHG-03）、境界の子を`format`と宣言する負例（common-068。CHG-03）を加えた。
+- 用語集に旧履歴の境界を加え、実装ガイド、移行の手順（親のないcommitから`main`を始めることを勧め、公開済みの`main`は作り直さない）、CONTRIBUTING、要件との対応表を更新した。
+
 ## 字体注記の範囲（2026-11-24、草案）
 
 [law-of-japan/loj-spec#161](https://github.com/law-of-japan/loj-spec/issues/161)による変更である。草案の版（`loj-glyphs/v1alpha1`と`loj/v1alpha2`）への変更であり、版番号は上げない。既存のケースの期待結果は変わらない。判断はDDR-030に追記した。

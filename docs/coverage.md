@@ -192,6 +192,13 @@ CHG-03のmergeのcommit（2026-11-16、[law-of-japan/loj-spec#120](https://githu
 - 登録台帳のリポジトリの最初のcommit（索引の変更の入力の`repository: registry`）で、`space.yaml`と一つのRecordのファイルを置く`metadata`の正例（common-062）と、同じファイルを置いて`revisionAdd`と宣言する負例（common-063。CHG-03）がある。二つのcommitは、正本のデータのファイルが同じで、宣言だけが違う。登録台帳の最初のcommitで、`100755`のファイルを置くケースは加えていない。モードの確かめはリポジトリの種類によらない同じ文（CHG-02）で、common-061と同じ検査になる。
 - リポジトリの別をファイルから推定しないこと（CHG-03）は、`space.yaml`も`history.yaml`も置かず、説明のファイル（`README.md`）だけを置く登録台帳の最初のcommitを`metadata`と宣言する正例（common-064）で確かめる。別を索引の`repository: registry`から受け取れば合格し、ファイルから法令リポジトリと推定すれば`revisionAdd`でない最初のcommitとして不合格になる。正本のデータのファイルを変えないcommitは`auxiliary`とする（CHG-01）が、最初のcommitは除き、CHG-03の最初のcommitの種類とする（CHG-01のただし書き）ので、合格である。common-062・063は、登録台帳のファイルを持つので、推定しても同じ結果になる。
 
+旧リポジトリのcommitの上に始めた正本ブランチ（2026-11-24、[law-of-japan/loj-spec#163](https://github.com/law-of-japan/loj-spec/issues/163)、CHG-02・CHG-03）は、宣言のない二つの旧commitの上に、`revisionAdd`の最初のcommit（`history.yaml`の全体を作る）と`correction`のcommitを置いた`git bundle`で、次のケースがある。
+- 索引の変更の入力の`legacyBoundary`に二つ目の旧commitを与え、`base`を省く正例（common-065）。旧履歴のcommitを検査せず、境界の子を最初のcommitとして、最初のcommitの範囲で検査する。
+- `base`に一つ目の旧commit（旧履歴のcommit）を与える正例（common-066）。common-065と同じく、境界の子から検査する。
+- 同じ`git bundle`の写しで、境界を与えない負例（common-067。CHG-02・CHG-03）。親のないcommitが最初のcommitになり、二つの旧commitが宣言のないcommitとしてCHG-03で、`revisionAdd`のcommitが変更前の記録版を持つので、`history.yaml`の最上位のフィールドを作る範囲の外の変更としてCHG-02で不合格になる。境界をファイルやtrailerの有無から推定しないこと（CHG-03）を確かめる。
+- 境界の子を`format`と宣言する負例（common-068。CHG-03）。common-060と同じく、`revisionAdd`でない最初のcommitである。
+- 加えていないケース: 旧履歴にmergeのcommitを含むもの（旧履歴のcommitを報告しない同じ文の範囲で、common-065と同じ結果になる）、`head`の祖先でない境界を与えるもの（境界の定義に合わない入力で、検査の結果を定めていない）、境界の木に正本のデータのファイルの名前のファイルがあるもの（境界の木と比べない同じ文の範囲）、`rebuild.yaml`を置く最初のcommit（上の#152の項と同じ）。
+
 TIME-03は、hist-004、hist-015〜018のほか、`pending`を基準とする`derived`に`value`を書いた負例（hist-044）と、`value`の書式（`YYYY-MM-DD`）に反する負例（hist-045）がある。`calc`のない`derived`の`value`を検査せず、結果を未完了にしないこと（2026-11-16、[law-of-japan/loj-spec#136](https://github.com/law-of-japan/loj-spec/issues/136)）は、`calc`のない施行の時点を持ち、L3（履歴構造）の合格を期待するhist-001が当たる。警告を出すかは任意（MAY）なので、警告は期待結果に挙げない。
 
 フィールドの改名（2026-11-12、[law-of-japan/loj-spec#29](https://github.com/law-of-japan/loj-spec/issues/29)）は、改めたschemaで正例のYAMLを検査して確かめる。`law.yaml`の`sourceUris`（旧`sources`）は任意のフィールドで、v1alpha2の正例に使用例がなく、まだケースがない。旧名は閉じたschemaにより未知のフィールドとして拒否されるが、旧名を使う負例は加えていない（未知のフィールドの負例は、Manifestのpkgのケースと、Revisionのhist-005にある）。

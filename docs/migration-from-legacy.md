@@ -28,6 +28,8 @@
 
 - 規定のブランチ（`master`、または`main`）を凍結する。凍結した時点のcommitの完全なハッシュを控える。これが再構築報告の`legacy.frozenAt`になる。
 - 凍結した旧履歴に、push・force pushしない。ブランチの名前による既存のリンク（`blob/master/…`）を壊さないように、新しい正本は別のブランチ（`main`）に置く。旧`master`が規定のブランチなら、`main`を新しく作り、規定のブランチを`main`に切り替える。
+- `main`は、親のないcommit（`git switch --orphan main`）から始める。旧commitには、残した旧`master`から到達できる（REB-08）。旧commitの上に`main`を始めることもできるが、その場合は、変更検査に旧履歴の境界（`main`の最初のcommitの親）を入力として与え続ける必要がある（CHG-03）。境界はファイルから推定されないので、検証のワークフローの設定等に書いておく。
+- 既に旧commitの上に`main`を始めて公開したリポジトリ（例: 祝日法）は、`main`を作り直さない。正本ブランチの履歴を書き換えることになる（CORE-01）。旧履歴の境界を変更検査の入力に与えて検査する。
 - 凍結より後は、リポジトリの名前を変えない。リポジトリの名前とRecord IDの対応は、登録台帳で解決する。
 - 見つかった誤りを、旧リポジトリで直さない。差は再構築報告に記録する（REBR-05）。
 
@@ -84,6 +86,7 @@ LoJ-Change: revisionAdd
 LoJ-Revisions: 98mj5vgx
 ```
 
+- `main`の最初のcommit（親のないcommit、または旧履歴の境界を親とするcommit）は`revisionAdd`とし、`history.yaml`と`rebuild.yaml`の全体を作ってよい（CHG-02）。
 - 版を加えるcommitは`revisionAdd`、履歴マニフェストの属性・字体注記・再構築報告だけを加えるcommitは`metadata`とする。
 - 後で見つけた転記の誤りは`correction`、官報正誤の反映は`officialCorrection`とし、新しいRevisionを作らない。
 
