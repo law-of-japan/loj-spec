@@ -1561,6 +1561,15 @@ def spacing_line_breaks():
     mutate(pos, SPACING_POS, [("versions/q7v3n2xc/glyphs.yaml", "offset: 9\n", "offset: 28\n")])
     add("glyph", "文字列の長さに等しいoffsetを持つ空の字間の注記（文字列の末尾）", ["GLYPH-04"], "L3",
         {"kind": "repository", "path": rel(pos)}, {"results": [l3("evidence")]}, True, "evidence")
+    for title, edits in [
+        ("CRLFの行の終端のCRとLFの間を指す空の字間の注記", [("versions/q7v3n2xc/glyphs.yaml", "offset: 9\n", "offset: 27\n")]),
+        ("CRLFの行の終端のCRだけを記録した字間の注記",
+         [("versions/q7v3n2xc/glyphs.yaml", 'offset: 14\n    recorded: "\\r\\n"', 'offset: 14\n    recorded: "\\r"')]),
+    ]:
+        dest = next_dir("glyph", False) / "repo"
+        mutate(dest, SPACING_POS, edits)
+        add("glyph", title, ["GLYPH-04"], "L3", {"kind": "repository", "path": rel(dest)},
+            {"results": [l3("evidence", "fail")], "diagnostics": [diag("GLYPH-04", SV["glyph"])]}, False, "evidence")
 
 
 def main():

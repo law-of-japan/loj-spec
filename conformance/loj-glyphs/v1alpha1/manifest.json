@@ -728,6 +728,64 @@
           ]
         }
       ]
+    },
+    {
+      "id": "glyph-026",
+      "title": "CRLFの行の終端のCRとLFの間を指す空の字間の注記",
+      "requirements": [
+        "GLYPH-04"
+      ],
+      "check": "L3",
+      "category": "evidence",
+      "normative": true,
+      "input": {
+        "kind": "repository",
+        "path": "conformance/loj-glyphs/v1alpha1/invalid/glyph-026/repo"
+      },
+      "expected": "conformance/loj-glyphs/v1alpha1/expected/glyph-026.json",
+      "success": false,
+      "derivedFrom": [
+        {
+          "path": "conformance/loj-glyphs/v1alpha1/invalid/glyph-026/repo",
+          "from": "conformance/loj-glyphs/v1alpha1/valid/glyph-021/repo",
+          "edits": [
+            {
+              "file": "versions/q7v3n2xc/glyphs.yaml",
+              "old": "offset: 9\n",
+              "new": "offset: 27\n"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "glyph-027",
+      "title": "CRLFの行の終端のCRだけを記録した字間の注記",
+      "requirements": [
+        "GLYPH-04"
+      ],
+      "check": "L3",
+      "category": "evidence",
+      "normative": true,
+      "input": {
+        "kind": "repository",
+        "path": "conformance/loj-glyphs/v1alpha1/invalid/glyph-027/repo"
+      },
+      "expected": "conformance/loj-glyphs/v1alpha1/expected/glyph-027.json",
+      "success": false,
+      "derivedFrom": [
+        {
+          "path": "conformance/loj-glyphs/v1alpha1/invalid/glyph-027/repo",
+          "from": "conformance/loj-glyphs/v1alpha1/valid/glyph-021/repo",
+          "edits": [
+            {
+              "file": "versions/q7v3n2xc/glyphs.yaml",
+              "old": "offset: 14\n    recorded: \"\\r\\n\"",
+              "new": "offset: 14\n    recorded: \"\\r\""
+            }
+          ]
+        }
+      ]
     }
   ]
 }
