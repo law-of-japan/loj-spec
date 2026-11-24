@@ -282,6 +282,9 @@ class ArtifactAuditTests(unittest.TestCase):
             breaker(ast)
             with self.subTest(breaker=breaker.__name__), self.assertRaisesRegex(ValueError, message):
                 v.check_tree(ast, man, v2=True)
+        for label in ("第二条及び第三条及び第四条", "第二条、第三条", "第二条の及び第三条"):
+            with self.subTest(label=label), self.assertRaisesRegex(ValueError, "Invalid range label"):
+                v.article_range(label, "2:3")
         self.assertLess(v.number_key("12"), v.number_key("12-2"))
         self.assertLess(v.number_key("12-2-1"), v.number_key("13"))
 

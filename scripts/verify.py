@@ -194,7 +194,9 @@ def caption_balanced(value):
     return depth == 0 and len(value) > 2
 
 
-RANGE_LABEL = re.compile(r"(第.+?[条條](?:[のノ][^ 　（）]+)*)(及び|及ヒ|乃至|から)(第.+?[条條](?:[のノ][^ 　（）]+)*)(まで)?")
+NUMERAL = "[0-9０-９一二三四五六七八九十百千]+"
+ARTICLE_NUMBER = "第" + NUMERAL + "[条條](?:[のノ]" + NUMERAL + ")*"
+RANGE_LABEL = re.compile("(" + ARTICLE_NUMBER + ")(及び|及ヒ|乃至|から)(" + ARTICLE_NUMBER + ")(まで)?")
 
 
 def number_key(number):
@@ -208,7 +210,7 @@ def article_range(display, number):
     require(bool(match) and (match[2] == "から") == bool(match[4]), "Invalid range label: " + display)
     ends = []
     for label in (match[1], match[3]):
-        part = re.fullmatch(r"第(.+?)[条條]((?:[のノ][^ 　（）]+)*)", label)
+        part = re.fullmatch("第(" + NUMERAL + ")[条條]((?:[のノ]" + NUMERAL + ")*)", label)
         ends.append(normalized_display(part[1] + part[2], "Article", True))
     require(":".join(ends) == number, "Range number mismatch: " + display)
     start, end = (number_key(x) for x in ends)
@@ -343,6 +345,7 @@ def check_tree(ast, man, v2=False):
             require(node["status"] == "deleted", "Range label on an active article (HEAD-04): " + ident)
             start, end = article_range(node["display"], node["number"])
         elif kind == "Article":
+            require(":" not in node["number"], "Range number outside loj/v1alpha2: " + ident)
             start = end = number_key(node["number"])
         if kind == "Article":
             for low, high in spans.setdefault(scope, []):
