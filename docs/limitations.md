@@ -25,7 +25,7 @@
 | 原典で罫線に囲まれた空の表の欄 | 未対応（TABLE-03、[law-of-japan/loj-spec#57](https://github.com/law-of-japan/loj-spec/issues/57)）。`unsupportedFeatures`に記録し、L1は不合格。上の欄・左の欄が続く箇所は、結合したセルとして書ける |
 | 項の見出しがかかる範囲（一つの見出しが続く項にかかる場合） | 記録しない。見出しは最初の項にだけ書く（PARA-02、[law-of-japan/loj-spec#56](https://github.com/law-of-japan/loj-spec/issues/56)）。属性のない第1項と`numbering=implicit`の項では、最初の行に見出しを書いて属性を書き落としても、L1では検出せず、原典照合で確かめる。附則の第1項の`（施行期日）`は最も出やすい形なので、収録の際に注意する |
 | 範囲の削除条の中にどの条があったか、結ぶ語の選択 | 記録しない・L1では検査しない（HEAD-04、[law-of-japan/loj-spec#153](https://github.com/law-of-japan/loj-spec/issues/153)）。範囲の削除条は範囲の番号だけを持ち、範囲の中の条（枝番号の条を含む）を列挙しない。結ぶ語を原典どおりに書いたか、条ごとの削除条をまとめて書いていないかは、原典照合で確かめる |
-| 改行が引用元の行の区切りか組版か（複数行にわたる引いた字句等）、改正の指示の文のない改正規定の範囲 | L1では検査しない（MD-04、AMEND-01、[law-of-japan/loj-spec#143](https://github.com/law-of-japan/loj-spec/issues/143)）。L1は改行を本文として保持すること、`instruction=implicit`の改正規定の形だけを確かめる。改行を書くか、原典に指示の文がないか、どこまでが掲げた規定かは、原典照合で確かめる |
+| 改行が引用元の行の区切りか組版か（複数行にわたる引いた字句、二行割りの行の区切り等）、改正の指示の文のない改正規定の範囲 | L1では検査しない（MD-04、AMEND-01、[law-of-japan/loj-spec#143](https://github.com/law-of-japan/loj-spec/issues/143)）。L1は改行を本文として保持すること、`instruction=implicit`の改正規定の形だけを確かめる。改行を書くか、原典に指示の文がないか、どこまでが掲げた規定かは、原典照合で確かめる |
 | 番号のない第1項で、本文が数字のtokenで始まるもの | 未対応（DISP-01）。`unsupportedFeatures`に記録し、L1は不合格。記録がなければ、DISP-01（またはPARA-01）の違反としてL1は不合格 |
 | 明治6年1月1日より前の日付のグレゴリオ暦への換算 | 規則を定めない。`unknown`とし、原表記を記録する（TIME-02） |
 | `space.yaml`（登録空間の識別子のファイル）の形 | 定めない（REG-01）。登録空間の識別子は検査器への入力だけで確定し、`space.yaml`は読まない。入力がなければ、識別子を要する判定は判定不能（VAL-03、[law-of-japan/loj-spec#68](https://github.com/law-of-japan/loj-spec/issues/68)） |

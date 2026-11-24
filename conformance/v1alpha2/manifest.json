@@ -3749,6 +3749,24 @@
       },
       "expected": "conformance/v1alpha2/expected/pkg-230.json",
       "success": false
+    },
+    {
+      "id": "pkg-231",
+      "title": "二行割りで組んだ引いた字句の行の区切りを本文の改行として書いた改正の指示（昭和二十二年勅令第百四十三号の形）",
+      "requirements": [
+        "MD-04",
+        "PARA-03",
+        "AMEND-03",
+        "AST-01"
+      ],
+      "check": "L1",
+      "normative": true,
+      "input": {
+        "kind": "package",
+        "path": "conformance/v1alpha2/valid/pkg-231/law.yaml"
+      },
+      "expected": "conformance/v1alpha2/expected/pkg-231.json",
+      "success": true
     }
   ]
 }
