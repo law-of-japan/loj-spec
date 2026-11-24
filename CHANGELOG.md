@@ -2,6 +2,13 @@
 
 見出しの「草案」は、[草案の版](spec/README.md#版の状態)への変更であることを示す。版の状態の正は、[規範仕様の入口](spec/README.md#規範とするもの)の表にある。版を公開したときは、公開の日付の項目を加える。
 
+## 改行の字間の注記の適合ケース（2026-11-24、草案）
+
+[law-of-japan/loj-spec#159](https://github.com/law-of-japan/loj-spec/issues/159)による変更である。草案の版（`loj-glyphs/v1alpha1`）に適合ケースを加えただけで、規範の本文は変えていない。既存のケースの期待結果は変わらない。
+
+- 適合ケース: 二行割りの行の区切りを書いた・書かなかった`kind: spacing`の注記の正例（glyph-021。LFとCRLFの本文、`recorded`が`"\n"`・`"\r\n"`・空文字列）と、CRLFの行の区切りをLFだけで記録した負例（glyph-022、GLYPH-04）を加えた。`author_next_cases.py`が負例を写して作る。
+- 要件との対応表を更新した。
+
 ## 二行割りの行の区切り（2026-11-24、草案）
 
 [law-of-japan/loj-spec#154](https://github.com/law-of-japan/loj-spec/issues/154)による変更である。草案の版（`loj/v1alpha2`と`loj-glyphs/v1alpha1`）への変更であり、版番号は上げない。既存のケースの期待結果は変わらない。判断はDDR-030にある。
