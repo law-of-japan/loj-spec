@@ -24,7 +24,7 @@
 - 制約:
   - 原典にない指示の文を補わないこと、原典に指示の文があるのに属性を書かないこと、掲げた規定の範囲は、L1では検出できない（原典照合）。
   - 指示の文のない改正規定が、改める・加える・削るのどれに当たるかは、ASTからは分からない。
-  - 架空の適合ケース（pkg-217）は、労働省設置法附則第十四條・第十五條の形をなぞったものである。同じ時期（昭和22〜24年頃）のほかの改正規定は、2026-11-24に官報の全文検索で調べた（[調査の記録](../survey-showa-amendments.md)、[law-of-japan/loj-spec#150](https://github.com/law-of-japan/loj-spec/issues/150)）。指示の文のない改正規定は、この時期の法律・政令・勅令に普通に現れる。その形を試料にした正例（pkg-223〜225）を加えた。二つ以上の条をまとめた削除条の形（[law-of-japan/loj-spec#153](https://github.com/law-of-japan/loj-spec/issues/153)）と、二行割りで組んだ引いた字句（[law-of-japan/loj-spec#154](https://github.com/law-of-japan/loj-spec/issues/154)）は、まだ書けない。
+  - 架空の適合ケース（pkg-217）は、労働省設置法附則第十四條・第十五條の形をなぞったものである。同じ時期（昭和22〜24年頃）のほかの改正規定は、2026-11-24に官報の全文検索で調べた（[調査の記録](../survey-showa-amendments.md)、[law-of-japan/loj-spec#150](https://github.com/law-of-japan/loj-spec/issues/150)）。指示の文のない改正規定は、この時期の法律・政令・勅令に普通に現れる。その形を試料にした正例（pkg-223〜225）を加えた。二つ以上の条をまとめた削除条の形は、範囲のラベルの削除条として書けるようにした（[DDR-029](029-range-deleted-articles.md)、[law-of-japan/loj-spec#153](https://github.com/law-of-japan/loj-spec/issues/153)）。二行割りで組んだ引いた字句（[law-of-japan/loj-spec#154](https://github.com/law-of-japan/loj-spec/issues/154)）は、まだ書けない。
 - 再検討: 指示の文のない改正規定で、改正内容の群のどれにも当たらないもの（例: 二つ以上の群を掲げるもの）が見つかったとき。改正の指示の意味を型付けする要求が出たとき。
 
 ## 改正内容の中の番号のない項

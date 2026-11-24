@@ -194,6 +194,30 @@ def caption_balanced(value):
     return depth == 0 and len(value) > 2
 
 
+NUMERAL = "[0-9０-９一二三四五六七八九十百千]+"
+ARTICLE_NUMBER = "第" + NUMERAL + "[条條](?:[のノ]" + NUMERAL + ")*"
+RANGE_LABEL = re.compile("(" + ARTICLE_NUMBER + ")(及び|及ヒ|乃至|から)(" + ARTICLE_NUMBER + ")(まで)?")
+
+
+def number_key(number):
+    """HEAD-04 number order: components compared as numbers; a number precedes its own extensions."""
+    return tuple(int(x) for x in number.split("-"))
+
+
+def article_range(display, number):
+    """HEAD-04 (v1alpha2): the (start, end) keys of a deleted article with a range label, checked against its number."""
+    match = RANGE_LABEL.fullmatch(display)
+    require(bool(match) and (match[2] == "から") == bool(match[4]), "Invalid range label: " + display)
+    ends = []
+    for label in (match[1], match[3]):
+        part = re.fullmatch("第(" + NUMERAL + ")[条條]((?:[のノ]" + NUMERAL + ")*)", label)
+        ends.append(normalized_display(part[1] + part[2], "Article", True))
+    require(":".join(ends) == number, "Range number mismatch: " + display)
+    start, end = (number_key(x) for x in ends)
+    require(start < end, "Range start must precede its end (HEAD-04): " + display)
+    return start, end
+
+
 def nodes(node):
     yield node
     for child in node["content"]:
@@ -217,6 +241,7 @@ def check_tree(ast, man, v2=False):
         scopes = lead + scopes
     require(top == scopes, "Scope order")
     text_kinds = TEXT_KINDS_V2 if v2 else TEXT_KINDS
+    spans = {}  # HEAD-02: article numbers (ranges included) per scope must not overlap.
 
     def visit(node, parent=None, scope=None, quoted=False):
         kind, ident = node["kind"], node["id"]
@@ -316,7 +341,17 @@ def check_tree(ast, man, v2=False):
             require(not children, "Opaque appendix children")
         if kind == "MainProvision":
             require(node["display"] == "", "Main display")
-        if kind in RANK:
+        if v2 and kind == "Article" and ":" in node["number"]:
+            require(node["status"] == "deleted", "Range label on an active article (HEAD-04): " + ident)
+            start, end = article_range(node["display"], node["number"])
+        elif kind == "Article":
+            require(":" not in node["number"], "Range number outside loj/v1alpha2: " + ident)
+            start = end = number_key(node["number"])
+        if kind == "Article":
+            for low, high in spans.setdefault(scope, []):
+                require(end < low or high < start, "Overlapping article numbers (HEAD-02): " + ident)
+            spans[scope].append((start, end))
+        if kind in RANK and not (kind == "Article" and ":" in node["number"]):
             unit = {"Part": "編", "Chapter": "章", "Section": "節", "Subsection": "款", "Division": "目", "Article": "条"}[kind]
             if v2 and kind == "Article":
                 unit = "[条條]"

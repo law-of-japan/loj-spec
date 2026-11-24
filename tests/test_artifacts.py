@@ -242,6 +242,52 @@ class ArtifactAuditTests(unittest.TestCase):
             with self.subTest(breaker=breaker.__name__), self.assertRaisesRegex(ValueError, message):
                 v.check_tree(ast, man, v2=True)
 
+    def test_v1alpha2_range_deleted_articles(self):
+        # HEAD-02/HEAD-04 range labels in the positive-fixture audit: pkg-226 passes; breaking its tree must not.
+        path = v.ROOT / "conformance/v1alpha2/valid/pkg-226/law.yaml"
+        man = v.load_yaml(path.read_bytes())
+        source = v.read_json(v.ROOT / "conformance/v1alpha2/expected/pkg-226.json")["ast"]
+        v.check_tree(source, man, v2=True)
+
+        def articles(ast):
+            return ast["root"]["content"][0]["content"]
+
+        def renumber(node, number):
+            node["id"] = node["id"].rsplit("/", 1)[0] + "/" + number
+            node["number"] = number
+
+        def reversed_order(ast):
+            articles(ast)[1]["display"] = "第四条から第二条まで"
+            renumber(articles(ast)[1], "4:2")
+
+        def active(ast):
+            first, target = articles(ast)[0], articles(ast)[1]
+            target["status"] = "active"
+            target["content"] = json.loads(json.dumps(first["content"]).replace(first["id"], target["id"]))
+
+        def overlap(ast):
+            articles(ast)[2]["display"] = "第四条及び第五条"
+            renumber(articles(ast)[2], "4:5")
+
+        def no_made(ast):
+            articles(ast)[1]["display"] = "第二条から第四条"
+
+        def mismatch(ast):
+            renumber(articles(ast)[1], "2:3")
+
+        for breaker, message in ((reversed_order, "Range start must precede"), (active, "Range label on an active"),
+                                 (overlap, "Overlapping article numbers"), (no_made, "Invalid range label"),
+                                 (mismatch, "Range number mismatch")):
+            ast = json.loads(json.dumps(source))
+            breaker(ast)
+            with self.subTest(breaker=breaker.__name__), self.assertRaisesRegex(ValueError, message):
+                v.check_tree(ast, man, v2=True)
+        for label in ("第二条及び第三条及び第四条", "第二条、第三条", "第二条の及び第三条"):
+            with self.subTest(label=label), self.assertRaisesRegex(ValueError, "Invalid range label"):
+                v.article_range(label, "2:3")
+        self.assertLess(v.number_key("12"), v.number_key("12-2"))
+        self.assertLess(v.number_key("12-2-1"), v.number_key("13"))
+
     def test_v1alpha2_caption_parentheses(self):
         for value in ("（定義）", "（雲（白雲を除く。）の保管）", "（a(b)）"):
             with self.subTest(value=value):

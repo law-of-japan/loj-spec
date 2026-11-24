@@ -72,6 +72,7 @@
 | rank | — | 分類の深さ。Part=1〜Division=5、Article=6。見出しの`#`の数（Hレベル）ではなくrankで所属を決める | [HEAD-02](../spec/v1alpha2/04-headings.md#head-02-分類と所属) |
 | 条 | Article | `第N条`・`第N條`の見出しで始まる単位。`status`は`active`か`deleted` | [HEAD-01](../spec/v1alpha2/04-headings.md#head-01-見出しの形)、[AST-01](../spec/v1alpha2/06-semantic-model.md#ast-01-意味astの形) |
 | 削除条 | `status: deleted` | ラベルの直後の行に`削除`だけを置いた条。項を持たず、元の条のIDを保つ | [HEAD-04](../spec/v1alpha2/04-headings.md#head-04-削除条) |
+| 範囲のラベル、範囲の削除条 | range label | 二つの条を`及び`・`及ヒ`・`乃至`・`から…まで`で結んだ削除条のラベル（例: `第九十條及ヒ第九十一條`）と、そのラベルを持つ一つの削除条。`number`は始めと終わりの番号を`:`で結んだ範囲の番号（例: `90:91`）で、範囲のすべての番号を持つものとして一意性を判定する | [HEAD-04](../spec/v1alpha2/04-headings.md#head-04-削除条)、[HEAD-02](../spec/v1alpha2/04-headings.md#head-02-分類と所属) |
 | 項 | Paragraph、`paragraph` | 条（または直接の項の形式の附則、項の形式の本則）の下の単位 | [DIR-01](../spec/v1alpha2/05-directives.md#dir-01-マーカーの字句)、[DIR-02](../spec/v1alpha2/05-directives.md#dir-02-対応入れ子空の禁止) |
 | 項の形式の本則 | MainProvisionの子のParagraph | 条を持たない本則。本則のscopeの直下に項を書く。原典にない条・項の番号を補わない | [PARA-03](../spec/v1alpha2/09-structures.md#para-03-項の形式の本則) |
 | 改正規定 | Amendment、`amendment` | 改正の指示と、それに続く改正内容の組。改正内容を持つものだけをマーカーで囲み、改正の指示は本文として保持する。改正の指示の文を置かずに改正内容だけを掲げるものは`instruction=implicit`を書く（ASTの`instruction`） | [AMEND-01](../spec/v1alpha2/09-structures.md#amend-01-改正規定と改正内容)、[AMEND-03](../spec/v1alpha2/09-structures.md#amend-03-改正規定の範囲) |
