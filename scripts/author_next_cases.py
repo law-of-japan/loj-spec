@@ -1545,6 +1545,32 @@ def spacing_line_breaks():
     add("glyph", "CRLFの行の区切りをLFだけで記録した字間の注記", ["GLYPH-04", "GLYPH-02"], "L3",
         {"kind": "repository", "path": rel(dest)},
         {"results": [l3("evidence", "fail")], "diagnostics": [diag("GLYPH-04", SV["glyph"])]}, False, "evidence")
+    # GLYPH-04 (#161): the range of a note stays in the text and never ends between the CR and LF of a CRLF.
+    for title, edits in [
+        ("文字列の長さを超えるoffsetを持つ空の字間の注記", [("versions/q7v3n2xc/glyphs.yaml", "offset: 9\n", "offset: 99\n")]),
+        ("CRLFの行の終端のLFの位置を指してLFだけを記録した字間の注記",
+         [("versions/q7v3n2xc/glyphs.yaml", 'offset: 14\n    recorded: "\\r\\n"', 'offset: 15\n    recorded: "\\n"')]),
+    ]:
+        dest = next_dir("glyph", False) / "repo"
+        mutate(dest, SPACING_POS, edits)
+        add("glyph", title, ["GLYPH-04"], "L3", {"kind": "repository", "path": rel(dest)},
+            {"results": [l3("evidence", "fail")], "diagnostics": [diag("GLYPH-04", SV["glyph"])]}, False, "evidence")
+    # GLYPH-04 (#161): the boundary of the range. An empty note whose offset equals the length of the text points to
+    # its end and is in the range. A fixture of the boundary only: g3 no longer points to the break of its source.
+    pos = next_dir("glyph", True) / "repo"
+    mutate(pos, SPACING_POS, [("versions/q7v3n2xc/glyphs.yaml", "offset: 9\n", "offset: 28\n")])
+    add("glyph", "文字列の長さに等しいoffsetを持つ空の字間の注記（文字列の末尾）", ["GLYPH-04"], "L3",
+        {"kind": "repository", "path": rel(pos)}, {"results": [l3("evidence")]}, True, "evidence")
+    for title, edits in [
+        ("CRLFの行の終端のCRとLFの間を指す空の字間の注記", [("versions/q7v3n2xc/glyphs.yaml", "offset: 9\n", "offset: 27\n")]),
+        ("CRLFの行の終端のCRだけを記録した字間の注記",
+         [("versions/q7v3n2xc/glyphs.yaml", 'offset: 14\n    recorded: "\\r\\n"', 'offset: 14\n    recorded: "\\r"')]),
+    ]:
+        dest = next_dir("glyph", False) / "repo"
+        mutate(dest, SPACING_POS, edits)
+        add("glyph", title, ["GLYPH-04"], "L3", {"kind": "repository", "path": rel(dest)},
+            {"results": [l3("evidence", "fail")], "diagnostics": [diag("GLYPH-04", SV["glyph"])]}, False, "evidence")
+
 
 def main():
     for suite, folder in FOLDER.items():
