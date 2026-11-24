@@ -1545,6 +1545,17 @@ def spacing_line_breaks():
     add("glyph", "CRLFの行の区切りをLFだけで記録した字間の注記", ["GLYPH-04", "GLYPH-02"], "L3",
         {"kind": "repository", "path": rel(dest)},
         {"results": [l3("evidence", "fail")], "diagnostics": [diag("GLYPH-04", SV["glyph"])]}, False, "evidence")
+    # GLYPH-04 (#161): the range of a note stays in the text and never ends between the CR and LF of a CRLF.
+    for title, edits in [
+        ("文字列の長さを超えるoffsetを持つ空の字間の注記", [("versions/q7v3n2xc/glyphs.yaml", "offset: 9\n", "offset: 99\n")]),
+        ("CRLFの行の終端のLFの位置を指してLFだけを記録した字間の注記",
+         [("versions/q7v3n2xc/glyphs.yaml", 'offset: 14\n    recorded: "\\r\\n"', 'offset: 15\n    recorded: "\\n"')]),
+    ]:
+        dest = next_dir("glyph", False) / "repo"
+        mutate(dest, SPACING_POS, edits)
+        add("glyph", title, ["GLYPH-04"], "L3", {"kind": "repository", "path": rel(dest)},
+            {"results": [l3("evidence", "fail")], "diagnostics": [diag("GLYPH-04", SV["glyph"])]}, False, "evidence")
+
 
 def main():
     for suite, folder in FOLDER.items():
