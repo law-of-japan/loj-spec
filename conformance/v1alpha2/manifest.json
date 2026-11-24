@@ -3608,6 +3608,65 @@
       },
       "expected": "conformance/v1alpha2/expected/pkg-222.json",
       "success": false
+    },
+    {
+      "id": "pkg-223",
+      "title": "項の形式の改正法の本則の、指示の文のない削除条の形だけの改正規定（昭和二十二年法律第百七十四号の形）",
+      "requirements": [
+        "AMEND-01",
+        "AMEND-02",
+        "HEAD-04",
+        "PARA-03",
+        "ID-01",
+        "AST-01"
+      ],
+      "check": "L1",
+      "normative": true,
+      "input": {
+        "kind": "package",
+        "path": "conformance/v1alpha2/valid/pkg-223/law.yaml"
+      },
+      "expected": "conformance/v1alpha2/expected/pkg-223.json",
+      "success": true
+    },
+    {
+      "id": "pkg-224",
+      "title": "条ごとの、指示の文のない条の全文の改正規定と、無番号の項からなる附則（昭和二十二年法律第百七十三号の形）",
+      "requirements": [
+        "AMEND-01",
+        "AMEND-02",
+        "PARA-01",
+        "ID-01",
+        "AST-01"
+      ],
+      "check": "L1",
+      "normative": true,
+      "input": {
+        "kind": "package",
+        "path": "conformance/v1alpha2/valid/pkg-224/law.yaml"
+      },
+      "expected": "conformance/v1alpha2/expected/pkg-224.json",
+      "success": true
+    },
+    {
+      "id": "pkg-225",
+      "title": "指示の文のない削除条の形の改正規定と、続けて掲げた四つの削除条を一つにした改正内容（昭和二十二年政令第四十五号の形）",
+      "requirements": [
+        "AMEND-01",
+        "AMEND-02",
+        "HEAD-04",
+        "PARA-03",
+        "ID-01",
+        "AST-01"
+      ],
+      "check": "L1",
+      "normative": true,
+      "input": {
+        "kind": "package",
+        "path": "conformance/v1alpha2/valid/pkg-225/law.yaml"
+      },
+      "expected": "conformance/v1alpha2/expected/pkg-225.json",
+      "success": true
     }
   ]
 }
