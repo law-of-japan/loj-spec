@@ -1487,6 +1487,36 @@ def first_commits():
         {"results": [{"check": "change", "result": "fail"}], "diagnostics": [diag("CHG-02", SV["common"])]}, False)
 
 
+# --- 2026-11-24 (#152): the first commit of the repository of the registry (CHG-02, CHG-03) ----------------------
+REGISTRY_FIRST = {
+    "space.yaml": "{}\n",
+    "records/20990101-act-1.yaml": (
+        "schemaVersion: loj-registry/v1alpha1\nid: 20990101-act-1\nlabel: 架空法律第一号（実在しないサンプル）\n"
+        "status: active\nidentity:\n  evidence: [{source: src-fiction, locator: 本文}]\n  verification: {state: confirmed}\n"
+        "collection: {state: notCollected}\nsources:\n  - {id: src-fiction, kind: other, title: 架空の原典}\n"
+        "numbers: []\nexternalIds: []\n"),
+}
+
+
+def registry_first_commits():
+    """The first commit of the repository of the registry declares metadata (CHG-03); the index says registry.
+
+    The positive registers one Record with space.yaml: in the range of metadata (CHG-02), with no version and no
+    retired Record to compare. The negative adds the same files but declares revisionAdd, the kind a first commit of
+    a law repository declares: a first commit of the registry that is not metadata fails by CHG-03 alone.
+    """
+    for success, kind, title in ((True, "metadata", "登録台帳のリポジトリの最初のcommitで、Recordを登録する"),
+                                 (False, "revisionAdd", "登録台帳のリポジトリの最初のcommitを、状態の追加と宣言する")):
+        bundle = next_dir("common", success) / "repo.bundle"
+        (c1,) = build_bundle(bundle, [("Recordを登録する", kind, False, dict(REGISTRY_FIRST))])
+        assert root_commits(bundle) == [c1], bundle
+        expected = {"results": [{"check": "change", "result": "pass" if success else "fail"}]}
+        if not success:
+            expected["diagnostics"] = [diag("CHG-03", SV["common"])]
+        add("common", title, ["CHG-02", "CHG-03"] if success else ["CHG-03"], "change",
+            {"kind": "change", "bundle": rel(bundle), "head": c1, "repository": "registry"}, expected, success)
+
+
 def main():
     for suite, folder in FOLDER.items():
         for group in ("invalid", "expected"):
@@ -1525,6 +1555,7 @@ def main():
     illegible_other_source()
     file_modes()
     first_commits()
+    registry_first_commits()
     assert not DERIVED, sorted(DERIVED)  # every copy is listed by the case that owns it
     marked = {case["id"] for cases in INDEX.values() for case in cases if "rejectedBy" in case}
     assert marked == SCHEMA_REJECTED, SCHEMA_REJECTED - marked

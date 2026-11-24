@@ -2,6 +2,16 @@
 
 見出しの「草案」は、[草案の版](spec/README.md#版の状態)への変更であることを示す。版の状態の正は、[規範仕様の入口](spec/README.md#規範とするもの)の表にある。版を公開したときは、公開の日付の項目を加える。
 
+## 最初のcommitの範囲と登録台帳の最初のcommit（2026-11-24、草案）
+
+[law-of-japan/loj-spec#152](https://github.com/law-of-japan/loj-spec/issues/152)による変更である。草案の版（共通の型`common/v1alpha1`）への変更であり、版番号は上げない。既存のケースの期待結果は変わらない。判断はDDR-015に追記した。
+
+- CHG-02: 最初のcommitの`revisionAdd`の「変更してよい範囲」は、`history.yaml`と`rebuild.yaml`のファイルの全体（最上位のフィールドを含む）を作ることを含むと明記した。登録台帳のリポジトリの最初のcommitの`metadata`の範囲は、`space.yaml`と`records/`の下のファイルを作ることを含む。
+- CHG-03: 変更検査は、リポジトリが法令リポジトリか登録台帳のリポジトリかを入力として受け取り、ファイルから推定してはならない（MUST NOT）とした。登録台帳のリポジトリの最初のcommitは`metadata`を宣言しなければならない（MUST）とし、`metadata`でない種類を宣言した最初のcommitを、種類ごとの検査をせずにCHG-03で不合格とする列挙に加えた。
+- 適合ケースの索引のschema: 変更の入力に`repository`（`law`／`registry`。省略時は`law`）を加えた。実装ガイドに読み方を書いた。
+- 適合ケース: 登録台帳のリポジトリの最初のcommitの正例（common-062）と、`revisionAdd`と宣言する負例（common-063。CHG-03）を加えた。
+- 要件との対応表を更新した。
+
 ## 昭和22〜24年の改正規定の調査と試料のケース（2026-11-24、草案）
 
 [law-of-japan/loj-spec#150](https://github.com/law-of-japan/loj-spec/issues/150)による変更である。草案の版（`loj/v1alpha2`）に正例を加えただけで、規範の本文は変えていない。既存のケースの期待結果は変わらない。
