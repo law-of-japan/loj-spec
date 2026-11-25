@@ -57,7 +57,7 @@
 | スクリプト | 対象 | 注意 |
 |---|---|---|
 | `scripts/port_v1alpha2_cases.py` | `conformance/v1alpha2`のpkg-001〜106（v1alpha1のケースの機械的な移植） | 一度だけの移植。実行すると索引を作り直すので、続けて`author_v1alpha2_cases.py`を実行する |
-| `scripts/author_v1alpha2_cases.py` | `conformance/v1alpha2`のpkg-107以降（v1alpha2で加えた構造） | 索引のpkg-107以降を置き換える |
+| `scripts/author_v1alpha2_cases.py` | `conformance/v1alpha2`のpkg-107〜225（v1alpha2で加えた構造） | 索引のpkg-107以降を置き換える。pkg-226以降はこのスクリプトを使わずに手で加えたもので、スクリプトに定義がない。実行すると索引からpkg-226以降が消え、番号が付け直されるので、実行したら索引と入力の差分を確かめて戻す |
 | `scripts/author_next_cases.py` | 共通・履歴・字体注記・登録台帳・再構築の索引 | 負例は正例の写しに一か所の変更を加えて作り、元と変更を索引の`derivedFrom`に書く。正例のファイルは手で書いて保守する。正例を直したら、このスクリプトを実行して写しを揃える |
 | `scripts/author_data.py` | v1alpha1の資料 | v1alpha1は凍結したので実行しない |
 
