@@ -891,7 +891,12 @@ def table_rows(text, heading, source="spec/README.md"):
     """
     section = re.search(r"^## " + re.escape(heading) + r"\n(.*?)(?=^## |\Z)", text, re.M | re.S)
     require(bool(section), source + " has no section: " + heading)
-    lines = [line for line in section[1].splitlines() if line.startswith("|")]
+    lines = []
+    for line in section[1].splitlines():
+        if line.startswith("|"):
+            lines.append(line)
+        elif lines:
+            break  # the first table ends at its first line that is not a row
     require(len(lines) > 2, source + " section has no table: " + heading)
     cells = [[cell.strip() for cell in line.strip().strip("|").split("|")] for line in lines]
     for row in cells[1:]:
@@ -1172,6 +1177,45 @@ def check_prohibitions():
     return len(schemas), compare_prohibitions(rows, schemas, requirement_sections(texts))
 
 
+CASE_TABLE_HEADING = "次期仕様（loj/v1alpha2と新しい4種類）"
+CASE_RANGE = re.compile(r"([a-z0-9]+)-(\d{3})〜(\d{3})")
+MANIFEST_LINK = re.compile(r"\]\(\.\./(conformance/[^)]+/manifest\.json)\)")
+
+
+def case_table_ranges(text):
+    """{manifest path: (first ID, last ID)} from the case table of docs/coverage.md."""
+    ranges = {}
+    for row in table_rows(text, CASE_TABLE_HEADING, "docs/coverage.md"):
+        link = MANIFEST_LINK.search(row["ディレクトリ"])
+        span = CASE_RANGE.fullmatch(row["ケース"])
+        require(bool(link), "docs/coverage.md case table row needs a link to a manifest: " + row["ディレクトリ"])
+        require(bool(span), "docs/coverage.md case table range must be <prefix>-NNN〜MMM: " + row["ケース"])
+        require(link[1] not in ranges, "docs/coverage.md case table repeats a manifest: " + link[1])
+        ranges[link[1]] = (span[1] + "-" + span[2], span[1] + "-" + span[3])
+    return ranges
+
+
+def compare_case_ranges(listed, indexed):
+    """Fail when the table and the manifests differ in the suites listed or in the first and last case IDs."""
+    require(set(listed) == set(indexed), "docs/coverage.md case table and manifests differ: missing "
+            + ", ".join(sorted(set(indexed) - set(listed))) + "; unknown " + ", ".join(sorted(set(listed) - set(indexed))))
+    for path in sorted(indexed):
+        require(listed[path] == indexed[path], "docs/coverage.md case table range of " + path + " is "
+                + "〜".join(listed[path]) + ", the manifest has " + "〜".join(indexed[path]))
+
+
+def check_case_ranges():
+    """The case table names every non-frozen manifest with its first and last case IDs (the contents are not checked)."""
+    indexed = {}
+    for path in sorted((ROOT / "conformance").glob("**/manifest.json")):
+        name = path.relative_to(ROOT).as_posix()
+        if name != "conformance/v1alpha1/manifest.json":
+            cases = read_json(path)["cases"]
+            indexed[name] = (cases[0]["id"], cases[-1]["id"])
+    compare_case_ranges(case_table_ranges((ROOT / "docs/coverage.md").read_text(encoding="utf-8")), indexed)
+    return len(indexed)
+
+
 def main():
     schemas = {path.name: read_json(path) for path in (ROOT / "schemas/v1alpha1").glob("*.json")}
     registry = Registry().with_resources((s["$id"], Resource.from_contents(s)) for s in schemas.values())
@@ -1233,6 +1277,7 @@ def main():
     noted = check_codepoints()
     states = check_states()
     addressed = check_addressees()
+    ranged = check_case_ranges()
     prohibited, unwritten = check_prohibitions()
     print(f"Artifact audit PASS: {len(schemas)} schemas; {len(seen)} case definitions; {links} local links.")
     labels = {"草案": "draft", "公開": "published", "凍結": "frozen"}  # ASCII: stdout may not encode Japanese
@@ -1240,6 +1285,7 @@ def main():
           + " (tables only; publication tags are not checked).")
     print(f"Code point notations match their characters in {noted} documents (docs/archive excluded).")
     print(f"Addressee table lists all {addressed} requirement IDs (the classification itself is not checked).")
+    print(f"Case table ranges match {ranged} manifests (the contents column is not checked).")
     print(f"Archived documents: {archived} (status lines present; not linked from spec/).")
     print(f"Positive source/tree audits: {positive}; executed L0 negatives: {negative_l0}.")
     print(f"L1 negative definitions only (NOT executed): {negative_l1}; informative L2: {illustrative}.")

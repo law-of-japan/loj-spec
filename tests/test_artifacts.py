@@ -600,6 +600,22 @@ class RestatementTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "missing ; unknown ZZZ-01"):
             v.compare_addressees({"AAA-01", "ZZZ-01"}, {"AAA-01"})
 
+    def test_case_table_ranges(self):
+        text = ("## 次期仕様（loj/v1alpha2と新しい4種類）\n\n| ディレクトリ | ケース | 内容 |\n|---|---|---|\n"
+                "| [a](../conformance/a/manifest.json) | a-001〜012 | x |\n\n### 次の表\n\n| 要件 | 理由 |\n|---|---|\n| X | y |\n")
+        self.assertEqual(v.case_table_ranges(text), {"conformance/a/manifest.json": ("a-001", "a-012")})
+        with self.assertRaises(ValueError):
+            v.case_table_ranges(text.replace("a-001〜012", "a-001〜a-012"))
+        with self.assertRaises(ValueError):
+            v.case_table_ranges(text.replace("](../conformance/a/manifest.json)", "]"))
+
+    def test_case_range_mismatch_rejected(self):
+        v.compare_case_ranges({"m": ("a-001", "a-002")}, {"m": ("a-001", "a-002")})
+        with self.assertRaisesRegex(ValueError, "range of m is a-001〜a-002, the manifest has a-001〜a-003"):
+            v.compare_case_ranges({"m": ("a-001", "a-002")}, {"m": ("a-001", "a-003")})
+        with self.assertRaisesRegex(ValueError, "missing n; unknown $"):
+            v.compare_case_ranges({"m": ("a-001", "a-002")}, {"m": ("a-001", "a-002"), "n": ("b-001", "b-001")})
+
     def test_repository_addressee_table(self):
         self.assertGreater(v.check_addressees(), 100)
 
