@@ -36,7 +36,7 @@ SCHEMA_REJECTED = {"hist-005", "hist-006", "hist-010", "hist-012", "hist-013", "
                    "hist-026", "hist-038", "hist-041", "hist-042", "hist-043", "hist-045", "hist-046", "glyph-005", "reg-005",
                    "reg-006", "reg-007", "reg-010", "rebuild-002", "hist-056", "hist-057", "hist-058", "hist-059",
                    "hist-060", "hist-061", "rebuild-005", "reg-013", "glyph-014", "glyph-015",
-                   "glyph-016", "glyph-019", "hist-068", "glyph-033"}
+                   "glyph-016", "glyph-019", "hist-068", "glyph-033", "reg-015", "rebuild-006", "reg-016", "rebuild-007"}
 
 
 def write_json(path, value):
@@ -1811,6 +1811,187 @@ def glyph_note_gaps():
         {"kind": "repository", "path": rel(pos)}, {"results": [l3("evidence")]}, True, "evidence")
 
 
+# --- 2026-11-26: missing cross-record cases (XREF-01, XREF-02, XREF-05, XREF-06) -----------------
+MERGED_ID = ("m4x8k2p7qd", "架空の統合した登録")
+SPLIT_ID = ("s5r9n3t6wc", "架空の分割した登録")
+SPLIT_OTHER = ("20990602-law-4", "架空の分割先の候補")
+TOTAL_POS = "conformance/common/v1alpha1/valid/common-017"
+PROM_POS = "conformance/common/v1alpha1/valid/common-015"
+NUMBER_179 = "conformance/common/v1alpha1/valid/common-014/hist-001"
+
+
+def replaced_record(ident, label, status, targets):
+    """A merged or split Record of the fictional registries (REG-02: replacedBy in the same registry)."""
+    body = ("schemaVersion: loj-registry/v1alpha1\nid: " + ident + "\nlabel: " + label + "\nstatus: " + status + "\n"
+            "identity:\n  evidence: [{source: src-fictional, locator: 登録の記録}]\n  verification: {state: confirmed}\n"
+            "collection: {state: notCollected}\n"
+            "sources:\n  - {id: src-fictional, kind: other, title: 適合ケースのための架空の資料}\nnumbers: []\nexternalIds: []\n"
+            "replacedBy:\n")
+    for target, state in targets:
+        body += ("  - record: {id: %s, label: %s}\n" % target
+                 + "    evidence: [{source: src-fictional, locator: %sの記録}]\n" % ("統合" if status == "merged" else "分割")
+                 + ("    verification: {state: confirmed}\n" if state == "confirmed" else
+                    "    verification: {state: unverified, reason: 分割先が確定していない（架空）}\n"))
+    return body
+
+
+def fictional_record_body(ident, label):
+    return ("schemaVersion: loj-registry/v1alpha1\nid: " + ident + "\nlabel: " + label + "\nstatus: active\n"
+            "identity:\n  evidence: [{source: src-fictional, locator: 題名}]\n  verification: {state: confirmed}\n"
+            "collection: {state: notCollected}\n"
+            "sources:\n  - {id: src-fictional, kind: other, title: 適合ケースのための架空の資料}\nnumbers: []\nexternalIds: []\n")
+
+
+def cross_record_gaps():
+    registry, old, new = TOTAL_POS + "/registry", TOTAL_POS + "/" + OLD_LAW[0], TOTAL_POS + "/" + NEW_LAW[0]
+    resolution = {"check": "L4", "category": "relationResolution"}
+    consistency = {"check": "L4", "category": "relationConsistency"}
+    from_new = "    from: {id: %s, label: %s}\n" % NEW_LAW
+    # XREF-02: the from of the old Record's relation is a merged Record; it resolves to its target, the new Record.
+    dest = next_dir("common", True)
+    mutate(dest / "registry", registry, [], {"records/%s.yaml" % MERGED_ID[0]: replaced_record(
+        MERGED_ID[0], MERGED_ID[1], "merged", [(NEW_LAW, "confirmed")])})
+    mutate(dest / OLD_LAW[0], old, [("history.yaml", from_new, "    from: {id: %s, label: %s}\n" % MERGED_ID)])
+    add("common", "全部改正の関係の起点が、全部改正後のRecordへ統合したRecord（架空）", ["XREF-01", "XREF-02", "REG-02"], "L4",
+        {"kind": "records", "registry": rel(dest / "registry"), "repositories": [rel(dest / OLD_LAW[0]), new]},
+        {"results": [dict(consistency, result="pass")]}, True, "relationConsistency")
+    # XREF-02: the from is a split Record; it is not resolved, so whether it is the same Record is undetermined.
+    dest = next_dir("common", True)
+    mutate(dest / "registry", registry, [], {
+        "records/%s.yaml" % SPLIT_ID[0]: replaced_record(SPLIT_ID[0], SPLIT_ID[1], "split",
+                                                          [(NEW_LAW, "unverified"), (SPLIT_OTHER, "unverified")]),
+        "records/%s.yaml" % SPLIT_OTHER[0]: fictional_record_body(*SPLIT_OTHER)})
+    mutate(dest / OLD_LAW[0], old, [("history.yaml", from_new, "    from: {id: %s, label: %s}\n" % SPLIT_ID)])
+    add("common", "全部改正の関係の起点が、分割したRecord（架空）", ["XREF-01", "XREF-02", "VAL-04"], "L4",
+        {"kind": "records", "registry": rel(dest / "registry"), "repositories": [rel(dest / OLD_LAW[0]), new]},
+        {"results": [dict(consistency, result="incomplete")],
+         "diagnostics": [diag("XREF-02", SV["common"], "undetermined")]}, True, "relationConsistency")
+    # XREF-02: the old Record is registered, but its history manifest is not in the input (not fetched).
+    add("common", "totallyRevisesが指す旧Recordの履歴マニフェストを取得できない（架空）", ["XREF-02", "VAL-04", "VAL-06"], "L4",
+        {"kind": "records", "registry": registry, "repositories": [new]},
+        {"results": [dict(consistency, result="incomplete")]}, True, "relationConsistency")
+    # XREF-01: the end of a confirmed relation (the Record whose manifest holds it) is withdrawn.
+    dest = next_dir("common", False)
+    mutate(dest / "registry", registry, [("records/%s.yaml" % OLD_LAW[0], "status: active\n", "status: withdrawn\n")])
+    mutate(dest / OLD_LAW[0], old, [("history.yaml", "    verification: {state: unverified, reason: 架空の資料}\n    status: active\n",
+                                     "    verification: {state: confirmed}\n    status: active\n")])
+    add("common", "確定した関係の終点が登録を撤回したRecord（架空）", ["XREF-01", "REG-02", "VAL-06"], "L4",
+        {"kind": "records", "registry": rel(dest / "registry"), "repositories": [rel(dest / OLD_LAW[0]), new]},
+        {"results": [dict(resolution, result="fail")], "diagnostics": [diag("XREF-01", SV["common"])],
+         "references": [{"target": "loj:loj/" + OLD_LAW[0], "result": "nonexistentConfirmed"}]}, False,
+        "relationResolution")
+
+    # XREF-05: the state of the adopted number claim of the Act on National Holidays.
+    display = {"check": "L4", "category": "displayConsistency", "result": "pass"}
+    law = "records/19480720-law-178.yaml"
+    text = (ROOT / REG_POS / law).read_bytes().decode("utf-8")
+    numbers = text[text.index("numbers:\n"):text.index("externalIds:\n")]
+    claim = ("numbers:\n  - id: n1\n    state: %s\n"
+             "    evidence: [{source: src-kanpo-19480720, locator: 1コマ 法律の冒頭}]\n"
+             "    verification: {state: unverified, reason: 適合ケースのための架空の変更}\n    decision: adopted\n")
+    conflicting = ("numbers:\n  - id: n1\n    state: conflicting\n    raw:\n"
+                   "      - {source: src-kanpo-19480720, raw: 法律第百七十八号}\n      - {source: src-egov, raw: 法律第百七十九号}\n"
+                   "    evidence: [{source: src-kanpo-19480720, locator: 1コマ 法律の冒頭}, {source: src-egov, locator: 法令番号}]\n"
+                   "    verification: {state: disputed, reason: 適合ケースのための架空の食い違い}\n    decision: adopted\n")
+    for success, title, edit, repo, warns in [
+        (True, "採用中の番号主張が番号のないことを確認したもので、版パッケージに番号がある", claim % "nonexistent", HIST_POS, True),
+        (True, "採用中の番号主張の番号が不明で、版パッケージに番号がある", claim % "unknown", HIST_POS, True),
+        # Not judged: the number of the version package (百七十九号) would not match an exists claim either.
+        (True, "採用中の番号主張が資料の間で食い違う（判定しない）", conflicting, NUMBER_179, False),
+    ]:
+        dest = next_dir("common", success) / "registry"
+        mutate(dest, REG_POS, [(law, numbers, edit)])
+        expected = {"results": [display]}
+        if warns:
+            expected["diagnostics"] = [diag("XREF-05", SV["common"], "warning")]
+        add("common", title, ["XREF-05", "REG-03"], "L4", {"kind": "records", "registry": rel(dest), "repositories": [repo]},
+            expected, success, "displayConsistency")
+    dest = next_dir("common", True) / "registry"
+    mutate(dest, REG_POS, [(law, "    decision: adopted\n", "    decision: pending\n")])
+    add("common", "採用中の番号主張がない（判定しない）", ["XREF-05", "REG-03"], "L4",
+        {"kind": "records", "registry": rel(dest), "repositories": [NUMBER_179]}, {"results": [display]}, True,
+        "displayConsistency")
+
+    # XREF-06: the second Record's relation from the same amending law, against hist-016 (promulgated 2099-06-01).
+    time = {"check": "L4", "category": "timeConsistency"}
+    other = PROM_POS + "/hist-016b"
+    prom = ('    promulgated:\n      state: date\n      value: "2099-06-01"\n      raw: 令和八十一年六月一日\n      precision: day\n'
+            "      evidence: [{source: src-fictional, locator: 公布の日}]\n      verification: {state: unverified, reason: 架空の資料}\n")
+    june2 = prom.replace('"2099-06-01"', '"2099-06-02"').replace("六月一日", "六月二日")
+    from_law2 = "    from: {id: 20990601-law-2, label: 架空の改正法}\n"
+    retracted = ("  - id: rel-amend-x\n    type: amends\n" + from_law2 + june2
+                 + "    evidence: [{source: src-fictional, locator: 附則第一条}]\n"
+                 "    verification: {state: unverified, reason: 公布の日を誤って記録した関係の撤回（架空）}\n"
+                 "    status: retracted\n    items:\n      - id: i1\n        scope: {text: 第一条}\n"
+                 "        effective: {state: unknown, reason: 適合ケースで省略}\n"
+                 "        evidence: [{source: src-fictional, locator: 附則第一条}]\n"
+                 "        verification: {state: unverified, reason: 架空の資料}\n")
+    month = ('    promulgated:\n      state: date\n      value: "2099-06"\n      raw: 令和八十一年六月\n      precision: month\n'
+             "      evidence: [{source: src-fictional, locator: 公布の日}]\n      verification: {state: unverified, reason: 架空の資料}\n")
+    dest = next_dir("common", True) / "hist-016b"
+    mutate(dest, other, [("history.yaml", prom, month)])
+    add("common", "同じ改正法令の公布の時点の一方が確定日でない（架空）", ["XREF-06", "TIME-03", "VAL-04"], "L4",
+        {"kind": "records", "registry": PROM_POS + "/registry", "repositories": [POS_016, rel(dest)]},
+        {"results": [dict(time, result="incomplete")], "diagnostics": [diag("XREF-06", SV["common"], "undetermined")]},
+        True, "timeConsistency")
+    for title, requirements, edits in [
+        ("撤回した関係の公布の時点は比べない（架空）", ["XREF-06", "HIST-03"], [("history.yaml", "revisions:\n", retracted + "revisions:\n")]),
+        ("一方の関係だけが公布の時点を持つ（判定しない）", ["XREF-06", "HIST-03"], [("history.yaml", prom, "")]),
+    ]:
+        dest = next_dir("common", True) / "hist-016b"
+        mutate(dest, other, edits)
+        add("common", title, requirements, "L4",
+            {"kind": "records", "registry": PROM_POS + "/registry", "repositories": [POS_016, rel(dest)]},
+            {"results": [dict(time, result="pass")]}, True, "timeConsistency")
+    for success, title, ident, status, targets in [
+        (False, "統合したRecordを起点とする関係の公布の時点が、統合先を起点とする関係と食い違う（架空）", MERGED_ID, "merged",
+         [(("20990601-law-2", "架空の改正法"), "confirmed")]),
+        (True, "分割したRecordを起点とする関係の公布の時点は比べない（架空）", SPLIT_ID, "split",
+         [(("20990601-law-2", "架空の改正法"), "unverified"), (SPLIT_OTHER, "unverified")]),
+    ]:
+        dest = next_dir("common", success)
+        records = {"records/%s.yaml" % ident[0]: replaced_record(ident[0], ident[1], status, targets)}
+        if status == "split":
+            records["records/%s.yaml" % SPLIT_OTHER[0]] = fictional_record_body(*SPLIT_OTHER)
+        mutate(dest / "registry", PROM_POS + "/registry", [], records)
+        mutate(dest / "hist-016b", other, [("history.yaml", from_law2, "    from: {id: %s, label: %s}\n" % ident),
+                                           ("history.yaml", prom, june2)])
+        expected = ({"results": [dict(time, result="pass")]} if success else
+                    {"results": [dict(time, result="fail")], "diagnostics": [diag("XREF-06", SV["common"])]})
+        add("common", title, ["XREF-01", "XREF-06"], "L4",
+            {"kind": "records", "registry": rel(dest / "registry"), "repositories": [POS_016, rel(dest / "hist-016b")]},
+            expected, success, "timeConsistency")
+
+
+# --- 2026-11-26: common types in the registry and the rebuild report (VAL-07) ---------------------
+def common_type_gaps():
+    law = "records/19480720-law-178.yaml"
+    identity = "  evidence: [{source: src-kanpo-19480720, locator: 1コマ}]\n  verification: {state: confirmed}\n"
+    for title, rule, new in [
+        ("同一性の確認が登録台帳にないSourceを指す", "TYPE-03",
+         "  evidence: [{source: src-kanpo-19480721, locator: 1コマ}]\n  verification: {state: confirmed}\n"),
+        ("同一性の確認のVerificationの未知の状態", "TYPE-04",
+         "  evidence: [{source: src-kanpo-19480720, locator: 1コマ}]\n  verification: {state: checked}\n"),
+        ("出典のない同一性の確認を確認済みにする", "TYPE-05", "  evidence: []\n  verification: {state: confirmed}\n"),
+    ]:
+        dest = next_dir("reg", False) / "registry"
+        mutate(dest, REG_POS, [(law, identity, new)])
+        add("reg", title, [rule, "REG-02"], "registry", {"kind": "registry", "path": rel(dest)},
+            {"results": [{"check": "registry", "result": "fail"}], "diagnostics": [diag(rule, SV["common"])]}, False)
+    for title, rule, old, new in [
+        ("旧commitとの対応のVerificationの未知の状態", "TYPE-04",
+         "    verification: {state: confirmed, reason: リポジトリ作成時のcommitで、本文を含まない}\n",
+         "    verification: {state: checked, reason: リポジトリ作成時のcommitで、本文を含まない}\n"),
+        ("出典のない差の記録を確認済みにする", "TYPE-05",
+         "    evidence: [{source: src-kanpo-19480720, locator: 第二條}]\n    verification: {state: confirmed}\n",
+         "    evidence: []\n    verification: {state: confirmed}\n"),
+    ]:
+        dest = next_dir("rebuild", False) / "repo"
+        mutate(dest, HIST_POS, [("rebuild.yaml", old, new)])
+        add("rebuild", title, [rule, "REBR-04" if "旧commit" in title else "REBR-05"], "rebuild", {"kind": "repository", "path": rel(dest)},
+            {"results": [{"check": "rebuild", "result": "fail"}], "diagnostics": [diag(rule, SV["common"])]}, False)
+
+
 def main():
     for suite, folder in FOLDER.items():
         for group in ("invalid", "expected"):
@@ -1856,6 +2037,8 @@ def main():
     row_key_gaps()
     text_variances()
     glyph_note_gaps()
+    cross_record_gaps()
+    common_type_gaps()
     assert not DERIVED, sorted(DERIVED)  # every copy is listed by the case that owns it
     marked = {case["id"] for cases in INDEX.values() for case in cases if "rejectedBy" in case}
     assert marked == SCHEMA_REJECTED, SCHEMA_REJECTED - marked
