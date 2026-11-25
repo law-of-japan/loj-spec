@@ -616,6 +616,9 @@ class RestatementTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "missing n; unknown $"):
             v.compare_case_ranges({"m": ("a-001", "a-002")}, {"m": ("a-001", "a-002"), "n": ("b-001", "b-001")})
 
+    def test_repository_case_table(self):
+        self.assertEqual(v.check_case_ranges(), 6)
+
     def test_repository_addressee_table(self):
         self.assertGreater(v.check_addressees(), 100)
 

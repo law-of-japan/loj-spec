@@ -1210,8 +1210,9 @@ def check_case_ranges():
     for path in sorted((ROOT / "conformance").glob("**/manifest.json")):
         name = path.relative_to(ROOT).as_posix()
         if name != "conformance/v1alpha1/manifest.json":
-            cases = read_json(path)["cases"]
-            indexed[name] = (cases[0]["id"], cases[-1]["id"])
+            ids = sorted(case["id"] for case in read_json(path)["cases"])  # zero-padded, so sorted as numbers
+            require(bool(ids), name + " has no cases")
+            indexed[name] = (ids[0], ids[-1])
     compare_case_ranges(case_table_ranges((ROOT / "docs/coverage.md").read_text(encoding="utf-8")), indexed)
     return len(indexed)
 
