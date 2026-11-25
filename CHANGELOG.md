@@ -6,8 +6,8 @@
 
 [law-of-japan/loj-spec#173](https://github.com/law-of-japan/loj-spec/issues/173)による変更である。草案の版（`loj-history/v1alpha1`、`common/v1alpha1`）への変更であり、版番号は上げない。既存のケースの期待結果は変わらない。判断はDDR-014に節を加えた。
 
-- HIST-05: 段階施行の法令の各版の版パッケージは、公布された本文にその版までの改正を反映した本文の全体でなければならない（MUST）とし、後の施行時点を待つ規定（未施行の規定）を本文から除いてはならない（MUST NOT）とした。未施行の規定が`partial`の`gaps`に当たらないこと、未施行の範囲は後のRevisionの`basis`の`enactment`の`scope`で表すことを書いた。
-- VIEW-02: ビューで示す表に、列に含めた版のうち後に段階施行の施行時点がある版（`basis`が`enactment`の有効なRevisionから`basedOn`を辿って到達する版）の行を加え、後のRevisionのrevision_idと`scope`の原文を示すこととした。付録A（参考）の索引ファイルの注記に加えた。
+- HIST-05: 段階施行の法令（起点が`origin: enactment`で、`basis`が`enactment`のRevisionを持つ法令）の、版パッケージを持つ各版（`complete`・`partial`）の本文は、制定時に公布された本文の全体にその版までの改正を反映したものでなければならない（MUST）とし（`partial`は`gaps`の範囲だけを欠いてよい）、後の施行時点を待つ規定（未施行の規定）を未施行であることを理由に本文から除いてはならない（MUST NOT）とした。起点の版と、後の施行時点のRevisionとの間の改正の版にも及ぶ。未施行の規定が`partial`の`gaps`に当たらないこと、未施行の範囲は後のRevisionの`basis`の`enactment`の`scope`で表すことを書いた。
+- VIEW-02: ビューで示す表に、列に含めた版のうち後に段階施行の施行時点がある版（`basis`が`enactment`の有効なRevisionから`basedOn`を辿って到達する版）の行を加え、後のRevisionのrevision_idと`scope`の原文を示すこととした。起点と後の施行時点のRevisionの間の改正の版も当たる。付録A（参考）の索引ファイルの注記に加えた。
 - 適合ケース: 鉱山保安法の段階施行の二つの版の正例（hist-062）を加えた。参照するRecord（鉱山保安法と、施行期日を定めた昭和二十四年政令第二百九十三号）を、登録台帳の正例reg-001に加え、写しのケース（reg-002〜reg-013）を作り直した。
 - 用語集の段階施行と、要件との対応表（HIST-05の入力者への要求、VIEW-02の行）を更新した。
 
