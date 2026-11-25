@@ -50,11 +50,11 @@ T076〜T105は承認されたMAN-03 B案の独立ケース。附属資料の通�
 | ディレクトリ | ケース | 内容 |
 |---|---|---|
 | [conformance/v1alpha2](../conformance/v1alpha2/manifest.json) | pkg-001〜231 | v1alpha1の106件を写したもの（pkg-001〜106。pkg-074の入力は2026-11-13に直した）と、「條」「ノ」「附　則」、無番号の項、表、前文・制定文、目次、いろは・括弧付きの十進の細分、括弧書きを含む条の見出しとその違反（pkg-107〜143）、L0の正例と、診断の位置を固定した負例（pkg-144〜150）、表の結合（pkg-151・152）、未対応の構造の申告の有無（pkg-153・154）、項の見出し（pkg-155〜165）、重複・見出しの違反の診断の位置（pkg-166〜173）、空白の字・表の矩形・附属資料の診断の位置（pkg-174〜182）、項の形式の本則（pkg-183〜191）、改正規定（pkg-192〜207）、列記（pkg-208〜216）、改正の指示の文のない改正規定（pkg-217〜225）、範囲の削除条（pkg-226〜230）、二行割りの引いた字句（pkg-231） |
-| [conformance/loj-history/v1alpha1](../conformance/loj-history/v1alpha1/manifest.json) | hist-001〜053 | 祝日法の制定時と最初の改正後の版、履歴だけの法令リポジトリ三つ、その違反、共通の型と時点値の違反 |
+| [conformance/loj-history/v1alpha1](../conformance/loj-history/v1alpha1/manifest.json) | hist-001〜062 | 祝日法の制定時と最初の改正後の版、履歴だけの法令リポジトリ三つ、その違反、共通の型と時点値の違反。行のkey（hist-031〜033）、効力の終了の根拠と時点（hist-034〜036、hist-052・053）、字体注記のファイルの選び方（hist-047・054・055）、条件の外で禁止するフィールド（hist-056〜061）、段階施行の二つの版（hist-062） |
 | [conformance/loj-glyphs/v1alpha1](../conformance/loj-glyphs/v1alpha1/manifest.json) | glyph-001〜027 | 祝日法の字体注記と、その違反。L1が不合格の版の字体注記（未完了）。改正法（昭和四十一年法律第八十六号）の版の改正内容の中のセルを指す見え消しの注記（glyph-012）。ほかの原典資料で読めた判読困難の字（glyph-013〜020）。二行割りの行の区切りの字間の注記と、注記の範囲とその違反（glyph-021〜027） |
-| [conformance/loj-registry/v1alpha1](../conformance/loj-registry/v1alpha1/manifest.json) | reg-001〜010 | 六つのRecordの登録台帳、統合したRecordを残した登録台帳と、その違反 |
-| [conformance/loj-rebuild/v1alpha1](../conformance/loj-rebuild/v1alpha1/manifest.json) | rebuild-001〜004 | 祝日法の再構築報告と、その違反 |
-| [conformance/common/v1alpha1](../conformance/common/v1alpha1/manifest.json) | common-001〜026 | L4の時点の整合（T-04）、変更検査、固定参照（`git bundle`の架空の履歴） |
+| [conformance/loj-registry/v1alpha1](../conformance/loj-registry/v1alpha1/manifest.json) | reg-001〜013 | 六つのRecordの登録台帳、統合したRecordを残した登録台帳と、その違反。IDの再利用（reg-011）、統合先の解決（reg-012・013） |
+| [conformance/loj-rebuild/v1alpha1](../conformance/loj-rebuild/v1alpha1/manifest.json) | rebuild-001〜005 | 祝日法の再構築報告と、その違反（構造の差の件数はrebuild-005） |
+| [conformance/common/v1alpha1](../conformance/common/v1alpha1/manifest.json) | common-001〜069 | L4の時点の整合（T-04）・番号・公布の時点・全部改正・撤回したRecord・他の登録空間、変更検査、固定参照（`git bundle`の架空の履歴）。変更検査は、ASTを生成できない版と人のレビューの記録（common-025〜027、029〜031、036・037、039、048、053）、種類の宣言の書き方（common-032〜035、038、040、043〜045）、官報正誤（common-041・042）、mergeのcommit（common-046）、正本のデータの外の変更（common-050〜055）、ファイルのモード（common-056〜058）、最初のcommit（common-059〜064）、旧履歴の境界（common-065〜069） |
 
 `scripts/verify.py`は、すべての索引・期待結果・正例の入力の形と、要件IDの存在を検査し、v1alpha2の正例のASTを原文と突き合わせる。v1alpha2のL0の正例は、ASTを持たずにL0の`pass`を挙げることと、ManifestがL0の検査を通ることを検査する。期待結果の診断の位置は、`documents`のファイルの中の一つの行（行末の改行を含む）であることだけを検査し（`law.yaml`を指す位置は拒否する。SRC-01はManifestの意味の違反の位置を定めない）、規則が指すべき行かは判定しない。版パッケージのケースを除く負例は、索引の`rejectedBy: schema`の印のとおりに、入力のYAMLがschemaで落ちるか、schemaを通るかを検査する（[CONTRIBUTING](../CONTRIBUTING.md#適合ケースの作り方)）。別の入力の写しに変更を加えて作った入力（索引の`derivedFrom`）は、元に変更を適用し直した結果と一致することを検査する。元の正例だけを直して`author_next_cases.py`を実行し忘れると、ここで失敗する。変更が期待する規則の違反だけを生むかは判定せず、レビューで確かめる。v1alpha2のL1の負例と、L3・L4・登録台帳・再構築報告・変更検査・固定参照のケースの合否は判定しない。検査器で判定する。
 
