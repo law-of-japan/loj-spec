@@ -52,7 +52,7 @@ T076〜T105は承認されたMAN-03 B案の独立ケース。附属資料の通�
 | [conformance/v1alpha2](../conformance/v1alpha2/manifest.json) | pkg-001〜231 | v1alpha1の106件を写したもの（pkg-001〜106。pkg-074の入力は2026-11-13に直した）と、「條」「ノ」「附　則」、無番号の項、表、前文・制定文、目次、いろは・括弧付きの十進の細分、括弧書きを含む条の見出しとその違反（pkg-107〜143）、L0の正例と、診断の位置を固定した負例（pkg-144〜150）、表の結合（pkg-151・152）、未対応の構造の申告の有無（pkg-153・154）、項の見出し（pkg-155〜165）、重複・見出しの違反の診断の位置（pkg-166〜173）、空白の字・表の矩形・附属資料の診断の位置（pkg-174〜182）、項の形式の本則（pkg-183〜191）、改正規定（pkg-192〜207）、列記（pkg-208〜216）、改正の指示の文のない改正規定（pkg-217〜225）、範囲の削除条（pkg-226〜230）、二行割りの引いた字句（pkg-231） |
 | [conformance/loj-history/v1alpha1](../conformance/loj-history/v1alpha1/manifest.json) | hist-001〜053 | 祝日法の制定時と最初の改正後の版、履歴だけの法令リポジトリ三つ、その違反、共通の型と時点値の違反 |
 | [conformance/loj-glyphs/v1alpha1](../conformance/loj-glyphs/v1alpha1/manifest.json) | glyph-001〜027 | 祝日法の字体注記と、その違反。L1が不合格の版の字体注記（未完了）。改正法（昭和四十一年法律第八十六号）の版の改正内容の中のセルを指す見え消しの注記（glyph-012）。ほかの原典資料で読めた判読困難の字（glyph-013〜020）。二行割りの行の区切りの字間の注記と、注記の範囲とその違反（glyph-021〜027） |
-| [conformance/loj-registry/v1alpha1](../conformance/loj-registry/v1alpha1/manifest.json) | reg-001〜010 | 三つのRecordの登録台帳、統合したRecordを残した登録台帳と、その違反 |
+| [conformance/loj-registry/v1alpha1](../conformance/loj-registry/v1alpha1/manifest.json) | reg-001〜010 | 四つのRecordの登録台帳、統合したRecordを残した登録台帳と、その違反 |
 | [conformance/loj-rebuild/v1alpha1](../conformance/loj-rebuild/v1alpha1/manifest.json) | rebuild-001〜004 | 祝日法の再構築報告と、その違反 |
 | [conformance/common/v1alpha1](../conformance/common/v1alpha1/manifest.json) | common-001〜026 | L4の時点の整合（T-04）、変更検査、固定参照（`git bundle`の架空の履歴） |
 
@@ -95,7 +95,7 @@ CHG-03のtrailerの構文とCHG-04の判定不能の診断（2026-11-16、[law-o
 
 RID-04・RID-05（2026-11-12）は、統合したRecordを残し、`replacedBy`で登録空間を書いて統合先を指す正例（reg-009）と、大文字を含む登録空間の負例（reg-010）がある。どちらの規則で報告するかは、2026-11-15にRID-01で定めた（一方が統合・分割・撤回したRecordならRID-05、そうでなければRID-01。[law-of-japan/loj-spec#63](https://github.com/law-of-japan/loj-spec/issues/63)）。統合したRecordのIDを別のRecordの別名に再利用する負例（reg-011）がある。分割・撤回したRecordのIDの再利用は、統合と同じ規則なので加えていない。
 
-共通の型と時点値（2026-11-12、[law-of-japan/loj-spec#32](https://github.com/law-of-japan/loj-spec/issues/32)）は、履歴マニフェストの中で確かめる。登録空間と版の外部識別子の正例（hist-037）と、リポジトリの所在で指すRecord（TYPE-01、hist-038）、Sourceのidの重複（HIST-02、hist-039）、同じファイルにないSource（TYPE-03、hist-040）、Verificationの未知の状態（TYPE-04、hist-041）、原文のないScope（TYPE-06、hist-042）、精度と書式の不一致（TIME-02、hist-043）、版を対象としない外部識別子（HIST-01・HIST-09、hist-046）の負例がある。確認済みの時点値の根拠（TIME-06）は、hist-013が当たる。登録台帳・再構築報告の中の共通の型の違反のケースは、まだない。
+共通の型と時点値（2026-11-12、[law-of-japan/loj-spec#32](https://github.com/law-of-japan/loj-spec/issues/32)）は、履歴マニフェストの中で確かめる。登録空間と版の外部識別子の正例（hist-037）と、リポジトリの所在で指すRecord（TYPE-01、hist-038）、Sourceのidの重複（HIST-02、hist-039）、同じファイルにないSource（TYPE-03、hist-040）、Verificationの未知の状態（TYPE-04、hist-041）、原文のないScope（TYPE-06、hist-042）、精度と書式の不一致（TIME-02、hist-043）、版を対象としない外部識別子（HIST-01・HIST-09、hist-046）の負例がある。確認済みの時点値の根拠（TIME-06）は、hist-013が当たる。登録台帳・再構築報告の中の共通の型の違反のケースは、まだない。RecordRefに仮の値を置くことの禁止（TYPE-01、2026-11-25、[law-of-japan/loj-spec#172](https://github.com/law-of-japan/loj-spec/issues/172)）には、負例を置かない。仮の値はRecord IDの文字種に合い、登録台帳にないIDは未取得として報告されて違反にならないので（XREF-01）、検査の入力の成否として表せないためである。入力者への要求として、レビューで確かめる。
 
 CHG-02・CHG-03（2026-11-12、[law-of-japan/loj-spec#18](https://github.com/law-of-japan/loj-spec/issues/18)）の従属するファイルの更新は、記録訂正で同じ版の`text.sources`を更新する正例（common-024）だけがある。common-024は、宣言した版だけのASTが変わり、従属する更新が宣言した版の`text.sources`に限られ、宣言した版の根拠（`text.sources`の箇所）があるので合格とする。Scopeの`nodes`・字体注記の更新、宣言していない版の従属するファイルを変える負例、登録台帳だけの`metadata`、revertのcommitのケースは、まだない。登録台帳の`git bundle`が要るためである。mergeのcommitは下のcommon-046が、最初のcommitは下のcommon-059〜061が当たる。
 
@@ -241,7 +241,9 @@ TIME-03は、hist-004、hist-015〜018のほか、`pending`を基準とする`de
 | CONF-01 | 資料の管理の情報（`rejectedBy`、`derivedFrom`）は判定を変えず、実装は読まなくてよい | 実装 | 実装の試験 |
 | CONF-02 | レベルごとのケースの成功、結果の集計 | 実装 | 実装の試験（実装の適合の宣言は本仕様では定めない） |
 | CONF-02 | 合格を、機械で検査しない要求を満たしたことの主張に使わない | 実装、利用者 | レビュー |
-| TYPE-01、TYPE-03〜TYPE-05、TYPE-08 | 全体 | データ | 機械検査（その型を使うファイルの検査） |
+| TYPE-01 | 形、登録空間とRecord IDの組で指すこと | データ | 機械検査（その型を使うファイルの検査） |
+| TYPE-01 | 発行したRecord IDで指し、仮の値（`unregistered`等）を置かない | 入力者 | レビュー（仮の値はRecord IDの文字種に合うことがあり、機械では区別できない。登録台帳にないIDは関係の解決（L4）で未取得と報告され、違反にならない） |
+| TYPE-03〜TYPE-05、TYPE-08 | 全体 | データ | 機械検査（その型を使うファイルの検査） |
 | TYPE-02 | Sourceの形、`glyphPreservation`、`fixed`の形 | データ | 機械検査（同上） |
 | TYPE-02 | 旧形式のURIを自動で根拠に認定しない | 入力者 | レビュー |
 | TYPE-06 | Scopeの形 | データ | 機械検査（同上） |

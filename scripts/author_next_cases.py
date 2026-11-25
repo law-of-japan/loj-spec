@@ -289,7 +289,7 @@ def glyphs():
 
 # --- loj-registry ------------------------------------------------------------
 def registry():
-    add("reg", "登録台帳の三つのRecord", ["REG-01", "REG-02", "REG-03", "REG-05", "RID-02"], "registry",
+    add("reg", "登録台帳の四つのRecord", ["REG-01", "REG-02", "REG-03", "REG-05", "RID-02"], "registry",
         {"kind": "registry", "path": REG_POS}, {"results": [{"check": "registry", "result": "pass"}]}, True)
     act = "records/19660625-act-86.yaml"
     law = "records/19480720-law-178.yaml"
@@ -1034,7 +1034,7 @@ def conditional_fields():
         ("自身の規定による失効が持つ関係", "HIST-12", hist3,
          [("history.yaml", "  - type: expired\n", "  - type: expired\n    relation: rel-repeal\n")]),
         ("確定していない時点の確定の根拠", "TIME-01", hist3,
-         [("history.yaml", pending, pending + "      determinedBy: {record: {id: unregistered, label: 平成二十九年政令第三百二号}, "
+         [("history.yaml", pending, pending + "      determinedBy: {record: {id: tfy1ccapzk, label: 平成二十九年政令第三百二号}, "
                                        "evidence: [{source: src-egov-h29-302, locator: 本則}]}\n")]),
     ]:
         dest = next_dir("hist", False) / "repo"

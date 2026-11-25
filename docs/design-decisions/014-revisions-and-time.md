@@ -74,6 +74,16 @@
 - 制約: 値と参照先の二重の記録になる。
 - 再検討: なし。
 
+## 確定させた根拠のRecord（2026-11-25）
+
+- 問題: 確定させた根拠（`determinedBy`）の`record`に、台帳に登録していない施行期日政令を指す仮の値（`unregistered`）が置かれた。仕様の値ではなく、未登録の印か、まだ取得していない本物のIDかを読む側が区別できない。作業者ごとに別の仮の値（`none`、`unknown`等）が使われ、同じ種類の参照の書き方が法令ごとに分かれた。
+- 選択肢: 根拠の法令を登録台帳に登録して、発行したIDで指す（採用）／`record`を任意にし、`evidence`だけで書けるようにする（根拠の法令を関係・時点の検査で辿れなくなる）／RecordRefに未登録の状態を設ける（RecordRefを使うすべての場所に、未登録の扱いを定める必要がある）。
+- 判断基準: 参照の書き方が一つに揃うこと、根拠の法令を後で辿れること、登録の手間が小さいこと。
+- 採用: TYPE-01で、`id`を参照する登録空間で発行したRecord IDとし、仮の値を置くことを禁じた。TIME-04は、`determinedBy`の`record`が登録台帳のRecordを指すことを要約する。本文を収録しない法令は`collection.state: notCollected`で登録すれば足りる。
+- 理由: 登録の手間はRecord一件のファイルだけである。禁止をTYPE-01に置き、`determinedBy`に限らずRecordRefを使うすべての場所に及ぼした。
+- 制約: 仮の値はRecord IDの文字種に合うことがあり、機械では一般に区別できない。登録台帳にないIDは、関係の解決（L4）で未取得と報告され、違反にならない（XREF-01）。入力者への要件として、レビューで確かめる。
+- 再検討: 登録台帳の網羅性を保証できるようになり、登録台帳にないIDを違反にできるようになったとき。
+
 ## 経緯
 
-[統合案](../archive/next-spec-integration.md)の§5、§10.16〜10.18、§16.1（SCHEMA-05）。確定日の定義は[law-of-japan/loj-spec#14](https://github.com/law-of-japan/loj-spec/issues/14)。
+[統合案](../archive/next-spec-integration.md)の§5、§10.16〜10.18、§16.1（SCHEMA-05）。確定日の定義は[law-of-japan/loj-spec#14](https://github.com/law-of-japan/loj-spec/issues/14)。確定させた根拠のRecordは[law-of-japan/loj-spec#172](https://github.com/law-of-japan/loj-spec/issues/172)。

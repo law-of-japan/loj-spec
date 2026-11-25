@@ -2,6 +2,15 @@
 
 見出しの「草案」は、[草案の版](spec/README.md#版の状態)への変更であることを示す。版の状態の正は、[規範仕様の入口](spec/README.md#規範とするもの)の表にある。版を公開したときは、公開の日付の項目を加える。
 
+## 未登録のRecordを指す仮の値（2026-11-25、草案）
+
+[law-of-japan/loj-spec#172](https://github.com/law-of-japan/loj-spec/issues/172)による変更である。草案の版（`common/v1alpha1`）への変更であり、版番号は上げない。既存のケースの期待結果は変わらない。判断はDDR-014に節を加えた。
+
+- TYPE-01: RecordRefの`id`を、参照する登録空間で発行したRecord IDでなければならない（MUST）とし、Recordを登録していないことや特定していないことを表す仮の値（`unregistered`等）を置いてはならない（MUST NOT）とした。参照するRecordが登録台帳になければ登録して指すこと、本文を収録しない法令は`notCollected`で登録できること、仮の値は機械で一般に区別できず、関係の解決（L4）では未取得と報告されることを書いた。
+- TIME-04: `determinedBy`の`record`が登録台帳に登録した施行期日政令等のRecordを指すことを、TYPE-01へのリンクで要約した。
+- 適合ケース: 正例hist-003の`determinedBy`の`record`が仮の値`unregistered`を指していたので、平成二十九年政令第三百二号を`notCollected`のRecord（`tfy1ccapzk`）として登録台帳の正例reg-001に加え、そのIDで指すようにした。写しのケース（hist-060・hist-061、reg-002〜reg-013）を作り直した。
+- 要件との対応表のTYPE-01の行を、データへの要求と入力者への要求に分けた。
+
 ## 期待結果の作り方（2026-11-25、草案）
 
 [law-of-japan/loj-spec#167](https://github.com/law-of-japan/loj-spec/issues/167)による変更である。草案の版（`common/v1alpha1`）への変更であり、版番号は上げない。既存のケースの期待結果は変わらない。判断はDDR-024に追記した。
