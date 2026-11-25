@@ -52,7 +52,7 @@ T076〜T105は承認されたMAN-03 B案の独立ケース。附属資料の通�
 | [conformance/v1alpha2](../conformance/v1alpha2/manifest.json) | pkg-001〜231 | v1alpha1の106件を写したもの（pkg-001〜106。pkg-074の入力は2026-11-13に直した）と、「條」「ノ」「附　則」、無番号の項、表、前文・制定文、目次、いろは・括弧付きの十進の細分、括弧書きを含む条の見出しとその違反（pkg-107〜143）、L0の正例と、診断の位置を固定した負例（pkg-144〜150）、表の結合（pkg-151・152）、未対応の構造の申告の有無（pkg-153・154）、項の見出し（pkg-155〜165）、重複・見出しの違反の診断の位置（pkg-166〜173）、空白の字・表の矩形・附属資料の診断の位置（pkg-174〜182）、項の形式の本則（pkg-183〜191）、改正規定（pkg-192〜207）、列記（pkg-208〜216）、改正の指示の文のない改正規定（pkg-217〜225）、範囲の削除条（pkg-226〜230）、二行割りの引いた字句（pkg-231） |
 | [conformance/loj-history/v1alpha1](../conformance/loj-history/v1alpha1/manifest.json) | hist-001〜053 | 祝日法の制定時と最初の改正後の版、履歴だけの法令リポジトリ三つ、その違反、共通の型と時点値の違反 |
 | [conformance/loj-glyphs/v1alpha1](../conformance/loj-glyphs/v1alpha1/manifest.json) | glyph-001〜027 | 祝日法の字体注記と、その違反。L1が不合格の版の字体注記（未完了）。改正法（昭和四十一年法律第八十六号）の版の改正内容の中のセルを指す見え消しの注記（glyph-012）。ほかの原典資料で読めた判読困難の字（glyph-013〜020）。二行割りの行の区切りの字間の注記と、注記の範囲とその違反（glyph-021〜027） |
-| [conformance/loj-registry/v1alpha1](../conformance/loj-registry/v1alpha1/manifest.json) | reg-001〜010 | 三つのRecordの登録台帳、統合したRecordを残した登録台帳と、その違反 |
+| [conformance/loj-registry/v1alpha1](../conformance/loj-registry/v1alpha1/manifest.json) | reg-001〜010 | 四つのRecordの登録台帳、統合したRecordを残した登録台帳と、その違反 |
 | [conformance/loj-rebuild/v1alpha1](../conformance/loj-rebuild/v1alpha1/manifest.json) | rebuild-001〜004 | 祝日法の再構築報告と、その違反 |
 | [conformance/common/v1alpha1](../conformance/common/v1alpha1/manifest.json) | common-001〜026 | L4の時点の整合（T-04）、変更検査、固定参照（`git bundle`の架空の履歴） |
 
@@ -241,7 +241,9 @@ TIME-03は、hist-004、hist-015〜018のほか、`pending`を基準とする`de
 | CONF-01 | 資料の管理の情報（`rejectedBy`、`derivedFrom`）は判定を変えず、実装は読まなくてよい | 実装 | 実装の試験 |
 | CONF-02 | レベルごとのケースの成功、結果の集計 | 実装 | 実装の試験（実装の適合の宣言は本仕様では定めない） |
 | CONF-02 | 合格を、機械で検査しない要求を満たしたことの主張に使わない | 実装、利用者 | レビュー |
-| TYPE-01、TYPE-03〜TYPE-05、TYPE-08 | 全体 | データ | 機械検査（その型を使うファイルの検査） |
+| TYPE-01 | 形、登録空間とRecord IDの組で指すこと | データ | 機械検査（その型を使うファイルの検査） |
+| TYPE-01 | 発行したRecord IDで指し、仮の値（`unregistered`等）を置かない | 入力者 | レビュー（仮の値はRecord IDの文字種に合うことがあり、機械では区別できない。登録台帳にないIDは関係の解決（L4）で未取得と報告され、違反にならない） |
+| TYPE-03〜TYPE-05、TYPE-08 | 全体 | データ | 機械検査（その型を使うファイルの検査） |
 | TYPE-02 | Sourceの形、`glyphPreservation`、`fixed`の形 | データ | 機械検査（同上） |
 | TYPE-02 | 旧形式のURIを自動で根拠に認定しない | 入力者 | レビュー |
 | TYPE-06 | Scopeの形 | データ | 機械検査（同上） |

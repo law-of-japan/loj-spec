@@ -1034,7 +1034,7 @@ def conditional_fields():
         ("自身の規定による失効が持つ関係", "HIST-12", hist3,
          [("history.yaml", "  - type: expired\n", "  - type: expired\n    relation: rel-repeal\n")]),
         ("確定していない時点の確定の根拠", "TIME-01", hist3,
-         [("history.yaml", pending, pending + "      determinedBy: {record: {id: unregistered, label: 平成二十九年政令第三百二号}, "
+         [("history.yaml", pending, pending + "      determinedBy: {record: {id: tfy1ccapzk, label: 平成二十九年政令第三百二号}, "
                                        "evidence: [{source: src-egov-h29-302, locator: 本則}]}\n")]),
     ]:
         dest = next_dir("hist", False) / "repo"
