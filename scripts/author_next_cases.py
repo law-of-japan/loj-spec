@@ -289,7 +289,7 @@ def glyphs():
 
 # --- loj-registry ------------------------------------------------------------
 def registry():
-    add("reg", "登録台帳の三つのRecord", ["REG-01", "REG-02", "REG-03", "REG-05", "RID-02"], "registry",
+    add("reg", "登録台帳の四つのRecord", ["REG-01", "REG-02", "REG-03", "REG-05", "RID-02"], "registry",
         {"kind": "registry", "path": REG_POS}, {"results": [{"check": "registry", "result": "pass"}]}, True)
     act = "records/19660625-act-86.yaml"
     law = "records/19480720-law-178.yaml"
