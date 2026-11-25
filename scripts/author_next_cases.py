@@ -289,7 +289,7 @@ def glyphs():
 
 # --- loj-registry ------------------------------------------------------------
 def registry():
-    add("reg", "登録台帳の四つのRecord", ["REG-01", "REG-02", "REG-03", "REG-05", "RID-02"], "registry",
+    add("reg", "登録台帳の六つのRecord", ["REG-01", "REG-02", "REG-03", "REG-05", "RID-02"], "registry",
         {"kind": "registry", "path": REG_POS}, {"results": [{"check": "registry", "result": "pass"}]}, True)
     act = "records/19660625-act-86.yaml"
     law = "records/19480720-law-178.yaml"
@@ -1623,6 +1623,16 @@ def spacing_line_breaks():
             {"results": [l3("evidence", "fail")], "diagnostics": [diag("GLYPH-04", SV["glyph"])]}, False, "evidence")
 
 
+def staged_enactment():
+    """The two versions of a staged enactment (鉱山保安法, hand-written, #173): the origin and a Revision whose basis is
+    the enactment. The text of both is absent: whether a version package holds the whole promulgated text (HIST-05) is
+    compared with the sources, not checked on the data.
+    """
+    add("hist", "段階施行の二つの版（鉱山保安法）", ["HIST-04", "HIST-05", "TIME-04"], "L3",
+        {"kind": "repository", "path": "conformance/loj-history/v1alpha1/valid/hist-062/repo"},
+        {"results": [l3("historyStructure")]}, True, "historyStructure")
+
+
 def main():
     for suite, folder in FOLDER.items():
         for group in ("invalid", "expected"):
@@ -1664,6 +1674,7 @@ def main():
     registry_first_commits()
     legacy_boundary()
     spacing_line_breaks()
+    staged_enactment()
     assert not DERIVED, sorted(DERIVED)  # every copy is listed by the case that owns it
     marked = {case["id"] for cases in INDEX.values() for case in cases if "rejectedBy" in case}
     assert marked == SCHEMA_REJECTED, SCHEMA_REJECTED - marked

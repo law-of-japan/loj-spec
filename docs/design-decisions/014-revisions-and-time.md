@@ -84,6 +84,16 @@
 - 制約: 仮の値はRecord IDの文字種に合うことがあり、機械では一般に区別できない。登録台帳にないIDは、関係の解決（L4）で未取得と報告され、違反にならない（XREF-01）。入力者への要件として、レビューで確かめる。
 - 再検討: 登録台帳の網羅性を保証できるようになり、登録台帳にないIDを違反にできるようになったとき。
 
+## 段階施行の版の本文（2026-11-25）
+
+- 問題: 段階施行の法令の最初の版の本文に、まだ施行されていない規定を含めるかが定まっていなかった。試行では、e-Govの版にならって、どの版にも公布された全文を書いたが、仕様の根拠がなかった。
+- 選択肢: (A) どの版も公布された本文の全体を持ち、施行の範囲の違いを後の版の`basis.enactment.scope`で表す（採用）／(B) 各版は施行された規定だけを持つ（未施行の規定を除く書き方がない。`partial`の`gaps`に入れると欠落と未施行の区別がなくなる。条を除くと版の中の参照が解決しなくなり、版ごとにノードの集合が変わる）／(A)に加え、未施行の範囲を前の版の側にもフィールドで持つ（後の版の`scope`との二重の記録になる）。
+- 判断基準: 版の中の参照とノードの集合が版ごとに崩れないこと、e-Govの版の区切りと同じ粒度であること（版の粒度）、記録が一か所であること。
+- 採用: HIST-05で、段階施行の法令の各版の版パッケージを、その版までの改正を反映した本文の全体とし、未施行の規定を除くことを禁じた。未施行の範囲は後のRevisionの`basis.enactment.scope`だけで表す。VIEW-02の表に、後に段階施行の施行時点がある版の行を加え、ビューが未施行の規定を施行中と読ませないようにした。
+- 理由: (B)は本文の構造を壊し、(A)の欠点（版の本文だけでは施行の範囲が分からない）は、ビューの注記で補える。
+- 制約: `scope`は原文であり、ノードと結び付かない。未施行の範囲を機械で知る手段はない。本文に全文を書いたかは、原典照合で確かめる。
+- 再検討: `basis.enactment.scope`のノード（TYPE-06の`nodes`）を使って、未施行の範囲を機械で示す必要が出たとき。
+
 ## 経緯
 
-[統合案](../archive/next-spec-integration.md)の§5、§10.16〜10.18、§16.1（SCHEMA-05）。確定日の定義は[law-of-japan/loj-spec#14](https://github.com/law-of-japan/loj-spec/issues/14)。確定させた根拠のRecordは[law-of-japan/loj-spec#172](https://github.com/law-of-japan/loj-spec/issues/172)。
+[統合案](../archive/next-spec-integration.md)の§5、§10.16〜10.18、§16.1（SCHEMA-05）。確定日の定義は[law-of-japan/loj-spec#14](https://github.com/law-of-japan/loj-spec/issues/14)。確定させた根拠のRecordは[law-of-japan/loj-spec#172](https://github.com/law-of-japan/loj-spec/issues/172)。段階施行の版の本文は[law-of-japan/loj-spec#173](https://github.com/law-of-japan/loj-spec/issues/173)。

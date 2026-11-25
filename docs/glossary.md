@@ -113,7 +113,7 @@
 | 起点（Revisionの） | `origin` | `basedOn`を持たないRevision。`enactment`（制定）、`totalRevision`（全部改正による最初の状態）、`coverageStart`（収録の開始） | [HIST-04](../spec/loj-history/v1alpha1/01-history.md#hist-04-起点と基礎状態) |
 | 基礎状態 | `basedOn` | 直前の状態のrevision_id。版の順序は施行日の比較ではなくこの参照で表す。分岐を許す | [HIST-04](../spec/loj-history/v1alpha1/01-history.md#hist-04-起点と基礎状態) |
 | 成立根拠 | `basis` | Revisionを成立させた関係の`id`と内訳の`id`の組。段階施行では`enactment` | [HIST-05](../spec/loj-history/v1alpha1/01-history.md#hist-05-成立根拠) |
-| 段階施行 | `basis: enactment` | 制定時に施行時点が複数ある法令。起点に続くRevisionで表す | [HIST-05](../spec/loj-history/v1alpha1/01-history.md#hist-05-成立根拠) |
+| 段階施行 | `basis: enactment` | 制定時に施行時点が複数ある法令。起点に続くRevisionで表す。各版の本文は公布された本文の全体であり、後の施行時点を待つ規定（未施行の規定）を含む。未施行の範囲は後のRevisionの`basis`の`scope`で表す | [HIST-05](../spec/loj-history/v1alpha1/01-history.md#hist-05-成立根拠) |
 | 施行時点 | `effective` | Revisionの施行の時点値。すべてのRevisionが持つ | [HIST-06](../spec/loj-history/v1alpha1/01-history.md#hist-06-版の時間の情報と順序) |
 | 適用関係 | `applicability` | 適用の条件の調査結果。`noneConfirmed`（ないことを確認）、`unsurveyed`（未調査）、`conditions`（条件あり） | [HIST-07](../spec/loj-history/v1alpha1/01-history.md#hist-07-適用関係) |
 | 時点照会 | — | 指定した日・対象・条件に適用されるRevisionを求めること。本版では規範にしない | [HIST-07](../spec/loj-history/v1alpha1/01-history.md#hist-07-適用関係) |
