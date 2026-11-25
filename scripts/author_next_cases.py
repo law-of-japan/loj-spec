@@ -36,7 +36,7 @@ SCHEMA_REJECTED = {"hist-005", "hist-006", "hist-010", "hist-012", "hist-013", "
                    "hist-026", "hist-038", "hist-041", "hist-042", "hist-043", "hist-045", "hist-046", "glyph-005", "reg-005",
                    "reg-006", "reg-007", "reg-010", "rebuild-002", "hist-056", "hist-057", "hist-058", "hist-059",
                    "hist-060", "hist-061", "rebuild-005", "reg-013", "glyph-014", "glyph-015",
-                   "glyph-016", "glyph-019"}
+                   "glyph-016", "glyph-019", "hist-068", "glyph-033"}
 
 
 def write_json(path, value):
@@ -1633,6 +1633,184 @@ def staged_enactment():
         {"results": [l3("historyStructure")]}, True, "historyStructure")
 
 
+# --- 2026-11-25: cases listed as missing in docs/coverage.md before the first publication -------------------------
+def row_key_versions(base, versions, based_on=None):
+    """Fictional versions of one law for HIST-13, more general than row_key_files.
+
+    versions: one dict per Revision of ROW_REVS (in order) with "status" (complete / partial / absent), "tables"
+    (the row keys of each table of 第一条第一項, in table order; table numbers are 1, 2, ... as TABLE-01 requires) and
+    optionally "broken" (the text breaks HEAD-01, so the version fails L1). based_on: the index of the Revision each
+    later Revision is based on (default: the one before it).
+    """
+    fict = "      evidence: [{source: src-fiction, locator: %s}]\n      verification: {state: unverified, reason: 架空の資料}\n"
+    clouds = dict(CLOUDS, g7h8="高積雲")
+    rels, revs = "", ""
+    for i, (rev, version) in enumerate(zip(ROW_REVS, versions)):
+        day = "2099-0%d-01" % (i + 2)
+        raw = "二千九十九年" + "二三四"[i] + "月一日"
+        effective = ("    effective:\n      state: date\n      value: \"" + day + "\"\n      raw: " + raw + "\n"
+                     "      precision: day\n" + fict % "施行期日")
+        if i:
+            rels += ("  - id: rel-%d\n    type: amends\n    from: {id: 2099%02d01-act-%d, label: 架空の改正法}\n" % (i, i + 2, i + 10)
+                     + "    evidence: [{source: src-fiction, locator: 本則}]\n"
+                     "    verification: {state: unverified, reason: 架空の資料}\n    status: active\n    items:\n"
+                     "      - id: i1\n        scope: {text: 第一条の表}\n        effective:\n          state: date\n"
+                     "          value: \"" + day + "\"\n          raw: " + raw + "\n          precision: day\n"
+                     "          evidence: [{source: src-fiction, locator: 附則}]\n"
+                     "          verification: {state: unverified, reason: 架空の資料}\n"
+                     "        evidence: [{source: src-fiction, locator: 附則}]\n"
+                     "        verification: {state: unverified, reason: 架空の資料}\n")
+        parent = (based_on or {}).get(i, i - 1)
+        revs += "  - id: " + rev + "\n"
+        revs += ("    origin: enactment\n" if not i else
+                 "    basedOn: " + ROW_REVS[parent] + "\n    basis: [{relation: rel-%d, items: [i1]}]\n" % i)
+        status = version["status"]
+        if status == "absent":
+            text = "    text:\n      status: absent\n"
+        else:
+            text = ("    text:\n      status: " + ("partial\n      gaps: [{text: 第一条の表の一部}]" if status == "partial"
+                                                  else "complete") + "\n"
+                    "      sources: [{source: src-fiction, locator: 本則}]\n      glyphCheck: unverified\n")
+        revs += effective + "    applicability: {state: unsurveyed}\n" + text + "    status: active\n"
+        if status == "absent":
+            continue
+        tables = "".join(
+            "<!-- loj:table number=%d -->\n" % (n + 1) +
+            "".join("<!-- loj:row key=" + k + " -->\n<!-- loj:cell -->\n" + clouds[k] + "\n<!-- loj:end-cell -->\n"
+                    "<!-- loj:end-row -->\n" for k in keys) + "<!-- loj:end-table -->\n"
+            for n, keys in enumerate(version["tables"]))
+        md = (("# 一\n" if version.get("broken") else "# 第一条\n") +
+              "<!-- loj:paragraph number=1 -->\n架空の雲の種類を次のように定める。\n" + tables +
+              "<!-- loj:end-paragraph -->\n")
+        law = {"schemaVersion": "loj/v1alpha2",
+               "law": {"id": ROW_LAW[0], "title": ROW_LAW[1], "type": "act", "number": "架空法律第二号",
+                       "promulgatedAt": "2099-02-01", "language": "ja"},
+               "documents": [{"path": "main.md", "parent": "main"}]}
+        folder = base / "versions" / rev
+        folder.mkdir(parents=True, exist_ok=True)
+        (folder / "law.yaml").write_bytes((json.dumps(law, ensure_ascii=False, indent=2) + "\n").encode("utf-8"))
+        (folder / "main.md").write_bytes(md.encode("utf-8"))
+    history = ("schemaVersion: loj-history/v1alpha1\nrecord: {id: " + ROW_LAW[0] + ", label: 架空雲分類法}\n"
+               "sources:\n  - {id: src-fiction, kind: other, title: 適合ケースのための架空の資料}\n"
+               "relations:\n" + rels + "revisions:\n" + revs + "coverage: {state: unconfirmed}\n")
+    (base / "history.yaml").write_bytes(history.encode("utf-8"))
+
+
+def row_key_gaps():
+    """HIST-13 cases that docs/coverage.md listed as missing. Each would fail if the skipped version were compared or
+    if the key c3d4 of the first table were compared across a renumbered table or across two branches; HIST-13 says
+    none of them is compared, so every one passes the history structure category."""
+    full = {"status": "complete", "tables": [["a1b2", "c3d4"]]}
+    cases = [
+        ("本文のない版を挟んで行がなくても、削ったとみなさない（架空）", ["HIST-13", "HIST-08"],
+         [full, {"status": "absent"}, full], None),
+        ("L1が不合格の版で行がなくても、削ったとみなさない（架空）", ["HIST-13", "VAL-05"],
+         [full, {"status": "complete", "tables": [["a1b2"]], "broken": True}, full], None),
+        ("表の番号が変わった表の行のkeyを、前の番号の表と比べない（架空）", ["HIST-13", "ID-01", "TABLE-01"],
+         [full, {"status": "complete", "tables": [["g7h8"], ["a1b2"]]},
+          {"status": "complete", "tables": [["g7h8"], ["a1b2", "c3d4"]]}], None),
+        ("basedOnが分岐した別の枝の版とは、行のkeyを比べない（架空）", ["HIST-13", "HIST-04"],
+         [full, {"status": "complete", "tables": [["a1b2"]]}, full], {2: 0}),
+    ]
+    for title, requirements, versions, based_on in cases:
+        dest = next_dir("hist", True) / "repo"
+        row_key_versions(dest, versions, based_on)
+        add("hist", title, requirements, "L3", {"kind": "repository", "path": rel(dest)},
+            {"results": [l3("historyStructure")]}, True, "historyStructure")
+
+
+VARIANCES = ("      variances:\n"
+             "        - scope: {text: 第一條}\n"
+             "          readings:\n"
+             "            - {source: src-kanpo-19480720, locator: 1コマ 第一條, raw: 美しい風習を育てつつ}\n"
+             "            - {source: src-goshomei, locator: 第一條, raw: 美しい風俗を育てつつ}\n"
+             "          verification: {state: disputed, reason: 適合ケースのための架空の食い違い。官報正誤は見つかっていない}\n")
+
+
+def text_variances():
+    """HIST-08 text.variances, which had no case. The positive records a (fictional) wording difference between the
+    官報 and the 御署名原本 of the enactment version; the negative gives one reading only (two or more: HIST-08,
+    a schema error of the history manifest)."""
+    anchor = "      glyphNotes: versions/98mj5vgx/glyphs.yaml\n"
+    pos = next_dir("hist", True) / "repo"
+    mutate(pos, HIST_POS, [("history.yaml", anchor, anchor + VARIANCES)])
+    add("hist", "原典資料の間の文言の食い違いを、官報正誤が見つからない間はdisputedとして記録する", ["HIST-08", "GLYPH-07", "TYPE-06"],
+        "L3", {"kind": "repository", "path": rel(pos)}, {"results": [l3("historyStructure")]}, True, "historyStructure")
+    dest = next_dir("hist", False) / "repo"
+    mutate(dest, rel(pos), [("history.yaml",
+                             "            - {source: src-goshomei, locator: 第一條, raw: 美しい風俗を育てつつ}\n", "")])
+    add("hist", "原典資料の間の文言の食い違いの資料ごとの文言が一件だけ", ["HIST-08"], "L3",
+        {"kind": "repository", "path": rel(dest)},
+        {"results": [l3("historyStructure", "fail")], "diagnostics": [diag("HIST-08", SV["hist"])]}, False,
+        "historyStructure")
+
+
+IVS_NOTE = ('  - id: g30\n'
+            '    node: 19480720-law-178/main/article/2/paragraph/1/table/1/row/b6gr/cell/1\n'
+            '    offset: 1\n'
+            '    recorded: "日' + chr(0xE0100) + '"\n'
+            '    kind: selected\n'
+            '    ivd: {collection: Moji_Joho, sequence: 65E5 E0100}\n'
+            '    evidence: [{source: src-kanpo-19480720, locator: "1コマ 第二條 元日の項"}]\n'
+            '    verification: {state: unverified, reason: "適合ケースのための架空の注記"}\n')
+VARIANCE_NOTE = ('  - id: g31\n'
+                 '    node: 19480720-law-178/main/article/1/paragraph/1\n'
+                 '    offset: 15\n'
+                 '    recorded: "國"\n'
+                 '    kind: variance\n'
+                 '    candidates: ["國", "国"]\n'
+                 '    evidence: [{source: src-kanpo-19480720, locator: "1コマ 第一條"}, {source: src-goshomei, locator: "第一條"}]\n'
+                 '    verification: {state: unverified, reason: "適合ケースのための架空の注記"}\n')
+CORRECTION_ILLEGIBLE = ('  - id: g32\n'
+                        '    node: 19480720-law-178/main/article/2/paragraph/1/table/1/row/2aph/cell/3\n'
+                        '    offset: 13\n'
+                        '    recorded: "國"\n'
+                        '    kind: illegible\n'
+                        '    basis: otherSource\n'
+                        '    evidence: [{source: src-kanpo-19480928, locator: "2コマ 正誤 第二條八行（かすれ）"}, '
+                        '{source: src-goshomei, locator: "第二條 憲法記念日の項"}]\n'
+                        '    verification: {state: unverified, reason: "適合ケースのための架空の注記"}\n')
+
+
+def glyph_note_gaps():
+    """GLYPH-05 cases that docs/coverage.md listed as missing, on the enactment version of hist-001 (fictional notes).
+
+    ivd: a selected note whose recorded text has a variation selector (U+E0100) carries ivd; the negatives drop it,
+    make its sequence differ from recorded, and give ivd to a note without a selector. These are checked by the
+    validator, not by the schema. variance: a positive, and a negative without candidates (a schema error).
+    officialCorrection: the 官報正誤 as the publication whose copy cannot be read (GLYPH-05 allows promulgation or
+    officialCorrection there)."""
+    pos = next_dir("glyph", True) / "repo"
+    mutate(pos, HIST_POS, [(ENA + "glyphs.yaml", "  - id: g15\n", IVS_NOTE + "  - id: g15\n"),
+                           (ENA + "main.md", "元日\n", "元日" + chr(0xE0100) + "\n")])
+    add("glyph", "異体字セレクタを付けた字の注記に、IVDのコレクションと登録の並びを書く", ["GLYPH-05", "GLYPH-06", "CHAR-03"], "L3",
+        {"kind": "repository", "path": rel(pos)}, {"results": [l3("evidence")]}, True, "evidence")
+    negatives = [
+        ("異体字セレクタを付けた字の注記にivdがない", [(ENA + "glyphs.yaml", "    ivd: {collection: Moji_Joho, sequence: 65E5 E0100}\n", "")]),
+        ("ivdの登録の並びが、注記の字と合わない", [(ENA + "glyphs.yaml", "sequence: 65E5 E0100}", "sequence: 65E5 E0101}")]),
+        ("異体字セレクタを含まない注記にivdを書く",
+         [(ENA + "glyphs.yaml", '    recorded: "号"\n    kind: ambiguous\n',
+           '    recorded: "号"\n    kind: ambiguous\n    ivd: {collection: Moji_Joho, sequence: 53F7 E0100}\n')]),
+    ]
+    for title, edits in negatives:
+        dest = next_dir("glyph", False) / "repo"
+        mutate(dest, rel(pos), edits)
+        add("glyph", title, ["GLYPH-05"], "L3", {"kind": "repository", "path": rel(dest)},
+            {"results": [l3("evidence", "fail")], "diagnostics": [diag("GLYPH-05", SV["glyph"])]}, False, "evidence")
+    pos = next_dir("glyph", True) / "repo"
+    mutate(pos, HIST_POS, [(ENA + "glyphs.yaml", "  - id: g15\n", VARIANCE_NOTE + "  - id: g15\n")])
+    add("glyph", "官報とほかの原典資料で字体が違う字に、官報の字を置いて両方の字を注記する", ["GLYPH-02", "GLYPH-05", "GLYPH-07"], "L3",
+        {"kind": "repository", "path": rel(pos)}, {"results": [l3("evidence")]}, True, "evidence")
+    dest = next_dir("glyph", False) / "repo"
+    mutate(dest, rel(pos), [(ENA + "glyphs.yaml", '    candidates: ["國", "国"]\n', "")])
+    add("glyph", "字体の違いの注記に候補がない", ["GLYPH-05"], "L3", {"kind": "repository", "path": rel(dest)},
+        {"results": [l3("evidence", "fail")], "diagnostics": [diag("GLYPH-05", SV["glyph"])]}, False, "evidence")
+    pos = next_dir("glyph", True) / "repo"
+    mutate(pos, HIST_POS, [(ENA + "glyphs.yaml", "  - id: g15\n", CORRECTION_ILLEGIBLE + "  - id: g15\n")])
+    add("glyph", "官報正誤の複製で読めず、ほかの原典資料で読めた字を本文に置く判読困難の注記", ["GLYPH-05", "GLYPH-06", "GLYPH-07"], "L3",
+        {"kind": "repository", "path": rel(pos)}, {"results": [l3("evidence")]}, True, "evidence")
+
+
 def main():
     for suite, folder in FOLDER.items():
         for group in ("invalid", "expected"):
@@ -1675,6 +1853,9 @@ def main():
     legacy_boundary()
     spacing_line_breaks()
     staged_enactment()
+    row_key_gaps()
+    text_variances()
+    glyph_note_gaps()
     assert not DERIVED, sorted(DERIVED)  # every copy is listed by the case that owns it
     marked = {case["id"] for cases in INDEX.values() for case in cases if "rejectedBy" in case}
     assert marked == SCHEMA_REJECTED, SCHEMA_REJECTED - marked
