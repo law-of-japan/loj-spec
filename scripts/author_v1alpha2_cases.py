@@ -2,7 +2,10 @@
 
 Authoring helper (O-15). Not a parser: every expected tree below is written by
 hand from the spec text. Run after port_v1alpha2_cases.py; it replaces cases
-pkg-107 and later in conformance/v1alpha2/manifest.json. CI does not run it.
+pkg-107 and later in conformance/v1alpha2/manifest.json. CI does not run it, but
+tests/test_artifacts.py imports it (which writes nothing) and checks that the files
+main() would write match the checked-in files, so every case from pkg-107 on must be
+defined here.
 """
 import copy
 import json
@@ -58,19 +61,24 @@ def ast(main_children, lead=(), supplements=()):
 
 
 CASES = []
+FOLDERS = []  # the input folder of each case, replaced as a whole by main()
+FILES = {}  # path -> bytes of every file main() writes, except the index
+
+
+def emit(path, data):
+    FILES[path] = data.encode("utf-8") if isinstance(data, str) else data
 
 
 def case(title, requirements, files, expected, success, check="L1", man_extra=None):
     ident = "pkg-%03d" % (FIRST + len(CASES))
     folder = DST / ("valid" if success else "invalid") / ident
-    if folder.exists():
-        shutil.rmtree(folder)
+    FOLDERS.append(folder)
     names = [(name, parent) for name, parent, _ in files]
-    write(folder / "law.yaml", manifest(names, **(man_extra or {})))
+    emit(folder / "law.yaml", manifest(names, **(man_extra or {})))
     for name, _, body in files:
-        write(folder / name, body)
+        emit(folder / name, body)
     exp_path = "conformance/v1alpha2/expected/" + ident + ".json"
-    write(ROOT / exp_path, json.dumps(expected, ensure_ascii=False, indent=2) + "\n")
+    emit(ROOT / exp_path, json.dumps(expected, ensure_ascii=False, indent=2) + "\n")
     CASES.append({"id": ident, "title": title, "requirements": requirements, "check": check, "normative": True,
                   "input": {"kind": "package", "path": (folder / "law.yaml").relative_to(ROOT).as_posix()},
                   "expected": exp_path, "success": success})
@@ -931,11 +939,75 @@ case("指示の文のない削除条の形の改正規定と、続けて掲げ�
      ["AMEND-01", "AMEND-02", "HEAD-04", "PARA-03", "ID-01", "AST-01"], [("main.md", "main", S3_MAIN)], {"ast": S3_AST}, True)
 
 
+# 2026-11-24 (#157): deleted articles whose label is a range of articles (HEAD-04). The range number is
+# "<first>:<last>" (HEAD-02). In the main provision 「から…まで」 and 「及び」; in an amendment content 「及ヒ」 and
+# 「乃至」 with branch numbers. Written by hand in #157 and moved into this script without change (#180).
+R_FIRST = "この法律は、雲の保管について定める。\n"
+R_HEAD = ART + "<!-- loj:paragraph number=1 -->\n" + R_FIRST + "<!-- loj:end-paragraph -->\n"
+R_KEPT = "雲は、保管所に保管する。\n"
+R_LEAD = "架空雲刑法（架空法律第三号）の一部を次のように改正する。\n第八十八條中「乃至第八十六條」を「及ヒ第八十二條」に改める。\n"
+R_MID = "第百五條中「之ヲ罰セス」を「其刑ヲ免除スルコトヲ得」に改める。\n"
+R_LAST = "雲の保管の記録は、保管所に備える。\n"
+R_MAIN = (R_HEAD + "# 第二条から第四条まで\n削除\n\n# 第五条及び第六条\n削除\n\n"
+          "# 第七条\n<!-- loj:paragraph number=1 -->\n" + R_LEAD +
+          amendment_md("1", None, "# 第八十九條\n削除\n\n# 第九十條及ヒ第九十一條\n削除\n\n") + R_MID +
+          amendment_md("2", None, "# 第百十二條ノ二乃至第百十二條ノ五\n削除\n\n") + "<!-- loj:end-paragraph -->\n"
+          "# 第八条\n<!-- loj:paragraph number=1 -->\n" + R_LAST + "<!-- loj:end-paragraph -->\n")
+R_AST = ast([
+    article(MAIN, "1", "第一条", [lambda a: para(a, "1", R_FIRST)]),
+    deleted_article(MAIN, "2:4", "第二条から第四条まで"),
+    deleted_article(MAIN, "5:6", "第五条及び第六条"),
+    article(MAIN, "7", "第七条", [lambda a: para(a, "1", R_LEAD, children=lambda p: [
+        mk_amendment(p, "1", None, lambda c: [deleted_article(c, "89", "第八十九條"),
+                                              deleted_article(c, "90:91", "第九十條及ヒ第九十一條")]),
+        text(R_MID),
+        mk_amendment(p, "2", None, lambda c: [deleted_article(c, "112-2:112-5", "第百十二條ノ二乃至第百十二條ノ五")])])]),
+    article(MAIN, "8", "第八条", [lambda a: para(a, "1", R_LAST)])])
+case("範囲のラベルの削除条（本則の「から…まで」「及び」、改正内容の「及ヒ」と枝番号の「乃至」）",
+     ["HEAD-01", "HEAD-02", "HEAD-04", "AMEND-02", "ID-01", "AST-01"], [("main.md", "main", R_MAIN)], {"ast": R_AST}, True)
+case("範囲のラベルの条に項を置く（削除条でない）", ["HEAD-04"],
+     [("main.md", "main", R_HEAD + "# 第二条から第四条まで\n<!-- loj:paragraph number=1 -->\n" + R_KEPT +
+       "<!-- loj:end-paragraph -->\n")], fail("HEAD-04"), False)
+case("範囲のラベルの始めの条が終わりの条より後", ["HEAD-04"],
+     [("main.md", "main", R_HEAD + "# 第四条から第二条まで\n削除\n")], fail("HEAD-04"), False)
+case("範囲の削除条の範囲に番号が含まれる条", ["HEAD-02", "HEAD-04"],
+     [("main.md", "main", R_HEAD + "# 第二条から第四条まで\n削除\n\n# 第三条\n<!-- loj:paragraph number=1 -->\n" + R_KEPT +
+       "<!-- loj:end-paragraph -->\n")], fail("HEAD-02"), False)
+case("「から」の後に「まで」を欠く条をまとめたラベル", ["HEAD-01", "HEAD-04"],
+     [("main.md", "main", R_HEAD + "# 第二条から第四条\n削除\n")], fail("HEAD-01"), False)
+
+# 2026-11-24 (#158): the line break of quoted words set in two lines (二行割り) written as a line break of the text
+# (MD-04), as in 昭和二十二年勅令第百四十三号.
+W_TEXT = ("架空雲省官制（架空勅令第三号）の一部を次のように改正する。\n"
+          "第三條中「七局」を「八局」に、「總務局」を「總務局\n勞務局」に、「貯金保險局」を「貯金局」に改める。\n")
+case("二行割りで組んだ引いた字句の行の区切りを本文の改行として書いた改正の指示（昭和二十二年勅令第百四十三号の形）",
+     ["MD-04", "PARA-03", "AMEND-03", "AST-01"],
+     [("main.md", "main", "<!-- loj:paragraph number=1 -->\n" + W_TEXT + "<!-- loj:end-paragraph -->\n")],
+     {"ast": ast([para(MAIN, "1", W_TEXT)])}, True)
+
+# 2026-11-25 (#179): an ATX heading inside the table of contents, and the sources of a Manifest (sourceUris).
+case("目次の中のATX見出し", ["TOC-01", "DIR-02"],
+     [("main.md", "main", "<!-- loj:toc -->\n目次\n# 第一章　総則（第一条）\n附則\n<!-- loj:end-toc -->\n"
+       "# 第一章　総則\n## 第一条\n" + P1)], fail("TOC-01", "DIR-02"), False)
+case("Manifestの出典のURI（sourceUris）", ["MAN-01", "AST-01"], [("main.md", "main", ART + P1)],
+     {"ast": ast([article(MAIN, "1", "第一条", [lambda a: para(a, "1", BODY)])])}, True,
+     man_extra={"sourceUris": ["https://example.com/kanpo/20990101/1", "https://example.com/egov/20990101-act-1"]})
+
+
+def index_cases(index):
+    """The cases of the index with pkg-107 and later replaced by the cases defined here."""
+    return [c for c in index["cases"] if int(c["id"][4:]) < FIRST] + CASES
+
+
 def main():
+    for folder in FOLDERS:
+        if folder.exists():
+            shutil.rmtree(folder)
+    for path, data in FILES.items():
+        write(path, data)
     index_path = DST / "manifest.json"
     index = json.loads(index_path.read_text(encoding="utf-8"))
-    kept = [c for c in index["cases"] if int(c["id"][4:]) < FIRST]
-    index["cases"] = kept + CASES
+    index["cases"] = index_cases(index)
     write(index_path, json.dumps(index, ensure_ascii=False, indent=2) + "\n")
     print(f"Authored {len(CASES)} v1alpha2 cases by hand; no parser invoked.")
 

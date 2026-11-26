@@ -1039,6 +1039,44 @@ class NextSuiteAuditTests(unittest.TestCase):
         self.assert_rejected("negative without its own input", "common/v1alpha1", broken)
 
 
+class V1alpha2AuthoringTests(unittest.TestCase):
+    """author_v1alpha2_cases.py defines every case from pkg-107 on, as checked in (#180).
+
+    CI does not run the authoring script. Importing it builds the files in memory and writes nothing, so this
+    catches a case added or changed by hand without the script, which a later run of the script would overwrite.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        import author_v1alpha2_cases as a
+        cls.a = a
+        cls.index = v.read_json(a.DST / "manifest.json")
+
+    def test_index_matches_script(self):
+        self.assertEqual(self.a.index_cases(self.index), self.index["cases"])
+
+    def test_files_match_script(self):
+        for path, data in self.a.FILES.items():
+            with self.subTest(path=path.relative_to(v.ROOT).as_posix()):
+                self.assertTrue(path.is_file())
+                self.assertEqual(path.read_bytes(), data)
+
+    def test_case_folders_have_no_other_files(self):
+        written = set(self.a.FILES)
+        for folder in self.a.FOLDERS:
+            for path in folder.rglob("*"):
+                if path.is_file():
+                    with self.subTest(path=path.relative_to(v.ROOT).as_posix()):
+                        self.assertIn(path, written)
+
+    def test_no_expected_result_outside_script(self):
+        defined = {c["id"] for c in self.a.CASES}
+        for path in (self.a.DST / "expected").glob("pkg-*.json"):
+            if int(path.stem[4:]) >= self.a.FIRST:
+                with self.subTest(case=path.stem):
+                    self.assertIn(path.stem, defined)
+
+
 if __name__ == "__main__":
     unittest.main()
 
