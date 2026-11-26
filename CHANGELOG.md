@@ -2,6 +2,16 @@
 
 見出しの「草案」は、[草案の版](spec/README.md#版の状態)への変更であることを示す。版の状態の正は、[規範仕様の入口](spec/README.md#規範とするもの)の表にある。版を公開したときは、公開の日付の項目を加える。
 
+## 本文のない版を宣言した変更（2026-11-26、草案）
+
+公開の前の手順3（[CONTRIBUTING](CONTRIBUTING.md#版の状態と公開)）で、期待結果を一つに決められなかった入力を定める変更である。草案の版（`common/v1alpha1`）の意味を変える。理由は[DDR-015](docs/design-decisions/015-change-kinds.md)にある。
+
+- CHG-02: 本文のない版（`text.status: absent`）を宣言した`correction`・`officialCorrection`は、`text.sources`を持たない（HIST-08）ので根拠の確かめで不合格とすると書いた。
+- CHG-02: `text.status`の変更と、本文のない版への版パッケージの追加は`restoration`の範囲で、`correction`・`officialCorrection`では範囲の外とした。`restoration`で宣言した版が変更後に本文のない版であれば、変更前の本文の状態によらず不合格とした。
+- 適合ケース: common-098〜101（負例3件、正例1件）を加えた。
+- 制限に、本文のある版を本文のない版に改める変更の種類を定めないことを加えた。
+- 要件との対応表の該当する段落とケースの表の範囲を直した。
+
 ## 状態の訂正でのRevisionのidの再利用の検査（2026-11-26、草案）
 
 [law-of-japan/loj-spec#189](https://github.com/law-of-japan/loj-spec/issues/189)の変更である。草案の版（`common/v1alpha1`）の意味を変える。理由は[DDR-015](docs/design-decisions/015-change-kinds.md#表が他の要件を引く検査の規則と関係の撤回の種類2026-11-26)の制約にある。既存のケースの期待結果は変わらない。
