@@ -43,7 +43,7 @@ ASTは、`schemaVersion`・`law`・`root`への投影を、位置情報を除い
   - `correction`: 当該Revisionの`text.sources`が、Evidenceを一つ以上持つ。
   - `officialCorrection`: 上に加えて、`text.sources`のEvidenceの少なくとも一つが、`kind: officialCorrection`のSource（官報正誤）を指す。
 - この確かめは、そのcommitが根拠を加えた・更新したことを求めない。根拠の内容が訂正に合うかは、原典と比べて確かめる事柄であり、変更検査では判定しない。
-- `revisionFix`の「撤回・統合・分割した旧IDを再利用していない」は、変更前の記録版で`status`が`retracted`・`merged`・`split`のRevisionのrevision_idを、変更後の記録版の履歴マニフェストで二つ以上のRevisionが持つかを確かめる。持てば、旧IDの再利用として報告する。
+- `revisionFix`の「撤回・統合・分割した旧IDを再利用していない」は、変更前の記録版で`status`が`retracted`・`merged`・`split`のRevisionのrevision_idで、変更前の記録版では一つのRevisionだけが持つものを、変更後の記録版の履歴マニフェストで二つ以上のRevisionが持つかを確かめる。持てば、旧IDの再利用として報告する。変更前から二つ以上のRevisionが持っていたidは、そのcommitが生じた再利用ではないので、この検査では報告しない（変更前の記録版のL3で検出する）。
   - 撤回・統合・分割したRevisionは履歴マニフェストに残る（[HIST-10](../../loj-history/v1alpha1/01-history.md)）ので、別のRevisionが同じidを持てば、二つの項目が同じidを持つ。
   - 撤回・統合・分割したRevisionの項目そのものを`active`に戻す変更は、撤回・統合・分割の取り消し（[CHG-03](#chg-03-種類の宣言)）であり、再利用に当たらない。戻すときにその項目のほかのフィールドを変えても、宣言した版の訂正と区別できないので、変更検査では再利用と判定しない。
 - `correction`・`officialCorrection`・`restoration`の検査は、宣言した版の本文の内容が変わったことを確かめず（本文の内容を変えない版の宣言の禁止は[CHG-01](#chg-01-変更の種類)による）、宣言した版のASTを生成・比較しない。したがって、宣言した版がASTを生成できなくても、その版について[CHG-04](#chg-04-astを生成できない版)の判定不能に当たらない。本文の内容を変えない版を宣言したcommitも、表の検査を満たせば合格とする。一部しか本文がない版の訂正・復元を、ASTを生成できるかによらず検査できるようにするためである。
