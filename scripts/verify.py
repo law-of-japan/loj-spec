@@ -1181,17 +1181,18 @@ def schema_sections(by_dir, schema):
 
     The schema's own version directory comes first; other versions of the same kind are never read
     (e.g. REG-02 of loj-registry/v1alpha1 for a row on loj-registry/v1alpha2). An ID of another kind is
-    added only when no other directory has the same ID, so it cannot be matched with the wrong version.
+    added only when no other directory has the same ID, so it cannot be matched with the wrong version:
+    with loj-history/v1alpha1 and a later loj-history/v1alpha2 both holding HIST-07, a row on a
+    loj-registry schema cannot cite HIST-07 (it is ambiguous), while a row on either history schema can.
     """
     own = schema_version_dir(schema)
-    kind = version_kind
     sections = dict(by_dir.get(own, {}))
     counts = {}
     for found in by_dir.values():
         for ident in found:
             counts[ident] = counts.get(ident, 0) + 1
     for folder, found in by_dir.items():
-        if kind(folder) != kind(own):
+        if version_kind(folder) != version_kind(own):
             sections.update({ident: text for ident, text in found.items()
                              if ident not in sections and counts[ident] == 1})
     return sections

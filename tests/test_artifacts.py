@@ -674,6 +674,10 @@ class RestatementTests(unittest.TestCase):
                  ("spec/m/v1/a.md", 3, "AAA-01", ["BBB-01"]), ("spec/k/v3/a.md", 3, "AAA-01", ["BBB-01"])]
         self.assertEqual(v.drop_copied_restatements(found, texts),
                          [found[0], found[2], found[3]])
+        # A file directly under spec/ (spec/README.md) has the empty kind and does not fail.
+        top = {"spec/README.md": "## AAA-01 x\n\n- MUST BBB-01\n"}
+        self.assertEqual(v.drop_copied_restatements([("spec/README.md", 3, "AAA-01", ["BBB-01"])], top),
+                         [("spec/README.md", 3, "AAA-01", ["BBB-01"])])
 
     def test_schema_sections_keep_versions_apart(self):
         by_dir = {"k/v1": {"AAA-01": "old", "AAA-02": "old two"}, "k/v2": {"AAA-01": "new", "AAA-03": "new three"},
@@ -957,6 +961,15 @@ class NextSuiteAuditTests(unittest.TestCase):
                     self.assertTrue((v.ROOT / case["expected"]).is_file(), case["id"])
                     for path in v.input_files(case):
                         self.assertTrue(path.exists(), case["id"])
+
+    def test_suite_name_must_match_folder(self):
+        # The index pattern admits suites that do not exist (loj-rebuild/v9); audit_suite pins the suite
+        # name to its folder, so an index naming another suite fails.
+        for name, index in self.indexes.items():
+            broken = copy.deepcopy(index)
+            broken["suite"] = "loj-rebuild/v9"
+            with self.subTest(suite=name):
+                self.assert_rejected("Suite mismatch", name, broken)
 
     def test_orphan_expected_file(self):
         for name, index in self.indexes.items():
