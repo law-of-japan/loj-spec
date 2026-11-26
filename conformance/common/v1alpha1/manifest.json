@@ -2301,6 +2301,25 @@
       },
       "expected": "conformance/common/v1alpha1/expected/common-095.json",
       "success": true
+    },
+    {
+      "id": "common-096",
+      "title": "関係の撤回と効力の終了の項目の削除を、状態の訂正と宣言する",
+      "requirements": [
+        "HIST-12",
+        "CHG-01",
+        "CHG-02"
+      ],
+      "check": "change",
+      "normative": true,
+      "input": {
+        "kind": "change",
+        "bundle": "conformance/common/v1alpha1/invalid/common-096/repo.bundle",
+        "base": "dfd40bffd70de3fa3bf1c3668e462bc5053407fd",
+        "head": "1b9d2fa6a2f5183b02a2fb1b73f4e4924f27246e"
+      },
+      "expected": "conformance/common/v1alpha1/expected/common-096.json",
+      "success": false
     }
   ]
 }

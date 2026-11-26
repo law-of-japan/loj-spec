@@ -7,9 +7,9 @@
 [law-of-japan/loj-spec#184](https://github.com/law-of-japan/loj-spec/issues/184)の変更である。草案の版（`common/v1alpha1`、`loj-history/v1alpha1`）の意味を変える。理由は[DDR-015](docs/design-decisions/015-change-kinds.md#表が他の要件を引く検査の規則と関係の撤回の種類2026-11-26)にある。既存のケースの期待結果は変わらない。
 
 - CHG-02: 表の`metadata`の検査で、統合・分割・撤回したRecordのIDの再利用の違反をRID-05の規則で報告すると書いた。`revisionFix`の旧IDの再利用の検査には、REV-01を挙げた。
-- CHG-03: 表の検査のうち、他の要件が定める要求を確かめる検査は、その要件の規則で報告すると書いた。
+- CHG-03: 表が報告する規則を挙げた検査はその規則で、表のほかの検査はCHG-02の規則で報告すると書いた。
 - HIST-12: 関係を撤回して`termination`の項目を削る変更の種類を、`revisionFix`から`metadata`に改めた。関係の撤回は、Revisionの撤回・統合・分割ではなく、関係の更新である（CHG-01の表）。
-- 適合ケース: 関係の撤回と`termination`の項目の削除（common-094）、別の関係への置き換え（common-095）を、一つの`metadata`の変更とする正例を加えた。
+- 適合ケース: 関係の撤回と`termination`の項目の削除（common-094）、別の関係への置き換え（common-095）を、一つの`metadata`の変更とする正例と、同じ変更を`revisionFix`と宣言する負例（common-096、CHG-02）を加えた。
 - 要件との対応表の該当する段落とケースの表の範囲を直し、DDR-017の採用の項に改めたことを書き添えた。
 
 ## 分割したRecordへの参照の結果（2026-11-26、草案）

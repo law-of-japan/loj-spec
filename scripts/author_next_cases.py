@@ -2273,6 +2273,16 @@ def relation_retraction_changes():
         add("common", title, ["HIST-12", "CHG-01", "CHG-02"], "change",
             {"kind": "change", "bundle": rel(bundle), "base": c1, "head": c2},
             {"results": [{"check": "change", "result": "pass"}]}, True)
+    # The same change as common-094 declared revisionFix (the old reading of HIST-12), with the only Revision
+    # declared: the relation and the termination are outside its range (the declared version and the record of the
+    # retraction, merge or split of Revisions), so the commit fails by CHG-02.
+    bundle = next_dir("common", False) / "repo.bundle"
+    c1, c2 = build_bundle(bundle, [("効力の終了を記録する", "revisionAdd", False, {"history.yaml": base}),
+                                   (raw_message("関係を撤回する", "revisionFix", ["2d6d257a"]), RAW, False,
+                                    {"history.yaml": deleted})])
+    add("common", "関係の撤回と効力の終了の項目の削除を、状態の訂正と宣言する", ["HIST-12", "CHG-01", "CHG-02"], "change",
+        {"kind": "change", "bundle": rel(bundle), "base": c1, "head": c2},
+        {"results": [{"check": "change", "result": "fail"}], "diagnostics": [diag("CHG-02", SV["common"])]}, False)
 
 
 def main():
