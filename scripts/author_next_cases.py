@@ -2345,6 +2345,48 @@ def revision_id_reuse():
         {"results": [{"check": "change", "result": "fail"}], "diagnostics": [diag("REV-01", SV["hist"])]}, False)
 
 
+# --- 2026-11-26: a version without text declared by correction or restoration (CHG-02) ---------------------------
+def absent_text(files):
+    """The version recorded without text (HIST-08): no version package, and no sources or glyphCheck."""
+    out = {k: v for k, v in files.items() if not k.startswith("versions/")}
+    text = ("    text:\n      status: complete\n      sources: [{source: src-fiction, locator: 本則}]\n"
+            "      glyphCheck: unverified\n")
+    assert out["history.yaml"].count(text) == 1
+    out["history.yaml"] = out["history.yaml"].replace(text, "    text: {status: absent}\n")
+    return out
+
+
+def with_readme(files):
+    """Add a file outside the canonical data (CHG-01), which no kind's check covers, so the commit is not empty."""
+    out = dict(files)
+    out["README.md"] = "架空法律第一号の法令リポジトリである。\n"
+    return out
+
+
+def absent_version_declarations():
+    """CHG-02: a version without text has no text.sources (HIST-08), so correction cannot show its basis.
+
+    A correction that declares the version and changes only a file outside the canonical data fails the check of
+    its basis. A correction that adds the version package and records the text as complete changes text.status,
+    outside its range. Adding the text is restoration, which passes; a restoration that leaves the version without
+    text does not update the state of the text.
+    """
+    body = "架空の雲を保管する。\n"
+    absent = absent_text(fictional_files(body))
+    for success, title, kind, after in (
+            (False, "本文のない版を宣言し、正本のデータの外のファイルだけを変える記録訂正", "correction", with_readme(absent)),
+            (False, "本文のない版を宣言し、版パッケージを加えて本文をそろえる記録訂正", "correction", fictional_files(body)),
+            (True, "本文のない版に版パッケージを加えて本文をそろえる復元", "restoration", fictional_files(body)),
+            (False, "本文のない版を宣言し、本文を補わずに正本のデータの外のファイルだけを変える復元", "restoration", with_readme(absent))):
+        bundle = next_dir("common", success) / "repo.bundle"
+        c1, c2 = build_bundle(bundle, [("本文のない版を加える", "revisionAdd", True, absent), (title, kind, True, after)])
+        expected = {"results": [{"check": "change", "result": "pass" if success else "fail"}]}
+        if not success:
+            expected["diagnostics"] = [diag("CHG-02", SV["common"])]
+        add("common", title, ["CHG-02", "HIST-08"], "change", {"kind": "change", "bundle": rel(bundle), "base": c1, "head": c2},
+            expected, success)
+
+
 def main():
     for suite, folder in FOLDER.items():
         for group in ("invalid", "expected"):
@@ -2399,6 +2441,7 @@ def main():
     split_reference_candidates()
     relation_retraction_changes()
     revision_id_reuse()
+    absent_version_declarations()
     assert not DERIVED, sorted(DERIVED)  # every copy is listed by the case that owns it
     marked = {case["id"] for cases in INDEX.values() for case in cases if "rejectedBy" in case}
     assert marked == SCHEMA_REJECTED, SCHEMA_REJECTED - marked
