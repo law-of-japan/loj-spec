@@ -1000,9 +1000,14 @@ def index_cases(index):
 
 
 def main():
-    for folder in FOLDERS:
-        if folder.exists():
-            shutil.rmtree(folder)
+    # Replace every case from pkg-107 on, including one no longer defined here.
+    for group in ("valid", "invalid"):
+        for folder in (DST / group).glob("pkg-*"):
+            if int(folder.name[4:]) >= FIRST:
+                shutil.rmtree(folder)
+    for path in (DST / "expected").glob("pkg-*.json"):
+        if int(path.stem[4:]) >= FIRST:
+            path.unlink()
     for path, data in FILES.items():
         write(path, data)
     index_path = DST / "manifest.json"
