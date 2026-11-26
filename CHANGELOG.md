@@ -7,7 +7,7 @@
 [組み合わせて使える版](spec/README.md#組み合わせて使える版)の組1の6つの版を、草案から公開にした（[版の状態](spec/README.md#版の状態)）。以後、これらの版の意味は変えない。意味を変えるときは、版番号を上げた新しい版を草案として作る（CORE-04）。
 
 - 公開した版: `common/v1alpha1`（共通の型）、`loj/v1alpha2`、`loj-history/v1alpha1`、`loj-glyphs/v1alpha1`、`loj-registry/v1alpha1`、`loj-rebuild/v1alpha1`。
-- 公開の前の手順（[CONTRIBUTING](CONTRIBUTING.md#版の状態と公開)）: 欠陥のissueを閉じるか制限に書いた。規範のケース463件を検査器（`loj-validator` `1be397e`）で実行し、すべて期待どおりであった（結果は公開のPRに添付した）。公開の後では版番号を上げないと直せない論点を、解決するか制限に書いた。
+- 公開の前の手順（[CONTRIBUTING](CONTRIBUTING.md#版の状態と公開)）: 欠陥のissueを閉じるか制限に書いた。規範のケース463件を検査器（`loj-validator` `1be397e`）で実行し、すべて期待どおりであった（結果は公開のPR [law-of-japan/loj-spec#193](https://github.com/law-of-japan/loj-spec/pull/193#issuecomment-7184444138) に添付した）。公開の後では版番号を上げないと直せない論点を、解決するか制限に書いた。
 - 公開したcommitに、schemaVersionと同じ名前のタグ（共通の型は`common/v1alpha1`）を打つ。
 - 制限の「検証の境界」の、検査器で確かめていないとした文を、公開の前の実行の結果に合わせて直した。
 
