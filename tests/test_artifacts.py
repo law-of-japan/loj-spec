@@ -617,7 +617,7 @@ class RestatementTests(unittest.TestCase):
             v.compare_case_ranges({"m": ("a-001", "a-002")}, {"m": ("a-001", "a-002"), "n": ("b-001", "b-001")})
 
     def test_repository_case_table(self):
-        self.assertEqual(v.check_case_ranges(), 6)
+        self.assertEqual(v.check_case_ranges(), 7)
 
     def test_repository_addressee_table(self):
         self.assertGreater(v.check_addressees(), 100)
@@ -644,15 +644,16 @@ class RestatementTests(unittest.TestCase):
         rows = v.prohibition_rows(self.TABLE)
         schemas = {("s.json", "/a/then"): {"p", "q"}, ("s.json", "/a/else"): {"r"}, ("s.json", "/b/then"): {"t"}}
         sections = {"AAA-01": "## AAA-01 x\n\n- `p`を持ってはならない。\n", "AAA-02": "## AAA-02 y\n"}
-        self.assertEqual(v.compare_prohibitions(rows, schemas, sections), [
+        cited = {"s.json": sections}
+        self.assertEqual(v.compare_prohibitions(rows, schemas, cited), [
             ("s.json", "/a/else", "r", "no text"), ("s.json", "/a/then", "q", "no text"),
             ("s.json", "/b/then", "t", "not named in AAA-02")])
         with self.assertRaisesRegex(ValueError, "/b/then u / listed t"):
-            v.compare_prohibitions(rows, {**schemas, ("s.json", "/b/then"): {"u"}}, sections)
+            v.compare_prohibitions(rows, {**schemas, ("s.json", "/b/then"): {"u"}}, cited)
         with self.assertRaisesRegex(ValueError, "/c/then x / listed $"):
-            v.compare_prohibitions(rows, {**schemas, ("s.json", "/c/then"): {"x"}}, sections)
+            v.compare_prohibitions(rows, {**schemas, ("s.json", "/c/then"): {"x"}}, cited)
         with self.assertRaisesRegex(ValueError, "unknown requirement: AAA-02"):
-            v.compare_prohibitions(rows, schemas, {"AAA-01": sections["AAA-01"]})
+            v.compare_prohibitions(rows, schemas, {"s.json": {"AAA-01": sections["AAA-01"]}})
 
     def test_prohibition_table_rows_rejected(self):
         for old, new in (("| AAA-01 | `q` |", "| — | `q` |"), ("| AAA-01 | `q` |", "| AAA-01 | `z` |"),
@@ -665,6 +666,15 @@ class RestatementTests(unittest.TestCase):
         self.assertEqual(sections, {"AAA-01": "## AAA-01 x\n\n本文\n\n", "AAA-02": "## AAA-02 y\n\n二\n"})
         with self.assertRaisesRegex(ValueError, "AAA-01"):
             v.requirement_sections(["## AAA-01 x\n", "## AAA-01 y\n"])
+
+    def test_schema_sections_keep_versions_apart(self):
+        by_dir = {"k/v1": {"AAA-01": "old", "AAA-02": "old two"}, "k/v2": {"AAA-01": "new", "AAA-03": "new three"},
+                  "c/v1": {"BBB-01": "common"}}
+        self.assertEqual(v.schema_sections(by_dir, "k/v2/s.json"),
+                         {"AAA-01": "new", "AAA-03": "new three", "BBB-01": "common"})
+        self.assertEqual(v.schema_sections(by_dir, "k/v1/s.json")["AAA-01"], "old")
+        # A shared ID is never taken from another directory.
+        self.assertNotIn("AAA-01", v.schema_sections(by_dir, "c/v1/s.json"))
 
     def test_repository_prohibition_table(self):
         count, warnings = v.check_prohibitions()
@@ -923,7 +933,8 @@ class NextSuiteAuditTests(unittest.TestCase):
 
     def test_every_suite_passes_with_its_files(self):
         self.assertEqual(set(self.indexes), {"loj/v1alpha2", "common/v1alpha1", "loj-history/v1alpha1",
-                                             "loj-glyphs/v1alpha1", "loj-registry/v1alpha1", "loj-rebuild/v1alpha1"})
+                                             "loj-glyphs/v1alpha1", "loj-registry/v1alpha1", "loj-registry/v1alpha2",
+                                             "loj-rebuild/v1alpha1"})
         for name, index in self.indexes.items():
             with self.subTest(suite=name):
                 count, covered, stats = self.audit(name)

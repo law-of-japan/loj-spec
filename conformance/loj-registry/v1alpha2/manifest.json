@@ -1,0 +1,166 @@
+{
+  "suite": "loj-registry/v1alpha2",
+  "cases": [
+    {
+      "id": "reg-001",
+      "title": "名称を持つRecordと持たないRecord",
+      "requirements": [
+        "REG-01",
+        "REG-02",
+        "REG-06",
+        "RID-02"
+      ],
+      "check": "registry",
+      "normative": true,
+      "input": {
+        "kind": "registry",
+        "path": "conformance/loj-registry/v1alpha2/valid/reg-001/registry"
+      },
+      "expected": "conformance/loj-registry/v1alpha2/expected/reg-001.json",
+      "success": true
+    },
+    {
+      "id": "reg-002",
+      "title": "同じ種別と表記の名称が二つ",
+      "requirements": [
+        "REG-06"
+      ],
+      "check": "registry",
+      "normative": true,
+      "input": {
+        "kind": "registry",
+        "path": "conformance/loj-registry/v1alpha2/invalid/reg-002/registry"
+      },
+      "expected": "conformance/loj-registry/v1alpha2/expected/reg-002.json",
+      "success": false,
+      "derivedFrom": [
+        {
+          "path": "conformance/loj-registry/v1alpha2/invalid/reg-002/registry",
+          "from": "conformance/loj-registry/v1alpha2/valid/reg-001/registry",
+          "edits": [
+            {
+              "file": "records/19480720-law-178.yaml",
+              "old": "    value: 祝日法\n",
+              "new": "    value: 国民祝日法\n"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "reg-003",
+      "title": "名称のidの重複",
+      "requirements": [
+        "REG-06"
+      ],
+      "check": "registry",
+      "normative": true,
+      "input": {
+        "kind": "registry",
+        "path": "conformance/loj-registry/v1alpha2/invalid/reg-003/registry"
+      },
+      "expected": "conformance/loj-registry/v1alpha2/expected/reg-003.json",
+      "success": false,
+      "derivedFrom": [
+        {
+          "path": "conformance/loj-registry/v1alpha2/invalid/reg-003/registry",
+          "from": "conformance/loj-registry/v1alpha2/valid/reg-001/registry",
+          "edits": [
+            {
+              "file": "records/19480720-law-178.yaml",
+              "old": "  - id: m2\n",
+              "new": "  - id: m1\n"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "reg-004",
+      "title": "定めのない名称の種別",
+      "requirements": [
+        "REG-06"
+      ],
+      "check": "registry",
+      "normative": true,
+      "input": {
+        "kind": "registry",
+        "path": "conformance/loj-registry/v1alpha2/invalid/reg-004/registry"
+      },
+      "expected": "conformance/loj-registry/v1alpha2/expected/reg-004.json",
+      "success": false,
+      "rejectedBy": "schema",
+      "derivedFrom": [
+        {
+          "path": "conformance/loj-registry/v1alpha2/invalid/reg-004/registry",
+          "from": "conformance/loj-registry/v1alpha2/valid/reg-001/registry",
+          "edits": [
+            {
+              "file": "records/19480720-law-178.yaml",
+              "old": "    kind: abbreviation\n    value: 祝日法\n",
+              "new": "    kind: nickname\n    value: 祝日法\n"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "reg-005",
+      "title": "根拠のない未確認の名称",
+      "requirements": [
+        "REG-06"
+      ],
+      "check": "registry",
+      "normative": true,
+      "input": {
+        "kind": "registry",
+        "path": "conformance/loj-registry/v1alpha2/invalid/reg-005/registry"
+      },
+      "expected": "conformance/loj-registry/v1alpha2/expected/reg-005.json",
+      "success": false,
+      "rejectedBy": "schema",
+      "derivedFrom": [
+        {
+          "path": "conformance/loj-registry/v1alpha2/invalid/reg-005/registry",
+          "from": "conformance/loj-registry/v1alpha2/valid/reg-001/registry",
+          "edits": [
+            {
+              "file": "records/19480720-law-178.yaml",
+              "old": "    value: 祝日法\n    evidence: [{source: src-egov, locator: 法令略称}]\n    verification: {state: confirmed}\n",
+              "new": "    value: 祝日法\n    evidence: []\n    verification: {state: unverified, reason: 根拠の資料を記録していない}\n"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "reg-006",
+      "title": "名称の一覧がない",
+      "requirements": [
+        "REG-02"
+      ],
+      "check": "registry",
+      "normative": true,
+      "input": {
+        "kind": "registry",
+        "path": "conformance/loj-registry/v1alpha2/invalid/reg-006/registry"
+      },
+      "expected": "conformance/loj-registry/v1alpha2/expected/reg-006.json",
+      "success": false,
+      "rejectedBy": "schema",
+      "derivedFrom": [
+        {
+          "path": "conformance/loj-registry/v1alpha2/invalid/reg-006/registry",
+          "from": "conformance/loj-registry/v1alpha2/valid/reg-001/registry",
+          "edits": [
+            {
+              "file": "records/19490516-law-70.yaml",
+              "old": "names: []\n",
+              "new": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
