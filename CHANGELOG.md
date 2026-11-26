@@ -2,6 +2,17 @@
 
 見出しの「草案」は、[草案の版](spec/README.md#版の状態)への変更であることを示す。版の状態の正は、[規範仕様の入口](spec/README.md#規範とするもの)の表にある。版を公開したときは、公開の日付の項目を加える。
 
+## 分割したRecordへの参照の結果（2026-11-26、草案）
+
+[law-of-japan/loj-spec#183](https://github.com/law-of-japan/loj-spec/issues/183)の変更である。草案の版（`common/v1alpha1`）の意味を変える。理由は[DDR-016](docs/design-decisions/016-l3-l4.md#分割したrecordへの参照の結果2026-11-26)にある。既存のケースの期待結果は変わらない。
+
+- VAL-06: Record間の参照の結果に、四つ目の値として候補（`candidates`）を加えた。未取得と同じく判定不能の一つとして数え、区分の結果を未完了にする。
+- XREF-01: 分割したRecordへの参照の結果を候補とし、登録台帳の`replacedBy`の各項目の`record`を、確認状態によらず候補のRecordとして挙げると定めた。候補の参照は判定不能として報告し、確定した関係が参照していても違反にしない。候補以外の結果の参照は`candidates`を持たない。
+- CONF-01: 期待結果の参照の比較に、候補のRecordの集合を加えた。
+- `report.schema.json`・`expected.schema.json`: 参照の`result`に`candidates`を加え、`candidates`（候補のRecordの文字列表記の配列）を、`result: candidates`で必須、それ以外で禁止とした。要件との対応表の条件付きの禁止の表に、2行を加えた。
+- 適合ケース: 関係の起点が分割したRecordで、関係の解決の区分が未完了になり、参照の結果が候補になる正例（common-093）を加えた。入力はcommon-071の正例を共有して読む。
+- 用語集に「候補」を加え、要件との対応表のXREF-02の段落とケースの表の範囲を直した。
+
 ## v1alpha2の手で加えたケースの作成の補助への取り込み（2026-11-26）
 
 [law-of-japan/loj-spec#180](https://github.com/law-of-japan/loj-spec/issues/180)の変更である。資料を作る補助を直しただけで、規範の本文と適合ケースは変えていない。`conformance/v1alpha2`のファイルは、1バイトも変わらない。

@@ -2222,6 +2222,21 @@ def revert_revision_add():
         {"results": [{"check": "change", "result": "fail"}], "diagnostics": [diag("CHG-02", SV["common"])]}, False)
 
 
+# --- 2026-11-26: the result of a reference to a split Record (#183) -------------------------------
+def split_reference_candidates():
+    # XREF-01: the from of the old Record's relation is a split Record (the input of common-071). The reference is
+    # not resolved; its result is candidates, listing replacedBy of the split Record, and it is undetermined.
+    split = "conformance/common/v1alpha1/valid/common-071"
+    add("common", "関係の起点が分割したRecordで、参照の結果が候補になる（架空）", ["XREF-01", "VAL-04", "VAL-06"], "L4",
+        {"kind": "records", "registry": split + "/registry",
+         "repositories": [split + "/" + OLD_LAW[0], TOTAL_POS + "/" + NEW_LAW[0]]},
+        {"results": [{"check": "L4", "category": "relationResolution", "result": "incomplete"}],
+         "diagnostics": [diag("XREF-01", SV["common"], "undetermined")],
+         "references": [{"target": "loj:loj/" + SPLIT_ID[0], "result": "candidates",
+                         "candidates": ["loj:loj/" + NEW_LAW[0], "loj:loj/" + SPLIT_OTHER[0]]}]},
+        True, "relationResolution")
+
+
 def main():
     for suite, folder in FOLDER.items():
         for group in ("invalid", "expected"):
@@ -2273,6 +2288,7 @@ def main():
     change_dependent_files()
     registry_metadata_changes()
     revert_revision_add()
+    split_reference_candidates()
     assert not DERIVED, sorted(DERIVED)  # every copy is listed by the case that owns it
     marked = {case["id"] for cases in INDEX.values() for case in cases if "rejectedBy" in case}
     assert marked == SCHEMA_REJECTED, SCHEMA_REJECTED - marked
