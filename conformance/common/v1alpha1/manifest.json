@@ -2241,6 +2241,28 @@
       },
       "expected": "conformance/common/v1alpha1/expected/common-092.json",
       "success": false
+    },
+    {
+      "id": "common-093",
+      "title": "関係の起点が分割したRecordで、参照の結果が候補になる（架空）",
+      "requirements": [
+        "XREF-01",
+        "VAL-04",
+        "VAL-06"
+      ],
+      "check": "L4",
+      "category": "relationResolution",
+      "normative": true,
+      "input": {
+        "kind": "records",
+        "registry": "conformance/common/v1alpha1/valid/common-071/registry",
+        "repositories": [
+          "conformance/common/v1alpha1/valid/common-071/20990101-law-5",
+          "conformance/common/v1alpha1/valid/common-017/20991001-law-9"
+        ]
+      },
+      "expected": "conformance/common/v1alpha1/expected/common-093.json",
+      "success": true
     }
   ]
 }
