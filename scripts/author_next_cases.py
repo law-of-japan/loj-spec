@@ -2387,6 +2387,63 @@ def absent_version_declarations():
             expected, success)
 
 
+# --- 2026-11-26: the clauses of XREF-05 and XREF-06 without a case (publication step 2) ------------
+def cross_record_clauses():
+    display = {"check": "L4", "category": "displayConsistency", "result": "pass"}
+    warning = {"results": [display], "diagnostics": [diag("XREF-05", SV["common"], "warning")]}
+    law = "records/19480720-law-178.yaml"
+    exists_raw = "    state: exists\n    raw: 法律第百七十八号\n"
+    period = '      period: {raw: 昭和二十三年, gregorian: {from: "1948-01-01", to: "1948-12-31"}}\n'
+    ambiguous = ('      - {id: g1, offset: 7, recorded: "号", kind: ambiguous, candidates: ["号", "號"],\n'
+                 "         basis: provisional, evidence: [{source: src-egov, locator: 法令番号}],\n"
+                 "         verification: {state: confirmed, reason: 画像の最大解像度で字体を決められない}}\n")
+    # XREF-05: an illegible claim is compared like exists; 昭和二十三年法律第百七十八号 matches neither
+    # 法律第百七十〓号 nor 昭和二十三年法律第百七十〓号. The 〓 has its GLYPH-05 note (basis undetermined).
+    illegible = ('      - {id: g1, offset: 6, recorded: "〓", kind: illegible, basis: undetermined,\n'
+                 "         evidence: [{source: src-kanpo-19480720, locator: 1コマ 法律の冒頭}],\n"
+                 "         verification: {state: unverified, reason: 適合ケースのための架空の判読不能}}\n")
+    dest = next_dir("common", True) / "registry"
+    mutate(dest, REG_POS, [(law, exists_raw, "    state: illegible\n    raw: 法律第百七十〓号\n"), (law, ambiguous, illegible)])
+    add("common", "採用中の番号主張が判読不能で、版パッケージの番号と一致しない", ["XREF-05", "REG-03"], "L4",
+        {"kind": "records", "registry": rel(dest), "repositories": [HIST_POS]}, warning, True, "displayConsistency")
+    # XREF-05: law.number null against an exists claim is a mismatch.
+    dest = next_dir("common", True) / "hist-001"
+    mutate(dest, HIST_POS, [(ZWG + "law.yaml", '  number: "昭和二十三年法律第百七十八号"\n', "  number: null\n")])
+    add("common", "版パッケージの番号がnullで、採用中の番号主張は番号がある", ["XREF-05", "MAN-01"], "L4",
+        {"kind": "records", "registry": REG_POS, "repositories": [rel(dest)]}, warning, True, "displayConsistency")
+    # XREF-05: without structured.period only raw is compared, so 昭和二十三年法律第百七十八号 (period + raw)
+    # no longer matches.
+    dest = next_dir("common", True) / "registry"
+    mutate(dest, REG_POS, [(law, period, "")])
+    add("common", "採用中の番号主張にstructured.periodがなく、版パッケージの番号がrawと一致しない", ["XREF-05", "REG-03"],
+        "L4", {"kind": "records", "registry": rel(dest), "repositories": [HIST_POS]}, warning, True,
+        "displayConsistency")
+
+    time = {"check": "L4", "category": "timeConsistency", "result": "pass"}
+    # XREF-06: only the Record of hist-016 is in the input; the other Record that has a relation from the same
+    # amending law (20990402-law-3, notCollected) is not compared, and the check is not incomplete.
+    add("common", "同じ改正法令からの関係を持つ、もう一方のRecordを収録していない（判定しない）", ["XREF-06", "REG-02"], "L4",
+        {"kind": "records", "registry": PROM_POS + "/registry", "repositories": [POS_016]}, {"results": [time]}, True,
+        "timeConsistency")
+    # XREF-06: two relations of one history manifest from the same amending law, promulgated on different days.
+    other = PROM_POS + "/hist-016b"
+    second = ("  - id: rel-amend-x\n    type: amends\n    from: {id: 20990601-law-2, label: 架空の改正法}\n"
+              '    promulgated:\n      state: date\n      value: "2099-06-02"\n      raw: 令和八十一年六月二日\n'
+              "      precision: day\n      evidence: [{source: src-fictional, locator: 公布の日}]\n"
+              "      verification: {state: unverified, reason: 架空の資料}\n"
+              "    evidence: [{source: src-fictional, locator: 附則第二条}]\n"
+              "    verification: {state: unverified, reason: 架空の資料}\n"
+              "    status: active\n    items:\n      - id: i1\n        scope: {text: 第二条}\n"
+              "        effective: {state: unknown, reason: 適合ケースで省略}\n"
+              "        evidence: [{source: src-fictional, locator: 附則第二条}]\n"
+              "        verification: {state: unverified, reason: 架空の資料}\n")
+    dest = next_dir("common", True) / "hist-016b"
+    mutate(dest, other, [("history.yaml", "revisions:\n", second + "revisions:\n")])
+    add("common", "同じ履歴マニフェストの、同じ改正法令からの関係の公布の時点は比べない（架空）", ["XREF-06", "HIST-03"], "L4",
+        {"kind": "records", "registry": PROM_POS + "/registry", "repositories": [rel(dest)]}, {"results": [time]}, True,
+        "timeConsistency")
+
+
 def main():
     for suite, folder in FOLDER.items():
         for group in ("invalid", "expected"):
@@ -2442,6 +2499,7 @@ def main():
     relation_retraction_changes()
     revision_id_reuse()
     absent_version_declarations()
+    cross_record_clauses()
     assert not DERIVED, sorted(DERIVED)  # every copy is listed by the case that owns it
     marked = {case["id"] for cases in INDEX.values() for case in cases if "rejectedBy" in case}
     assert marked == SCHEMA_REJECTED, SCHEMA_REJECTED - marked
