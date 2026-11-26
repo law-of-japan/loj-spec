@@ -22,21 +22,29 @@ C = ROOT / "conformance"
 HIST_POS = "conformance/loj-history/v1alpha1/valid/hist-001/repo"
 POS_016 = "conformance/loj-history/v1alpha1/valid/hist-016/repo"
 REG_POS = "conformance/loj-registry/v1alpha1/valid/reg-001/registry"
+# loj-registry/v1alpha2 (draft): the positive is a hand-written copy of REG_POS with names (REG-06).
+REG2_POS = "conformance/loj-registry/v1alpha2/valid/reg-001/registry"
 SV = {"hist": "loj-history/v1alpha1", "glyph": "loj-glyphs/v1alpha1", "reg": "loj-registry/v1alpha1",
-      "rebuild": "loj-rebuild/v1alpha1", "pkg": "loj/v1alpha2", "common": "common/v1alpha1"}
+      "rebuild": "loj-rebuild/v1alpha1", "pkg": "loj/v1alpha2", "common": "common/v1alpha1",
+      "reg2": "loj-registry/v1alpha2"}
 FOLDER = {"hist": "loj-history/v1alpha1", "glyph": "loj-glyphs/v1alpha1", "reg": "loj-registry/v1alpha1",
-          "rebuild": "loj-rebuild/v1alpha1", "common": "common/v1alpha1"}
+          "rebuild": "loj-rebuild/v1alpha1", "common": "common/v1alpha1", "reg2": "loj-registry/v1alpha2"}
+# Case ID prefix of a suite key, when it differs from the key (both registry versions use reg-NNN).
+PREFIX = {"reg2": "reg"}
 INDEX = {key: [] for key in FOLDER}
 # CONF-01: the source and the changes of every copied input, by the copy's path; add() moves them to the index.
 DERIVED = {}
 ZWG = "versions/zwgmz1rt/"
 # CONF-01: negatives whose input breaks the schema of its schemaVersion. Written by hand: the schema error
 # of each one was checked to be the violation of the case's expected rule (law-of-japan/loj-spec#32).
-SCHEMA_REJECTED = {"hist-005", "hist-006", "hist-010", "hist-012", "hist-013", "hist-020", "hist-021", "hist-022",
-                   "hist-026", "hist-038", "hist-041", "hist-042", "hist-043", "hist-045", "hist-046", "glyph-005", "reg-005",
-                   "reg-006", "reg-007", "reg-010", "rebuild-002", "hist-056", "hist-057", "hist-058", "hist-059",
-                   "hist-060", "hist-061", "rebuild-005", "reg-013", "glyph-014", "glyph-015",
-                   "glyph-016", "glyph-019", "hist-068", "glyph-033", "reg-015", "rebuild-006", "reg-016", "rebuild-007"}
+# Keyed by (suite key, case ID): the two registry versions both use reg-NNN case IDs.
+SCHEMA_REJECTED = {(case.split("-")[0], case) for case in (
+    "hist-005", "hist-006", "hist-010", "hist-012", "hist-013", "hist-020", "hist-021", "hist-022", "hist-026",
+    "hist-038", "hist-041", "hist-042", "hist-043", "hist-045", "hist-046", "glyph-005", "reg-005", "reg-006",
+    "reg-007", "reg-010", "rebuild-002", "hist-056", "hist-057", "hist-058", "hist-059", "hist-060", "hist-061",
+    "rebuild-005", "reg-013", "glyph-014", "glyph-015", "glyph-016", "glyph-019", "hist-068", "glyph-033", "reg-015",
+    "rebuild-006", "reg-016", "rebuild-007")}
+SCHEMA_REJECTED |= {("reg2", case) for case in ("reg-004", "reg-005", "reg-006", "reg-007")}
 
 
 def write_json(path, value):
@@ -75,14 +83,14 @@ def diag(rule, schema_version, klass="error"):
 
 
 def add(suite, title, requirements, check, inp, expected, success, category=None, normative=True):
-    ident = "%s-%03d" % (suite, len(INDEX[suite]) + 1)
+    ident = "%s-%03d" % (PREFIX.get(suite, suite), len(INDEX[suite]) + 1)
     exp_path = "conformance/%s/expected/%s.json" % (FOLDER[suite], ident)
     write_json(ROOT / exp_path, expected)
     case = {"id": ident, "title": title, "requirements": requirements, "check": check}
     if category:
         case["category"] = category
     case.update({"normative": normative, "input": inp, "expected": exp_path, "success": success})
-    if ident in SCHEMA_REJECTED:
+    if (suite, ident) in SCHEMA_REJECTED:
         assert not success, ident
         case["rejectedBy"] = "schema"
     # A copy belongs to the case whose directory holds it; other cases may read it as a shared input.
@@ -96,7 +104,7 @@ def add(suite, title, requirements, check, inp, expected, success, category=None
 
 
 def next_dir(suite, success):
-    ident = "%s-%03d" % (suite, len(INDEX[suite]) + 1)
+    ident = "%s-%03d" % (PREFIX.get(suite, suite), len(INDEX[suite]) + 1)
     return C / FOLDER[suite] / ("valid" if success else "invalid") / ident
 
 
@@ -315,6 +323,35 @@ def registry():
                             "    evidence: [{source: src-egov, locator: 法令ID}]\n    verification: {state: unverified}\n")])
     add("reg", "別名と大小文字だけが違うRecord ID", ["RID-01", "RID-02"], "registry", {"kind": "registry", "path": rel(dest)},
         {"results": [{"check": "registry", "result": "fail"}], "diagnostics": [diag("RID-01", SV["reg"])]}, False)
+
+
+def registry_names():
+    """loj-registry/v1alpha2 (draft): names (REG-06). The positive is hand-written; each negative changes it once."""
+    add("reg2", "名称を持つRecordと持たないRecord", ["REG-01", "REG-02", "REG-06", "RID-02"], "registry",
+        {"kind": "registry", "path": REG2_POS}, {"results": [{"check": "registry", "result": "pass"}]}, True)
+    law = "records/19480720-law-178.yaml"
+    mine = "records/19490516-law-70.yaml"
+    negatives = [
+        ("同じ種別と表記の名称が二つ", "REG-06", [(law, "    value: 祝日法\n", "    value: 国民祝日法\n")]),
+        ("名称のidの重複", "REG-06", [(law, "  - id: m2\n", "  - id: m1\n")]),
+        ("定めのない名称の種別", "REG-06", [(law, "    kind: abbreviation\n    value: 祝日法\n",
+                                         "    kind: nickname\n    value: 祝日法\n")]),
+        # unverified, so that only REG-06 applies: a confirmed claim with no evidence also breaks TYPE-05.
+        ("根拠のない未確認の名称（確認済みならTYPE-05の違反も重なる）", "REG-06", [(law, "    value: 祝日法\n    evidence: [{source: src-egov, locator: 法令略称}]\n"
+                                           "    verification: {state: confirmed}\n",
+                                           "    value: 祝日法\n    evidence: []\n"
+                                           "    verification: {state: unverified, reason: 根拠の資料を記録していない}\n")]),
+        ("名称の一覧がない", "REG-02", [(mine, "names: []\n", "")]),
+        ("撤回とした名称", "REG-06", [(law, "    value: 祝日法\n    evidence: [{source: src-egov, locator: 法令略称}]\n"
+                                    "    verification: {state: confirmed}\n",
+                                    "    value: 祝日法\n    evidence: [{source: src-egov, locator: 法令略称}]\n"
+                                    "    verification: {state: retracted, reason: 誤って加えた}\n")]),
+    ]
+    for title, rule, edits in negatives:
+        dest = next_dir("reg2", False) / "registry"
+        mutate(dest, REG2_POS, edits)
+        add("reg2", title, [rule], "registry", {"kind": "registry", "path": rel(dest)},
+            {"results": [{"check": "registry", "result": "fail"}], "diagnostics": [diag(rule, SV["reg2"])]}, False)
 
 
 # --- loj-rebuild -------------------------------------------------------------
@@ -2452,6 +2489,7 @@ def main():
     history()
     glyphs()
     registry()
+    registry_names()
     rebuild()
     cross_record()
     changes_and_references()
@@ -2501,8 +2539,8 @@ def main():
     absent_version_declarations()
     cross_record_clauses()
     assert not DERIVED, sorted(DERIVED)  # every copy is listed by the case that owns it
-    marked = {case["id"] for cases in INDEX.values() for case in cases if "rejectedBy" in case}
-    assert marked == SCHEMA_REJECTED, SCHEMA_REJECTED - marked
+    marked = {(suite, case["id"]) for suite, cases in INDEX.items() for case in cases if "rejectedBy" in case}
+    assert marked == SCHEMA_REJECTED, SCHEMA_REJECTED ^ marked
     for suite, folder in FOLDER.items():
         write_json(C / folder / "manifest.json", {"suite": SV[suite], "cases": INDEX[suite]})
     print("Authored " + ", ".join(f"{k}: {len(v)}" for k, v in INDEX.items()) + "; no validator invoked.")

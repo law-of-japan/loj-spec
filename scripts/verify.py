@@ -4,6 +4,7 @@ Positive source traces are compared with independently authored expected trees.
 Negative L1 fixture semantics require a future implementation adapter/review.
 """
 import json
+import posixpath
 import re
 import unicodedata
 from pathlib import Path
@@ -543,10 +544,12 @@ L0_PASS = {"check": "L0", "result": "pass"}
 
 SUITES = {"loj/v1alpha2": ("v1alpha2", "pkg"), "common/v1alpha1": ("common/v1alpha1", "common"),
           "loj-history/v1alpha1": ("loj-history/v1alpha1", "hist"), "loj-glyphs/v1alpha1": ("loj-glyphs/v1alpha1", "glyph"),
-          "loj-registry/v1alpha1": ("loj-registry/v1alpha1", "reg"), "loj-rebuild/v1alpha1": ("loj-rebuild/v1alpha1", "rebuild")}
+          "loj-registry/v1alpha1": ("loj-registry/v1alpha1", "reg"), "loj-registry/v1alpha2": ("loj-registry/v1alpha2", "reg"),
+          "loj-rebuild/v1alpha1": ("loj-rebuild/v1alpha1", "rebuild")}
 KIND_SCHEMAS = {"loj/v1alpha2": "v1alpha2/manifest.schema.json", "loj-history/v1alpha1": "loj-history/v1alpha1/history.schema.json",
                 "loj-glyphs/v1alpha1": "loj-glyphs/v1alpha1/glyphs.schema.json",
                 "loj-registry/v1alpha1": "loj-registry/v1alpha1/record.schema.json",
+                "loj-registry/v1alpha2": "loj-registry/v1alpha2/record.schema.json",
                 "loj-rebuild/v1alpha1": "loj-rebuild/v1alpha1/rebuild.schema.json"}
 
 
@@ -984,12 +987,35 @@ def restated_requirement_words(texts):
     return found
 
 
+def version_kind(folder):
+    """The kind of a spec version directory: "loj-registry" for "loj-registry/v1alpha2", "" for the version
+    package directories ("v1alpha2"), which sit directly under spec/."""
+    return folder.split("/")[0] if "/" in folder else ""
+
+
+def drop_copied_restatements(found, texts):
+    """Keep one of the hits whose sentence line, own ID and cited IDs are the same in two versions of one kind.
+
+    A new draft version starts as a copy of the published one, so its unchanged sentences would repeat the
+    warnings of the older version without adding a new restatement (law-of-japan/loj-spec#194).
+    """
+    kept, seen = [], set()
+    for name, number, own, cited in found:
+        folder = posixpath.dirname(name.split("/", 1)[1])  # "spec/loj-registry/v1alpha2/x.md" -> "loj-registry/v1alpha2"
+        line = texts[name].splitlines()[number - 1]
+        key = (version_kind(folder), posixpath.basename(name), line, own, tuple(cited))
+        if key not in seen:
+            seen.add(key)
+            kept.append((name, number, own, cited))
+    return kept
+
+
 def check_restatements():
     """Warn about requirement words restated outside their source requirement (frozen versions excluded)."""
     spec = ROOT / "spec"
     texts = {path.relative_to(ROOT).as_posix(): path.read_text(encoding="utf-8")
              for path in spec.rglob("*.md") if (spec / "v1alpha1") not in path.parents}
-    return restated_requirement_words(texts)
+    return drop_copied_restatements(restated_requirement_words(texts), texts)
 
 
 # 「CHAR-02〜CHAR-04」「FIXREF-03」: one ID or an inclusive range within one series.
@@ -1132,10 +1158,10 @@ def prohibition_rows(text):
 
 
 def requirement_sections(texts):
-    """{requirement ID: text of its section} from spec texts.
+    """{requirement ID: text of its section} from the spec texts of one version directory.
 
-    An ID found twice fails: two draft versions of one series would share IDs, and the table would then
-    need to name the version (not supported yet) rather than match a section of the other version.
+    An ID found twice fails: within one version an ID names one requirement. Two versions of one kind
+    may share IDs (spec/README.md); schema_sections() keeps them apart.
     """
     sections = {}
     for text in texts:
@@ -1145,10 +1171,39 @@ def requirement_sections(texts):
     return sections
 
 
+def schema_version_dir(schema):
+    """The spec version directory of a schema path under schemas/ ("loj-registry/v1alpha2/x.json" -> "loj-registry/v1alpha2")."""
+    return posixpath.dirname(schema)
+
+
+def schema_sections(by_dir, schema):
+    """{requirement ID: section} a prohibition row on this schema may cite.
+
+    The schema's own version directory comes first; other versions of the same kind are never read
+    (e.g. REG-02 of loj-registry/v1alpha1 for a row on loj-registry/v1alpha2). An ID of another kind is
+    added only when no other directory has the same ID, so it cannot be matched with the wrong version:
+    with loj-history/v1alpha1 and a later loj-history/v1alpha2 both holding HIST-07, a row on a
+    loj-registry schema cannot cite HIST-07 (it is ambiguous), while a row on either history schema can.
+    """
+    own = schema_version_dir(schema)
+    sections = dict(by_dir.get(own, {}))
+    counts = {}
+    for found in by_dir.values():
+        for ident in found:
+            counts[ident] = counts.get(ident, 0) + 1
+    for folder, found in by_dir.items():
+        if version_kind(folder) != version_kind(own):
+            sections.update({ident: text for ident, text in found.items()
+                             if ident not in sections and counts[ident] == 1})
+    return sections
+
+
 def compare_prohibitions(rows, schemas, sections):
     """Fail when the table and the schemas differ or a row names an unknown requirement; return warnings
     as (schema, pointer, field, why) for fields the table marks as having no text, and for fields not
-    named in any requirement the row lists. Whether the named text forbids the field is not checked."""
+    named in any requirement the row lists. Whether the named text forbids the field is not checked.
+
+    sections is {schema path: {requirement ID: section}}, the requirements a row on that schema may cite."""
     wanted = {key: fields for key, fields in schemas.items()}
     listed = {key: value[0] for key, value in rows.items()}
     require(listed == wanted, "docs/coverage.md prohibition table and schemas differ: "
@@ -1157,12 +1212,13 @@ def compare_prohibitions(rows, schemas, sections):
                         for key in sorted(set(wanted) | set(listed)) if wanted.get(key) != listed.get(key)))
     warnings = []
     for key, (fields, ids, missing) in sorted(rows.items()):
-        unknown = ids - set(sections)
+        cited = sections.get(key[0], {})
+        unknown = ids - set(cited)
         require(not unknown, "docs/coverage.md prohibition table names an unknown requirement: " + ", ".join(sorted(unknown)))
         for field in sorted(fields):
             if field in missing:
                 warnings.append(key + (field, "no text"))
-            elif not any("`" + field + "`" in sections[ident] for ident in ids):
+            elif not any("`" + field + "`" in cited[ident] for ident in ids):
                 warnings.append(key + (field, "not named in " + ", ".join(sorted(ids))))
     return warnings
 
@@ -1171,10 +1227,15 @@ def check_prohibitions():
     """Conditional prohibitions in the draft schemas, matched with the docs/coverage.md table."""
     spec = ROOT / "spec"
     # Only the top-level spec/v1alpha1 is frozen (as in check_restatements); spec/common/v1alpha1 is a draft.
-    texts = [path.read_text(encoding="utf-8") for path in spec.rglob("*.md") if (spec / "v1alpha1") not in path.parents]
+    texts = {}
+    for path in spec.rglob("*.md"):
+        if (spec / "v1alpha1") not in path.parents and path.parent != spec:
+            texts.setdefault(path.parent.relative_to(spec).as_posix(), []).append(path.read_text(encoding="utf-8"))
+    by_dir = {folder: requirement_sections(found) for folder, found in texts.items()}
     schemas = draft_schema_prohibitions()
     rows = prohibition_rows((ROOT / "docs/coverage.md").read_text(encoding="utf-8"))
-    return len(schemas), compare_prohibitions(rows, schemas, requirement_sections(texts))
+    sections = {schema: schema_sections(by_dir, schema) for schema, _ in rows}
+    return len(schemas), compare_prohibitions(rows, schemas, sections)
 
 
 CASE_TABLE_HEADING = "次期仕様（loj/v1alpha2と新しい4種類）"

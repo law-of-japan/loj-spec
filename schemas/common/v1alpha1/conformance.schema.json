@@ -6,14 +6,9 @@
   "type": "object",
   "properties": {
     "suite": {
-      "enum": [
-        "loj/v1alpha2",
-        "common/v1alpha1",
-        "loj-history/v1alpha1",
-        "loj-glyphs/v1alpha1",
-        "loj-registry/v1alpha1",
-        "loj-rebuild/v1alpha1"
-      ]
+      "type": "string",
+      "$comment": "A pattern, not a list of the versions of 2026-11-26: a list would reject the index of every later version, of every kind and of the common types (DDR-032). The pattern also admits versions that have no suite (e.g. the frozen loj/v1alpha1); which suites exist is the set of manifests, checked by verify.py.",
+      "pattern": "^(loj|loj-history|loj-glyphs|loj-registry|loj-rebuild|common)/v[0-9]+(alpha|beta)?[0-9]*$"
     },
     "cases": {
       "type": "array",

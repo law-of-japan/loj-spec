@@ -157,6 +157,7 @@
 | 番号主張 | `numbers` | 法令番号についての、出典付きの主張。`state`（`exists`等）、原表記、構造化した値、`decision`を持つ | [REG-03](../spec/loj-registry/v1alpha1/01-registry.md#reg-03-番号主張) |
 | 採否 | `decision` | 番号主張の`adopted`（採用）、`pending`（保留）、`retracted`（撤回）。採用は同時に一つまで | [REG-03](../spec/loj-registry/v1alpha1/01-registry.md#reg-03-番号主張) |
 | supersedes | `supersedes` | 訂正後の番号主張から訂正前の主張を指す。訂正前の主張は削除しない | [REG-04](../spec/loj-registry/v1alpha1/01-registry.md#reg-04-訂正と履歴) |
+| 名称 | `names`、`kind` | 題名と別に法令を指して使われる名前。`abbreviation`（法令略称）と`commonName`（通称）。出典付きで登録台帳のRecordに置き、参照の解決に使わない。`loj-registry/v1alpha2`（草案）で定める | [REG-06](../spec/loj-registry/v1alpha2/01-registry.md#reg-06-名称) |
 | 同一性 | `identity` | Recordが指す対象の確認。資料・調査の記録と確認状態 | [REG-02](../spec/loj-registry/v1alpha1/01-registry.md#reg-02-recordのファイル) |
 | 仮登録 | `status: provisional` | 同一性が未確定の登録。IDはこの段階で発行し、確定しても変えない | [REG-02](../spec/loj-registry/v1alpha1/01-registry.md#reg-02-recordのファイル)、[RID-01](../spec/loj-registry/v1alpha1/02-record-ids.md#rid-01-新しいrecord-idの発行) |
 | Recordの状態 | `status` | `provisional`、`active`、`merged`（統合）、`split`（分割）、`withdrawn`（撤回）。登録の状態であり、効力の終了ではない | [REG-02](../spec/loj-registry/v1alpha1/01-registry.md#reg-02-recordのファイル)、[RID-05](../spec/loj-registry/v1alpha1/02-record-ids.md#rid-05-統合分割撤回) |

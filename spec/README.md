@@ -13,6 +13,7 @@ LoJ（Law of Japan）のデータの規範仕様の入口である。本書は�
 | [loj-history/v1alpha1](loj-history/v1alpha1/01-history.md) | 履歴マニフェスト（`history.yaml`） | `loj-history/v1alpha1` | 公開 |
 | [loj-glyphs/v1alpha1](loj-glyphs/v1alpha1/01-glyphs.md) | 字体注記（`glyphs.yaml`） | `loj-glyphs/v1alpha1` | 公開 |
 | [loj-registry/v1alpha1](loj-registry/v1alpha1/01-registry.md) | 登録台帳のRecord（`records/<Record ID>.yaml`） | `loj-registry/v1alpha1` | 公開 |
+| [loj-registry/v1alpha2](loj-registry/v1alpha2/01-registry.md) | 登録台帳のRecord（`records/<Record ID>.yaml`）。v1alpha1に名称（`names`）を加えた版 | `loj-registry/v1alpha2` | 草案 |
 | [loj-rebuild/v1alpha1](loj-rebuild/v1alpha1/01-rebuild.md) | 原典からの再構築と再構築報告（`rebuild.yaml`） | `loj-rebuild/v1alpha1` | 公開 |
 
 - 「状態」の列の意味は、[版の状態](#版の状態)で定める。
@@ -49,7 +50,7 @@ LoJ（Law of Japan）のデータの規範仕様の入口である。本書は�
 ## 要件ID
 
 - `## <ID> <名前>`の見出しで、一つの要件に一つのIDを付ける。要件IDは、検査の診断で報告する規則（rule）でもある（[VAL-07](common/v1alpha1/03-validation.md)）。
-- 一つの系列（IDの接頭辞）は、一つのディレクトリに属する。系列の名前は、すべてのディレクトリを通じて一意である。
+- 一つの系列（IDの接頭辞）は、一つの種類（版パッケージ、履歴マニフェスト等。共通の型を一つの種類とみなす）に属する。同じ種類の版のディレクトリは、同じ系列を使う。系列の名前は、種類の間で重ならない。
 - 番号は、系列の中で読む順に01から振る。一度公開した版（[版の状態](#版の状態)）で使った番号を、後の版で別の意味に使ってはならない（MUST NOT）。廃止した番号は欠番として残す。
 - 要件IDは版ごとに意味を持つ。同じIDでも、版が違えば別の規則である。
 
@@ -60,6 +61,7 @@ LoJ（Law of Japan）のデータの規範仕様の入口である。本書は�
 | loj-history/v1alpha1 | HIST、REV |
 | loj-glyphs/v1alpha1 | GLYPH |
 | loj-registry/v1alpha1 | REG、RID |
+| loj-registry/v1alpha2 | REG、RID |
 | loj-rebuild/v1alpha1 | REB、REBR |
 
 ## 組み合わせて使える版
@@ -69,6 +71,7 @@ LoJ（Law of Japan）のデータの規範仕様の入口である。本書は�
 | 組 | `loj` | `loj-history` | `loj-glyphs` | `loj-rebuild` | `loj-registry` | 共通の型 |
 |---|---|---|---|---|---|---|
 | 1 | v1alpha2 | v1alpha1 | v1alpha1 | v1alpha1 | v1alpha1 | v1alpha1 |
+| 2（草案） | v1alpha2 | v1alpha1 | v1alpha1 | v1alpha1 | v1alpha2 | v1alpha1 |
 
 - 版を上げるときは、行を加える。行を加えることは、既にある版の意味を変えることではない。
 - `loj/v1alpha1`の版パッケージは、どの組にも含まない。

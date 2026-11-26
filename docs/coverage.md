@@ -53,10 +53,26 @@ T076〜T105は承認されたMAN-03 B案の独立ケース。附属資料の通�
 | [conformance/loj-history/v1alpha1](../conformance/loj-history/v1alpha1/manifest.json) | hist-001〜068 | 祝日法の制定時と最初の改正後の版、履歴だけの法令リポジトリ三つ、その違反、共通の型と時点値の違反。行のkey（hist-031〜033）、効力の終了の根拠と時点（hist-034〜036、hist-052・053）、字体注記のファイルの選び方（hist-047・054・055）、条件の外で禁止するフィールド（hist-056〜061）、段階施行の二つの版（hist-062）、行のkeyの比べない版・表・枝（hist-063〜066）、原典資料の間の文言の食い違い（hist-067・068） |
 | [conformance/loj-glyphs/v1alpha1](../conformance/loj-glyphs/v1alpha1/manifest.json) | glyph-001〜034 | 祝日法の字体注記と、その違反。L1が不合格の版の字体注記（未完了）。改正法（昭和四十一年法律第八十六号）の版の改正内容の中のセルを指す見え消しの注記（glyph-012）。ほかの原典資料で読めた判読困難の字（glyph-013〜020）。二行割りの行の区切りの字間の注記と、注記の範囲とその違反（glyph-021〜027）。異体字セレクタとivd、字体の違い、官報正誤の複製で読めない字（glyph-028〜034） |
 | [conformance/loj-registry/v1alpha1](../conformance/loj-registry/v1alpha1/manifest.json) | reg-001〜016 | 六つのRecordの登録台帳、統合したRecordを残した登録台帳と、その違反。IDの再利用（reg-011）、統合先の解決（reg-012・013）、共通の型の違反（reg-014〜016） |
+| [conformance/loj-registry/v1alpha2](../conformance/loj-registry/v1alpha2/manifest.json) | reg-001〜007 | 草案。名称（REG-06）を持つRecordと持たないRecordの登録台帳と、名称の重複・idの重複・定めのない種別・根拠のない未確認の名称・撤回とした名称、名称の一覧のないRecord（REG-02）。v1alpha1から変えていない要件のケースは、公開の前に写す |
 | [conformance/loj-rebuild/v1alpha1](../conformance/loj-rebuild/v1alpha1/manifest.json) | rebuild-001〜007 | 祝日法の再構築報告と、その違反（構造の差の件数はrebuild-005）。共通の型の違反（rebuild-006・007） |
 | [conformance/common/v1alpha1](../conformance/common/v1alpha1/manifest.json) | common-001〜106 | L4の時点の整合（T-04）・番号・公布の時点・全部改正・撤回したRecord・他の登録空間、変更検査、固定参照（`git bundle`の架空の履歴）。変更検査は、ASTを生成できない版と人のレビューの記録（common-025〜027、029〜031、036・037、039、048、053）、種類の宣言の書き方（common-032〜035、038、040、043〜045）、官報正誤（common-041・042）、mergeのcommit（common-046）、正本のデータの外の変更（common-050〜055）、ファイルのモード（common-056〜058）、最初のcommit（common-059〜064）、旧履歴の境界（common-065〜069）。L4の統合・分割・未取得・終点の撤回（common-070〜073、081・082）、番号主張の状態（common-074〜077）、公布の時点を判定しない場合（common-078〜080）。変更検査の一部しか本文がない版（common-083・084）、従属するファイル（common-085〜088）、登録台帳だけの属性の更新（common-089・090）、状態の追加の取り消し（common-091・092）。分割したRecordへの参照の結果の候補（common-093）、関係の撤回の種類（common-094〜096）、Revisionのidの再利用（common-097）、本文のない版の宣言（common-098〜101）、XREF-05・XREF-06の残りの場合（common-102〜106） |
 
 `scripts/verify.py`は、すべての索引・期待結果・正例の入力の形と、要件IDの存在を検査し、v1alpha2の正例のASTを原文と突き合わせる。v1alpha2のL0の正例は、ASTを持たずにL0の`pass`を挙げることと、ManifestがL0の検査を通ることを検査する。期待結果の診断の位置は、`documents`のファイルの中の一つの行（行末の改行を含む）であることだけを検査し（`law.yaml`を指す位置は拒否する。SRC-01はManifestの意味の違反の位置を定めない）、規則が指すべき行かは判定しない。版パッケージのケースを除く負例は、索引の`rejectedBy: schema`の印のとおりに、入力のYAMLがschemaで落ちるか、schemaを通るかを検査する（[CONTRIBUTING](../CONTRIBUTING.md#適合ケースの作り方)）。別の入力の写しに変更を加えて作った入力（索引の`derivedFrom`）は、元に変更を適用し直した結果と一致することを検査する。元の正例だけを直して`author_next_cases.py`を実行し忘れると、ここで失敗する。変更が期待する規則の違反だけを生むかは判定せず、レビューで確かめる。v1alpha2のL1の負例と、L3・L4・登録台帳・再構築報告・変更検査・固定参照のケースの合否は判定しない。検査器で判定する。
+
+### loj-registry/v1alpha2（草案）で公開の前に写すケース
+
+`loj-registry/v1alpha2`の索引は、名称（REG-06）とその一覧（REG-02）のケースだけを持つ。次の要件は、v1alpha1から意味を変えておらず、ケースはv1alpha1の索引にだけある。公開の前に、v1alpha2の索引へ写す（[制限](limitations.md#検証の境界)）。
+
+| 要件 | v1alpha1のケース |
+|---|---|
+| REG-01〜REG-05、RID-01、RID-02、RID-04、RID-05 | [conformance/loj-registry/v1alpha1](../conformance/loj-registry/v1alpha1/manifest.json)のreg-001〜016 |
+| REG-02、REG-03、RID-01、RID-05等の登録台帳を入力とするL4・変更検査 | [conformance/common/v1alpha1](../conformance/common/v1alpha1/manifest.json)の、登録台帳を入力とするケース |
+
+名称のケースのうち、次はまだない。公開の前に加える。
+
+- `value`をコードポイントの列で比べる境界（互換漢字・異体字セレクタだけが違う二つの名称は重複でない）。AGENTS.mdの互換漢字の注意のとおり、スクリプトの中でコードポイントで書く。
+- 確認済みでEvidenceのない名称（REG-06とTYPE-05の両方の違反）。reg-005は、REG-06だけの違反にするため未確認の名称にしている。
+- `commonName`の名称を持つ正例。正例のRecordは実在の法令なので、根拠の資料を確かめた通称で加える（根拠のない通称をケースに書かない）。
 
 ### ケースのない要件
 
@@ -335,6 +351,9 @@ TIME-03は、hist-004、hist-015〜018のほか、`pending`を基準とする`de
 | REG-02、REG-03 | `notCollected`から不存在を推論しない。番号の一致で同一と判断しない | 実装 | 実装の試験 |
 | REG-03 | `raw`を原表記のまま書く。所管から逆算しない | 入力者 | 原典照合 |
 | REG-05 | 外部の収録の単位がRecordと一致すると仮定しない | 入力者 | レビュー |
+| REG-06 | 形、`kind`と`value`の組の重複、`id`の重複 | データ | 機械検査（登録台帳の検査） |
+| REG-06 | `value`を資料の表記のまま書く。根拠とする資料の選び方 | 入力者 | 原典照合、レビュー |
+| REG-06 | 名称の一致で同一と判断しない | 実装 | 実装の試験 |
 | RID-01 | 発行の方法（ランダム。連番、時刻を含む方式、情報や登録の順序から計算する方式を使わない。仮登録でIDを変えない） | 入力者 | レビュー（形はRID-02で機械検査） |
 | RID-01 | 登録台帳の中のIDの衝突（別名と大小文字の違いを含む） | データ | 機械検査（登録台帳の検査） |
 | RID-03 | 全体 | 実装 | 実装の試験 |
@@ -383,6 +402,7 @@ TIME-03は、hist-004、hist-015〜018のほか、`pending`を基準とする`de
 | `loj-history/v1alpha1/history.schema.json` | `/properties/termination/items/allOf/0/else` | `type`が`repealed`・`totallyRevised`でない | `relation` | HIST-12 | — |
 | `loj-rebuild/v1alpha1/rebuild.schema.json` | `/properties/differences/items/allOf/4/else` | `class`が`glyph`でない | `count`、`examples` | REBR-05 | — |
 | `loj-registry/v1alpha1/record.schema.json` | `/allOf/1/else` | `status`が`merged`・`split`でない | `replacedBy` | REG-02 | — |
+| `loj-registry/v1alpha2/record.schema.json` | `/allOf/1/else` | `status`が`merged`・`split`でない | `replacedBy` | REG-02 | — |
 | `v1alpha2/ast.schema.json` | `/$defs/node/allOf/0/else` | `kind`が`Article`でない | `status` | AST-01 | — |
 | `v1alpha2/ast.schema.json` | `/$defs/node/allOf/1/else` | `kind`が`Subitem`でない | `level` | AST-01 | — |
 | `v1alpha2/ast.schema.json` | `/$defs/node/allOf/3/else` | `kind`が`Paragraph`でない | `numbering` | AST-01 | — |
