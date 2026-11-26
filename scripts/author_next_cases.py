@@ -399,7 +399,7 @@ def build_bundle(path, steps=None, verbatim=False):
     """Build a git bundle of the branch main from steps; return the hash of each commit, in the order of the steps.
 
     A step is (subject, kind, with_revs, files, *trailers), or (BRANCH, name) and (CHECKOUT, name), which make no
-    commit. files is the whole set of files to write, or Merge(branch) for a merge commit of that branch. The modes
+    commit. files is the whole set of files to write (a value of None deletes that file), or Merge(branch) for a merge commit of that branch. The modes
     are set in the index, not read from the working tree, so the bundle is the same on every system (EXECUTABLE).
     The date of a commit is fixed by the number of its step, counting the steps that make no commit, so a step
     put in before others changes the hashes of the commits after it. The bundle holds main only: a branch must
@@ -439,6 +439,10 @@ def build_bundle(path, steps=None, verbatim=False):
                     if name == EXECUTABLE:
                         continue
                     target = repo / name
+                    # None deletes the file (a step that removes a version package, CHG-03 revert).
+                    if body is None:
+                        target.unlink(missing_ok=True)
+                        continue
                     target.parent.mkdir(parents=True, exist_ok=True)
                     target.write_bytes(body.encode("utf-8"))
                 git("add", "-A")
@@ -1992,6 +1996,232 @@ def common_type_gaps():
             {"results": [{"check": "rebuild", "result": "fail"}], "diagnostics": [diag(rule, SV["common"])]}, False)
 
 
+# --- 2026-11-26: change checks with bundles (CHG-02, CHG-03, CHG-04) ------------------------------------------
+def raw_message(subject, kind, revisions=None):
+    """A whole commit message (RAW step) that declares revision ids other than REV (CHG-03)."""
+    message = subject + "\n\nLoJ-Change: " + kind + "\n"
+    return message + ("LoJ-Revisions: " + ", ".join(revisions) + "\n" if revisions else "")
+
+
+def replace_nth(text, old, new, n):
+    """Replace the n-th (0-based; -1 for the last) occurrence of old."""
+    starts = [i for i in range(len(text)) if text.startswith(old, i)]
+    start = starts[n]
+    return text[:start] + new + text[start + len(old):]
+
+
+def row_files(key_sets):
+    """The files of row_key_files (fictional versions of 架空雲分類法) as a build_bundle step."""
+    with tempfile.TemporaryDirectory() as tmp:
+        row_key_files(Path(tmp), key_sets)
+        out = {p.relative_to(tmp).as_posix(): p.read_bytes().decode("utf-8") for p in sorted(Path(tmp).rglob("*"))
+               if p.is_file()}
+    # A single version has no relation: row_key_files leaves the list empty.
+    out["history.yaml"] = out["history.yaml"].replace("relations:\nrevisions:", "relations: []\nrevisions:")
+    return out
+
+
+def glyph_note_file(revision, node, offset, reason="適合ケースのための架空の注記"):
+    return ("schemaVersion: loj-glyphs/v1alpha1\nrevision: " + revision + "\nnotes:\n  - id: g1\n    node: " + node + "\n"
+            "    offset: " + str(offset) + "\n    recorded: \"雲\"\n    kind: variance\n    candidates: [\"雲\", \"云\"]\n"
+            "    evidence: [{source: src-fiction, locator: 本則}]\n    verification: {state: unverified, reason: " + reason + "}\n")
+
+
+def with_glyph_notes(files, revision, node, offset, n=0, reason="適合ケースのための架空の注記"):
+    """Record fictional glyph notes for one version (the n-th Revision of history.yaml): glyphNotes and the file."""
+    out = dict(files)
+    path = "versions/" + revision + "/glyphs.yaml"
+    check = "      glyphCheck: unverified\n"
+    out["history.yaml"] = replace_nth(out["history.yaml"], check, check + "      glyphNotes: " + path + "\n", n)
+    out[path] = glyph_note_file(revision, node, offset, reason)
+    return out
+
+
+REGISTRY_RETIRED = ("q3w8e5r2t7", "架空法律第一号の重複した登録（実在しないサンプル）")
+
+
+def retired_registry_files():
+    """REGISTRY_FIRST and a Record merged into it (REG-02, RID-05)."""
+    out = dict(REGISTRY_FIRST)
+    out["records/" + REGISTRY_RETIRED[0] + ".yaml"] = (
+        "schemaVersion: loj-registry/v1alpha1\nid: " + REGISTRY_RETIRED[0] + "\nlabel: " + REGISTRY_RETIRED[1] + "\n"
+        "status: merged\nidentity:\n  evidence: [{source: src-fiction, locator: 登録の記録}]\n"
+        "  verification: {state: confirmed}\ncollection: {state: notCollected}\n"
+        "sources:\n  - {id: src-fiction, kind: other, title: 架空の原典}\nnumbers: []\nexternalIds: []\nreplacedBy:\n"
+        "  - record: {id: 20990101-act-1, label: 架空法律第一号}\n"
+        "    evidence: [{source: src-fiction, locator: 統合の記録}]\n    verification: {state: confirmed}\n")
+    return out
+
+
+def change_partial_text():
+    """CHG-04: a version with only part of its text has no AST to compare, like a version that fails L1.
+
+    metadata compares the AST of every version, so the check is undetermined (CHG-04 undetermined). format that
+    changes the files of that version without LoJ-Reviewed is an automatic conversion, which CHG-04 forbids.
+    """
+    body = "架空の雲を保管する。\n"
+    renamed = partial_text(fictional_files(body, False, "制定時"))
+    renamed["versions/" + REV + "/one.md"] = renamed.pop("versions/" + REV + "/main.md")
+    law = "versions/" + REV + "/law.yaml"
+    assert renamed[law].count('"main.md"') == 1
+    renamed[law] = renamed[law].replace('"main.md"', '"one.md"')
+    bundle_pos = next_dir("common", True) / "repo.bundle"
+    c1, c2, c3 = build_bundle(bundle_pos, [
+        ("第一条だけの版を加える", "revisionAdd", True, partial_text(fictional_files(body))),
+        ("ラベルを改める", "metadata", False, partial_text(fictional_files(body, False, "制定時"))),
+        ("一部しか本文がない版のファイルの名前を改める", "format", False, renamed),
+    ])
+    add("common", "一部しか本文がない版を含む属性の更新は判定不能", ["CHG-04", "CHG-02"], "change",
+        {"kind": "change", "bundle": rel(bundle_pos), "base": c1, "head": c2},
+        {"results": [{"check": "change", "result": "incomplete"}],
+         "diagnostics": [diag("CHG-04", SV["common"], "undetermined")]}, True)
+    dest = next_dir("common", False) / "repo.bundle"
+    copy_file(dest, bundle_pos)
+    add("common", "一部しか本文がない版のファイルを、人のレビューの記録なしに書式変更で変える", ["CHG-04"], "change",
+        {"kind": "change", "bundle": rel(dest), "base": c2, "head": c3},
+        {"results": [{"check": "change", "result": "fail"}],
+         "diagnostics": [diag("CHG-04", SV["common"]), diag("CHG-04", SV["common"], "undetermined")]}, False)
+
+
+ROW_NODE = ROW_LAW[0] + "/main/article/1/paragraph/1"
+
+
+def change_dependent_files():
+    """CHG-02: the files that depend on the declared version, and the same files of a version not declared.
+
+    A correction may update the glyph notes of the declared version (GLYPH-04) and the Scope nodes that point to it
+    (TYPE-08). It must not change the Revision entry or the glyph notes of a version it does not declare, even when
+    the AST of that version stays the same.
+    """
+    # The glyph note follows 雲 when the correction puts two characters before it (offset 3 -> 5).
+    bundle = next_dir("common", True) / "repo.bundle"
+    c1, c2 = build_bundle(bundle, [
+        ("制定時の版を加える", "revisionAdd", True,
+         with_glyph_notes(fictional_files("架空の雲を保管すろ。\n"), REV, NODE, 3)),
+        ("第一条の誤転記を直し、字体注記の位置を改める", "correction", True,
+         with_glyph_notes(fictional_files("架空の白い雲を保管する。\n"), REV, NODE, 5)),
+    ])
+    add("common", "記録訂正で、同じ版の字体注記を併せて更新する", ["CHG-02", "GLYPH-04"], "change",
+        {"kind": "change", "bundle": rel(bundle), "base": c1, "head": c2},
+        {"results": [{"check": "change", "result": "pass"}]}, True)
+
+    # The second version was recorded with its article as 第二条; the correction renumbers it and the Scope of the
+    # amendment that is its basis, whose nodes point to the article.
+    old_rev, new_rev = ROW_REVS[0], ROW_REVS[1]
+    keys = [["a1b2", "c3d4"], ["a1b2", "c3d4"]]
+
+    def scoped(article):
+        out = row_files(keys)
+        md = "versions/" + new_rev + "/main.md"
+        out[md] = out[md].replace("# 第一条\n", "# 第" + "一二"[article - 1] + "条\n")
+        scope = "scope: {text: 第一条の表}"
+        assert out["history.yaml"].count(scope) == 1
+        out["history.yaml"] = out["history.yaml"].replace(
+            scope, "scope: {nodes: [" + ROW_LAW[0] + "/main/article/" + str(article) + "]}")
+        return out
+
+    bundle = next_dir("common", True) / "repo.bundle"
+    c1, c2 = build_bundle(bundle, [
+        ("二つの版を加える", "revisionAdd", False, scoped(2)),
+        (raw_message("第二の版の条の番号の誤転記を直し、改正の対象範囲のノードを改める", "correction", [new_rev]), RAW, False,
+         scoped(1)),
+    ])
+    add("common", "記録訂正で、その版を指す対象範囲のノード（Scopeのnodes）を併せて更新する", ["CHG-02", "TYPE-08"], "change",
+        {"kind": "change", "bundle": rel(bundle), "base": c1, "head": c2},
+        {"results": [{"check": "change", "result": "pass"}]}, True)
+
+    # Negatives: the correction declares the first version and fixes its text, and also changes a file that depends
+    # on the second version, which it does not declare. The AST of the second version does not change.
+    def typo(fixed, edit=None):
+        out = row_files(keys)
+        if not fixed:
+            md = "versions/" + old_rev + "/main.md"
+            out[md] = out[md].replace("定める。", "定めろ。")
+        return edit(out) if edit else out
+
+    sources = "      sources: [{source: src-fiction, locator: 本則}]\n"
+
+    def other_sources(out):
+        out["history.yaml"] = replace_nth(out["history.yaml"], sources, sources.replace("本則", "本則第一条"), 1)
+        return out
+
+    def other_notes(reason):
+        return lambda out: with_glyph_notes(out, new_rev, ROW_NODE, 3, n=1, reason=reason)
+
+    for title, before, after in (
+            ("記録訂正で、宣言していない版の本文の出典（text.sources）を変える", typo(False), typo(True, other_sources)),
+            ("記録訂正で、宣言していない版の字体注記を変える", typo(False, other_notes("適合ケースのための架空の注記")),
+             typo(True, other_notes("適合ケースのための架空の注記（改めた）")))):
+        bundle = next_dir("common", False) / "repo.bundle"
+        c1, c2 = build_bundle(bundle, [
+            ("二つの版を加える", "revisionAdd", False, before),
+            (raw_message("第一の版の誤転記を直す", "correction", [old_rev]), RAW, False, after),
+        ])
+        add("common", title, ["CHG-02"], "change", {"kind": "change", "bundle": rel(bundle), "base": c1, "head": c2},
+            {"results": [{"check": "change", "result": "fail"}], "diagnostics": [diag("CHG-02", SV["common"])]}, False)
+
+
+def registry_metadata_changes():
+    """CHG-02: metadata in the repository of the registry, after its first commit (no version to compare).
+
+    Changing the label of a Record passes. Replacing the file of a merged Record with an active Record of the same
+    ID reuses the retired ID (RID-05): the registry after the commit holds no retired Record, so only the change
+    check finds it. The table of CHG-02 refers the check to RID-05, the requirement that forbids the reuse, so the
+    violation is reported by RID-05 (CHG-03: by the requirement that defines the check).
+    """
+    relabeled = dict(REGISTRY_FIRST)
+    path = "records/20990101-act-1.yaml"
+    relabeled[path] = relabeled[path].replace("label: 架空法律第一号（実在しないサンプル）", "label: 架空雲保管法（実在しないサンプル）")
+    assert relabeled[path] != REGISTRY_FIRST[path]
+    bundle = next_dir("common", True) / "repo.bundle"
+    c1, c2 = build_bundle(bundle, [("Recordを登録する", "metadata", False, dict(REGISTRY_FIRST)),
+                                   ("Recordのラベルを改める", "metadata", False, relabeled)])
+    add("common", "登録台帳のリポジトリで、Recordのラベルを改める属性の更新", ["CHG-02"], "change",
+        {"kind": "change", "bundle": rel(bundle), "base": c1, "head": c2, "repository": "registry"},
+        {"results": [{"check": "change", "result": "pass"}]}, True)
+
+    reused = dict(REGISTRY_FIRST)
+    reused["records/" + REGISTRY_RETIRED[0] + ".yaml"] = (
+        "schemaVersion: loj-registry/v1alpha1\nid: " + REGISTRY_RETIRED[0] + "\nlabel: 架空の別の法令（実在しないサンプル）\n"
+        "status: active\nidentity:\n  evidence: [{source: src-fiction, locator: 本文}]\n  verification: {state: confirmed}\n"
+        "collection: {state: notCollected}\nsources:\n  - {id: src-fiction, kind: other, title: 架空の原典}\n"
+        "numbers: []\nexternalIds: []\n")
+    bundle = next_dir("common", False) / "repo.bundle"
+    c1, c2 = build_bundle(bundle, [("Recordを登録し、重複した登録を統合する", "metadata", False, retired_registry_files()),
+                                   ("統合したRecordのIDを別の法令のRecordに使う", "metadata", False, reused)])
+    add("common", "登録台帳のリポジトリで、統合したRecordのIDを別の法令のRecordに再利用する属性の更新", ["CHG-02", "RID-05"], "change",
+        {"kind": "change", "bundle": rel(bundle), "base": c1, "head": c2, "repository": "registry"},
+        {"results": [{"check": "change", "result": "fail"}], "diagnostics": [diag("RID-05", SV["reg"])]}, False)
+
+
+def revert_revision_add():
+    """CHG-03: the revert of revisionAdd is revisionFix, which retracts the Revision and keeps its version package.
+
+    The positive retracts the added Revision. The negative is the diff of git revert, declared revisionAdd (the kind
+    of the change it reverts): it deletes the version package and the Revision, outside the range of revisionAdd.
+    """
+    old_rev, new_rev = ROW_REVS[0], ROW_REVS[1]
+    one, two = row_files([["a1b2", "c3d4"]]), row_files([["a1b2", "c3d4"], ["a1b2"]])
+    retracted = dict(two)
+    retracted["history.yaml"] = replace_nth(two["history.yaml"], "    status: active\n", "    status: retracted\n", -1)
+    first = [("制定時の版を加える", "revisionAdd", False, one),
+             (raw_message("改正による版を加える", "revisionAdd", [new_rev]), RAW, False, two)]
+    bundle = next_dir("common", True) / "repo.bundle"
+    _, c2, c3 = build_bundle(bundle, first + [
+        (raw_message("改正による版の追加を取り消す", "revisionFix", [new_rev]), RAW, False, retracted)])
+    add("common", "状態の追加の取り消しを、Revisionを撤回する状態の訂正とする", ["CHG-03", "CHG-02"], "change",
+        {"kind": "change", "bundle": rel(bundle), "base": c2, "head": c3},
+        {"results": [{"check": "change", "result": "pass"}]}, True)
+    reverted = dict(one)
+    reverted.update({"versions/" + new_rev + "/law.yaml": None})
+    bundle = next_dir("common", False) / "repo.bundle"
+    _, c2, c3 = build_bundle(bundle, first + [
+        (raw_message("Revert \"改正による版を加える\"", "revisionAdd", [new_rev]), RAW, False, reverted)])
+    add("common", "状態の追加の取り消しを、版パッケージを削除する差分で状態の追加と宣言する", ["CHG-03", "CHG-02"], "change",
+        {"kind": "change", "bundle": rel(bundle), "base": c2, "head": c3},
+        {"results": [{"check": "change", "result": "fail"}], "diagnostics": [diag("CHG-02", SV["common"])]}, False)
+
+
 def main():
     for suite, folder in FOLDER.items():
         for group in ("invalid", "expected"):
@@ -2039,6 +2269,10 @@ def main():
     glyph_note_gaps()
     cross_record_gaps()
     common_type_gaps()
+    change_partial_text()
+    change_dependent_files()
+    registry_metadata_changes()
+    revert_revision_add()
     assert not DERIVED, sorted(DERIVED)  # every copy is listed by the case that owns it
     marked = {case["id"] for cases in INDEX.values() for case in cases if "rejectedBy" in case}
     assert marked == SCHEMA_REJECTED, SCHEMA_REJECTED - marked

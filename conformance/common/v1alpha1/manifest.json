@@ -2056,6 +2056,191 @@
           ]
         }
       ]
+    },
+    {
+      "id": "common-083",
+      "title": "一部しか本文がない版を含む属性の更新は判定不能",
+      "requirements": [
+        "CHG-04",
+        "CHG-02"
+      ],
+      "check": "change",
+      "normative": true,
+      "input": {
+        "kind": "change",
+        "bundle": "conformance/common/v1alpha1/valid/common-083/repo.bundle",
+        "base": "cca9787c25fdc0aaf6e8864bce831e8afca1708e",
+        "head": "1dbdbe40c88994cc11541432c71509cf54ee3f0d"
+      },
+      "expected": "conformance/common/v1alpha1/expected/common-083.json",
+      "success": true
+    },
+    {
+      "id": "common-084",
+      "title": "一部しか本文がない版のファイルを、人のレビューの記録なしに書式変更で変える",
+      "requirements": [
+        "CHG-04"
+      ],
+      "check": "change",
+      "normative": true,
+      "input": {
+        "kind": "change",
+        "bundle": "conformance/common/v1alpha1/invalid/common-084/repo.bundle",
+        "base": "1dbdbe40c88994cc11541432c71509cf54ee3f0d",
+        "head": "534de19ab539d5ad9faf7aa86f38b99834204c66"
+      },
+      "expected": "conformance/common/v1alpha1/expected/common-084.json",
+      "success": false,
+      "derivedFrom": [
+        {
+          "path": "conformance/common/v1alpha1/invalid/common-084/repo.bundle",
+          "from": "conformance/common/v1alpha1/valid/common-083/repo.bundle",
+          "edits": []
+        }
+      ]
+    },
+    {
+      "id": "common-085",
+      "title": "記録訂正で、同じ版の字体注記を併せて更新する",
+      "requirements": [
+        "CHG-02",
+        "GLYPH-04"
+      ],
+      "check": "change",
+      "normative": true,
+      "input": {
+        "kind": "change",
+        "bundle": "conformance/common/v1alpha1/valid/common-085/repo.bundle",
+        "base": "f013255c9a5f18a3f4145eae57778c96d2ed1e2e",
+        "head": "e272850bfcd2b44cf2865ec67f094a31a320d139"
+      },
+      "expected": "conformance/common/v1alpha1/expected/common-085.json",
+      "success": true
+    },
+    {
+      "id": "common-086",
+      "title": "記録訂正で、その版を指す対象範囲のノード（Scopeのnodes）を併せて更新する",
+      "requirements": [
+        "CHG-02",
+        "TYPE-08"
+      ],
+      "check": "change",
+      "normative": true,
+      "input": {
+        "kind": "change",
+        "bundle": "conformance/common/v1alpha1/valid/common-086/repo.bundle",
+        "base": "59bf32471ffdba77ac6d8fde49fe8ab4a8267a48",
+        "head": "fe97e77dc51cc7e6a2da43b98edb11be1cb8745a"
+      },
+      "expected": "conformance/common/v1alpha1/expected/common-086.json",
+      "success": true
+    },
+    {
+      "id": "common-087",
+      "title": "記録訂正で、宣言していない版の本文の出典（text.sources）を変える",
+      "requirements": [
+        "CHG-02"
+      ],
+      "check": "change",
+      "normative": true,
+      "input": {
+        "kind": "change",
+        "bundle": "conformance/common/v1alpha1/invalid/common-087/repo.bundle",
+        "base": "73f893e58c0a213ffbd31f2bda8d4560e4209c30",
+        "head": "c54ec878215b5f10d870b0e7ab0c88149e7414ab"
+      },
+      "expected": "conformance/common/v1alpha1/expected/common-087.json",
+      "success": false
+    },
+    {
+      "id": "common-088",
+      "title": "記録訂正で、宣言していない版の字体注記を変える",
+      "requirements": [
+        "CHG-02"
+      ],
+      "check": "change",
+      "normative": true,
+      "input": {
+        "kind": "change",
+        "bundle": "conformance/common/v1alpha1/invalid/common-088/repo.bundle",
+        "base": "4eaadf2d14b84678bd8aa2a8a37edadf8a5bdb6e",
+        "head": "14180e61a9c778cbe809a25727ae3617c99af2d1"
+      },
+      "expected": "conformance/common/v1alpha1/expected/common-088.json",
+      "success": false
+    },
+    {
+      "id": "common-089",
+      "title": "登録台帳のリポジトリで、Recordのラベルを改める属性の更新",
+      "requirements": [
+        "CHG-02"
+      ],
+      "check": "change",
+      "normative": true,
+      "input": {
+        "kind": "change",
+        "bundle": "conformance/common/v1alpha1/valid/common-089/repo.bundle",
+        "base": "43a71b1c84063a173a88da86cd011a6f7418bd7f",
+        "head": "76320cbf15a322f2a2a81a1e9619b417f39a2239",
+        "repository": "registry"
+      },
+      "expected": "conformance/common/v1alpha1/expected/common-089.json",
+      "success": true
+    },
+    {
+      "id": "common-090",
+      "title": "登録台帳のリポジトリで、統合したRecordのIDを別の法令のRecordに再利用する属性の更新",
+      "requirements": [
+        "CHG-02",
+        "RID-05"
+      ],
+      "check": "change",
+      "normative": true,
+      "input": {
+        "kind": "change",
+        "bundle": "conformance/common/v1alpha1/invalid/common-090/repo.bundle",
+        "base": "c9ce1972d0b26f78c796fd357b04da78f0392d0c",
+        "head": "a4ea7789c6b666d4e1924a3f430083de1cd1b709",
+        "repository": "registry"
+      },
+      "expected": "conformance/common/v1alpha1/expected/common-090.json",
+      "success": false
+    },
+    {
+      "id": "common-091",
+      "title": "状態の追加の取り消しを、Revisionを撤回する状態の訂正とする",
+      "requirements": [
+        "CHG-03",
+        "CHG-02"
+      ],
+      "check": "change",
+      "normative": true,
+      "input": {
+        "kind": "change",
+        "bundle": "conformance/common/v1alpha1/valid/common-091/repo.bundle",
+        "base": "a0853aac06984470a60ea045beb0772ede4657d0",
+        "head": "c505929ace5e4720e4ff5807815b62ee95f5ccd0"
+      },
+      "expected": "conformance/common/v1alpha1/expected/common-091.json",
+      "success": true
+    },
+    {
+      "id": "common-092",
+      "title": "状態の追加の取り消しを、版パッケージを削除する差分で状態の追加と宣言する",
+      "requirements": [
+        "CHG-03",
+        "CHG-02"
+      ],
+      "check": "change",
+      "normative": true,
+      "input": {
+        "kind": "change",
+        "bundle": "conformance/common/v1alpha1/invalid/common-092/repo.bundle",
+        "base": "a0853aac06984470a60ea045beb0772ede4657d0",
+        "head": "9835f7c9125946dd899e3cba4c3ad5349a8c48c7"
+      },
+      "expected": "conformance/common/v1alpha1/expected/common-092.json",
+      "success": false
     }
   ]
 }
