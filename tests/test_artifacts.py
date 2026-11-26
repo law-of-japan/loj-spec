@@ -667,6 +667,14 @@ class RestatementTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "AAA-01"):
             v.requirement_sections(["## AAA-01 x\n", "## AAA-01 y\n"])
 
+    def test_copied_restatements_reported_once(self):
+        texts = {"spec/k/v1/a.md": "## AAA-01 x\n\n- MUST BBB-01\n", "spec/k/v2/a.md": "## AAA-01 x\n\n- MUST BBB-01\n",
+                 "spec/m/v1/a.md": "## AAA-01 x\n\n- MUST BBB-01\n", "spec/k/v3/a.md": "## AAA-01 x\n\n- MUST BBB-01 changed\n"}
+        found = [("spec/k/v1/a.md", 3, "AAA-01", ["BBB-01"]), ("spec/k/v2/a.md", 3, "AAA-01", ["BBB-01"]),
+                 ("spec/m/v1/a.md", 3, "AAA-01", ["BBB-01"]), ("spec/k/v3/a.md", 3, "AAA-01", ["BBB-01"])]
+        self.assertEqual(v.drop_copied_restatements(found, texts),
+                         [found[0], found[2], found[3]])
+
     def test_schema_sections_keep_versions_apart(self):
         by_dir = {"k/v1": {"AAA-01": "old", "AAA-02": "old two"}, "k/v2": {"AAA-01": "new", "AAA-03": "new three"},
                   "c/v1": {"BBB-01": "common"}}

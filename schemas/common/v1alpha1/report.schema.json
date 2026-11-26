@@ -108,7 +108,7 @@
           },
           "schemaVersion": {
             "type": "string",
-            "pattern": "^(loj|loj-history|loj-glyphs|loj-registry|loj-rebuild)/v[0-9]+(alpha|beta)?[0-9]*$|^common/v1alpha1$"
+            "pattern": "^(loj|loj-history|loj-glyphs|loj-registry|loj-rebuild|common)/v[0-9]+(alpha|beta)?[0-9]*$"
           },
           "class": {
             "enum": [

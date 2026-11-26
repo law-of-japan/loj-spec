@@ -37,13 +37,14 @@ DERIVED = {}
 ZWG = "versions/zwgmz1rt/"
 # CONF-01: negatives whose input breaks the schema of its schemaVersion. Written by hand: the schema error
 # of each one was checked to be the violation of the case's expected rule (law-of-japan/loj-spec#32).
-SCHEMA_REJECTED = {"hist-005", "hist-006", "hist-010", "hist-012", "hist-013", "hist-020", "hist-021", "hist-022",
-                   "hist-026", "hist-038", "hist-041", "hist-042", "hist-043", "hist-045", "hist-046", "glyph-005", "reg-005",
-                   "reg-006", "reg-007", "reg-010", "rebuild-002", "hist-056", "hist-057", "hist-058", "hist-059",
-                   "hist-060", "hist-061", "rebuild-005", "reg-013", "glyph-014", "glyph-015",
-                   "glyph-016", "glyph-019", "hist-068", "glyph-033", "reg-015", "rebuild-006", "reg-016", "rebuild-007"}
-# The same for loj-registry/v1alpha2, whose case IDs repeat those of v1alpha1.
-SCHEMA_REJECTED_REG2 = {"reg-004", "reg-005", "reg-006"}
+# Keyed by (suite key, case ID): the two registry versions both use reg-NNN case IDs.
+SCHEMA_REJECTED = {(case.split("-")[0], case) for case in (
+    "hist-005", "hist-006", "hist-010", "hist-012", "hist-013", "hist-020", "hist-021", "hist-022", "hist-026",
+    "hist-038", "hist-041", "hist-042", "hist-043", "hist-045", "hist-046", "glyph-005", "reg-005", "reg-006",
+    "reg-007", "reg-010", "rebuild-002", "hist-056", "hist-057", "hist-058", "hist-059", "hist-060", "hist-061",
+    "rebuild-005", "reg-013", "glyph-014", "glyph-015", "glyph-016", "glyph-019", "hist-068", "glyph-033", "reg-015",
+    "rebuild-006", "reg-016", "rebuild-007")}
+SCHEMA_REJECTED |= {("reg2", case) for case in ("reg-004", "reg-005", "reg-006")}
 
 
 def write_json(path, value):
@@ -89,7 +90,7 @@ def add(suite, title, requirements, check, inp, expected, success, category=None
     if category:
         case["category"] = category
     case.update({"normative": normative, "input": inp, "expected": exp_path, "success": success})
-    if ident in (SCHEMA_REJECTED_REG2 if suite == "reg2" else SCHEMA_REJECTED):
+    if (suite, ident) in SCHEMA_REJECTED:
         assert not success, ident
         case["rejectedBy"] = "schema"
     # A copy belongs to the case whose directory holds it; other cases may read it as a shared input.
@@ -336,7 +337,7 @@ def registry_names():
         ("定めのない名称の種別", "REG-06", [(law, "    kind: abbreviation\n    value: 祝日法\n",
                                          "    kind: nickname\n    value: 祝日法\n")]),
         # unverified, so that only REG-06 applies: a confirmed claim with no evidence also breaks TYPE-05.
-        ("根拠のない未確認の名称", "REG-06", [(law, "    value: 祝日法\n    evidence: [{source: src-egov, locator: 法令略称}]\n"
+        ("根拠のない未確認の名称（確認済みならTYPE-05の違反も重なる）", "REG-06", [(law, "    value: 祝日法\n    evidence: [{source: src-egov, locator: 法令略称}]\n"
                                            "    verification: {state: confirmed}\n",
                                            "    value: 祝日法\n    evidence: []\n"
                                            "    verification: {state: unverified, reason: 根拠の資料を記録していない}\n")]),
@@ -2534,10 +2535,8 @@ def main():
     absent_version_declarations()
     cross_record_clauses()
     assert not DERIVED, sorted(DERIVED)  # every copy is listed by the case that owns it
-    marked = {case["id"] for suite, cases in INDEX.items() if suite != "reg2" for case in cases if "rejectedBy" in case}
-    assert marked == SCHEMA_REJECTED, SCHEMA_REJECTED - marked
-    marked = {case["id"] for case in INDEX["reg2"] if "rejectedBy" in case}
-    assert marked == SCHEMA_REJECTED_REG2, SCHEMA_REJECTED_REG2 - marked
+    marked = {(suite, case["id"]) for suite, cases in INDEX.items() for case in cases if "rejectedBy" in case}
+    assert marked == SCHEMA_REJECTED, SCHEMA_REJECTED ^ marked
     for suite, folder in FOLDER.items():
         write_json(C / folder / "manifest.json", {"suite": SV[suite], "cases": INDEX[suite]})
     print("Authored " + ", ".join(f"{k}: {len(v)}" for k, v in INDEX.items()) + "; no validator invoked.")

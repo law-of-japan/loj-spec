@@ -4,6 +4,7 @@ Positive source traces are compared with independently authored expected trees.
 Negative L1 fixture semantics require a future implementation adapter/review.
 """
 import json
+import posixpath
 import re
 import unicodedata
 from pathlib import Path
@@ -986,12 +987,35 @@ def restated_requirement_words(texts):
     return found
 
 
+def version_kind(folder):
+    """The kind of a spec version directory: "loj-registry" for "loj-registry/v1alpha2", "" for the version
+    package directories ("v1alpha2"), which sit directly under spec/."""
+    return folder.split("/")[0] if "/" in folder else ""
+
+
+def drop_copied_restatements(found, texts):
+    """Keep one of the hits whose sentence line, own ID and cited IDs are the same in two versions of one kind.
+
+    A new draft version starts as a copy of the published one, so its unchanged sentences would repeat the
+    warnings of the older version without adding a new restatement (law-of-japan/loj-spec#194).
+    """
+    kept, seen = [], set()
+    for name, number, own, cited in found:
+        folder = posixpath.dirname(name.split("/", 1)[1])  # "spec/loj-registry/v1alpha2/x.md" -> "loj-registry/v1alpha2"
+        line = texts[name].splitlines()[number - 1]
+        key = (version_kind(folder), posixpath.basename(name), line, own, tuple(cited))
+        if key not in seen:
+            seen.add(key)
+            kept.append((name, number, own, cited))
+    return kept
+
+
 def check_restatements():
     """Warn about requirement words restated outside their source requirement (frozen versions excluded)."""
     spec = ROOT / "spec"
     texts = {path.relative_to(ROOT).as_posix(): path.read_text(encoding="utf-8")
              for path in spec.rglob("*.md") if (spec / "v1alpha1") not in path.parents}
-    return restated_requirement_words(texts)
+    return drop_copied_restatements(restated_requirement_words(texts), texts)
 
 
 # 「CHAR-02〜CHAR-04」「FIXREF-03」: one ID or an inclusive range within one series.
@@ -1149,8 +1173,7 @@ def requirement_sections(texts):
 
 def schema_version_dir(schema):
     """The spec version directory of a schema path under schemas/ ("loj-registry/v1alpha2/x.json" -> "loj-registry/v1alpha2")."""
-    parts = schema.split("/")[:-1]
-    return "/".join(parts)
+    return posixpath.dirname(schema)
 
 
 def schema_sections(by_dir, schema):
@@ -1161,7 +1184,7 @@ def schema_sections(by_dir, schema):
     added only when no other directory has the same ID, so it cannot be matched with the wrong version.
     """
     own = schema_version_dir(schema)
-    kind = lambda folder: folder.split("/")[0] if "/" in folder else ""
+    kind = version_kind
     sections = dict(by_dir.get(own, {}))
     counts = {}
     for found in by_dir.values():

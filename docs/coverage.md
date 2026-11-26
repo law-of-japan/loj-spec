@@ -59,6 +59,15 @@ T076〜T105は承認されたMAN-03 B案の独立ケース。附属資料の通�
 
 `scripts/verify.py`は、すべての索引・期待結果・正例の入力の形と、要件IDの存在を検査し、v1alpha2の正例のASTを原文と突き合わせる。v1alpha2のL0の正例は、ASTを持たずにL0の`pass`を挙げることと、ManifestがL0の検査を通ることを検査する。期待結果の診断の位置は、`documents`のファイルの中の一つの行（行末の改行を含む）であることだけを検査し（`law.yaml`を指す位置は拒否する。SRC-01はManifestの意味の違反の位置を定めない）、規則が指すべき行かは判定しない。版パッケージのケースを除く負例は、索引の`rejectedBy: schema`の印のとおりに、入力のYAMLがschemaで落ちるか、schemaを通るかを検査する（[CONTRIBUTING](../CONTRIBUTING.md#適合ケースの作り方)）。別の入力の写しに変更を加えて作った入力（索引の`derivedFrom`）は、元に変更を適用し直した結果と一致することを検査する。元の正例だけを直して`author_next_cases.py`を実行し忘れると、ここで失敗する。変更が期待する規則の違反だけを生むかは判定せず、レビューで確かめる。v1alpha2のL1の負例と、L3・L4・登録台帳・再構築報告・変更検査・固定参照のケースの合否は判定しない。検査器で判定する。
 
+### loj-registry/v1alpha2（草案）で公開の前に写すケース
+
+`loj-registry/v1alpha2`の索引は、名称（REG-06）とその一覧（REG-02）のケースだけを持つ。次の要件は、v1alpha1から意味を変えておらず、ケースはv1alpha1の索引にだけある。公開の前に、v1alpha2の索引へ写す（[制限](limitations.md#検証の境界)）。
+
+| 要件 | v1alpha1のケース |
+|---|---|
+| REG-01〜REG-05、RID-01、RID-02、RID-04、RID-05 | [conformance/loj-registry/v1alpha1](../conformance/loj-registry/v1alpha1/manifest.json)のreg-001〜016 |
+| REG-02、REG-03、RID-01、RID-05等の登録台帳を入力とするL4・変更検査 | [conformance/common/v1alpha1](../conformance/common/v1alpha1/manifest.json)の、登録台帳を入力とするケース |
+
 ### ケースのない要件
 
 次の要件にはケースを作らない（検査の対象外）。
