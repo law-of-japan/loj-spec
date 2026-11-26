@@ -2237,6 +2237,44 @@ def split_reference_candidates():
         True, "relationResolution")
 
 
+# --- 2026-11-26: the kind of the retraction of a relation (#184) ------------------------------------
+def relation_retraction_changes():
+    """HIST-12: retracting a relation and deleting (or replacing) the termination item that rests on it is one
+    metadata change (CHG-01: the update of a relation), not revisionFix (the retraction of a Revision).
+
+    The history manifest of hist-002 has no version package (text.status: absent), so no AST is compared.
+    """
+    base = (ROOT / "conformance/loj-history/v1alpha1/valid/hist-002/repo/history.yaml").read_bytes().decode("utf-8")
+    active = "    verification: {state: unverified, reason: 官報と未照合}\n    status: active\n"
+    retracted = ("    verification: {state: unverified, reason: 公布の日の法令を取り違えた関係の撤回（架空）}\n"
+                 "    status: retracted\n")
+    termination = "termination:\n  - {type: repealed, relation: rel-repeal}\n"
+    assert base.count(active) == 1 and base.count(termination) == 1
+    deleted = base.replace(active, retracted).replace(termination, "")
+    other = ("  - id: rel-repeal-2\n    type: repeals\n    from: {id: 19590413-law-123, label: 架空の廃止法}\n"
+             "    evidence: [{source: src-egov-s34-122, locator: 第三条}]\n"
+             "    verification: {state: unverified, reason: 官報と未照合}\n    status: active\n    items:\n"
+             "      - id: i1\n        scope: {text: 全部}\n        effective:\n          state: date\n"
+             '          value: "1960-04-01"\n          raw: 昭和三十五年四月一日\n          precision: day\n'
+             "          evidence: [{source: src-egov-s34-122, locator: 第一条}]\n"
+             "          verification: {state: unverified, reason: 官報と未照合}\n"
+             "        evidence: [{source: src-egov-s34-122, locator: 第三条}]\n"
+             "        verification: {state: unverified, reason: 官報と未照合}\n")
+    # The new relation follows the retracted one, and the termination item rests on it instead.
+    replaced = base.replace(active, retracted).replace(
+        termination, other + "termination:\n  - {type: repealed, relation: rel-repeal-2}\n")
+    for title, head in [
+        ("関係の撤回と、それを根拠とする効力の終了の項目の削除を、一つの属性の更新とする", deleted),
+        ("関係の撤回と、効力の終了の項目の別の関係への置き換えを、一つの属性の更新とする", replaced),
+    ]:
+        bundle = next_dir("common", True) / "repo.bundle"
+        c1, c2 = build_bundle(bundle, [("効力の終了を記録する", "revisionAdd", False, {"history.yaml": base}),
+                                       ("関係を撤回する", "metadata", False, {"history.yaml": head})])
+        add("common", title, ["HIST-12", "CHG-01", "CHG-02"], "change",
+            {"kind": "change", "bundle": rel(bundle), "base": c1, "head": c2},
+            {"results": [{"check": "change", "result": "pass"}]}, True)
+
+
 def main():
     for suite, folder in FOLDER.items():
         for group in ("invalid", "expected"):
@@ -2289,6 +2327,7 @@ def main():
     registry_metadata_changes()
     revert_revision_add()
     split_reference_candidates()
+    relation_retraction_changes()
     assert not DERIVED, sorted(DERIVED)  # every copy is listed by the case that owns it
     marked = {case["id"] for cases in INDEX.values() for case in cases if "rejectedBy" in case}
     assert marked == SCHEMA_REJECTED, SCHEMA_REJECTED - marked
