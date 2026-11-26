@@ -35,7 +35,7 @@ ASTは、`schemaVersion`・`law`・`root`への投影を、位置情報を除い
 | `restoration` | 宣言した版の本文と本文の状態。従属して、`correction`と同じファイルと、当該Revisionの`text`の欠落範囲、再構築報告の対応 | 宣言していない版のASTが一致する。本文の状態・欠落範囲の宣言が更新されている |
 | `metadata` | 版パッケージ以外の正本のデータのファイル（登録台帳を含む） | すべての版のASTが一致する。登録台帳では、統合・分割・撤回したRecordのIDを再利用していない（違反は[RID-05](../../loj-registry/v1alpha1/02-record-ids.md)の規則で報告する） |
 | `revisionAdd` | 新しい版パッケージ（本文のない版（`text.status: absent`）では版パッケージを置かない）と、その履歴マニフェストの項目。従属して、新しい版の字体注記、`history.yaml`の新しいRevision・関係（`relations`）・Source、再構築報告の`mappings` | 既存のすべての版のASTが一致する。新しい版が版の順序の要件を満たす |
-| `revisionFix` | 宣言した版と、撤回・統合・分割の対応の記録 | 宣言していない版のASTが一致する。撤回・統合・分割した旧IDを再利用していない（違反は[REV-01](../../loj-history/v1alpha1/02-revision-ids.md)の規則で報告する） |
+| `revisionFix` | 宣言した版と、Revisionの撤回・統合・分割の対応の記録（関係の撤回は含まない。`metadata`による） | 宣言していない版のASTが一致する。撤回・統合・分割した旧IDを再利用していない（違反は[REV-01](../../loj-history/v1alpha1/02-revision-ids.md)の規則で報告する） |
 | `migration` | すべての版 | 新しい仕様の版が規範として提供するASTの対応表で変換した旧ASTが、新ASTと一致する |
 | `auxiliary` | 正本のデータの外のファイル | 正本のデータのファイルが、変更前後で一致する（ファイルの追加・削除・パスの変更がなく、各ファイルのバイト列とGitのファイルのモード（通常のファイル、実行可能なファイル、シンボリックリンク等）が同じ）。ASTを比べない |
 
