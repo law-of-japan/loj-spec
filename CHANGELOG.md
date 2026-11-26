@@ -2,6 +2,17 @@
 
 見出しの「草案」は、[草案の版](spec/README.md#版の状態)への変更であることを示す。版の状態の正は、[規範仕様の入口](spec/README.md#規範とするもの)の表にある。版を公開したときは、公開の日付の項目を加える。
 
+## 変更検査の不足したケース（2026-11-26、草案）
+
+公開の手順2（[CONTRIBUTING](CONTRIBUTING.md#版の状態と公開)）で、要件との対応表が「まだない」としたケースを加える変更である。草案の版（`common/v1alpha1`）に適合ケースを加えただけで、規範の本文は変えていない。既存のケースの期待結果は変わらない。
+
+- CHG-04: 一部しか本文がない版を含む`metadata`の変更の判定不能（common-083）と、その版のファイルを`LoJ-Reviewed`なしに`format`で変える負例（common-084）。
+- CHG-02の従属するファイル: 宣言した版の字体注記（common-085）とScopeの`nodes`（common-086）を併せて更新する`correction`の正例と、宣言していない版の`text.sources`（common-087）・字体注記（common-088）を変える負例。
+- 登録台帳のリポジトリの2番目以降のcommitの`metadata`: Recordのラベルを改める正例（common-089）と、統合したRecordのIDを別の法令のRecordに再利用する負例（common-090、RID-05）。
+- CHG-03の取り消し: `revisionAdd`の取り消しを`revisionFix`でRevisionを撤回して行う正例（common-091）と、`git revert`の差分を`revisionAdd`と宣言する負例（common-092）。
+- `scripts/author_next_cases.py`の`build_bundle`で、ファイルを削除する手順を書けるようにした。既存のバンドルは変わらない。
+- 要件との対応表の該当する段落とケースの表の範囲を直した。RID-05の報告の規則と、関係の撤回の種類（HIST-12とCHG-01の食い違い）を、[law-of-japan/loj-spec#184](https://github.com/law-of-japan/loj-spec/issues/184)に挙げた。関係の撤回と`termination`の項目の削除を一つの変更で行うケースは、その結論を待って加える。
+
 ## Record間の検査と共通の型の不足したケース（2026-11-26、草案）
 
 公開の手順2（[CONTRIBUTING](CONTRIBUTING.md#版の状態と公開)）で、要件との対応表が「まだない」としたケースを加える変更である。草案の版（`common/v1alpha1`、`loj-registry/v1alpha1`、`loj-rebuild/v1alpha1`）に適合ケースを加えただけで、規範の本文は変えていない。既存のケースの期待結果は変わらない。
