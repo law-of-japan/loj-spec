@@ -2285,6 +2285,66 @@ def relation_retraction_changes():
         {"results": [{"check": "change", "result": "fail"}], "diagnostics": [diag("CHG-02", SV["common"])]}, False)
 
 
+# --- 2026-11-26: the reuse of a retired revision_id in revisionFix (#189) ----------------------------
+def revision_id_reuse():
+    """CHG-02: a revisionFix that splits a Revision and gives one of the new Revisions the revision_id of a
+    retracted Revision. The retracted Revision stays in the manifest (HIST-10), so two Revisions hold the id; the
+    violation is reported by REV-01 (the table of CHG-02 names it). No Revision has a version package
+    (text.status: absent), so no AST is compared and the version directories do not collide.
+    """
+    r0, r1, r2, r3 = "2d6d257a", "h3k8m2p5", "j4n9q3r6", "t5v2w8x1"
+    fict = "{source: src-fiction, locator: %s}"
+
+    def date(indent, value, raw, locator):
+        pad = " " * indent
+        return (pad + "effective:\n" + pad + "  state: date\n" + pad + '  value: "' + value + '"\n' + pad + "  raw: " + raw
+                + "\n" + pad + "  precision: day\n" + pad + "  evidence: [" + fict % locator + "]\n" + pad
+                + "  verification: {state: unverified, reason: 架空の資料}\n")
+
+    def item(ident, value, raw):
+        return ("      - id: " + ident + "\n        scope: {text: 第一条}\n" + date(8, value, raw, "附則")
+                + "        evidence: [" + fict % "附則" + "]\n        verification: {state: unverified, reason: 架空の資料}\n")
+
+    def relation(ident, law, items):
+        return ("  - id: " + ident + "\n    type: amends\n    from: {id: " + law + ", label: 架空の改正法}\n"
+                "    evidence: [" + fict % "本則" + "]\n    verification: {state: unverified, reason: 架空の資料}\n"
+                "    status: active\n    items:\n" + items)
+
+    def revision(ident, based, rel, items, value, raw, status="active", extra=""):
+        return ("  - id: " + ident + "\n    basedOn: " + based + "\n    basis: [{relation: " + rel + ", items: [" + items + "]}]\n"
+                + date(4, value, raw, "施行期日") + "    applicability: {state: unsurveyed}\n    text: {status: absent}\n"
+                "    status: " + status + "\n" + extra)
+
+    head = ("schemaVersion: loj-history/v1alpha1\nrecord: {id: 20990101-act-7, label: 架空雲測量法（実在しないサンプル）}\n"
+            "sources:\n  - {id: src-fiction, kind: other, title: 適合ケースのための架空の資料}\nrelations:\n"
+            + relation("rel-1", "20990201-act-11", item("i1", "2099-02-01", "二千九十九年二月一日"))
+            + relation("rel-2", "20990301-act-12", item("i1", "2099-03-01", "二千九十九年三月一日")
+                       + item("i2", "2099-04-01", "二千九十九年四月一日"))
+            + "revisions:\n  - id: " + r0 + "\n    origin: coverageStart\n    effective: {state: unknown, reason: 未調査}\n"
+            "    applicability: {state: unsurveyed}\n    text: {status: absent}\n    status: active\n")
+    first = head + revision(r1, r0, "rel-1", "i1", "2099-02-01", "二千九十九年二月一日") + revision(
+        r2, r0, "rel-2", "i1, i2", "2099-03-01", "二千九十九年三月一日")
+    tail = "coverage: {state: unconfirmed}\n"
+    retracted = head + revision(r1, r0, "rel-1", "i1", "2099-02-01", "二千九十九年二月一日", "retracted") + revision(
+        r2, r0, "rel-2", "i1, i2", "2099-03-01", "二千九十九年三月一日")
+    split = (head + revision(r1, r0, "rel-1", "i1", "2099-02-01", "二千九十九年二月一日", "retracted")
+             + revision(r2, r0, "rel-2", "i1, i2", "2099-03-01", "二千九十九年三月一日", "split",
+                        "    replacedBy:\n      revisions: [" + r3 + ", " + r1 + "]\n"
+                        "      evidence: [" + fict % "附則" + "]\n"
+                        "      verification: {state: unverified, reason: 施行期日の異なる二つの段階を一つの版にした誤りの訂正（架空）}\n")
+             + revision(r3, r0, "rel-2", "i1", "2099-03-01", "二千九十九年三月一日")
+             + revision(r1, r3, "rel-2", "i2", "2099-04-01", "二千九十九年四月一日"))
+    bundle = next_dir("common", False) / "repo.bundle"
+    _, c2, c3 = build_bundle(bundle, [
+        ("制定後の二つの版を加える", "revisionAdd", False, {"history.yaml": first + tail}),
+        (raw_message("取り違えた版を撤回する", "revisionFix", [r1]), RAW, False, {"history.yaml": retracted + tail}),
+        (raw_message("一つにした二つの段階の版を分割する", "revisionFix", [r2, r3, r1]), RAW, False,
+         {"history.yaml": split + tail})])
+    add("common", "状態の訂正で、分割先のRevisionに撤回したRevisionのrevision_idを再利用する", ["CHG-02", "REV-01", "HIST-10"],
+        "change", {"kind": "change", "bundle": rel(bundle), "base": c2, "head": c3},
+        {"results": [{"check": "change", "result": "fail"}], "diagnostics": [diag("REV-01", SV["hist"])]}, False)
+
+
 def main():
     for suite, folder in FOLDER.items():
         for group in ("invalid", "expected"):
@@ -2338,6 +2398,7 @@ def main():
     revert_revision_add()
     split_reference_candidates()
     relation_retraction_changes()
+    revision_id_reuse()
     assert not DERIVED, sorted(DERIVED)  # every copy is listed by the case that owns it
     marked = {case["id"] for cases in INDEX.values() for case in cases if "rejectedBy" in case}
     assert marked == SCHEMA_REJECTED, SCHEMA_REJECTED - marked

@@ -2,6 +2,16 @@
 
 見出しの「草案」は、[草案の版](spec/README.md#版の状態)への変更であることを示す。版の状態の正は、[規範仕様の入口](spec/README.md#規範とするもの)の表にある。版を公開したときは、公開の日付の項目を加える。
 
+## 状態の訂正でのRevisionのidの再利用の検査（2026-11-26、草案）
+
+[law-of-japan/loj-spec#189](https://github.com/law-of-japan/loj-spec/issues/189)の変更である。草案の版（`common/v1alpha1`）の意味を変える。理由は[DDR-015](docs/design-decisions/015-change-kinds.md#表が他の要件を引く検査の規則と関係の撤回の種類2026-11-26)の制約にある。既存のケースの期待結果は変わらない。
+
+- CHG-02: `revisionFix`の旧IDの再利用の検査は、変更前の記録版で撤回・統合・分割したRevisionのrevision_idを、変更後の記録版で二つ以上のRevisionが持つかを確かめると書いた。撤回・統合・分割したRevisionの項目そのものを`active`に戻す変更は取り消し（CHG-03）で、再利用に当たらず、そのときにほかのフィールドを変えても変更検査では再利用と判定しない。
+- CHG-02: 変更前から二つ以上のRevisionが持っていたidは、そのcommitが生じた再利用ではないので報告しないと書いた。
+- 適合ケース: 分割先の一つに撤回したRevisionのrevision_idを使う`revisionFix`の負例（common-097、REV-01）を加えた。
+- 制限に、撤回・統合・分割したRevisionの項目そのものを書き換えて旧IDを使う形を検出しないことを加えた。
+- 要件との対応表の該当する段落とケースの表の範囲、DDR-015の制約を直した。
+
 ## 表が他の要件を引く変更検査の規則と、関係の撤回の種類（2026-11-26、草案）
 
 [law-of-japan/loj-spec#184](https://github.com/law-of-japan/loj-spec/issues/184)の変更である。草案の版（`common/v1alpha1`、`loj-history/v1alpha1`）の意味を変える。理由は[DDR-015](docs/design-decisions/015-change-kinds.md#表が他の要件を引く検査の規則と関係の撤回の種類2026-11-26)にある。既存のケースの期待結果は変わらない。

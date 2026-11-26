@@ -2320,6 +2320,25 @@
       },
       "expected": "conformance/common/v1alpha1/expected/common-096.json",
       "success": false
+    },
+    {
+      "id": "common-097",
+      "title": "状態の訂正で、分割先のRevisionに撤回したRevisionのrevision_idを再利用する",
+      "requirements": [
+        "CHG-02",
+        "REV-01",
+        "HIST-10"
+      ],
+      "check": "change",
+      "normative": true,
+      "input": {
+        "kind": "change",
+        "bundle": "conformance/common/v1alpha1/invalid/common-097/repo.bundle",
+        "base": "4476cb56c49a1890e75eac1160ea37335dfe3bab",
+        "head": "3f21c3a8554e0cefe3eb0ba6c2db4fde5311062e"
+      },
+      "expected": "conformance/common/v1alpha1/expected/common-097.json",
+      "success": false
     }
   ]
 }
