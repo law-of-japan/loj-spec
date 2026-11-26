@@ -1076,6 +1076,14 @@ class V1alpha2AuthoringTests(unittest.TestCase):
                 with self.subTest(case=path.stem):
                     self.assertIn(path.stem, defined)
 
+    def test_no_input_folder_outside_script(self):
+        defined = set(self.a.FOLDERS)
+        for group in ("valid", "invalid"):
+            for path in (self.a.DST / group).glob("pkg-*"):
+                if int(path.name[4:]) >= self.a.FIRST:
+                    with self.subTest(folder=path.relative_to(v.ROOT).as_posix()):
+                        self.assertIn(path, defined)
+
 
 if __name__ == "__main__":
     unittest.main()
