@@ -8,12 +8,12 @@ LoJ（Law of Japan）のデータの規範仕様の入口である。本書は�
 
 | ディレクトリ | 対象 | schemaVersion | 状態 |
 |---|---|---|---|
-| [common/v1alpha1](common/v1alpha1/01-overview.md) | 種類にまたがる要件（構成、文字、適合レベル、共通の型、時点値、変更の種類、固定参照、派生ビュー、Record間の検査） | なし（共通の型の版） | 草案 |
-| [v1alpha2](v1alpha2/01-overview.md) | 版パッケージ（`law.yaml`と本文のMarkdown） | `loj/v1alpha2` | 草案 |
-| [loj-history/v1alpha1](loj-history/v1alpha1/01-history.md) | 履歴マニフェスト（`history.yaml`） | `loj-history/v1alpha1` | 草案 |
-| [loj-glyphs/v1alpha1](loj-glyphs/v1alpha1/01-glyphs.md) | 字体注記（`glyphs.yaml`） | `loj-glyphs/v1alpha1` | 草案 |
-| [loj-registry/v1alpha1](loj-registry/v1alpha1/01-registry.md) | 登録台帳のRecord（`records/<Record ID>.yaml`） | `loj-registry/v1alpha1` | 草案 |
-| [loj-rebuild/v1alpha1](loj-rebuild/v1alpha1/01-rebuild.md) | 原典からの再構築と再構築報告（`rebuild.yaml`） | `loj-rebuild/v1alpha1` | 草案 |
+| [common/v1alpha1](common/v1alpha1/01-overview.md) | 種類にまたがる要件（構成、文字、適合レベル、共通の型、時点値、変更の種類、固定参照、派生ビュー、Record間の検査） | なし（共通の型の版） | 公開 |
+| [v1alpha2](v1alpha2/01-overview.md) | 版パッケージ（`law.yaml`と本文のMarkdown） | `loj/v1alpha2` | 公開 |
+| [loj-history/v1alpha1](loj-history/v1alpha1/01-history.md) | 履歴マニフェスト（`history.yaml`） | `loj-history/v1alpha1` | 公開 |
+| [loj-glyphs/v1alpha1](loj-glyphs/v1alpha1/01-glyphs.md) | 字体注記（`glyphs.yaml`） | `loj-glyphs/v1alpha1` | 公開 |
+| [loj-registry/v1alpha1](loj-registry/v1alpha1/01-registry.md) | 登録台帳のRecord（`records/<Record ID>.yaml`） | `loj-registry/v1alpha1` | 公開 |
+| [loj-rebuild/v1alpha1](loj-rebuild/v1alpha1/01-rebuild.md) | 原典からの再構築と再構築報告（`rebuild.yaml`） | `loj-rebuild/v1alpha1` | 公開 |
 
 - 「状態」の列の意味は、[版の状態](#版の状態)で定める。
 - `spec/`の下でMarkdownを置くディレクトリは、この表と「[凍結した版](#凍結した版)」の表のディレクトリだけとする。版のディレクトリの下にディレクトリを作って、Markdownを置かない。

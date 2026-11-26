@@ -2,6 +2,15 @@
 
 見出しの「草案」は、[草案の版](spec/README.md#版の状態)への変更であることを示す。版の状態の正は、[規範仕様の入口](spec/README.md#規範とするもの)の表にある。版を公開したときは、公開の日付の項目を加える。
 
+## 組1の6つの版の公開（2026-11-26）
+
+[組み合わせて使える版](spec/README.md#組み合わせて使える版)の組1の6つの版を、草案から公開にした（[版の状態](spec/README.md#版の状態)）。以後、これらの版の意味は変えない。意味を変えるときは、版番号を上げた新しい版を草案として作る（CORE-04）。
+
+- 公開した版: `common/v1alpha1`（共通の型）、`loj/v1alpha2`、`loj-history/v1alpha1`、`loj-glyphs/v1alpha1`、`loj-registry/v1alpha1`、`loj-rebuild/v1alpha1`。
+- 公開の前の手順（[CONTRIBUTING](CONTRIBUTING.md#版の状態と公開)）: 欠陥のissueを閉じるか制限に書いた。規範のケース463件を検査器（`loj-validator` `1be397e`）で実行し、すべて期待どおりであった（結果は公開のPR [law-of-japan/loj-spec#193](https://github.com/law-of-japan/loj-spec/pull/193#issuecomment-7184444138) に添付した）。公開の後では版番号を上げないと直せない論点を、解決するか制限に書いた。
+- 公開したcommitに、schemaVersionと同じ名前のタグ（共通の型は`common/v1alpha1`）を打つ。
+- 制限の「検証の境界」の、検査器で確かめていないとした文を、公開の前の実行の結果に合わせて直した。
+
 ## XREF-05・XREF-06の残りの場合のケース（2026-11-26、草案）
 
 公開の前の手順2（[CONTRIBUTING](CONTRIBUTING.md#版の状態と公開)）で、要件との対応表が「一部だけ」としていたXREF-05・XREF-06に、ケースのない場合のケースを加える変更である。仕様の本文は変えない。
