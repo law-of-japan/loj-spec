@@ -602,7 +602,19 @@
             "minItems": 1
           },
           "verification": {
-            "$ref": "https://law-of-japan.github.io/loj-spec/schemas/common/v1alpha1/types.schema.json#/$defs/Verification"
+            "allOf": [
+              {
+                "$ref": "https://law-of-japan.github.io/loj-spec/schemas/common/v1alpha1/types.schema.json#/$defs/Verification"
+              }
+            ],
+            "properties": {
+              "state": {
+                "not": {
+                  "const": "retracted"
+                }
+              }
+            },
+            "$comment": "REG-06: a retracted name is deleted, not kept with verification.state: retracted."
           }
         },
         "additionalProperties": false,

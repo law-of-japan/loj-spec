@@ -44,7 +44,7 @@ SCHEMA_REJECTED = {(case.split("-")[0], case) for case in (
     "reg-007", "reg-010", "rebuild-002", "hist-056", "hist-057", "hist-058", "hist-059", "hist-060", "hist-061",
     "rebuild-005", "reg-013", "glyph-014", "glyph-015", "glyph-016", "glyph-019", "hist-068", "glyph-033", "reg-015",
     "rebuild-006", "reg-016", "rebuild-007")}
-SCHEMA_REJECTED |= {("reg2", case) for case in ("reg-004", "reg-005", "reg-006")}
+SCHEMA_REJECTED |= {("reg2", case) for case in ("reg-004", "reg-005", "reg-006", "reg-007")}
 
 
 def write_json(path, value):
@@ -342,6 +342,10 @@ def registry_names():
                                            "    value: 祝日法\n    evidence: []\n"
                                            "    verification: {state: unverified, reason: 根拠の資料を記録していない}\n")]),
         ("名称の一覧がない", "REG-02", [(mine, "names: []\n", "")]),
+        ("撤回とした名称", "REG-06", [(law, "    value: 祝日法\n    evidence: [{source: src-egov, locator: 法令略称}]\n"
+                                    "    verification: {state: confirmed}\n",
+                                    "    value: 祝日法\n    evidence: [{source: src-egov, locator: 法令略称}]\n"
+                                    "    verification: {state: retracted, reason: 誤って加えた}\n")]),
     ]
     for title, rule, edits in negatives:
         dest = next_dir("reg2", False) / "registry"

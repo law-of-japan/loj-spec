@@ -161,6 +161,35 @@
           ]
         }
       ]
+    },
+    {
+      "id": "reg-007",
+      "title": "撤回とした名称",
+      "requirements": [
+        "REG-06"
+      ],
+      "check": "registry",
+      "normative": true,
+      "input": {
+        "kind": "registry",
+        "path": "conformance/loj-registry/v1alpha2/invalid/reg-007/registry"
+      },
+      "expected": "conformance/loj-registry/v1alpha2/expected/reg-007.json",
+      "success": false,
+      "rejectedBy": "schema",
+      "derivedFrom": [
+        {
+          "path": "conformance/loj-registry/v1alpha2/invalid/reg-007/registry",
+          "from": "conformance/loj-registry/v1alpha2/valid/reg-001/registry",
+          "edits": [
+            {
+              "file": "records/19480720-law-178.yaml",
+              "old": "    value: 祝日法\n    evidence: [{source: src-egov, locator: 法令略称}]\n    verification: {state: confirmed}\n",
+              "new": "    value: 祝日法\n    evidence: [{source: src-egov, locator: 法令略称}]\n    verification: {state: retracted, reason: 誤って加えた}\n"
+            }
+          ]
+        }
+      ]
     }
   ]
 }
