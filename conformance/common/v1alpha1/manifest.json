@@ -1558,6 +1558,504 @@
       },
       "expected": "conformance/common/v1alpha1/expected/common-069.json",
       "success": false
+    },
+    {
+      "id": "common-070",
+      "title": "全部改正の関係の起点が、全部改正後のRecordへ統合したRecord（架空）",
+      "requirements": [
+        "XREF-01",
+        "XREF-02",
+        "REG-02"
+      ],
+      "check": "L4",
+      "category": "relationConsistency",
+      "normative": true,
+      "input": {
+        "kind": "records",
+        "registry": "conformance/common/v1alpha1/valid/common-070/registry",
+        "repositories": [
+          "conformance/common/v1alpha1/valid/common-070/20990101-law-5",
+          "conformance/common/v1alpha1/valid/common-017/20991001-law-9"
+        ]
+      },
+      "expected": "conformance/common/v1alpha1/expected/common-070.json",
+      "success": true,
+      "derivedFrom": [
+        {
+          "path": "conformance/common/v1alpha1/valid/common-070/registry",
+          "from": "conformance/common/v1alpha1/valid/common-017/registry",
+          "edits": [
+            {
+              "file": "records/m4x8k2p7qd.yaml",
+              "content": "schemaVersion: loj-registry/v1alpha1\nid: m4x8k2p7qd\nlabel: 架空の統合した登録\nstatus: merged\nidentity:\n  evidence: [{source: src-fictional, locator: 登録の記録}]\n  verification: {state: confirmed}\ncollection: {state: notCollected}\nsources:\n  - {id: src-fictional, kind: other, title: 適合ケースのための架空の資料}\nnumbers: []\nexternalIds: []\nreplacedBy:\n  - record: {id: 20991001-law-9, label: 架空の新法（全部改正の例）}\n    evidence: [{source: src-fictional, locator: 統合の記録}]\n    verification: {state: confirmed}\n"
+            }
+          ]
+        },
+        {
+          "path": "conformance/common/v1alpha1/valid/common-070/20990101-law-5",
+          "from": "conformance/common/v1alpha1/valid/common-017/20990101-law-5",
+          "edits": [
+            {
+              "file": "history.yaml",
+              "old": "    from: {id: 20991001-law-9, label: 架空の新法（全部改正の例）}\n",
+              "new": "    from: {id: m4x8k2p7qd, label: 架空の統合した登録}\n"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "common-071",
+      "title": "全部改正の関係の起点が、分割したRecord（架空）",
+      "requirements": [
+        "XREF-01",
+        "XREF-02",
+        "VAL-04"
+      ],
+      "check": "L4",
+      "category": "relationConsistency",
+      "normative": true,
+      "input": {
+        "kind": "records",
+        "registry": "conformance/common/v1alpha1/valid/common-071/registry",
+        "repositories": [
+          "conformance/common/v1alpha1/valid/common-071/20990101-law-5",
+          "conformance/common/v1alpha1/valid/common-017/20991001-law-9"
+        ]
+      },
+      "expected": "conformance/common/v1alpha1/expected/common-071.json",
+      "success": true,
+      "derivedFrom": [
+        {
+          "path": "conformance/common/v1alpha1/valid/common-071/registry",
+          "from": "conformance/common/v1alpha1/valid/common-017/registry",
+          "edits": [
+            {
+              "file": "records/s5r9n3t6wc.yaml",
+              "content": "schemaVersion: loj-registry/v1alpha1\nid: s5r9n3t6wc\nlabel: 架空の分割した登録\nstatus: split\nidentity:\n  evidence: [{source: src-fictional, locator: 登録の記録}]\n  verification: {state: confirmed}\ncollection: {state: notCollected}\nsources:\n  - {id: src-fictional, kind: other, title: 適合ケースのための架空の資料}\nnumbers: []\nexternalIds: []\nreplacedBy:\n  - record: {id: 20991001-law-9, label: 架空の新法（全部改正の例）}\n    evidence: [{source: src-fictional, locator: 分割の記録}]\n    verification: {state: unverified, reason: 分割先が確定していない（架空）}\n  - record: {id: 20990602-law-4, label: 架空の分割先の候補}\n    evidence: [{source: src-fictional, locator: 分割の記録}]\n    verification: {state: unverified, reason: 分割先が確定していない（架空）}\n"
+            },
+            {
+              "file": "records/20990602-law-4.yaml",
+              "content": "schemaVersion: loj-registry/v1alpha1\nid: 20990602-law-4\nlabel: 架空の分割先の候補\nstatus: active\nidentity:\n  evidence: [{source: src-fictional, locator: 題名}]\n  verification: {state: confirmed}\ncollection: {state: notCollected}\nsources:\n  - {id: src-fictional, kind: other, title: 適合ケースのための架空の資料}\nnumbers: []\nexternalIds: []\n"
+            }
+          ]
+        },
+        {
+          "path": "conformance/common/v1alpha1/valid/common-071/20990101-law-5",
+          "from": "conformance/common/v1alpha1/valid/common-017/20990101-law-5",
+          "edits": [
+            {
+              "file": "history.yaml",
+              "old": "    from: {id: 20991001-law-9, label: 架空の新法（全部改正の例）}\n",
+              "new": "    from: {id: s5r9n3t6wc, label: 架空の分割した登録}\n"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "common-072",
+      "title": "totallyRevisesが指す旧Recordの履歴マニフェストを取得できない（架空）",
+      "requirements": [
+        "XREF-02",
+        "VAL-04",
+        "VAL-06"
+      ],
+      "check": "L4",
+      "category": "relationConsistency",
+      "normative": true,
+      "input": {
+        "kind": "records",
+        "registry": "conformance/common/v1alpha1/valid/common-017/registry",
+        "repositories": [
+          "conformance/common/v1alpha1/valid/common-017/20991001-law-9"
+        ]
+      },
+      "expected": "conformance/common/v1alpha1/expected/common-072.json",
+      "success": true
+    },
+    {
+      "id": "common-073",
+      "title": "確定した関係の終点が登録を撤回したRecord（架空）",
+      "requirements": [
+        "XREF-01",
+        "REG-02",
+        "VAL-06"
+      ],
+      "check": "L4",
+      "category": "relationResolution",
+      "normative": true,
+      "input": {
+        "kind": "records",
+        "registry": "conformance/common/v1alpha1/invalid/common-073/registry",
+        "repositories": [
+          "conformance/common/v1alpha1/invalid/common-073/20990101-law-5",
+          "conformance/common/v1alpha1/valid/common-017/20991001-law-9"
+        ]
+      },
+      "expected": "conformance/common/v1alpha1/expected/common-073.json",
+      "success": false,
+      "derivedFrom": [
+        {
+          "path": "conformance/common/v1alpha1/invalid/common-073/registry",
+          "from": "conformance/common/v1alpha1/valid/common-017/registry",
+          "edits": [
+            {
+              "file": "records/20990101-law-5.yaml",
+              "old": "status: active\n",
+              "new": "status: withdrawn\n"
+            }
+          ]
+        },
+        {
+          "path": "conformance/common/v1alpha1/invalid/common-073/20990101-law-5",
+          "from": "conformance/common/v1alpha1/valid/common-017/20990101-law-5",
+          "edits": [
+            {
+              "file": "history.yaml",
+              "old": "    verification: {state: unverified, reason: 架空の資料}\n    status: active\n",
+              "new": "    verification: {state: confirmed}\n    status: active\n"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "common-074",
+      "title": "採用中の番号主張が番号のないことを確認したもので、版パッケージに番号がある",
+      "requirements": [
+        "XREF-05",
+        "REG-03"
+      ],
+      "check": "L4",
+      "category": "displayConsistency",
+      "normative": true,
+      "input": {
+        "kind": "records",
+        "registry": "conformance/common/v1alpha1/valid/common-074/registry",
+        "repositories": [
+          "conformance/loj-history/v1alpha1/valid/hist-001/repo"
+        ]
+      },
+      "expected": "conformance/common/v1alpha1/expected/common-074.json",
+      "success": true,
+      "derivedFrom": [
+        {
+          "path": "conformance/common/v1alpha1/valid/common-074/registry",
+          "from": "conformance/loj-registry/v1alpha1/valid/reg-001/registry",
+          "edits": [
+            {
+              "file": "records/19480720-law-178.yaml",
+              "old": "numbers:\n  - id: n1\n    state: exists\n    raw: 法律第百七十八号\n    structured:\n      system: 法律\n      period: {raw: 昭和二十三年, gregorian: {from: \"1948-01-01\", to: \"1948-12-31\"}}\n      series: {state: regular}\n      number: \"178\"\n    evidence: [{source: src-kanpo-19480720, locator: 1コマ 法律の冒頭}]\n    verification: {state: confirmed}\n    decision: adopted\n    glyphs:\n      - {id: g1, offset: 7, recorded: \"号\", kind: ambiguous, candidates: [\"号\", \"號\"],\n         basis: provisional, evidence: [{source: src-egov, locator: 法令番号}],\n         verification: {state: confirmed, reason: 画像の最大解像度で字体を決められない}}\n",
+              "new": "numbers:\n  - id: n1\n    state: nonexistent\n    evidence: [{source: src-kanpo-19480720, locator: 1コマ 法律の冒頭}]\n    verification: {state: unverified, reason: 適合ケースのための架空の変更}\n    decision: adopted\n"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "common-075",
+      "title": "採用中の番号主張の番号が不明で、版パッケージに番号がある",
+      "requirements": [
+        "XREF-05",
+        "REG-03"
+      ],
+      "check": "L4",
+      "category": "displayConsistency",
+      "normative": true,
+      "input": {
+        "kind": "records",
+        "registry": "conformance/common/v1alpha1/valid/common-075/registry",
+        "repositories": [
+          "conformance/loj-history/v1alpha1/valid/hist-001/repo"
+        ]
+      },
+      "expected": "conformance/common/v1alpha1/expected/common-075.json",
+      "success": true,
+      "derivedFrom": [
+        {
+          "path": "conformance/common/v1alpha1/valid/common-075/registry",
+          "from": "conformance/loj-registry/v1alpha1/valid/reg-001/registry",
+          "edits": [
+            {
+              "file": "records/19480720-law-178.yaml",
+              "old": "numbers:\n  - id: n1\n    state: exists\n    raw: 法律第百七十八号\n    structured:\n      system: 法律\n      period: {raw: 昭和二十三年, gregorian: {from: \"1948-01-01\", to: \"1948-12-31\"}}\n      series: {state: regular}\n      number: \"178\"\n    evidence: [{source: src-kanpo-19480720, locator: 1コマ 法律の冒頭}]\n    verification: {state: confirmed}\n    decision: adopted\n    glyphs:\n      - {id: g1, offset: 7, recorded: \"号\", kind: ambiguous, candidates: [\"号\", \"號\"],\n         basis: provisional, evidence: [{source: src-egov, locator: 法令番号}],\n         verification: {state: confirmed, reason: 画像の最大解像度で字体を決められない}}\n",
+              "new": "numbers:\n  - id: n1\n    state: unknown\n    evidence: [{source: src-kanpo-19480720, locator: 1コマ 法律の冒頭}]\n    verification: {state: unverified, reason: 適合ケースのための架空の変更}\n    decision: adopted\n"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "common-076",
+      "title": "採用中の番号主張が資料の間で食い違う（判定しない）",
+      "requirements": [
+        "XREF-05",
+        "REG-03"
+      ],
+      "check": "L4",
+      "category": "displayConsistency",
+      "normative": true,
+      "input": {
+        "kind": "records",
+        "registry": "conformance/common/v1alpha1/valid/common-076/registry",
+        "repositories": [
+          "conformance/common/v1alpha1/valid/common-014/hist-001"
+        ]
+      },
+      "expected": "conformance/common/v1alpha1/expected/common-076.json",
+      "success": true,
+      "derivedFrom": [
+        {
+          "path": "conformance/common/v1alpha1/valid/common-076/registry",
+          "from": "conformance/loj-registry/v1alpha1/valid/reg-001/registry",
+          "edits": [
+            {
+              "file": "records/19480720-law-178.yaml",
+              "old": "numbers:\n  - id: n1\n    state: exists\n    raw: 法律第百七十八号\n    structured:\n      system: 法律\n      period: {raw: 昭和二十三年, gregorian: {from: \"1948-01-01\", to: \"1948-12-31\"}}\n      series: {state: regular}\n      number: \"178\"\n    evidence: [{source: src-kanpo-19480720, locator: 1コマ 法律の冒頭}]\n    verification: {state: confirmed}\n    decision: adopted\n    glyphs:\n      - {id: g1, offset: 7, recorded: \"号\", kind: ambiguous, candidates: [\"号\", \"號\"],\n         basis: provisional, evidence: [{source: src-egov, locator: 法令番号}],\n         verification: {state: confirmed, reason: 画像の最大解像度で字体を決められない}}\n",
+              "new": "numbers:\n  - id: n1\n    state: conflicting\n    raw:\n      - {source: src-kanpo-19480720, raw: 法律第百七十八号}\n      - {source: src-egov, raw: 法律第百七十九号}\n    evidence: [{source: src-kanpo-19480720, locator: 1コマ 法律の冒頭}, {source: src-egov, locator: 法令番号}]\n    verification: {state: disputed, reason: 適合ケースのための架空の食い違い}\n    decision: adopted\n"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "common-077",
+      "title": "採用中の番号主張がない（判定しない）",
+      "requirements": [
+        "XREF-05",
+        "REG-03"
+      ],
+      "check": "L4",
+      "category": "displayConsistency",
+      "normative": true,
+      "input": {
+        "kind": "records",
+        "registry": "conformance/common/v1alpha1/valid/common-077/registry",
+        "repositories": [
+          "conformance/common/v1alpha1/valid/common-014/hist-001"
+        ]
+      },
+      "expected": "conformance/common/v1alpha1/expected/common-077.json",
+      "success": true,
+      "derivedFrom": [
+        {
+          "path": "conformance/common/v1alpha1/valid/common-077/registry",
+          "from": "conformance/loj-registry/v1alpha1/valid/reg-001/registry",
+          "edits": [
+            {
+              "file": "records/19480720-law-178.yaml",
+              "old": "    decision: adopted\n",
+              "new": "    decision: pending\n"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "common-078",
+      "title": "同じ改正法令の公布の時点の一方が確定日でない（架空）",
+      "requirements": [
+        "XREF-06",
+        "TIME-03",
+        "VAL-04"
+      ],
+      "check": "L4",
+      "category": "timeConsistency",
+      "normative": true,
+      "input": {
+        "kind": "records",
+        "registry": "conformance/common/v1alpha1/valid/common-015/registry",
+        "repositories": [
+          "conformance/loj-history/v1alpha1/valid/hist-016/repo",
+          "conformance/common/v1alpha1/valid/common-078/hist-016b"
+        ]
+      },
+      "expected": "conformance/common/v1alpha1/expected/common-078.json",
+      "success": true,
+      "derivedFrom": [
+        {
+          "path": "conformance/common/v1alpha1/valid/common-078/hist-016b",
+          "from": "conformance/common/v1alpha1/valid/common-015/hist-016b",
+          "edits": [
+            {
+              "file": "history.yaml",
+              "old": "    promulgated:\n      state: date\n      value: \"2099-06-01\"\n      raw: 令和八十一年六月一日\n      precision: day\n      evidence: [{source: src-fictional, locator: 公布の日}]\n      verification: {state: unverified, reason: 架空の資料}\n",
+              "new": "    promulgated:\n      state: date\n      value: \"2099-06\"\n      raw: 令和八十一年六月\n      precision: month\n      evidence: [{source: src-fictional, locator: 公布の日}]\n      verification: {state: unverified, reason: 架空の資料}\n"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "common-079",
+      "title": "撤回した関係の公布の時点は比べない（架空）",
+      "requirements": [
+        "XREF-06",
+        "HIST-03"
+      ],
+      "check": "L4",
+      "category": "timeConsistency",
+      "normative": true,
+      "input": {
+        "kind": "records",
+        "registry": "conformance/common/v1alpha1/valid/common-015/registry",
+        "repositories": [
+          "conformance/loj-history/v1alpha1/valid/hist-016/repo",
+          "conformance/common/v1alpha1/valid/common-079/hist-016b"
+        ]
+      },
+      "expected": "conformance/common/v1alpha1/expected/common-079.json",
+      "success": true,
+      "derivedFrom": [
+        {
+          "path": "conformance/common/v1alpha1/valid/common-079/hist-016b",
+          "from": "conformance/common/v1alpha1/valid/common-015/hist-016b",
+          "edits": [
+            {
+              "file": "history.yaml",
+              "old": "revisions:\n",
+              "new": "  - id: rel-amend-x\n    type: amends\n    from: {id: 20990601-law-2, label: 架空の改正法}\n    promulgated:\n      state: date\n      value: \"2099-06-02\"\n      raw: 令和八十一年六月二日\n      precision: day\n      evidence: [{source: src-fictional, locator: 公布の日}]\n      verification: {state: unverified, reason: 架空の資料}\n    evidence: [{source: src-fictional, locator: 附則第一条}]\n    verification: {state: unverified, reason: 公布の日を誤って記録した関係の撤回（架空）}\n    status: retracted\n    items:\n      - id: i1\n        scope: {text: 第一条}\n        effective: {state: unknown, reason: 適合ケースで省略}\n        evidence: [{source: src-fictional, locator: 附則第一条}]\n        verification: {state: unverified, reason: 架空の資料}\nrevisions:\n"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "common-080",
+      "title": "一方の関係だけが公布の時点を持つ（判定しない）",
+      "requirements": [
+        "XREF-06",
+        "HIST-03"
+      ],
+      "check": "L4",
+      "category": "timeConsistency",
+      "normative": true,
+      "input": {
+        "kind": "records",
+        "registry": "conformance/common/v1alpha1/valid/common-015/registry",
+        "repositories": [
+          "conformance/loj-history/v1alpha1/valid/hist-016/repo",
+          "conformance/common/v1alpha1/valid/common-080/hist-016b"
+        ]
+      },
+      "expected": "conformance/common/v1alpha1/expected/common-080.json",
+      "success": true,
+      "derivedFrom": [
+        {
+          "path": "conformance/common/v1alpha1/valid/common-080/hist-016b",
+          "from": "conformance/common/v1alpha1/valid/common-015/hist-016b",
+          "edits": [
+            {
+              "file": "history.yaml",
+              "old": "    promulgated:\n      state: date\n      value: \"2099-06-01\"\n      raw: 令和八十一年六月一日\n      precision: day\n      evidence: [{source: src-fictional, locator: 公布の日}]\n      verification: {state: unverified, reason: 架空の資料}\n",
+              "new": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "common-081",
+      "title": "統合したRecordを起点とする関係の公布の時点が、統合先を起点とする関係と食い違う（架空）",
+      "requirements": [
+        "XREF-01",
+        "XREF-06"
+      ],
+      "check": "L4",
+      "category": "timeConsistency",
+      "normative": true,
+      "input": {
+        "kind": "records",
+        "registry": "conformance/common/v1alpha1/invalid/common-081/registry",
+        "repositories": [
+          "conformance/loj-history/v1alpha1/valid/hist-016/repo",
+          "conformance/common/v1alpha1/invalid/common-081/hist-016b"
+        ]
+      },
+      "expected": "conformance/common/v1alpha1/expected/common-081.json",
+      "success": false,
+      "derivedFrom": [
+        {
+          "path": "conformance/common/v1alpha1/invalid/common-081/registry",
+          "from": "conformance/common/v1alpha1/valid/common-015/registry",
+          "edits": [
+            {
+              "file": "records/m4x8k2p7qd.yaml",
+              "content": "schemaVersion: loj-registry/v1alpha1\nid: m4x8k2p7qd\nlabel: 架空の統合した登録\nstatus: merged\nidentity:\n  evidence: [{source: src-fictional, locator: 登録の記録}]\n  verification: {state: confirmed}\ncollection: {state: notCollected}\nsources:\n  - {id: src-fictional, kind: other, title: 適合ケースのための架空の資料}\nnumbers: []\nexternalIds: []\nreplacedBy:\n  - record: {id: 20990601-law-2, label: 架空の改正法}\n    evidence: [{source: src-fictional, locator: 統合の記録}]\n    verification: {state: confirmed}\n"
+            }
+          ]
+        },
+        {
+          "path": "conformance/common/v1alpha1/invalid/common-081/hist-016b",
+          "from": "conformance/common/v1alpha1/valid/common-015/hist-016b",
+          "edits": [
+            {
+              "file": "history.yaml",
+              "old": "    from: {id: 20990601-law-2, label: 架空の改正法}\n",
+              "new": "    from: {id: m4x8k2p7qd, label: 架空の統合した登録}\n"
+            },
+            {
+              "file": "history.yaml",
+              "old": "    promulgated:\n      state: date\n      value: \"2099-06-01\"\n      raw: 令和八十一年六月一日\n      precision: day\n      evidence: [{source: src-fictional, locator: 公布の日}]\n      verification: {state: unverified, reason: 架空の資料}\n",
+              "new": "    promulgated:\n      state: date\n      value: \"2099-06-02\"\n      raw: 令和八十一年六月二日\n      precision: day\n      evidence: [{source: src-fictional, locator: 公布の日}]\n      verification: {state: unverified, reason: 架空の資料}\n"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "common-082",
+      "title": "分割したRecordを起点とする関係の公布の時点は比べない（架空）",
+      "requirements": [
+        "XREF-01",
+        "XREF-06"
+      ],
+      "check": "L4",
+      "category": "timeConsistency",
+      "normative": true,
+      "input": {
+        "kind": "records",
+        "registry": "conformance/common/v1alpha1/valid/common-082/registry",
+        "repositories": [
+          "conformance/loj-history/v1alpha1/valid/hist-016/repo",
+          "conformance/common/v1alpha1/valid/common-082/hist-016b"
+        ]
+      },
+      "expected": "conformance/common/v1alpha1/expected/common-082.json",
+      "success": true,
+      "derivedFrom": [
+        {
+          "path": "conformance/common/v1alpha1/valid/common-082/registry",
+          "from": "conformance/common/v1alpha1/valid/common-015/registry",
+          "edits": [
+            {
+              "file": "records/s5r9n3t6wc.yaml",
+              "content": "schemaVersion: loj-registry/v1alpha1\nid: s5r9n3t6wc\nlabel: 架空の分割した登録\nstatus: split\nidentity:\n  evidence: [{source: src-fictional, locator: 登録の記録}]\n  verification: {state: confirmed}\ncollection: {state: notCollected}\nsources:\n  - {id: src-fictional, kind: other, title: 適合ケースのための架空の資料}\nnumbers: []\nexternalIds: []\nreplacedBy:\n  - record: {id: 20990601-law-2, label: 架空の改正法}\n    evidence: [{source: src-fictional, locator: 分割の記録}]\n    verification: {state: unverified, reason: 分割先が確定していない（架空）}\n  - record: {id: 20990602-law-4, label: 架空の分割先の候補}\n    evidence: [{source: src-fictional, locator: 分割の記録}]\n    verification: {state: unverified, reason: 分割先が確定していない（架空）}\n"
+            },
+            {
+              "file": "records/20990602-law-4.yaml",
+              "content": "schemaVersion: loj-registry/v1alpha1\nid: 20990602-law-4\nlabel: 架空の分割先の候補\nstatus: active\nidentity:\n  evidence: [{source: src-fictional, locator: 題名}]\n  verification: {state: confirmed}\ncollection: {state: notCollected}\nsources:\n  - {id: src-fictional, kind: other, title: 適合ケースのための架空の資料}\nnumbers: []\nexternalIds: []\n"
+            }
+          ]
+        },
+        {
+          "path": "conformance/common/v1alpha1/valid/common-082/hist-016b",
+          "from": "conformance/common/v1alpha1/valid/common-015/hist-016b",
+          "edits": [
+            {
+              "file": "history.yaml",
+              "old": "    from: {id: 20990601-law-2, label: 架空の改正法}\n",
+              "new": "    from: {id: s5r9n3t6wc, label: 架空の分割した登録}\n"
+            },
+            {
+              "file": "history.yaml",
+              "old": "    promulgated:\n      state: date\n      value: \"2099-06-01\"\n      raw: 令和八十一年六月一日\n      precision: day\n      evidence: [{source: src-fictional, locator: 公布の日}]\n      verification: {state: unverified, reason: 架空の資料}\n",
+              "new": "    promulgated:\n      state: date\n      value: \"2099-06-02\"\n      raw: 令和八十一年六月二日\n      precision: day\n      evidence: [{source: src-fictional, locator: 公布の日}]\n      verification: {state: unverified, reason: 架空の資料}\n"
+            }
+          ]
+        }
+      ]
     }
   ]
 }
