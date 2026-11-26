@@ -1001,6 +1001,7 @@ def index_cases(index):
 
 def main():
     # Replace every case from pkg-107 on, including one no longer defined here.
+    assert CASES, "no case defined; refusing to delete the cases from pkg-%03d on" % FIRST
     for group in ("valid", "invalid"):
         for folder in (DST / group).glob("pkg-*"):
             if int(folder.name[4:]) >= FIRST:
