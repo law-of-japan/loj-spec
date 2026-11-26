@@ -2263,6 +2263,63 @@
       },
       "expected": "conformance/common/v1alpha1/expected/common-093.json",
       "success": true
+    },
+    {
+      "id": "common-094",
+      "title": "関係の撤回と、それを根拠とする効力の終了の項目の削除を、一つの属性の更新とする",
+      "requirements": [
+        "HIST-12",
+        "CHG-01",
+        "CHG-02"
+      ],
+      "check": "change",
+      "normative": true,
+      "input": {
+        "kind": "change",
+        "bundle": "conformance/common/v1alpha1/valid/common-094/repo.bundle",
+        "base": "dfd40bffd70de3fa3bf1c3668e462bc5053407fd",
+        "head": "1a56924429c749c60d15d016ee15c94c2ed6994c"
+      },
+      "expected": "conformance/common/v1alpha1/expected/common-094.json",
+      "success": true
+    },
+    {
+      "id": "common-095",
+      "title": "関係の撤回と、効力の終了の項目の別の関係への置き換えを、一つの属性の更新とする",
+      "requirements": [
+        "HIST-12",
+        "CHG-01",
+        "CHG-02"
+      ],
+      "check": "change",
+      "normative": true,
+      "input": {
+        "kind": "change",
+        "bundle": "conformance/common/v1alpha1/valid/common-095/repo.bundle",
+        "base": "dfd40bffd70de3fa3bf1c3668e462bc5053407fd",
+        "head": "50650bef004f75f7cbf76a569735601fb6da74cc"
+      },
+      "expected": "conformance/common/v1alpha1/expected/common-095.json",
+      "success": true
+    },
+    {
+      "id": "common-096",
+      "title": "関係の撤回と効力の終了の項目の削除を、状態の訂正と宣言する",
+      "requirements": [
+        "HIST-12",
+        "CHG-01",
+        "CHG-02"
+      ],
+      "check": "change",
+      "normative": true,
+      "input": {
+        "kind": "change",
+        "bundle": "conformance/common/v1alpha1/invalid/common-096/repo.bundle",
+        "base": "dfd40bffd70de3fa3bf1c3668e462bc5053407fd",
+        "head": "1b9d2fa6a2f5183b02a2fb1b73f4e4924f27246e"
+      },
+      "expected": "conformance/common/v1alpha1/expected/common-096.json",
+      "success": false
     }
   ]
 }
